@@ -6,25 +6,45 @@
 
 /* You can override the default Infima variables here. */
 :root {
-  --ifm-color-primary: #2e8555;
-  --ifm-color-primary-dark: #29784c;
-  --ifm-color-primary-darker: #277148;
-  --ifm-color-primary-darkest: #205d3b;
-  --ifm-color-primary-light: #33925d;
-  --ifm-color-primary-lighter: #359962;
-  --ifm-color-primary-lightest: #3cad6e;
+  --ifm-color-primary: #8D6E63; /* Muted Brown as primary */
+  --ifm-color-primary-dark: #7D5E53; /* Darker muted brown */
+  --ifm-color-primary-darker: #6D4E43; /* Even darker muted brown */
+  --ifm-color-primary-darkest: #5D3E33; /* Darkest muted brown */
+  --ifm-color-primary-light: #9D7E73; /* Lighter muted brown */
+  --ifm-color-primary-lighter: #AD8E83; /* Even lighter muted brown */
+  --ifm-color-primary-lightest: #BD9E93; /* Lightest muted brown */
+  
+  /* Accent colors */
+  --ifm-color-success: #A5D6A7; /* Soft Mint Green */
+  --ifm-color-info: #FFE082; /* Pale Yellow */
+  --ifm-color-warning: #FFAB91; /* Pastel Coral/Red */
+  --ifm-color-danger: #FFAB91; /* Pastel Coral/Red as danger */
+  
+  --ifm-background-color: #F4F4F4; /* Soft Light Grey background */
+  --ifm-background-surface-color: #E0D8C0; /* Muted Beige for surfaces */
+  --ifm-border-color: #D7CCC8; /* Light Taupe/Greyish Beige for borders */
   --ifm-code-font-size: 95%;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
 }
 
 /* For readability concerns, you should choose a lighter palette in dark mode. */
 [data-theme='dark'] {
-  --ifm-color-primary: #25c2a0;
-  --ifm-color-primary-dark: #21af90;
-  --ifm-color-primary-darker: #1fa588;
-  --ifm-color-primary-darkest: #1a8870;
-  --ifm-color-primary-light: #29d5b0;
-  --ifm-color-primary-lighter: #32d8b4;
-  --ifm-color-primary-lightest: #4fddbf;
+  --ifm-color-primary: #E0D8C0; /* Muted Beige as primary for dark mode */
+  --ifm-color-primary-dark: #D0C8B0;
+  --ifm-color-primary-darker: #C0B8A0;
+  --ifm-color-primary-darkest: #B0A890;
+  --ifm-color-primary-light: #F0E8D0;
+  --ifm-color-primary-lighter: #F5F0E0;
+  --ifm-color-primary-lightest: #FAF8F0;
+  
+  /* Accent colors - adjusted for dark mode */
+  --ifm-color-success: #A5D6A7; /* Soft Mint Green */
+  --ifm-color-info: #FFE082; /* Pale Yellow */
+  --ifm-color-warning: #FFAB91; /* Pastel Coral/Red */
+  --ifm-color-danger: #FFAB91; /* Pastel Coral/Red as danger */
+  
+  --ifm-background-color: #455A64; /* Blue Grey / Muted Charcoal background */
+  --ifm-background-surface-color: #8D6E63; /* Muted Brown for surfaces */
+  --ifm-border-color: #A1887F; /* Muted Brown/Taupe for borders */
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
