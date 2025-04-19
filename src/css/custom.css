@@ -1,50 +1,153 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap");
+
 /**
- * Any CSS included here will be global. The classic template
- * bundles Infima by default. Infima is a CSS framework designed to
- * work well for content-centric websites.
+ * Any custom CSS code to be imported should be specified here.
  */
 
-/* You can override the default Infima variables here. */
+.navbar-sidebar {
+  background-color: var(--ifm-side-navbar-background-color);
+}
+
+.navbar__title {
+  color: hsl(30, 75%, 90%);
+  -webkit-text-stroke: 1px #6c341c;
+  font-size: 24px;
+}
+
+.navbar__logo {
+  margin-right: 1px;
+}
+
+/* Footer */
+.footer {
+  padding: 2rem 0;
+  text-align: center;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+  background-color: #161616;
+  margin-top: 3rem;
+  border-top: 1px solid #333;
+}
+
 :root {
-  --ifm-color-primary: #8D6E63; /* Muted Brown as primary */
-  --ifm-color-primary-dark: #7D5E53; /* Darker muted brown */
-  --ifm-color-primary-darker: #6D4E43; /* Even darker muted brown */
-  --ifm-color-primary-darkest: #5D3E33; /* Darkest muted brown */
-  --ifm-color-primary-light: #9D7E73; /* Lighter muted brown */
-  --ifm-color-primary-lighter: #AD8E83; /* Even lighter muted brown */
-  --ifm-color-primary-lightest: #BD9E93; /* Lightest muted brown */
-  
+  /* Your navbar background color */
+  --ifm-navbar-background-color: rgba(255, 255, 255, 0.9);
+  --ifm-mobile-navbar-background-color: rgba(255, 255, 255);
+
+  /* Your side navbar background color */
+  --ifm-side-navbar-background-color: rgb(255, 255, 255);
+
+  /* Set Poppins as base font */
+  --ifm-font-family-base: "Poppins", sans-serif;
+
+  /* Your primary color */
+  --ifm-color-primary: hsl(25, 55%, 25%);
+  --ifm-color-primary-dark: hsl(25, 55%, 20%);
+  --ifm-color-primary-darker: hsl(25, 55%, 15%);
+  --ifm-color-primary-darkest: hsl(25, 55%, 10%);
+  --ifm-color-primary-light: hsl(25, 55%, 30%);
+  --ifm-color-primary-lighter: hsl(25, 55%, 35%);
+  --ifm-color-primary-lightest: hsl(25, 55%, 40%);
+
+  /* Badge colors */
+  --ifm-underdevelopment-color-background: rgb(239 68 68 / 15%);
+  --ifm-underdevelopment-color: rgb(239 68 68);
+
+  --ifm-license-color-background: rgb(33 196 93 / 15%);
+  --ifm-license-color: rgb(33 196 93);
+
+  --ifm-version-color-background: rgb(0 0 0);
+  --ifm-version-color: rgb(255 255 255);
+
+  --hero-get-started-button-color: rgb(255 255 255);
+  --hero-view-on-github-button-color: hsl(25, 55%, 25%);
+
   /* Accent colors */
-  --ifm-color-success: #A5D6A7; /* Soft Mint Green */
-  --ifm-color-info: #FFE082; /* Pale Yellow */
-  --ifm-color-warning: #FFAB91; /* Pastel Coral/Red */
-  --ifm-color-danger: #FFAB91; /* Pastel Coral/Red as danger */
-  
-  --ifm-background-color: #F4F4F4; /* Soft Light Grey background */
-  --ifm-background-surface-color: #E0D8C0; /* Muted Beige for surfaces */
-  --ifm-border-color: #D7CCC8; /* Light Taupe/Greyish Beige for borders */
+  --ifm-color-success: hsl(142, 71%, 45%);
+  --ifm-color-info: hsl(25, 55%, 25%);
+  --ifm-color-warning: hsl(46, 90%, 49%);
+  --ifm-color-danger: hsl(0, 84.2%, 60.2%);
+
+  /* Your background color */
+  --ifm-background-color: hsl(210, 40%, 98%);
+
+  /* Your card color */
+  --ifm-background-surface-color: hsl(0, 0%, 100%);
+
+  /* Your border color */
+  --ifm-border-color: hsl(214.3, 31.8%, 91.4%);
+
+  /* Your code font size */
   --ifm-code-font-size: 95%;
+  /* Your highlighted code line background color */
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
 }
 
 /* For readability concerns, you should choose a lighter palette in dark mode. */
-[data-theme='dark'] {
-  --ifm-color-primary: #E0D8C0; /* Muted Beige as primary for dark mode */
-  --ifm-color-primary-dark: #D0C8B0;
-  --ifm-color-primary-darker: #C0B8A0;
-  --ifm-color-primary-darkest: #B0A890;
-  --ifm-color-primary-light: #F0E8D0;
-  --ifm-color-primary-lighter: #F5F0E0;
-  --ifm-color-primary-lightest: #FAF8F0;
-  
+[data-theme="dark"] {
+  /* Your navbar background color */
+  --ifm-navbar-background-color: rgba(0, 0, 0, 0.116);
+  --ifm-mobile-navbar-background-color: #18181a;
+
+  /* Your side navbar background color */
+  --ifm-side-navbar-background-color: rgb(0, 0, 0);
+
+  /* Set Poppins as base font */
+  --ifm-font-family-base: "Poppins", sans-serif;
+
+  /* Your dark mode primary color */
+  --ifm-color-primary: hsl(30, 75%, 90%);
+  --ifm-color-primary-dark: hsl(30, 75%, 80%);
+  --ifm-color-primary-darker: hsl(30, 75%, 70%);
+  --ifm-color-primary-darkest: hsl(30, 75%, 60%);
+  --ifm-color-primary-light: hsl(30, 75%, 95%);
+  --ifm-color-primary-lighter: hsl(30, 75%, 97%);
+  --ifm-color-primary-lightest: hsl(30, 75%, 99%);
+
+  --hero-get-started-button-color: rgb(0 0 0);
+  --hero-view-on-github-button-color: hsl(30, 75%, 90%);
+
   /* Accent colors - adjusted for dark mode */
-  --ifm-color-success: #A5D6A7; /* Soft Mint Green */
-  --ifm-color-info: #FFE082; /* Pale Yellow */
-  --ifm-color-warning: #FFAB91; /* Pastel Coral/Red */
-  --ifm-color-danger: #FFAB91; /* Pastel Coral/Red as danger */
-  
-  --ifm-background-color: #455A64; /* Blue Grey / Muted Charcoal background */
-  --ifm-background-surface-color: #8D6E63; /* Muted Brown for surfaces */
-  --ifm-border-color: #A1887F; /* Muted Brown/Taupe for borders */
+  --ifm-color-success: hsl(120, 50%, 40%);
+  --ifm-color-info: hsl(25, 55%, 25%);
+  --ifm-color-warning: hsl(46, 90%, 49%);
+  --ifm-color-danger: hsl(0, 84.2%, 60.2%);
+
+  /* Your dark mode background */
+  --ifm-background-color: hsl(240, 10%, 3.9%);
+  /* Your dark mode card color */
+  --ifm-background-surface-color: hsl(240, 10%, 3.9%);
+  /* Your dark mode border color */
+  --ifm-border-color: hsl(240, 3.7%, 15.9%);
+  /* Your highlighted code line background color */
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+}
+
+/* Apply glass effect on screens wider than 996px (Docusaurus' typical mobile breakpoint) */
+@media (min-width: 997px) {
+  .navbar {
+    background-color: var(--ifm-navbar-background-color);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    /* Apply the glass effect */
+    backdrop-filter: blur(5px); /* Adjust the blur value as needed */
+    -webkit-backdrop-filter: blur(5px); /* Include for Safari support */
+  }
+}
+
+@media (max-width: 996px) {
+  /* Mobile navbar css start   */
+  .navbar {
+    background-color: var(--ifm-mobile-navbar-background-color);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Ensure mobile sidebar doesn't inherit the backdrop-filter */
+  .navbar-sidebar {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  /* Mobile navbar css end   */
 }

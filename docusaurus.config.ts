@@ -24,6 +24,15 @@ const config: Config = {
   onBrokenLinks: "throw",
   onBrokenMarkdownLinks: "warn",
 
+  // Custom fields for the homepage
+  customFields: {
+    status: "Under Development",
+    license: "MIT License",
+    bunVersion: "Bun 1.2.4+",
+    getStartedUrl: "/docs/intro",
+    githubUrl: "https://github.com/isfhan/burger-api",
+  },
+
   // Even if you don't use internationalization, you can use this field to set
   // useful metadata like html lang. For example, if your site is Chinese, you
   // may want to replace "en" with "zh-Hans".
@@ -68,6 +77,7 @@ const config: Config = {
   themeConfig: {
     // Replace with your project's social card
     // image: 'img/docusaurus-social-card.jpg',
+
     navbar: {
       title: "BurgerAPI",
       logo: {
@@ -78,16 +88,17 @@ const config: Config = {
         {
           type: "docSidebar",
           sidebarId: "tutorialSidebar",
-          position: "left",
-          label: "Tutorial",
+          position: "right",
+          label: "Docs",
         },
-        { to: "/blog", label: "Blog", position: "left" },
+        { to: "/blog", label: "Blog", position: "right" },
         {
           href: "https://github.com/facebook/docusaurus",
           label: "GitHub",
           position: "right",
         },
       ],
+    
     },
     footer: {
       style: "dark",
