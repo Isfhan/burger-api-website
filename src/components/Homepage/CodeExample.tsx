@@ -27,7 +27,7 @@ burger.serve(4000);`,
   },
   {
     id: "route",
-    title: "api/hello.ts",
+    title: "api/route.ts",
     code: `// Step 1: Import the BurgerRequest type from burger-api 
 import type { BurgerRequest } from 'burger-api';
 
