@@ -131,17 +131,87 @@
 }
 
 .codeExampleHeader {
-  background-color: #161616;
-  padding: 8px 16px;
+  background: linear-gradient(to bottom, #1a1a1a, #161616);
+  padding: 0 16px;
   display: flex;
-  gap: 8px;
+  align-items: stretch;
+  height: 40px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.windowControls {
+  display: flex;
   align-items: center;
+  gap: 8px;
+  padding-right: 16px;
+  position: relative;
+}
+
+.windowControls::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 25%;
+  height: 50%;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .codeExampleDot {
   width: 12px;
   height: 12px;
   border-radius: 50%;
+  transition: transform 0.2s ease;
+}
+
+.codeExampleDot:hover {
+  transform: scale(1.1);
+}
+
+.tabs {
+  display: flex;
+  flex-grow: 1;
+  align-items: flex-end;
+  padding-left: 8px;
+}
+
+.tabButton {
+  padding: 8px 16px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: none;
+  color: #aaa;
+  cursor: pointer;
+  font-size: 13px;
+  font-family: var(--ifm-font-family-monospace);
+  border-radius: 4px 4px 0 0;
+  margin-right: 2px;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+  position: relative;
+  bottom: -2px;
+  height: calc(100% - 2px);
+  display: flex;
+  align-items: center;
+  min-width: 100px;
+  justify-content: center;
+}
+
+.tabButton:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #eee;
+}
+
+.activeTab {
+  background-color: #242526;
+  color: #fff;
+  border-bottom: 2px solid var(--ifm-color-primary);
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.codeExampleContent {
+  border-radius: 0 0 8px 8px;
+  overflow: hidden;
+  background-color: #242526;
 }
 
 .codeExample {
@@ -214,8 +284,6 @@
   color: var(--ifm-color-emphasis-700);
   flex-grow: 1;
 }
-
-
 
 /* Responsive */
 @media (max-width: 996px) {
