@@ -7,7 +7,7 @@ import type * as Preset from "@docusaurus/preset-classic";
 const config: Config = {
   title: "BurgerAPI",
   tagline:
-    "A modern, open source API framework built on Bun.js with file-based routing, middleware support, Zod validation, and automatic OpenAPI generation.",
+    "A modern, open source Bun.js native framework with file-based routing, middleware support, Zod validation, and automatic OpenAPI generation.",
   favicon: "img/favicon.ico",
 
   // Set the production url of your site here
@@ -75,9 +75,6 @@ const config: Config = {
   ],
 
   themeConfig: {
-    // Replace with your project's social card
-    // image: 'img/docusaurus-social-card.jpg',
-
     navbar: {
       title: "BurgerAPI",
       logo: {
@@ -91,63 +88,20 @@ const config: Config = {
           position: "right",
           label: "Docs",
         },
-        { to: "/blog", label: "Blog", position: "right" },
         {
-          href: "https://github.com/facebook/docusaurus",
+          href: "https://github.com/isfhan/burger-api",
           label: "GitHub",
           position: "right",
         },
       ],
-    
     },
     footer: {
       style: "dark",
-      links: [
-        // {
-        //   title: 'Docs',
-        //   items: [
-        //     {
-        //       label: 'Tutorial',
-        //       to: '/docs/intro',
-        //     },
-        //   ],
-        // },
-        // {
-        //   title: 'Community',
-        //   items: [
-        //     {
-        //       label: 'Stack Overflow',
-        //       href: 'https://stackoverflow.com/questions/tagged/docusaurus',
-        //     },
-        //     {
-        //       label: 'Discord',
-        //       href: 'https://discordapp.com/invite/docusaurus',
-        //     },
-        //     {
-        //       label: 'X',
-        //       href: 'https://x.com/docusaurus',
-        //     },
-        //   ],
-        // },
-        // {
-        //   title: 'More',
-        //   items: [
-        //     {
-        //       label: 'Blog',
-        //       to: '/blog',
-        //     },
-        //     {
-        //       label: 'GitHub',
-        //       href: 'https://github.com/facebook/docusaurus',
-        //     },
-        //   ],
-        // },
-      ],
       copyright: `Built with ❤️ for the Bun.js community.`,
     },
     prism: {
-      theme: prismThemes.github,
-      darkTheme: prismThemes.dracula,
+      theme: prismThemes.vsDark,
+      darkTheme: prismThemes.vsDark,
     },
   } satisfies Preset.ThemeConfig,
 };
