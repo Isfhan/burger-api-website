@@ -21,7 +21,7 @@ export function HomepageFeatures() {
       icon: "⚙️",
       title: "Middleware Architecture",
       description:
-        "Supports both global and route-specific middleware with a familiar req, res, next pattern. Chain multiple middleware functions to process requests before they reach your route handlers.",
+        "Supports global and route-specific middleware with flexible response handling - continue, short-circuit, or modify responses.",
     },
     {
       icon: "🔒",

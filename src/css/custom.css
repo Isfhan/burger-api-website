@@ -24,7 +24,7 @@
   text-align: center;
   font-size: 0.9rem;
   color: rgba(255, 255, 255, 0.7);
-  background-color: #161616;
+  background-color: #242526;
   margin-top: 3rem;
   border-top: 1px solid #333;
 }
@@ -81,6 +81,8 @@
   --ifm-code-font-size: 95%;
   /* Your highlighted code line background color */
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+
+  --ifm-heading-color: hsl(25, 55%, 25%);
 }
 
 /* For readability concerns, you should choose a lighter palette in dark mode. */
@@ -114,13 +116,16 @@
   --ifm-color-danger: hsl(0, 84.2%, 60.2%);
 
   /* Your dark mode background */
-  --ifm-background-color: hsl(240, 10%, 3.9%);
+  --ifm-background-color: #09090b !important;
+  
   /* Your dark mode card color */
   --ifm-background-surface-color: hsl(240, 10%, 3.9%);
   /* Your dark mode border color */
   --ifm-border-color: hsl(240, 3.7%, 15.9%);
   /* Your highlighted code line background color */
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+
+  --ifm-heading-color: hsl(30, 75%, 90%);
 }
 
 /* Apply glass effect on screens wider than 996px (Docusaurus' typical mobile breakpoint) */

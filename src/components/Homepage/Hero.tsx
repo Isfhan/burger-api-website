@@ -69,7 +69,7 @@ export function HomepageHero() {
                   "button button--primary button--lg",
                   styles.getStartedButton
                 )}
-                to={customFields?.getStartedUrl || "/docs/intro"}
+                to={customFields?.getStartedUrl || "/docs"}
               >
                 Get Started
               </Link>

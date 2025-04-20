@@ -1,47 +1,34 @@
 ---
 sidebar_position: 1
+sidebar_label: Introduction
+slug: /
 ---
 
-# Tutorial Intro
+# Welcome to BurgerAPI
 
-Let's discover **Docusaurus in less than 5 minutes**.
+BurgerAPI is a modern, open-source framework built natively for Bun.js. It simplifies building web applications and APIs with features designed for speed and ease of use.
 
-## Getting Started
+:::tip What makes BurgerAPI special?
 
-Get started by **creating a new site**.
+BurgerAPI leverages Bun's speed and offers a streamlined development experience through:
 
-Or **try Docusaurus immediately** with **[docusaurus.new](https://docusaurus.new)**.
+- **Declarative File-Based Routing:** Define API endpoints and static pages simply by organizing your files and folders.
+- **Integrated Middleware:** Apply logic globally or target specific routes for concerns like logging, authentication, and data processing.
+- **Automatic Zod Validation:** Define Zod schemas alongside your routes for effortless request validation (query parameters and request bodies).
+- **OpenAPI Specification & Swagger UI:** Automatically generate OpenAPI 3.0 documentation from your code (including Zod schemas and route metadata) and serve interactive Swagger UI.
+- **TypeScript First:** Designed with TypeScript for improved developer experience and code safety.
 
-### What you'll need
+:::
 
-- [Node.js](https://nodejs.org/en/download/) version 18.0 or above:
-  - When installing Node.js, you are recommended to check all checkboxes related to dependencies.
+This documentation provides guides on using these core features based on the framework's implementation.
 
-## Generate a new site
+### Getting Started
 
-Generate a new Docusaurus site using the **classic template**.
+Ready to build something tasty? Explore the core concepts:
 
-The classic template will automatically be added to your project after you run the command:
-
-```bash
-npm init docusaurus@latest my-website classic
-```
-
-You can type this command into Command Prompt, Powershell, Terminal, or any other integrated terminal of your code editor.
-
-The command also installs all necessary dependencies you need to run Docusaurus.
-
-## Start your site
-
-Run the development server:
-
-```bash
-cd my-website
-npm run start
-```
-
-The `cd` command changes the directory you're working with. In order to work with your newly created Docusaurus site, you'll need to navigate the terminal there.
-
-The `npm run start` command builds your website locally and serves it through a development server, ready for you to view at http://localhost:3000/.
-
-Open `docs/intro.md` (this page) and edit some lines: the site **reloads automatically** and displays your changes.
+- **[Configuration](./core/configuration.md):** Learn how to initialize and configure your BurgerAPI instance.
+- **[API Routes](./routing/api-routes.md):** Understand how to define API endpoints using the file system.
+- **[Static Pages](./routing/static-pages.md):** See how to serve static HTML pages.
+- **[Middleware](./request-handling/middleware.md):** Discover how to use global and route-specific middleware.
+- **[Schema Validation](./request-handling/validation.md):** Implement request validation using Zod.
+- **[OpenAPI / Swagger](./api/openapi.md):** Learn about automatic API documentation generation.
