@@ -76,6 +76,11 @@ const config: Config = {
   ],
 
   themeConfig: {
+    colorMode: {
+      defaultMode: "dark",
+      disableSwitch: false,
+      respectPrefersColorScheme: false,
+    },
     metadata: [
       {
         name: "description",
@@ -137,7 +142,7 @@ const config: Config = {
       copyright: `Built with ❤️ for the Bun.js community.`,
     },
     prism: {
-      theme: prismThemes.vsDark, 
+      theme: prismThemes.vsDark,
       darkTheme: prismThemes.vsDark,
     },
   } satisfies Preset.ThemeConfig,

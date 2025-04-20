@@ -37,6 +37,7 @@ const sidebars: SidebarsConfig = {
       items: [
         'routing/api-routes',   // Link to docs/routing/api-routes.md
         'routing/static-pages', // Link to docs/routing/static-pages.md
+        'routing/dynamic-pages',   // Link to docs/routing/dynamic-pages.md (Coming Soon)
       ],
     },
     {
@@ -52,6 +53,32 @@ const sidebars: SidebarsConfig = {
       label: 'API Documentation',
       items: [
         'api/openapi', // Link to docs/api/openapi.md
+      ],
+    },
+    {
+      type: 'category',
+      label: 'Ecosystem',
+      link: { // Make the category itself clickable
+        type: 'doc',
+        id: 'ecosystem/introduction'
+      },
+      items: [
+        // Specific ecosystem component links removed
+        // Items will appear here as they are documented
+      ],
+    },
+    {
+      type: 'category',
+      label: 'Upcoming Features', // Renamed from 'Advanced Features'
+      items: [
+        'advanced/websockets', // Only websockets left here for now
+      ],
+    },
+    {
+      type: 'category',
+      label: 'Deployment (Coming Soon)',
+      items: [
+        'deployment/overview',
       ],
     },
     // Add other top-level docs or categories here if needed

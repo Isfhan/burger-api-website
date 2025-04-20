@@ -32,3 +32,12 @@ Ready to build something tasty? Explore the core concepts:
 - **[Middleware](./request-handling/middleware.md):** Discover how to use global and route-specific middleware.
 - **[Schema Validation](./request-handling/validation.md):** Implement request validation using Zod.
 - **[OpenAPI / Swagger](./api/openapi.md):** Learn about automatic API documentation generation.
+
+### Coming Soon
+
+We are actively working on expanding BurgerAPI! Keep an eye on these sections for future updates:
+
+- **[Ecosystem](./ecosystem/introduction.md):** Discover installable components and integrations.
+- **[Advanced Dynamic Pages](./routing/dynamic-pages.md):** Enhanced server-side rendering capabilities are planned.
+- **Upcoming Features:** Look forward to WebSocket support and more.
+- **Deployment:** Guides for deploying your BurgerAPI apps.
