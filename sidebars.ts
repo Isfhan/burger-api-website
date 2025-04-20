@@ -1,4 +1,4 @@
-import type {SidebarsConfig} from '@docusaurus/plugin-content-docs';
+import type { SidebarsConfig } from "@docusaurus/plugin-content-docs";
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
@@ -15,71 +15,62 @@ import type {SidebarsConfig} from '@docusaurus/plugin-content-docs';
 const sidebars: SidebarsConfig = {
   // Define the tutorial sidebar structure manually
   tutorialSidebar: [
-    'intro', // Link to docs/intro.md (Top level)
+    "intro", // Link to docs/intro.md (Top level)
     {
-      type: 'category',
-      label: 'Getting Started',
+      type: "category",
+      label: "Getting Started",
       items: [
-        'getting-started/installation', // Link to docs/getting-started/installation.md
+        "getting-started/installation", // Link to docs/getting-started/installation.md
         // Add other getting started guides here, e.g., 'getting-started/your-first-api'
       ],
     },
     {
-      type: 'category',
-      label: 'Core Concepts',
+      type: "category",
+      label: "Core Concepts",
       items: [
-        'core/configuration', // Link to docs/core/configuration.md
+        "core/configuration", // Link to docs/core/configuration.md
       ],
     },
     {
-      type: 'category',
-      label: 'Routing',
+      type: "category",
+      label: "Routing",
       items: [
-        'routing/api-routes',   // Link to docs/routing/api-routes.md
-        'routing/static-pages', // Link to docs/routing/static-pages.md
-        'routing/dynamic-pages',   // Link to docs/routing/dynamic-pages.md (Coming Soon)
+        "routing/api-routes", // Link to docs/routing/api-routes.md
+        "routing/static-pages", // Link to docs/routing/static-pages.md
+        "routing/dynamic-pages", // Link to docs/routing/dynamic-pages.md (Coming Soon)
       ],
     },
     {
-      type: 'category',
-      label: 'Request Handling',
+      type: "category",
+      label: "Request Handling",
       items: [
-        'request-handling/middleware', // Link to docs/request-handling/middleware.md
-        'request-handling/validation', // Link to docs/request-handling/validation.md
+        "request-handling/middleware", // Link to docs/request-handling/middleware.md
+        "request-handling/validation", // Link to docs/request-handling/validation.md
       ],
     },
     {
-      type: 'category',
-      label: 'API Documentation',
+      type: "category",
+      label: "API Documentation",
       items: [
-        'api/openapi', // Link to docs/api/openapi.md
+        "api/openapi", // Link to docs/api/openapi.md
       ],
     },
     {
-      type: 'category',
-      label: 'Ecosystem',
-      link: { // Make the category itself clickable
-        type: 'doc',
-        id: 'ecosystem/introduction'
-      },
+      type: "category",
+      label: "Ecosystem",
+      items: ["ecosystem/introduction"],
+    },
+    {
+      type: "category",
+      label: "Upcoming Features", // Renamed from 'Advanced Features'
       items: [
-        // Specific ecosystem component links removed
-        // Items will appear here as they are documented
+        "advanced/websockets", // Only websockets left here for now
       ],
     },
     {
-      type: 'category',
-      label: 'Upcoming Features', // Renamed from 'Advanced Features'
-      items: [
-        'advanced/websockets', // Only websockets left here for now
-      ],
-    },
-    {
-      type: 'category',
-      label: 'Deployment (Coming Soon)',
-      items: [
-        'deployment/overview',
-      ],
+      type: "category",
+      label: "Deployment (Coming Soon)",
+      items: ["deployment/overview"],
     },
     // Add other top-level docs or categories here if needed
   ],
