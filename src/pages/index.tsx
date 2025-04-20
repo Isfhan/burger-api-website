@@ -12,7 +12,7 @@ export default function Home(): ReactNode {
   const { siteConfig } = useDocusaurusContext();
 
   return (
-    <Layout title={siteConfig.title} description={siteConfig.tagline}>
+    <Layout title={siteConfig.projectName} description={siteConfig.tagline}>
       <main className={styles.mainContainer}>
         <HomepageHero />
         <HomepageFeatures />

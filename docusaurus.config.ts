@@ -5,7 +5,8 @@ import type * as Preset from "@docusaurus/preset-classic";
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const config: Config = {
-  title: "BurgerAPI",
+  projectName: "BurgerAPI",
+  title: "A modern, open source Bun.js native framework",
   tagline:
     "A modern, open source Bun.js native framework with file-based routing, middleware support, Zod validation, and automatic OpenAPI generation.",
   favicon: "img/favicon.ico",
@@ -75,6 +76,42 @@ const config: Config = {
   ],
 
   themeConfig: {
+    metadata: [
+      {
+        name: "description",
+        content:
+          "A modern, open source Bun.js native framework with file-based routing, middleware support, Zod validation, and automatic OpenAPI generation.",
+      },
+      {
+        name: "keywords",
+        content: "Bun.js, API, Framework, OpenAPI, Zod, TypeScript",
+      },
+      { name: "author", content: "Isfhan Ahmed" },
+      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { property: "og:title", content: "BurgerAPI - Modern Bun.js Framework" },
+      {
+        property: "og:description",
+        content:
+          "A modern, open source Bun.js native framework with file-based routing, middleware support, Zod validation, and automatic OpenAPI generation.",
+      },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://burger-api.com" },
+      {
+        property: "og:image",
+        content: "https://burger-api.com/img/og-image.png",
+      },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "BurgerAPI - Modern Bun.js Framework" },
+      {
+        name: "twitter:description",
+        content:
+          "A modern, open source Bun.js native framework with file-based routing, middleware support, Zod validation, and automatic OpenAPI generation.",
+      },
+      {
+        name: "twitter:image",
+        content: "https://burger-api.com/img/og-image.png",
+      },
+    ],
     navbar: {
       title: "BurgerAPI",
       logo: {
@@ -100,7 +137,7 @@ const config: Config = {
       copyright: `Built with ❤️ for the Bun.js community.`,
     },
     prism: {
-      theme: prismThemes.vsDark,
+      theme: prismThemes.vsDark, 
       darkTheme: prismThemes.vsDark,
     },
   } satisfies Preset.ThemeConfig,

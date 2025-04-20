@@ -36,7 +36,7 @@ export function HomepageHero() {
                 alt="Burger API Logo"
                 className={styles.heroLogo}
               />
-              {siteConfig.title}
+              {siteConfig.projectName}
             </Heading>
 
             {/* Tagline */}
