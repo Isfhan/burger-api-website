@@ -29,6 +29,8 @@
   border-top: 1px solid #333;
 }
 
+
+
 :root {
   /* Your navbar background color */
   --ifm-navbar-background-color: rgba(255, 255, 255, 0.9);
@@ -89,7 +91,7 @@
 [data-theme="dark"] {
   /* Your navbar background color */
   --ifm-navbar-background-color: rgba(0, 0, 0, 0.116);
-  --ifm-mobile-navbar-background-color: #18181a;
+  --ifm-mobile-navbar-background-color: #242526;
 
   /* Your side navbar background color */
   --ifm-side-navbar-background-color: rgb(0, 0, 0);
@@ -154,5 +156,13 @@
     -webkit-backdrop-filter: none !important;
   }
 
+  .navbar__items {
+    display: flex;
+    flex-direction: row;
+    flex-flow: row-reverse;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+  }
   /* Mobile navbar css end   */
 }
