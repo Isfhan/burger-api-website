@@ -6,6 +6,10 @@ sidebar_label: "Schema Validation"
 
 Ensuring the data coming into your API is correct is crucial. BurgerAPI simplifies this with built-in request validation powered by the popular [Zod](https://zod.dev/) library.
 
+:::info Zod 4.x
+BurgerAPI v0.3.0+ uses Zod 4.x, which provides improved performance, better error messages, and a cleaner error response format. See the [release notes](/blog/burger-api-v0.3.0-release) for details on breaking changes.
+:::
+
 Define schemas for your route's expected query parameters or request body, and BurgerAPI handles the validation _before_ your handler code even runs.
 
 ## Defining Schemas
@@ -112,6 +116,59 @@ If the incoming request doesn't match the Zod schema you defined, BurgerAPI auto
 3.  Includes a JSON body detailing the validation errors reported by Zod.
 
 This provides clear feedback to the API consumer about what went wrong.
+:::
+
+## Error Response Format
+
+When validation fails, BurgerAPI returns a structured error response that groups errors by their source:
+
+```json
+{
+  "errors": {
+    "body": [
+      {
+        "expected": "string",
+        "code": "invalid_type",
+        "path": ["name"],
+        "message": "Invalid input: expected string, received number"
+      }
+    ],
+    "query": [
+      {
+        "expected": "number",
+        "code": "invalid_type",
+        "path": ["page"],
+        "message": "Invalid input: expected number, received string"
+      }
+    ],
+    "params": [
+      {
+        "expected": "string",
+        "code": "too_short",
+        "minimum": 3,
+        "path": ["id"],
+        "message": "String must contain at least 3 character(s)"
+      }
+    ]
+  }
+}
+```
+
+### Error Structure
+
+- **`errors.body`**: Array of validation errors for the request body
+- **`errors.query`**: Array of validation errors for query parameters
+- **`errors.params`**: Array of validation errors for URL path parameters
+
+Each error object contains:
+- **`code`**: The Zod validation error code (e.g., `invalid_type`, `too_small`, `too_short`)
+- **`message`**: Human-readable error description
+- **`path`**: Array indicating the field path where the error occurred
+- **`expected`**: The expected data type (when applicable)
+- **Additional properties**: Vary based on the error type (e.g., `minimum`, `maximum` for size constraints)
+
+:::info Zod 4.x Error Format
+This error format was introduced in BurgerAPI v0.3.0 with the Zod 4.x upgrade. The new format provides a cleaner, more organized structure compared to the previous Zod 3.x format, making it easier to handle validation errors in your frontend applications.
 :::
 
 ## Middleware Interaction

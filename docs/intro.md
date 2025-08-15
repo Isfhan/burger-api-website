@@ -14,7 +14,7 @@ BurgerAPI leverages Bun's speed and offers a streamlined development experience 
 
 - **Declarative File-Based Routing:** Define API endpoints and static pages simply by organizing your files and folders.
 - **Integrated Middleware:** Apply logic globally or target specific routes for concerns like logging, authentication, and data processing.
-- **Automatic Zod Validation:** Define Zod schemas alongside your routes for effortless request validation (query parameters and request bodies).
+- **Automatic Zod Validation:** Define Zod schemas alongside your routes for effortless request validation (query parameters and request bodies). Now powered by Zod 4.x for enhanced performance and better error handling.
 - **OpenAPI Specification & Swagger UI:** Automatically generate OpenAPI 3.0 documentation from your code (including Zod schemas and route metadata) and serve interactive Swagger UI.
 - **TypeScript First:** Designed with TypeScript for improved developer experience and code safety.
 

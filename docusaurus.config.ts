@@ -50,24 +50,22 @@ const config: Config = {
           sidebarPath: "./sidebars.ts",
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
-          editUrl:
-            "https://github.com/isfhan/burger-api-website/tree/main/",
+          editUrl: "https://github.com/isfhan/burger-api-website/tree/main/",
         },
-        // blog: {
-        //   showReadingTime: true,
-        //   feedOptions: {
-        //     type: ["rss", "atom"],
-        //     xslt: true,
-        //   },
-        //   // Please change this to your repo.
-        //   // Remove this to remove the "edit this page" links.
-        //   editUrl:
-        //     "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/",
-        //   // Useful options to enforce blogging best practices
-        //   onInlineTags: "warn",
-        //   onInlineAuthors: "warn",
-        //   onUntruncatedBlogPosts: "warn",
-        // },
+        blog: {
+          showReadingTime: true,
+          feedOptions: {
+            type: ["rss", "atom"],
+            xslt: true,
+          },
+          // Please change this to your repo.
+          // Remove this to remove the "edit this page" links.
+          editUrl: "https://github.com/isfhan/burger-api-website/tree/main/",
+          // Useful options to enforce blogging best practices
+          onInlineTags: "warn",
+          onInlineAuthors: "warn",
+          onUntruncatedBlogPosts: "warn",
+        },
         theme: {
           customCss: "./src/css/custom.css",
         },
@@ -131,6 +129,11 @@ const config: Config = {
           label: "Docs",
         },
         {
+          to: "/blog",
+          label: "Blog",
+          position: "right",
+        },
+        {
           href: "https://github.com/isfhan/burger-api",
           label: "GitHub",
           position: "right",
@@ -139,6 +142,32 @@ const config: Config = {
     },
     footer: {
       style: "dark",
+      links: [
+        {
+          title: "Documentation",
+          items: [
+            {
+              label: "Getting Started",
+              to: "/docs/",
+            },
+            
+            
+          ],
+        },
+        {
+          title: "Community",
+          items: [
+            {
+              label: "Blog",
+              to: "/blog",
+            },
+            {
+              label: "GitHub",
+              href: "https://github.com/isfhan/burger-api",
+            },
+          ],
+        },
+      ],
       copyright: `Built with ❤️ for the Bun.js community.`,
     },
     prism: {
