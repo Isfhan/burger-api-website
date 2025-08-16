@@ -109,6 +109,11 @@ export async function GET(req: BurgerRequest) {
 *   **Top-Level:** Define elements common to all methods on that path (like `parameters` for path params).
 *   **Method-Level:** Define details specific to `get`, `post`, `put`, etc. (e.g., `summary`, `tags`, `requestBody`, `responses`).
 *   **Schema Inference:** BurgerAPI intelligently uses your exported Zod `schema` to automatically generate schemas for `requestBody` and `responses` in the OpenAPI spec where possible, significantly reducing boilerplate!
+
+:::info Zod 4.x Support
+BurgerAPI v0.3.0+ uses Zod 4.x for enhanced schema validation and improved OpenAPI generation. The new Zod version provides better performance and more accurate schema inference for your API documentation.
+:::
+
 You can still define them explicitly within the `openapi` object if needed for more complex cases or examples.
 
 ## Accessing Your Documentation
