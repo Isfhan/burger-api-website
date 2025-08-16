@@ -1,13 +1,11 @@
 isfhan:
   name: Isfhan Ahmed
-  title: Creator @ BurgerAPI
+  title: Creator of BurgerAPI Framework
   url: https://github.com/isfhan
   image_url: https://github.com/isfhan.png
   page:
-    # customize the url of the author page at /blog/authors/<permalink>
-    permalink: '/all-isfhan-ahmed-articles'
+    permalink: "/all-isfhan-ahmed-articles"
   socials:
     x: Isfhan_Ahmed
     linkedin: isfhan
     github: isfhan
-    
