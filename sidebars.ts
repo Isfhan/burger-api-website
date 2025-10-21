@@ -35,9 +35,24 @@ const sidebars: SidebarsConfig = {
       type: "category",
       label: "Routing",
       items: [
-        "routing/api-routes", // Link to docs/routing/api-routes.md
-        "routing/static-pages", // Link to docs/routing/static-pages.md
-        "routing/dynamic-pages", // Link to docs/routing/dynamic-pages.md (Coming Soon)
+        {
+          type: "category",
+          label: "API Routing",
+          items: [
+            "routing/api/static-routes", // Link to docs/routing/api/static-routes.md
+            "routing/api/route-groups", // Link to docs/routing/api/route-groups.md
+            "routing/api/dynamic-routes", // Link to docs/routing/api/dynamic-routes.md
+            "routing/api/wildcard-routes", // Link to docs/routing/api/wildcard-routes.md
+          ],
+        },
+        {
+          type: "category",
+          label: "Page Routing",
+          items: [
+            "routing/pages/static-pages", // Link to docs/routing/pages/static-pages.md
+            "routing/pages/dynamic-pages", // Link to docs/routing/pages/dynamic-pages.md (Coming Soon)
+          ],
+        },
       ],
     },
     {
