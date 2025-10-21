@@ -27,8 +27,8 @@ This documentation provides guides on using these core features based on the fra
 Ready to build something tasty? Explore the core concepts:
 
 - **[Configuration](./core/configuration.md):** Learn how to initialize and configure your BurgerAPI instance.
-- **[API Routes](./routing/api-routes.md):** Understand how to define API endpoints using the file system.
-- **[Static Pages](./routing/static-pages.md):** See how to serve static HTML pages.
+- **[API Routing](./routing/api/static-routes.md):** Understand how to define API endpoints using the file system.
+- **[Static Pages](./routing/pages/static-pages.md):** See how to serve static HTML pages.
 - **[Middleware](./request-handling/middleware.md):** Discover how to use global and route-specific middleware.
 - **[Schema Validation](./request-handling/validation.md):** Implement request validation using Zod.
 - **[OpenAPI / Swagger](./api/openapi.md):** Learn about automatic API documentation generation.
@@ -38,6 +38,6 @@ Ready to build something tasty? Explore the core concepts:
 We are actively working on expanding BurgerAPI! Keep an eye on these sections for future updates:
 
 - **[Ecosystem](./ecosystem/introduction.md):** Discover installable components and integrations.
-- **[Advanced Dynamic Pages](./routing/dynamic-pages.md):** Enhanced server-side rendering capabilities are planned.
+- **[Advanced Dynamic Pages](./routing/pages/dynamic-pages.md):** Enhanced server-side rendering capabilities are planned.
 - **Upcoming Features:** Look forward to WebSocket support and more.
 - **Deployment:** Guides for deploying your BurgerAPI apps.
