@@ -24,11 +24,15 @@ This documentation provides guides on using these core features based on the fra
 
 ### Getting Started
 
-Ready to build something tasty? Explore the core concepts:
+Ready to build something tasty? Choose your learning path:
 
+**🚀 Hands-on Learning (Recommended for beginners):**
+- **[Tutorials](./tutorials/intro.md):** Step-by-step tutorials that guide you from Hello World to building a complete blog API with CRUD operations, validation, and middleware.
+
+**📚 Concept Guides:**
 - **[Configuration](./core/configuration.md):** Learn how to initialize and configure your BurgerAPI instance.
-- **[API Routing](./routing/api/static-routes.md):** Understand how to define API endpoints using the file system.
-- **[Static Pages](./routing/pages/static-pages.md):** See how to serve static HTML pages.
+- **[API Routing](./routing/api-routes.md):** Understand how to define API endpoints using the file system.
+- **[Static Pages](./routing/static-pages.md):** See how to serve static HTML pages.
 - **[Middleware](./request-handling/middleware.md):** Discover how to use global and route-specific middleware.
 - **[Schema Validation](./request-handling/validation.md):** Implement request validation using Zod.
 - **[OpenAPI / Swagger](./api/openapi.md):** Learn about automatic API documentation generation.

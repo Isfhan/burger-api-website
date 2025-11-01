@@ -33,8 +33,8 @@
 .heroTitle {
   display: flex;
   align-items: center;
-  color: hsl(30, 75%, 90%);
-  -webkit-text-stroke: 1.5px #6c341c;
+  color: var(--ifm-navbar-logo-text-color);
+  /* -webkit-text-stroke: 1.5px #6c341c; */
   font-size: 70px;
   line-height: 1.1;
   margin-bottom: 1.5rem;
@@ -239,7 +239,7 @@
   text-align: left;
   margin-bottom: 3rem;
   font-size: 2.2rem;
-  color: var(--ifm-color-primary);
+  color: var(--ifm-heading-color);
 }
 
 .featuresGrid {

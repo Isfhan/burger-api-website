@@ -266,4 +266,4 @@ Have questions or feedback about v0.4.0? We'd love to hear from you! Share your 
 
 ---
 
-_Happy coding with BurgerAPI! 🍔_
+*Stay tuned for more updates and happy coding with BurgerAPI! 🍔*

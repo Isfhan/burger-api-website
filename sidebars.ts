@@ -13,7 +13,7 @@ import type { SidebarsConfig } from "@docusaurus/plugin-content-docs";
  Create as many sidebars as you want.
  */
 const sidebars: SidebarsConfig = {
-  // Define the tutorial sidebar structure manually
+  // Define the main docs sidebar structure manually
   tutorialSidebar: [
     "intro", // Link to docs/intro.md (Top level)
     {
@@ -88,6 +88,14 @@ const sidebars: SidebarsConfig = {
       items: ["deployment/overview"],
     },
     // Add other top-level docs or categories here if needed
+  ],
+
+  // Define the tutorials sidebar structure
+  tutorialsSidebar: [
+    "tutorials/intro",
+    "tutorials/hello-world", 
+    "tutorials/todo-api",
+    "tutorials/blog-api",
   ],
 
   // But you can create a sidebar manually

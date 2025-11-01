@@ -9,8 +9,8 @@
 }
 
 .navbar__title {
-  color: hsl(30, 75%, 90%);
-  -webkit-text-stroke: 1px #6c341c;
+  color: var(--ifm-navbar-logo-text-color);
+  /* -webkit-text-stroke: 1px var(--ifm-navbar-logo-text-stroke-color); */
   font-size: 24px;
 }
 
@@ -29,9 +29,11 @@
   border-top: 1px solid #333;
 }
 
-
-
 :root {
+  /* NavBar logo text color */
+  --ifm-navbar-logo-text-color: hsl(25, 55%, 25%);
+  --ifm-navbar-logo-text-stroke-color: hsl(25, 55%, 25%);
+
   /* Your navbar background color */
   --ifm-navbar-background-color: rgba(255, 255, 255, 0.9);
   --ifm-mobile-navbar-background-color: rgba(255, 255, 255);
@@ -89,6 +91,10 @@
 
 /* For readability concerns, you should choose a lighter palette in dark mode. */
 [data-theme="dark"] {
+  /* NavBar logo text color */
+  --ifm-navbar-logo-text-color: hsl(30, 75%, 90%);
+  --ifm-navbar-logo-text-stroke-color: hsl(30, 75%, 90%);
+
   /* Your navbar background color */
   --ifm-navbar-background-color: rgba(0, 0, 0, 0.116);
   --ifm-mobile-navbar-background-color: #242526;
@@ -119,7 +125,7 @@
 
   /* Your dark mode background */
   --ifm-background-color: #09090b !important;
-  
+
   /* Your dark mode card color */
   --ifm-background-surface-color: hsl(240, 10%, 3.9%);
   /* Your dark mode border color */

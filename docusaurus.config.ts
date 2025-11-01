@@ -128,6 +128,13 @@ const config: Config = {
           position: "right",
           label: "Docs",
         },
+        // {
+        //   type: "docSidebar",
+        //   sidebarId: "tutorialsSidebar",
+        //   to: "/docs/tutorials/intro",
+        //   label: "Tutorials",
+        //   position: "right",
+        // },
         {
           to: "/blog",
           label: "Blog",
