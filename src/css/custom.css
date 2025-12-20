@@ -172,3 +172,140 @@
   }
   /* Mobile navbar css end   */
 }
+
+/* ========================================================================
+   Search Modal Custom Styles (Using Official Plugin Variables)
+   ======================================================================== */
+
+/* Light Mode Search Variables */
+:root {
+  /* Modal Styling */
+  --search-local-modal-background: #f5f6f7;
+  --search-local-modal-shadow: inset 1px 1px 0 0 hsla(0, 0%, 100%, 0.5),
+                               0 3px 8px 0 #555a64;
+  
+  /* Modal Width - Responsive */
+  --search-local-modal-width: 560px;
+  --search-local-modal-width-sm: 340px;
+  
+  /* Spacing */
+  --search-local-spacing: 12px;
+  
+  /* Hit (Suggestion) Styling */
+  --search-local-hit-background: #fff;
+  --search-local-hit-shadow: 0 1px 3px 0 #d4d9e1;
+  --search-local-hit-color: #444950;
+  --search-local-hit-height: 56px;
+  
+  /* Highlight & Colors */
+  --search-local-highlight-color: green;
+  --search-local-muted-color: #969faf;
+  
+  /* Icon Styling */
+  --search-local-icon-stroke-width: 1.4;
+  
+  /* Active/Focus States */
+  --search-local-hit-active-color: var(--ifm-color-white);
+  --search-local-input-active-border-color: var(--ifm-color-primary);
+}
+
+/* Dark Mode Search Variables */
+[data-theme="dark"] {
+  /* Modal Styling */
+  --search-local-modal-background: var(--ifm-background-color);
+  --search-local-modal-shadow: inset 1px 1px 0 0 #2c2e40, 0 3px 8px 0 #000309;
+  
+  /* Hit (Suggestion) Styling */
+  --search-local-hit-background: var(--ifm-color-emphasis-100);
+  --search-local-hit-shadow: none;
+  --search-local-hit-color: var(--ifm-font-color-base);
+  
+  
+  /* Active/Focus States */
+  --search-local-hit-active-color: var(--ifm-color-white);
+  --search-local-input-active-border-color: var(--ifm-color-primary);
+}
+
+
+/* Adjust search bar width and styling */
+.navbar__search-input {
+  min-width: 200px;
+  border-radius: 8px;
+  background-color: var(--ifm-navbar-search-input-background-color);
+  border: 1px solid var(--ifm-color-emphasis-300);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  color: var(--ifm-navbar-search-input-color);
+}
+
+[data-theme="dark"] .navbar__search-input {
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.navbar__search-input:focus {
+  min-width: 300px;
+  background-color: var(--ifm-navbar-search-input-background-color);
+  border-color: var(--ifm-color-primary);
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] .navbar__search-input:focus {
+  background-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.05);
+}
+
+@media (max-width: 996px) {
+  /* Adjust search modal width for tablet/medium screens */
+  :root {
+    --search-local-modal-width: 480px;
+  }
+
+  .navbarSearchContainer_Bca1 {
+    right: 65px !important;
+  }
+}
+
+@media (max-width: 450px) {
+  /* Adjust search modal width for small screens */
+  :root {
+    --search-local-modal-width-sm: 320px;
+  }
+
+  .navbar__search-input {
+    min-width: 140px;
+    width: 140px;
+  }
+  
+  .navbar__search-input:focus {
+    min-width: 180px;
+    width: 180px;
+  } 
+
+  .navbar__toggle {
+    margin-right: 0;
+  } 
+}
+
+@media (max-width: 385px) {
+  /* Adjust search modal width for very small screens */
+  :root {
+    --search-local-modal-width-sm: 280px;
+  }
+
+  .navbar__title {
+   display: none;
+  }
+
+ .navbar__logo{
+  height: 2.5rem;
+ }
+
+.navbar__search-input:focus {
+    min-width: 160px;
+    width: 160px;
+  }
+
+.navbarSearchContainer_Bca1 {
+    right: 55px !important;
+  }
+}

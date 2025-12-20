@@ -73,6 +73,19 @@ const config: Config = {
     ],
   ],
 
+  themes: [
+    [
+      require.resolve("@easyops-cn/docusaurus-search-local"),
+      /** @type {import("@easyops-cn/docusaurus-search-local").Options} */
+      ({
+        hashed: true,
+        language: ["en"],
+        highlightSearchTermsOnTargetPage: true,
+        explicitSearchResultPath: true,
+      }),
+    ],
+  ],
+
   themeConfig: {
     colorMode: {
       defaultMode: "dark",
@@ -123,6 +136,10 @@ const config: Config = {
       },
       items: [
         {
+          type: "search",
+          position: "left",
+        },
+        {
           type: "docSidebar",
           sidebarId: "tutorialSidebar",
           position: "right",
@@ -157,8 +174,8 @@ const config: Config = {
               label: "Getting Started",
               to: "/docs/",
             },
-            
-            
+
+
           ],
         },
         {
