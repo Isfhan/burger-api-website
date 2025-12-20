@@ -20,8 +20,8 @@ const sidebars: SidebarsConfig = {
       type: "category",
       label: "Getting Started",
       items: [
-        "getting-started/installation", // Link to docs/getting-started/installation.md
-        // Add other getting started guides here, e.g., 'getting-started/your-first-api'
+        "getting-started/installation",
+        "getting-started/cli",
       ],
     },
     {
@@ -93,7 +93,7 @@ const sidebars: SidebarsConfig = {
   // Define the tutorials sidebar structure
   tutorialsSidebar: [
     "tutorials/intro",
-    "tutorials/hello-world", 
+    "tutorials/hello-world",
     "tutorials/todo-api",
     "tutorials/blog-api",
   ],

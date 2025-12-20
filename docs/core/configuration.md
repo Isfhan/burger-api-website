@@ -6,6 +6,10 @@ sidebar_label: "Configuration"
 
 Getting your BurgerAPI server running starts with configuration. You'll import the `Burger` class and instantiate it, passing an options object.
 
+:::tip For BurgerAPI CLI Users
+If you used the `burger-api create` command, this file and the basic configuration have already been set up for you!
+:::
+
 ```typescript title="index.ts"
 import { Burger } from "burger-api";
 import { globalLogger } from "./middleware/logger"; // Example: Assuming you have middleware defined

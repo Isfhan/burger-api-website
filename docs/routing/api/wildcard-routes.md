@@ -1,5 +1,5 @@
 ---
-sidebar_label: "Wildcard Routes (New)"
+sidebar_label: "Wildcard Routes"
 ---
 
 # Wildcard Routes

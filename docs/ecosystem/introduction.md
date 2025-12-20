@@ -9,10 +9,18 @@ BurgerAPI aims to provide a lean, fast core, focusing on the essentials for buil
 
 We believe in extensibility and plan to foster an ecosystem where additional functionalities, such as specific middleware or integrations, can be easily added to your project.
 
-:::info Coming Soon!
-This section will grow to showcase official and community-contributed packages that complement BurgerAPI. The goal is to allow developers to pull in only the extra features they need, keeping their projects tailored and efficient.
+To explore and add middleware to your project, use the Burger API CLI:
 
-Imagine installing specific middleware (like advanced logging, CORS handlers, rate limiters) or integrations as separate packages when you need them!
-:::
+1. **List available middleware:**
+   ```bash
+   burger-api list
+   ```
+
+2. **Add middleware to your project:**
+   ```bash
+   burger-api add <middleware-name>
+   ```
+
+This command downloads the middleware and places it in your project's `ecosystem/middleware/` directory, making it easy to import and use.
 
 Stay tuned for updates as the BurgerAPI ecosystem develops! 

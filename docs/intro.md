@@ -17,6 +17,7 @@ BurgerAPI leverages Bun's speed and offers a streamlined development experience 
 - **Automatic Zod Validation:** Define Zod schemas alongside your routes for effortless request validation (query parameters and request bodies). Now powered by Zod 4.x for enhanced performance and better error handling.
 - **OpenAPI Specification & Swagger UI:** Automatically generate OpenAPI 3.0 documentation from your code (including Zod schemas and route metadata) and serve interactive Swagger UI.
 - **TypeScript First:** Designed with TypeScript for improved developer experience and code safety.
+- **Burger API CLI:** Scaffolding, middleware management, and build tools built-in.
 
 :::
 
@@ -26,8 +27,9 @@ This documentation provides guides on using these core features based on the fra
 
 Ready to build something tasty? Choose your learning path:
 
-**🚀 Hands-on Learning (Recommended for beginners):**
-- **[Tutorials](./tutorials/intro.md):** Step-by-step tutorials that guide you from Hello World to building a complete blog API with CRUD operations, validation, and middleware.
+**🚀 Hands-on Learning (Recommended):**
+- **[CLI Quick Start](./getting-started/cli.md):** The fastest way to get up and running with a new project.
+- **[Tutorials](./tutorials/intro.md):** Step-by-step tutorials that guide you from Hello World to building a complete blog API.
 
 **📚 Concept Guides:**
 - **[Configuration](./core/configuration.md):** Learn how to initialize and configure your BurgerAPI instance.
@@ -36,12 +38,12 @@ Ready to build something tasty? Choose your learning path:
 - **[Middleware](./request-handling/middleware.md):** Discover how to use global and route-specific middleware.
 - **[Schema Validation](./request-handling/validation.md):** Implement request validation using Zod.
 - **[OpenAPI / Swagger](./api/openapi.md):** Learn about automatic API documentation generation.
+- **[Ecosystem](./ecosystem/introduction.md):** Discover and add middleware to your project using the CLI.
 
 ### Coming Soon
 
 We are actively working on expanding BurgerAPI! Keep an eye on these sections for future updates:
 
-- **[Ecosystem](./ecosystem/introduction.md):** Discover installable components and integrations.
 - **[Advanced Dynamic Pages](./routing/pages/dynamic-pages.md):** Enhanced server-side rendering capabilities are planned.
-- **Upcoming Features:** Look forward to WebSocket support and more.
-- **Deployment:** Guides for deploying your BurgerAPI apps.
+- **Upcoming Features:** Look forward to WebSocket support and more features.
+- **Deployment:** Guides for deploying your BurgerAPI project are coming soon.

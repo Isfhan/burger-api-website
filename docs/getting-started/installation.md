@@ -17,29 +17,47 @@ BurgerAPI is built for the [Bun.js](https://bun.sh/) runtime. Make sure you have
   bun --version
   ```
 
-## Setting up Your Project
+## Recommended: Using the Burger API CLI
+
+The fastest way to get started is with the dedicated **Burger API CLI**. It handles project scaffolding and dependency installation automatically.
+
+1. **Install the CLI:**
+   - **macOS/Linux/WSL:** `curl -fsSL https://burger-api.com/install.sh | bash`
+   - **Windows PowerShell:** `irm https://burger-api.com/install.ps1 | iex`
+
+2. **Create your project:**
+   ```bash
+   burger-api create my-awesome-api
+   ```
+
+3. **Run your project:**
+   ```bash
+   cd my-awesome-api
+   bun run dev
+   ```
+
+For detailed CLI usage, check out the [CLI Tool Guide](./cli.md).
+
+---
+
+## Alternative: Manual Setup (Standard Bun)
+
+If you prefer not to use the CLI, you can set up a project manually using standard Bun commands:
 
 1. **Initialize a new Bun project:**
-
-   Navigate to the directory where you want to create your project and run:
-
+   Navigate to your project directory and run:
    ```bash
    bun init
    ```
-
-   Follow the prompts. Choosing the defaults for a blank project is usually sufficient to start.
+   Follow the prompts to create a basic Bun project.
 
 2. **Install BurgerAPI:**
-
-   Add the `burger-api` package to your project's dependencies:
-
+   Add the framework to your dependencies:
    ```bash
    bun add burger-api
    ```
 
-   :::info Coming Soon!
-   We plan to introduce a dedicated BurgerAPI CLI tool in the future to streamline project creation and management. For now, please use the standard Bun commands outlined below.
-   :::
+---
 
 ## Ready to Go!
 
