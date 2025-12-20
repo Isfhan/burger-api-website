@@ -24,34 +24,34 @@
   text-align: center;
   font-size: 0.9rem;
   color: rgba(255, 255, 255, 0.7);
-  background-color: #242526;
+  background-color: #1a1b1e; /* Neutral dark */
   margin-top: 3rem;
   border-top: 1px solid #333;
 }
 
 :root {
   /* NavBar logo text color */
-  --ifm-navbar-logo-text-color: hsl(25, 55%, 25%);
-  --ifm-navbar-logo-text-stroke-color: hsl(25, 55%, 25%);
+  --ifm-navbar-logo-text-color: hsl(220, 45%, 10%);
+  --ifm-navbar-logo-text-stroke-color: hsl(220, 45%, 10%);
 
-  /* Your navbar background color */
-  --ifm-navbar-background-color: rgba(255, 255, 255, 0.9);
-  --ifm-mobile-navbar-background-color: rgba(255, 255, 255);
+  /* Your navbar background color - Glassy Slate */
+  --ifm-navbar-background-color: hsla(210, 20%, 98%, 0.9);
+  --ifm-mobile-navbar-background-color: hsl(210, 20%, 98%);
 
   /* Your side navbar background color */
-  --ifm-side-navbar-background-color: rgb(255, 255, 255);
+  --ifm-side-navbar-background-color: hsl(210, 20%, 98%);
 
   /* Set Poppins as base font */
   --ifm-font-family-base: "Poppins", sans-serif;
 
-  /* Your primary color */
-  --ifm-color-primary: hsl(25, 55%, 25%);
-  --ifm-color-primary-dark: hsl(25, 55%, 20%);
-  --ifm-color-primary-darker: hsl(25, 55%, 15%);
-  --ifm-color-primary-darkest: hsl(25, 55%, 10%);
-  --ifm-color-primary-light: hsl(25, 55%, 30%);
-  --ifm-color-primary-lighter: hsl(25, 55%, 35%);
-  --ifm-color-primary-lightest: hsl(25, 55%, 40%);
+  /* Your primary color - Deep Golden Orange (Premium & Rich) */
+  --ifm-color-primary: hsl(25, 55%, 40%);
+  --ifm-color-primary-dark: hsl(25, 55%, 35%);
+  --ifm-color-primary-darker: hsl(25, 55%, 30%);
+  --ifm-color-primary-darkest: hsl(25, 55%, 25%);
+  --ifm-color-primary-light: hsl(25, 55%, 50%);
+  --ifm-color-primary-lighter: hsl(25, 55%, 60%);
+  --ifm-color-primary-lightest: hsl(25, 55%, 75%);
 
   /* Badge colors */
   --ifm-underdevelopment-color-background: rgb(239 68 68 / 15%);
@@ -63,30 +63,30 @@
   --ifm-version-color-background: rgb(0 0 0);
   --ifm-version-color: rgb(255 255 255);
 
-  --hero-get-started-button-color: rgb(255 255 255);
-  --hero-view-on-github-button-color: hsl(25, 55%, 25%);
+  --hero-get-started-button-color: #ffffff;
+  --hero-view-on-github-button-color: var(--ifm-color-primary);
 
   /* Accent colors */
-  --ifm-color-success: hsl(142, 71%, 45%);
-  --ifm-color-info: hsl(25, 55%, 25%);
-  --ifm-color-warning: hsl(46, 90%, 49%);
-  --ifm-color-danger: hsl(0, 84.2%, 60.2%);
+  --ifm-color-success: hsl(142, 70%, 40%);
+  --ifm-color-info: hsl(210, 100%, 50%);
+  --ifm-color-warning: hsl(38, 100%, 50%);
+  --ifm-color-danger: hsl(0, 84%, 60%);
 
-  /* Your background color */
-  --ifm-background-color: hsl(210, 40%, 98%);
+  /* Background - Vignette White (SaaS style) */
+  --ifm-background-color: hsl(210, 20%, 98%);
 
   /* Your card color */
-  --ifm-background-surface-color: hsl(0, 0%, 100%);
+  --ifm-background-surface-color: #ffffff;
 
-  /* Your border color */
-  --ifm-border-color: hsl(214.3, 31.8%, 91.4%);
+  /* Your border color - Slate 200 */
+  --ifm-border-color: hsl(214, 32%, 91%);
 
   /* Your code font size */
   --ifm-code-font-size: 95%;
   /* Your highlighted code line background color */
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  --docusaurus-highlighted-code-line-bg: hsla(38, 100%, 50%, 0.1);
 
-  --ifm-heading-color: hsl(25, 55%, 25%);
+  --ifm-heading-color: hsl(220, 45%, 10%); /* Graphite Ink */
 }
 
 /* For readability concerns, you should choose a lighter palette in dark mode. */
@@ -149,6 +149,11 @@
 }
 
 @media (max-width: 996px) {
+
+  /* Footer */
+  .footer {
+    text-align: unset;
+  }
   /* Mobile navbar css start   */
   .navbar {
     background-color: var(--ifm-mobile-navbar-background-color);

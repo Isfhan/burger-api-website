@@ -195,7 +195,7 @@ const config: Config = {
       copyright: `Built with ❤️ for the Bun.js community.`,
     },
     prism: {
-      theme: prismThemes.vsDark,
+      theme: prismThemes.vsLight,
       darkTheme: prismThemes.vsDark,
     },
   } satisfies Preset.ThemeConfig,
