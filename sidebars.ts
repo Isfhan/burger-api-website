@@ -18,7 +18,7 @@ const sidebars: SidebarsConfig = {
     "intro", // Link to docs/intro.md (Top level)
     {
       type: "category",
-      label: "Getting Started",
+      label: "Getting Started (New)",
       items: [
         "getting-started/installation",
         "getting-started/cli",
@@ -68,6 +68,16 @@ const sidebars: SidebarsConfig = {
       label: "API Documentation",
       items: [
         "api/openapi", // Link to docs/api/openapi.md
+      ],
+    },
+    {
+      type: "category",
+      label: "AI Assistance (New)",
+      items: [
+        "ai-assistance/llm-context-files",
+        "ai-assistance/using-llm-files",
+        "ai-assistance/llm-files-reference",
+        "ai-assistance/integration-examples",
       ],
     },
     {
