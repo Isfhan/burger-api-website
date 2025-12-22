@@ -25,7 +25,7 @@ Modern AI editors are powerful, but they might not always have the latest traini
 
 There are two main ways to access these files:
 
-1.  **In your project**: If you created your project using the Burger API CLI, these files are already available in the `ecosystem/.llm/` directory of your project.
+1.  **In your project**: If you created your project using the Burger API CLI, these files are already available in the `ecosystem/.llm-context/` directory of your project.
 2.  **Direct Download**: You can also download them directly from our website:
     - [llms.txt](https://burger-api.com/llms.txt)
     - [llms-small.txt](https://burger-api.com/llms-small.txt)

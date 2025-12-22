@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # Using LLM Files
 
-Integrating Burger API's LLM files into your workflow is straightforward. If you've created your project using the Burger API CLI, you can find these files in the `ecosystem/.llm/` directory.
+Integrating Burger API's LLM files into your workflow is straightforward. If you've created your project using the Burger API CLI, you can find these files in the `ecosystem/.llm-context/` directory.
 
 This guide covers how to use them with the most popular AI-powered code editors.
 
@@ -19,7 +19,7 @@ Cursor is built specifically for AI-assisted coding and makes it very easy to re
 In the Chat or Composer window, simply type `@` followed by the name of the LLM file you want to use.
 
 **Example Prompt:**
-> `@ecosystem/.llm/llms-small.txt Generate a new route file for user authentication with login and register endpoints.`
+> `@ecosystem/.llm-context/llms-small.txt Generate a new route file for user authentication with login and register endpoints.`
 
 ### 2. Best Practices
 - Use **`llms-small.txt`** for most tasks to keep the AI response fast and focused.
@@ -35,7 +35,7 @@ GitHub Copilot can reference files using several methods depending on your IDE (
 Open the GitHub Copilot Chat and reference the file path directly.
 
 **Example Prompt:**
-> `Using the documentation in ./ecosystem/.llm/llms-small.txt, explain how to implement a custom middleware for logging.`
+> `Using the documentation in ./ecosystem/.llm-context/llms-small.txt, explain how to implement a custom middleware for logging.`
 
 ### 2. Open Files in Tabs
 Copilot often uses open files as context. Keeping the relevant `llm-*.txt` file open in a background tab can help Copilot provide more accurate suggestions in other files.
@@ -50,7 +50,7 @@ Claude Code (Anthropic's CLI tool) is exceptionally powerful at processing docum
 In your Claude Code session, use the `/add` command to bring the context files into the conversation.
 
 **Example:**
-> `/add ecosystem/.llm/llms-small.txt`
+> `/add ecosystem/.llm-context/llms-small.txt`
 > `Now, using that context, create a route group for 'admin' with a custom authentication middleware.`
 
 ### 2. Context Chaining
