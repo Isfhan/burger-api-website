@@ -9,19 +9,31 @@ The Burger API CLI is the recommended way to create, manage, and build your Burg
 
 ## Installation
 
-You can install the Burger API CLI quickly using the following commands:
+### Option 1: Bun Global Installation (Recommended if you have Bun installed)
 
-### Quick Install (macOS, Linux, WSL)
 ```bash
-curl -fsSL https://burger-api.com/install.sh | bash
+# Global installation
+bun add -g @burger-api/cli
 ```
 
-### Quick Install (Windows PowerShell)
-```powershell
-irm https://burger-api.com/install.ps1 | iex
+Or use with **bunx** (No Installation Needed):
+
+```bash
+bunx @burger-api/cli create my-project
 ```
 
-### Manual Installation
+### Option 2: Standalone Executable (Alternative Installation Method)
+
+- **macOS/Linux/WSL:**
+  ```bash
+  curl -fsSL https://burger-api.com/install.sh | bash
+  ```
+- **Windows PowerShell:**
+  ```powershell
+  irm https://burger-api.com/install.ps1 | iex
+  ```
+
+### Option 3: Manual Installation
 You can also download the latest binaries directly from the [GitHub Releases](https://github.com/isfhan/burger-api/releases/latest).
 
 ### Verification
@@ -29,7 +41,7 @@ After installation, verify that the CLI is working by checking its version:
 ```bash
 burger-api --version
 ```
-*Show version : `0.6.4`*
+*Show version : `0.7.1`*
 
 ---
 
