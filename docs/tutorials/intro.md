@@ -24,9 +24,9 @@ While our concept guides explain *how* BurgerAPI works, these tutorials show you
 
 ## Prerequisites
 
-Before starting these tutorials, make sure you have:
+Before starting, make sure you have:
 
-- ✅ **Bun installed** - Follow the [official Bun installation guide](https://bun.sh/docs/installation)
+- ✅ **Bun installed** - Follow the [official Bun installation guide](https://bun.com/docs/installation)
 - ✅ **Basic TypeScript knowledge** - You should understand types, interfaces, and async/await
 - ✅ **Familiarity with HTTP** - Understanding GET, POST, PUT, DELETE methods
 - ✅ **Code editor** - VS Code, WebStorm, or any editor with TypeScript support
@@ -35,6 +35,17 @@ You can verify Bun is installed by running:
 ```bash
 bun --version
 ```
+
+## How You'll Run and Build Apps
+
+In each tutorial you'll:
+
+- **Develop locally** using commands like `bun run index.ts` (see [Configuration](../core/configuration.md) for how the `Burger` server is set up).
+- Optionally **build for production** using the `burger-api` CLI:
+  - `burger-api build src/index.ts` to produce a bundle under `.build/bundle/app.js`.
+  - `burger-api build:exec src/index.ts` to create a standalone executable under `.build/executable/<project>`.
+
+For more on the CLI, see [CLI Tool](../getting-started/cli.md).
 
 ## Tutorial Progression
 

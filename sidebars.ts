@@ -29,11 +29,6 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
-      label: "Migration",
-      items: ["migration/migrating-to-0.9"],
-    },
-    {
-      type: "category",
       label: "Core Concepts",
       items: [
         "core/burger-class",

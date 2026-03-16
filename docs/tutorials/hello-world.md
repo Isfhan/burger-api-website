@@ -19,34 +19,40 @@ A single API endpoint that responds to GET requests with a friendly JSON message
 - Basic server configuration
 - How to view auto-generated API documentation
 
-## Step 1: Initialize Your Project
+## Step 1: Create a New Project
 
-First, let's create a new Bun project:
+The easiest way to get started with BurgerAPI is to use the **CLI**:
 
 ```bash
-# Create a new directory for your project
-mkdir my-burger-api
+# Create a new BurgerAPI project using the CLI
+burger-api create my-burger-api
 cd my-burger-api
-
-# Initialize a new Bun project
-bun init
 ```
 
-When prompted, you can accept the default options or customize as needed. This creates a basic project structure with a `package.json` file.
+This command:
 
-## Step 2: Install BurgerAPI
+- Generates a basic project structure.
+- Sets up a TypeScript entry file.
+- Creates a `burger.config.ts` with sensible defaults for `apiDir`, `pageDir`, and URL prefixes.
 
-Add BurgerAPI to your project dependencies:
+For more details on what `burger-api create` does, see the [CLI Tool](../getting-started/cli.md) guide.
+
+:::info Prefer a manual setup?
+If you want to wire things up yourself instead of using the CLI, you can still:
 
 ```bash
+mkdir my-burger-api
+cd my-burger-api
+bun init
 bun add burger-api
 ```
 
-This installs the BurgerAPI framework and adds it to your `package.json`.
+Then follow the same `index.ts` and `api` setup from the rest of this tutorial.
+:::
 
-## Step 3: Configure Your Server
+## Step 2: Configure Your Server
 
-Create an `index.ts` file in your project root:
+If you used `burger-api create`, you should already have an entry file similar to this. Open or create `index.ts` in your project root:
 
 ```typescript title="index.ts"
 import { Burger } from "burger-api";
@@ -72,7 +78,9 @@ burger.serve(4000, () => {
 - The callback function runs after the server starts successfully
 :::
 
-## Step 4: Create Your First API Route
+For a deeper dive into these options, see [Configuration](../core/configuration.md) and [Server Options](../core/server-options.md).
+
+## Step 3: Create Your First API Route
 
 Create an `api` directory in your project:
 
@@ -98,7 +106,7 @@ export function GET(req: BurgerRequest) {
 The file `api/hello/route.ts` creates an endpoint at `/api/hello`. The folder structure directly maps to the URL path!
 :::
 
-## Step 5: Run Your Server
+## Step 4: Run Your Server
 
 Start your BurgerAPI server:
 
@@ -112,7 +120,7 @@ You should see output like:
 📚 API docs available at http://localhost:4000/docs
 ```
 
-## Step 6: Test Your API
+## Step 5: Test Your API
 
 Open your browser or use a tool like curl to test your endpoint:
 
@@ -133,7 +141,7 @@ You should see a response like:
 }
 ```
 
-## Step 7: Explore Auto-Generated Documentation
+## Step 6: Explore Auto-Generated Documentation
 
 One of BurgerAPI's best features is automatic OpenAPI documentation generation. Visit:
 
@@ -194,6 +202,34 @@ my-burger-api/
 ├── package.json
 └── bun.lockb
 ```
+
+## Build for Production (Optional)
+
+Once you're happy with your Hello World API, you can build it for production using the CLI:
+
+```bash
+# From the project root
+burger-api build src/index.ts
+```
+
+This produces a bundle under:
+
+- `.build/bundle/app.js`
+
+If you prefer a standalone executable (great for simple deployments), run:
+
+```bash
+burger-api build:exec src/index.ts
+```
+
+This creates a binary under:
+
+- `.build/executable/<project>` (or `.exe` on Windows)
+
+For more details on build outputs and options, see:
+
+- [Migrating to 0.9](../migration/migrating-to-0.9.md)
+- [BurgerAPI v0.9.0 Release](/blog/burger-api-v0.9.0-release)
 
 ## Next Steps
 
