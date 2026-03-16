@@ -21,6 +21,8 @@ BurgerAPI leverages Bun's speed and offers a streamlined development experience 
 
 :::
 
+**New in v0.9.0:** Production builds with AOT route discovery, `burger.config.ts`, and `burger-api build:exec` — see [What's New](/blog/burger-api-v0.9.0-release).
+
 This documentation provides guides on using these core features based on the framework's implementation.
 
 ### Getting Started

@@ -41,7 +41,7 @@ After installation, verify that the CLI is working by checking its version:
 ```bash
 burger-api --version
 ```
-*Show version : `0.7.1`*
+The CLI displays its version (read from `package.json` at runtime).
 
 ---
 
@@ -69,8 +69,9 @@ bun run dev
 ### 1. `burger-api create <project-name>`
 Creates a new Burger API project with interactive prompts.
 
-- **What it does:** Scaffolds a complete project structure, configures initial settings, and automatically installs dependencies.
+- **What it does:** Scaffolds a complete project structure, configures initial settings, and automatically installs dependencies. New projects get a **config file: `burger.config.ts`** at the project root for API/page dirs and prefixes.
 - **Interactive Prompts:** You'll be asked about API routes, API directory, API prefix, debug mode, Page routes, Page directory, and Page prefix.
+- **Next steps after create:** Edit config if needed (`burger.config.ts`), open your browser, add middleware as needed.
 - **Example:**
   ```bash
   burger-api create my-api
@@ -97,10 +98,10 @@ Adds one or more middleware to your project.
   ```
 
 ### 4. `burger-api build <file>`
-Bundles your project into a single JavaScript file.
+Bundles your project into a single JavaScript file. The CLI discovers routes at build time (using `burger.config.ts` or conventions) and embeds them so production doesn't depend on the filesystem.
 
 - **Options:**
-  - `--outfile <path>`: Output file path (default: `.build/bundle.js`)
+  - `--outfile <path>`: Output file path (default: `.build/bundle/app.js`)
   - `--minify`: Minify the output code
   - `--sourcemap <type>`: Generate sourcemaps (`inline`, `linked`, or `none`)
   - `--target <target>`: Target environment (e.g., `bun`, `node`)
@@ -109,17 +110,17 @@ Bundles your project into a single JavaScript file.
   burger-api build src/index.ts --minify
   ```
 
-### 5. `burger-api build:executable <file>`
+### 5. `burger-api build:exec <file>`
 Compiles your project into a standalone executable that doesn't require a runtime to be pre-installed.
 
 - **Options:**
-  - `--outfile <path>`: Output file path
+  - `--outfile <path>`: Output file path (default: `.build/executable/<project>.exe` on Windows, `.build/executable/<project>` on Unix)
   - `--target <target>`: Target platform (e.g., `bun-windows-x64`, `bun-linux-x64`, `bun-darwin-arm64`)
   - `--minify`: Minify the output (enabled by default)
   - `--no-bytecode`: Disable bytecode compilation
 - **Example:**
   ```bash
-  burger-api build:executable src/index.ts --target bun-linux-x64
+  burger-api build:exec src/index.ts --target bun-linux-x64
   ```
 
 ### 6. `burger-api serve`
@@ -147,8 +148,8 @@ Starts a development server with hot reload, automatically restarting when you m
 3. Import the middleware from `ecosystem/middleware/` in your `index.ts`.
 
 ### Building for Production
-1. For a single JS file: `burger-api build src/index.ts --minify`.
-2. For a standalone binary: `burger-api build:executable src/index.ts --target bun-linux-x64`.
+1. For a single JS file: `burger-api build src/index.ts --minify` (output: `.build/bundle/app.js` by default).
+2. For a standalone binary: `burger-api build:exec src/index.ts --target bun-linux-x64` (output: `.build/executable/<project>` by default).
 
 ---
 
@@ -163,10 +164,12 @@ my-api/
 │   └── api/              # Your file-based API routes
 ├── ecosystem/
 │   └── middleware/       # Middleware installed via `burger-api add`
+├── burger.config.ts      # Project config: apiDir, pageDir, apiPrefix, pagePrefix (used by CLI for build)
 ├── package.json
 └── tsconfig.json
 ```
 
+- **`burger.config.ts`**: Config file at the project root. Edit it to change API/page directories and URL prefixes; the CLI uses it for `burger-api build` and `burger-api build:exec`.
 - **`ecosystem/middleware/`**: This is where the CLI places all downloaded middleware files. Each middleware is usually in its own subdirectory.
 
 ---
