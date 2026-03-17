@@ -74,7 +74,7 @@ const app = new Burger({
 
 **AI Expected Output**:
 > "You can use the Burger API CLI to build an executable. Run the following command:
-> `burger-api build:executable`
+> `burger-api build:exec`
 > This will bundle your application and the runtime into a single binary for easier deployment."
 
 ---

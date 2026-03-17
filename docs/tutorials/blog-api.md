@@ -36,14 +36,19 @@ Complete the [Todo List API](./todo-api.md) tutorial first. You should understan
 
 ## Step 1: Set Up Your Project
 
-Create a new project for the blog API:
+For this advanced tutorial, start from a clean project using the CLI:
 
 ```bash
-mkdir blog-api
+burger-api create blog-api
 cd blog-api
-bun init
-bun add burger-api zod
+
+# Install Zod for validation if it's not already present
+bun add zod
 ```
+
+The `burger-api create` command scaffolds an entry file and a `burger.config.ts` that define your `apiDir`, `pageDir`, and route prefixes. We'll hook our blog API into that setup.
+
+For more details, see [Configuration](../core/configuration.md), [Server Options](../core/server-options.md), and the [CLI Tool](../getting-started/cli.md).
 
 ## Step 2: Configure Your Server
 
@@ -127,7 +132,7 @@ export interface PostFilters {
 
 ## Step 4: Create Middleware
 
-Set up middleware for logging and authentication:
+Set up middleware for logging and authentication (see the [Middleware guide](../middleware/global.md) for more patterns and options):
 
 ```typescript title="middleware/logger.ts"
 import type { Middleware } from "burger-api";
@@ -900,6 +905,34 @@ curl -X POST http://localhost:4000/api/posts/1/comments \
 # Get specific comment
 curl http://localhost:4000/api/posts/1/comments/1
 ```
+
+## Deploying the Blog API (Production)
+
+With BurgerAPI v0.9+, you can build this blog API into a bundle or an executable using AOT route discovery:
+
+```bash
+# From the project root
+burger-api build src/index.ts
+```
+
+This will produce:
+
+- `.build/bundle/app.js`
+
+To build a standalone executable:
+
+```bash
+burger-api build:exec src/index.ts
+```
+
+Which creates:
+
+- `.build/executable/<project>` (or `.exe` on Windows)
+
+These commands are covered in more detail in:
+
+- [Migrating to 0.9](../migration/migrating-to-0.9.md)
+- [BurgerAPI v0.9.3 Release](/blog/burger-api-v0.9.3-release)
 
 ## Project Structure
 

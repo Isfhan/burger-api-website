@@ -46,6 +46,12 @@ Let's break down the essential configuration options:
 - **`pageDir`** (`string`, Optional)
   If you plan to serve static HTML pages or use `.tsx` for server-rendered pages, specify the directory containing these files here.
 
+- **`apiRoutes`** (`RouteDefinition[]`, Optional)
+  Pre-built API route list. When set, `apiDir` is ignored and no API route scanning runs. Typically used by the CLI-generated production entry; you can pass it for custom builds. See the [CLI build docs](./../getting-started/cli.md) for production builds.
+
+- **`pageRoutes`** (`PageDefinition[]`, Optional)
+  Pre-built page route list. When set, `pageDir` is ignored and no page scanning runs. Typically used by the CLI-generated production entry; you can pass it for custom builds.
+
 - **`globalMiddleware`** (`Middleware[]`, Optional)
   An array of [middleware functions](./../request-handling/middleware.md) that will run for _every_ incoming request before any route-specific logic.
 
@@ -60,6 +66,12 @@ Let's break down the essential configuration options:
 
 - **`debug`** (`boolean`, Optional)
   Setting this to `true` will enable stack traces page for errors.
+
+## Project config file (burger.config.ts)
+
+If you use the CLI to create a project, you get a **`burger.config.ts`** (or `.js`) at the project root. It defines `apiDir`, `pageDir`, `apiPrefix`, `pagePrefix`, and `debug` in one place. The CLI uses this file for `burger-api build` and `burger-api build:exec` so dev and production stay in sync. You can also load it in your app if you want a single source for paths and prefixes. See [CLI Tool](./../getting-started/cli.md) for create and build commands.
+
+If you don't provide either `apiDir`/`pageDir` or `apiRoutes`/`pageRoutes`, the Burger class will throw: *"Please provide apiDir/pageDir (for dev) or apiRoutes/pageRoutes (for production builds) when initializing the Burger class."*
 
 ## Starting the Server: `serve()`
 

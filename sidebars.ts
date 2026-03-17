@@ -15,11 +15,14 @@ import type { SidebarsConfig } from "@docusaurus/plugin-content-docs";
 const sidebars: SidebarsConfig = {
   // Define the main docs sidebar structure manually
   tutorialSidebar: [
-    "intro", // Link to docs/intro.md (Top level)
+    "intro",
     {
       type: "category",
-      label: "Getting Started (New)",
+      label: "Getting Started",
       items: [
+        "quick-start",
+        "installation",
+        "key-concepts",
         "getting-started/installation",
         "getting-started/cli",
       ],
@@ -28,51 +31,123 @@ const sidebars: SidebarsConfig = {
       type: "category",
       label: "Core Concepts",
       items: [
-        "core/configuration", // Link to docs/core/configuration.md
+        "core/burger-class",
+        "core/server-options",
+        "core/request-handling",
+        "core/response-types",
+        "core/configuration",
       ],
     },
     {
       type: "category",
       label: "Routing",
       items: [
+        "routing/file-based-routing",
+        "routing/static-routes",
+        "routing/dynamic-routes",
+        "routing/wildcard-routes",
+        "routing/route-groups",
+        "routing/nested-routes",
         {
           type: "category",
           label: "API Routing",
           items: [
-            "routing/api/static-routes", // Link to docs/routing/api/static-routes.md
-            "routing/api/route-groups", // Link to docs/routing/api/route-groups.md
-            "routing/api/dynamic-routes", // Link to docs/routing/api/dynamic-routes.md
-            "routing/api/wildcard-routes", // Link to docs/routing/api/wildcard-routes.md
+            "routing/api/static-routes",
+            "routing/api/route-groups",
+            "routing/api/dynamic-routes",
+            "routing/api/wildcard-routes",
           ],
         },
         {
           type: "category",
           label: "Page Routing",
           items: [
-            "routing/pages/static-pages", // Link to docs/routing/pages/static-pages.md
-            "routing/pages/dynamic-pages", // Link to docs/routing/pages/dynamic-pages.md (Coming Soon)
+            "routing/pages/static-pages",
+            "routing/pages/dynamic-pages",
           ],
         },
       ],
     },
     {
       type: "category",
+      label: "Middleware",
+      items: [
+        "middleware/system",
+        "middleware/global",
+        "middleware/route-specific",
+        "middleware/return-types",
+        "middleware/after",
+      ],
+    },
+    {
+      type: "category",
+      label: "Validation",
+      items: [
+        "validation/zod",
+        "validation/schema",
+        "validation/params",
+        "validation/query",
+        "validation/body",
+        "validation/errors",
+      ],
+    },
+    {
+      type: "category",
+      label: "OpenAPI & Documentation",
+      items: [
+        "openapi/generation",
+        "openapi/swagger-ui",
+        "openapi/metadata",
+        "api/openapi",
+      ],
+    },
+    {
+      type: "category",
       label: "Request Handling",
       items: [
-        "request-handling/middleware", // Link to docs/request-handling/middleware.md
-        "request-handling/validation", // Link to docs/request-handling/validation.md
+        "request-handling/middleware",
+        "request-handling/validation",
       ],
     },
     {
       type: "category",
-      label: "API Documentation",
+      label: "CLI Tool",
       items: [
-        "api/openapi", // Link to docs/api/openapi.md
+        "cli/installation",
+        "cli/create",
+        "cli/add",
+        "cli/list",
+        "cli/serve",
+        "cli/build",
+        "cli/build-exec",
       ],
     },
     {
       type: "category",
-      label: "AI Assistance (New)",
+      label: "Examples",
+      items: [
+        "examples/basic-route",
+        "examples/middleware",
+        "examples/validation",
+        "examples/complete-project",
+      ],
+    },
+    {
+      type: "category",
+      label: "Ecosystem",
+      items: [
+        "ecosystem/introduction",
+        "ecosystem/middleware",
+        "ecosystem/cors",
+        "ecosystem/logger",
+        "ecosystem/rate-limiter",
+        "ecosystem/jwt-auth",
+        "ecosystem/api-key-auth",
+      ],
+    },
+    {
+      type: "category",
+      label: "AI Assistance",
       items: [
         "ai-assistance/llm-context-files",
         "ai-assistance/using-llm-files",
@@ -82,22 +157,20 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
-      label: "Ecosystem",
-      items: ["ecosystem/introduction"],
-    },
-    {
-      type: "category",
-      label: "Upcoming Features", // Renamed from 'Advanced Features'
+      label: "Advanced",
       items: [
-        "advanced/websockets", // Only websockets left here for now
+        "advanced/performance",
+        "advanced/error-handling",
+        "advanced/type-safety",
+        "advanced/deployment",
+        "advanced/websockets",
       ],
     },
     {
       type: "category",
-      label: "Deployment (Coming Soon)",
+      label: "Deployment",
       items: ["deployment/overview"],
     },
-    // Add other top-level docs or categories here if needed
   ],
 
   // Define the tutorials sidebar structure

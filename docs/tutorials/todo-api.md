@@ -35,25 +35,27 @@ Complete the [Hello World API](./hello-world.md) tutorial first. You should unde
 
 ## Step 1: Set Up Your Project
 
-Start with a fresh BurgerAPI project or continue from the Hello World tutorial:
+You can either continue from the [Hello World API](./hello-world.md) tutorial or create a fresh project using the CLI:
 
 ```bash
-# If starting fresh
-mkdir todo-api
+# Option A: Continue from Hello World
+# (reuse the same project and add todos on top)
+
+# Option B: Create a new project
+burger-api create todo-api
 cd todo-api
-bun init
-bun add burger-api zod
-```
 
-Add Zod for request validation:
-
-```bash
+# Install Zod for validation if it's not already present
 bun add zod
 ```
 
+If you used `burger-api create`, it already wired up a basic `Burger` instance and a `burger.config.ts`. We will customize the server entry a bit for this tutorial.
+
+For more about these options, see [Configuration](../core/configuration.md) and [CLI Tool](../getting-started/cli.md).
+
 ## Step 2: Configure Your Server
 
-Create your `index.ts` file:
+Update or create your `index.ts` file:
 
 ```typescript title="index.ts"
 import { Burger } from "burger-api";
@@ -422,6 +424,31 @@ todo-api/
 ├── index.ts                 # Server configuration
 └── package.json
 ```
+
+## Build for Production (Optional)
+
+Just like with the Hello World tutorial, you can build this Todo API for production using the `burger-api` CLI:
+
+```bash
+# From the project root
+burger-api build src/index.ts
+```
+
+This generates a bundle at:
+
+- `.build/bundle/app.js`
+
+To create a standalone executable:
+
+```bash
+burger-api build:exec src/index.ts
+```
+
+Which produces:
+
+- `.build/executable/<project>` (or `.exe` on Windows)
+
+These commands use the same AOT route discovery described in [Migrating to 0.9](../migration/migrating-to-0.9.md) and the [v0.9.3 release post](/blog/burger-api-v0.9.3-release).
 
 ## Key Concepts Learned
 
