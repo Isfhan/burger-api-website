@@ -5,7 +5,7 @@ sidebar_position: 1
 
 # Migrating to BurgerAPI 0.9
 
-BurgerAPI 0.9.0 introduces production-ready builds with AOT route discovery, a project config file, and pre-built route support. This guide helps you update scripts and paths if you're affected by the CLI changes. If you only use `apiDir` / `pageDir` in the Burger constructor and don't run production builds, no changes are required.
+BurgerAPI 0.9.3 introduces production-ready builds with AOT route discovery, a project config file, and pre-built route support. This guide helps you update scripts and paths if you're affected by the CLI changes. If you only use `apiDir` / `pageDir` in the Burger constructor and don't run production builds, no changes are required.
 
 ## Migration checklist
 
@@ -31,4 +31,4 @@ BurgerAPI 0.9.0 introduces production-ready builds with AOT route discovery, a p
 | Project config | Optional: add **`burger.config.ts`** at root |
 | Constructor options | No change for `apiDir`/`pageDir`-only apps |
 
-For more on what's new in 0.9.0, see the [v0.9.0 release post](/blog/burger-api-v0.9.0-release).
+For more on what's new in 0.9.3, see the [v0.9.3 release post](/blog/burger-api-v0.9.3-release).

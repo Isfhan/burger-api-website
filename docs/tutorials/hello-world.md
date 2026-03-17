@@ -229,7 +229,7 @@ This creates a binary under:
 For more details on build outputs and options, see:
 
 - [Migrating to 0.9](../migration/migrating-to-0.9.md)
-- [BurgerAPI v0.9.0 Release](/blog/burger-api-v0.9.0-release)
+- [BurgerAPI v0.9.3 Release](/blog/burger-api-v0.9.3-release)
 
 ## Next Steps
 

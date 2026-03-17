@@ -1,15 +1,15 @@
 ---
-slug: burger-api-v0.9.0-release
-title: BurgerAPI v0.9.0 Released
+slug: burger-api-v0.9.3-release
+title: BurgerAPI v0.9.3 Released
 authors: [isfhan]
 tags: [release, production, cli, config]
 ---
 
-**v0.9.0** focuses on production readiness and consistency. Builds use **AOT route discovery**: the CLI discovers routes at build time and embeds them so your app doesn't depend on the filesystem in production. New projects get a **`burger.config.ts`** for API/page dirs and prefixes, and the Burger constructor supports **`apiRoutes`** and **`pageRoutes`** for pre-built route lists. The CLI command for standalone executables is now **`burger-api build:exec`**, with default outputs under `.build/bundle/` and `.build/executable/`. Your middleware and options are preserved in the generated build entry.
+**v0.9.3** focuses on production readiness and consistency. Builds use **AOT route discovery**: the CLI discovers routes at build time and embeds them so your app doesn't depend on the filesystem in production. New projects get a **`burger.config.ts`** for API/page dirs and prefixes, and the Burger constructor supports **`apiRoutes`** and **`pageRoutes`** for pre-built route lists. The CLI command for standalone executables is now **`burger-api build:exec`**, with default outputs under `.build/bundle/` and `.build/executable/`. Your middleware and options are preserved in the generated build entry.
 
 {/* truncate */}
 
-## What's New in v0.9.0
+## What's New in v0.9.3
 
 - **Production builds that match development.** Use `burger-api build` or `burger-api build:exec`; routes are discovered at build time and embedded so production doesn't scan the filesystem. Your middleware and server options are preserved in the bundle or binary.
 - **One config for your project.** New projects get a `burger.config.ts` at the root. Set API and page directories and URL prefixes in one place; the CLI uses it for builds so dev and production stay in sync.

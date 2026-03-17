@@ -448,7 +448,7 @@ Which produces:
 
 - `.build/executable/<project>` (or `.exe` on Windows)
 
-These commands use the same AOT route discovery described in [Migrating to 0.9](../migration/migrating-to-0.9.md) and the [v0.9.0 release post](/blog/burger-api-v0.9.0-release).
+These commands use the same AOT route discovery described in [Migrating to 0.9](../migration/migrating-to-0.9.md) and the [v0.9.3 release post](/blog/burger-api-v0.9.3-release).
 
 ## Key Concepts Learned
 
