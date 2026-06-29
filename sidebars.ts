@@ -117,6 +117,7 @@ const sidebars: SidebarsConfig = {
         "cli/create",
         "cli/add",
         "cli/list",
+        "cli/skills",
         "cli/serve",
         "cli/build",
         "cli/build-exec",
@@ -149,6 +150,7 @@ const sidebars: SidebarsConfig = {
       type: "category",
       label: "AI Assistance",
       items: [
+        "ai-assistance/agent-skills",
         "ai-assistance/llm-context-files",
         "ai-assistance/using-llm-files",
         "ai-assistance/llm-files-reference",

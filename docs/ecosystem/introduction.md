@@ -23,4 +23,21 @@ To explore and add middleware to your project, use the Burger API CLI:
 
 This command downloads the middleware and places it in your project's `ecosystem/middleware/` directory, making it easy to import and use.
 
+### Agent Skills
+
+BurgerAPI also provides **Agent Skills** — structured documentation that helps AI assistants understand your project. Skills follow the [agentskills.io](https://agentskills.io) open standard and are automatically discovered by Cursor, Claude Code, OpenCode, Copilot, and Codex.
+
+```bash
+# Install the default burger-api skill
+burger-api skills install
+
+# List installed skills
+burger-api skills list
+
+# Browse available skills
+burger-api skills available
+```
+
+See the [Agent Skills](/docs/ai-assistance/agent-skills) documentation for more details.
+
 Stay tuned for updates as the BurgerAPI ecosystem develops! 

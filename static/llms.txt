@@ -55,6 +55,7 @@
 - [Create Command - Burger API](https://burger-api.com/docs/cli/create)
 - [Add Command - Burger API](https://burger-api.com/docs/cli/add)
 - [List Command - Burger API](https://burger-api.com/docs/cli/list)
+- [Skills Command - Burger API](https://burger-api.com/docs/cli/skills)
 - [Serve Command - Burger API](https://burger-api.com/docs/cli/serve)
 - [Build Command - Burger API](https://burger-api.com/docs/cli/build)
 - [Build Exec Command (build:exec) - Burger API](https://burger-api.com/docs/cli/build-exec)
@@ -77,6 +78,7 @@
 
 ### AI Assistance
 
+- [Agent Skills - Burger API](https://burger-api.com/docs/ai-assistance/agent-skills)
 - [LLM Context Files - Burger API](https://burger-api.com/docs/ai-assistance/llm-context-files)
 - [Using LLM Files - Burger API](https://burger-api.com/docs/ai-assistance/using-llm-files)
 - [LLM Files Reference - Burger API](https://burger-api.com/docs/ai-assistance/llm-files-reference)

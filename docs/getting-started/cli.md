@@ -1,5 +1,5 @@
 ---
-sidebar_label: CLI Tool (New)
+sidebar_label: CLI Tool
 sidebar_position: 2
 ---
 
@@ -86,7 +86,21 @@ Shows all available middleware from the official ecosystem.
   burger-api list
   ```
 
-### 3. `burger-api add <middleware...>`
+### 3. `burger-api skills`
+Manages AI agent skills for agentic IDEs.
+
+- **`skills install [name]`** — Download a skill (defaults to `burger-api`). Installs to `.agents/skills/<name>/`.
+- **`skills list`** — Show locally installed skills.
+- **`skills available`** — Browse the remote skills catalog on GitHub.
+- **Examples:**
+  ```bash
+  burger-api skills install
+  burger-api skills list
+  burger-api skills available
+  ```
+- **Compatible with:** Cursor, Claude Code, OpenCode, Copilot, Codex — all auto-discover `.agents/skills/`.
+
+### 4. `burger-api add <middleware...>`
 Adds one or more middleware to your project.
 
 - **What it does:** Downloads the specified middleware from GitHub and copies them to your `ecosystem/middleware/` directory. It also provides usage instructions after installation.
@@ -97,7 +111,7 @@ Adds one or more middleware to your project.
   burger-api add jwt-auth api-key-auth
   ```
 
-### 4. `burger-api build <file>`
+### 5. `burger-api build <file>`
 Bundles your project into a single JavaScript file. The CLI discovers routes at build time (using `burger.config.ts` or conventions) and embeds them so production doesn't depend on the filesystem.
 
 - **Options:**
@@ -110,7 +124,7 @@ Bundles your project into a single JavaScript file. The CLI discovers routes at 
   burger-api build src/index.ts --minify
   ```
 
-### 5. `burger-api build:exec <file>`
+### 6. `burger-api build:exec <file>`
 Compiles your project into a standalone executable that doesn't require a runtime to be pre-installed.
 
 - **Options:**
@@ -123,7 +137,7 @@ Compiles your project into a standalone executable that doesn't require a runtim
   burger-api build:exec src/index.ts --target bun-linux-x64
   ```
 
-### 6. `burger-api serve`
+### 7. `burger-api serve`
 Starts a development server with hot reload, automatically restarting when you make file changes.
 
 - **Options:**
@@ -147,6 +161,11 @@ Starts a development server with hot reload, automatically restarting when you m
 2. Add what you need with `burger-api add <name>`.
 3. Import the middleware from `ecosystem/middleware/` in your `index.ts`.
 
+### Installing AI Agent Skills
+1. Answer Yes to "Add AI agent skills?" when creating a project, or run `burger-api skills install` in an existing project.
+2. Your AI assistant discovers `.agents/skills/burger-api/` automatically — no configuration needed.
+3. Start working: the skill activates when you ask about routing, validation, middleware, or CLI tasks.
+
 ### Building for Production
 1. For a single JS file: `burger-api build src/index.ts --minify` (output: `.build/bundle/app.js` by default).
 2. For a standalone binary: `burger-api build:exec src/index.ts --target bun-linux-x64` (output: `.build/executable/<project>` by default).
@@ -164,6 +183,9 @@ my-api/
 │   └── api/              # Your file-based API routes
 ├── ecosystem/
 │   └── middleware/       # Middleware installed via `burger-api add`
+├── .agents/
+│   └── skills/
+│       └── burger-api/   # AI agent skills (optional, when opted in)
 ├── burger.config.ts      # Project config: apiDir, pageDir, apiPrefix, pagePrefix (used by CLI for build)
 ├── package.json
 └── tsconfig.json
@@ -171,6 +193,7 @@ my-api/
 
 - **`burger.config.ts`**: Config file at the project root. Edit it to change API/page directories and URL prefixes; the CLI uses it for `burger-api build` and `burger-api build:exec`.
 - **`ecosystem/middleware/`**: This is where the CLI places all downloaded middleware files. Each middleware is usually in its own subdirectory.
+- **`.agents/skills/`**: This is where the CLI places downloaded agent skills (when opted in). Skills are auto-discovered by agentic IDEs.
 
 ---
 

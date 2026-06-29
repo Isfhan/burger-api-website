@@ -1,11 +1,17 @@
 ---
-sidebar_label: "LLM Context Files (New)"
+sidebar_label: "LLM Context Files"
 title: "LLM Context Files"
 description: "Learn how to use Burger API's LLM context files to help AI editors understand and generate code for your project."
 sidebar_position: 1
 ---
 
 # LLM Context Files
+
+:::tip New in CLI v0.9.9 — Agent Skills
+The recommended approach for AI assistance is now **Agent Skills** — structured `.agents/skills/` files that are automatically discovered by agentic IDEs. See the [Agent Skills guide](./agent-skills.md) for details.
+
+The legacy `.llm-context` files described below are still available but no longer auto-installed by the CLI.
+:::
 
 Burger API provides specialized context files designed to help AI editors (like Cursor, GitHub Copilot, and others) understand the framework's architecture, APIs, and best practices. These files provide the "brain" for your AI assistant, ensuring it generates accurate and idiomatic Burger API code.
 
@@ -25,7 +31,7 @@ Modern AI editors are powerful, but they might not always have the latest traini
 
 There are two main ways to access these files:
 
-1.  **In your project**: If you created your project using the Burger API CLI, these files are already available in the `ecosystem/.llm-context/` directory of your project.
+1.  **In your project** (legacy): Projects created with CLI v0.9.8 or earlier may have these files in `ecosystem/.llm-context/`. New projects use [Agent Skills](./agent-skills.md) instead.
 2.  **Direct Download**: You can also download them directly from our website:
     - [llms.txt](https://burger-api.com/llms.txt)
     - [llms-small.txt](https://burger-api.com/llms-small.txt)
@@ -69,6 +75,7 @@ For the best results, combine these LLM files with your own codebase context whe
 
 ## Next Steps
 
+- [Try Agent Skills (recommended)](./agent-skills.md)
 - [Learn how to use these files with your editor](./using-llm-files.md)
 - [Explore the file contents reference](./llm-files-reference.md)
 - [See real-world integration examples](./integration-examples.md)

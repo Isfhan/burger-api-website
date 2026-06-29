@@ -1,9 +1,13 @@
 ---
-sidebar_label: "Using LLM Files (New)"
+sidebar_label: "Using LLM Files"
 title: "Using LLM Files"
 description: "A detailed guide on how to integrate Burger API's LLM context files with various AI editors like Cursor and GitHub Copilot."
 sidebar_position: 2
 ---
+
+:::tip New in CLI v0.9.9 — Agent Skills
+Agent Skills (`.agents/skills/`) provide the same context automatically — no manual file attachment required. See the [Agent Skills guide](./agent-skills.md).
+:::
 
 # Using LLM Files
 
