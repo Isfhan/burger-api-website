@@ -136,13 +136,34 @@ export function GET(req: BurgerRequest) {
 ## Route Matching Priority
 
 :::tip Static Routes Have Highest Priority
-BurgerAPI uses an efficient routing mechanism (a trie) that prioritizes more specific routes. **Static routes are always matched first**, before dynamic or wildcard routes.
+BurgerAPI uses a **hybrid router**. Static routes are dispatched directly by Bun's native `routes` map (the fast path), while dynamic (`/products/[id]`) and wildcard (`/products/[...]`) routes are matched by an internal trie. **Static routes are always matched first**, before dynamic or wildcard routes.
 
 - Static routes (e.g., `/products/featured`) are matched _before_ dynamic routes (`/products/[id]`).
 - Routes with more static segments are generally matched before routes with fewer.
 
 This helps avoid ambiguity when multiple route patterns could potentially match a request URL.
 :::
+
+## Routing Behavior
+
+Beyond path matching, BurgerAPI applies consistent behavior to every route:
+
+### Method Not Allowed (405)
+
+When a known route is requested with a method it does not support, BurgerAPI returns `405` and includes an `Allow` header listing the supported methods:
+
+```
+GET    /api/products   → 200
+DELETE /api/products   → 405  Allow: GET, POST
+```
+
+### Automatic HEAD
+
+You do not need to write a separate `HEAD` handler. A `HEAD` request to any route that defines `GET` runs the `GET` handler and returns the same response with the body removed.
+
+### Trailing Slash
+
+Trailing slashes are matched loosely — `/api/products` and `/api/products/` resolve to the same route. On a dynamic route, a trailing slash is treated as an empty parameter value (e.g. `/api/users/` → `req.params.id === ""`), which your Zod schema can then reject.
 
 ### Priority Example
 

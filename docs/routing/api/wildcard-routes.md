@@ -68,6 +68,10 @@ GET /api/admin/users/123/permissions/edit
 → wildcardParams = ["users", "123", "permissions", "edit"]
 ```
 
+:::tip Wildcards Also Match Their Base Path
+A wildcard route matches its own base path too. For `api/files/[...]`, a request to `/api/files` (with no further segments) matches the route with `wildcardParams = []`. Check `wildcardParams.length === 0` to handle the base path explicitly.
+:::
+
 ## Accessing Wildcard Parameters
 
 The `req.wildcardParams` property gives you access to all captured path segments as an array of strings.
@@ -114,7 +118,7 @@ GET /api/files/documents/2024/report.pdf
 Understanding how BurgerAPI matches routes is important when combining different route types.
 
 :::tip Route Matching Order
-BurgerAPI uses a smart routing system (a trie) that matches routes in this order:
+BurgerAPI uses a **hybrid router**: static routes are dispatched by Bun's native `routes` map, while dynamic and wildcard routes are matched by an internal trie, in this order:
 
 1. **Static Routes** - Exact path matches (e.g., `/admin/settings`)
 2. **Dynamic Routes** - Single segment patterns (e.g., `/admin/[section]`)

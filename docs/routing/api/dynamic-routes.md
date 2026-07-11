@@ -128,6 +128,10 @@ export function GET(req: BurgerRequest) {
 }
 ```
 
+:::tip Trailing Slash and Unsupported Methods
+A trailing slash on a dynamic route is treated as an **empty parameter value**: `GET /api/users/` sets `req.params.id === ""` (your Zod schema can then reject it). Requesting a route with an unsupported method returns `405` with an `Allow` header listing the methods the route does support.
+:::
+
 ## Validation with Zod
 
 For type safety and validation, use Zod schemas:
