@@ -14,6 +14,7 @@ interface CustomFields {
   status?: string;
   license?: string;
   bunVersion?: string;
+  frameworkVersion?: string;
   getStartedUrl?: string;
   githubUrl?: string;
 }
@@ -57,7 +58,12 @@ export function HomepageHero() {
 
               {/* Version Badge */}
               <span className={styles.versionBadge}>
-                <SiBun size={15} /> {customFields?.bunVersion || "Bun 1.2.4+"}
+                <SiBun size={15} /> {customFields?.bunVersion || "Bun 1.3.0+"}
+              </span>
+
+              {/* Framework Version Badge */}
+              <span className={styles.versionBadge}>
+                v{customFields?.frameworkVersion || "0.11.0"}
               </span>
             </div>
 

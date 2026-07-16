@@ -18,4 +18,12 @@ const corsMiddleware: Middleware = (req) => {
 };
 ```
 
-See [Middleware Return Types](/docs/middleware/return-types) and [Middleware](/docs/request-handling/middleware).
+See [Middleware Return Types](/docs/middleware/return-types) and [Middleware](/docs/middleware/system).
+
+
+## Related
+
+- [Middleware System](/docs/middleware/system)
+- [Global Middleware](/docs/middleware/global)
+- [Route-Specific Middleware](/docs/middleware/route-specific)
+- [Request Context](/docs/core/request-handling)

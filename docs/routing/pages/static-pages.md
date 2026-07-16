@@ -56,3 +56,11 @@ Good old `.html` files require no special handling. BurgerAPI serves them direct
   </body>
 </html>
 ```
+
+
+## Related
+
+- [File-Based Routing](/docs/routing/file-based-routing)
+- [Static Routes](/docs/routing/static-routes)
+- [Dynamic Routes](/docs/routing/dynamic-routes)
+- [Request Lifecycle](/docs/architecture/request-lifecycle)

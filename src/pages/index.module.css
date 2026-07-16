@@ -235,10 +235,18 @@
   padding: 4rem 0;
 }
 
+.featureGroup {
+  margin-bottom: 3rem;
+}
+
+.featureGroup:last-child {
+  margin-bottom: 0;
+}
+
 .featuresTitle {
   text-align: left;
-  margin-bottom: 3rem;
-  font-size: 2.2rem;
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
   color: var(--ifm-heading-color);
 }
 

@@ -90,3 +90,11 @@ If you prefer not to use the CLI, you can set up a project manually using standa
 That's it! You now have a Bun project set up with BurgerAPI installed.
 
 Next, you might want to check out the [Configuration](./../core/configuration.md) guide to see how to create your first BurgerAPI instance.
+
+
+## Related
+
+- [Quick Start](/docs/quick-start)
+- [Key Concepts](/docs/key-concepts)
+- [Burger API CLI Tool](/docs/getting-started/cli)
+- [Request Context](/docs/core/request-handling)

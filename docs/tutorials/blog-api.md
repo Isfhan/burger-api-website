@@ -461,8 +461,7 @@ import { createPostSchema, postFiltersSchema } from "../../schemas";
 
 // GET /api/posts - List posts with filtering and pagination
 export function GET(req: BurgerRequest) {
-  const url = new URL(req.url);
-  const searchParams = Object.fromEntries(url.searchParams);
+  const searchParams = req.query;
   
   // Convert string parameters to appropriate types
   const filters = {
@@ -908,7 +907,7 @@ curl http://localhost:4000/api/posts/1/comments/1
 
 ## Deploying the Blog API (Production)
 
-With BurgerAPI v0.9+, you can build this blog API into a bundle or an executable using AOT route discovery:
+You can build this blog API into a bundle or an executable. The production build discovers routes at build time, so no runtime filesystem scanning is needed:
 
 ```bash
 # From the project root
@@ -1004,7 +1003,6 @@ You're now ready to build real-world applications with BurgerAPI! Consider explo
 - **Database Integration**: You've already used SQLite! Consider PostgreSQL, MongoDB, or other databases for larger applications
 - **Authentication**: Implement JWT tokens, OAuth, or session-based auth
 - **File Uploads**: Handle file uploads and storage
-- **WebSockets**: Real-time features (coming soon to BurgerAPI)
 - **Deployment**: Deploy your API to production environments
 
 ## Troubleshooting

@@ -152,7 +152,7 @@ If you're currently handling validation errors in your frontend or API consumers
 
 ## 📚 Documentation
 
-For detailed information about the new validation features, check out our [validation documentation](/docs/request-handling/validation).
+For detailed information about the new validation features, check out our [validation documentation](/docs/validation/zod).
 
 ## 🤝 Community
 

@@ -194,12 +194,7 @@ export const schema = {
 ## Route Matching Priority
 
 :::tip Understanding Priority
-BurgerAPI matches routes in this order:
-1. **Static routes** - Exact path matches (e.g., `/products/featured`)
-2. **Dynamic routes** - Single parameter patterns (e.g., `/products/[id]`)
-3. **Wildcard routes** - Catch-all patterns (e.g., `/products/[...]`)
-
-Dynamic routes are checked after static routes but before wildcard routes.
+BurgerAPI uses a hybrid router (static paths via Bun's native router, dynamic and wildcard via a trie). See [Routing Engine](/docs/architecture/routing-engine) for how routes are matched. Static routes are matched first, then dynamic, then wildcard.
 :::
 
 ### Priority Example

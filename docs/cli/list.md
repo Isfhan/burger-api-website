@@ -16,3 +16,11 @@ burger-api list
 ```
 
 See [CLI Tool](/docs/getting-started/cli) and [Ecosystem](/docs/ecosystem/introduction).
+
+
+## Related
+
+- [CLI Installation](/docs/cli/installation)
+- [Create Command](/docs/cli/create)
+- [Add Command](/docs/cli/add)
+- [Burger API CLI Tool](/docs/getting-started/cli)

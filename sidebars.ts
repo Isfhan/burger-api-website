@@ -2,18 +2,7 @@ import type { SidebarsConfig } from "@docusaurus/plugin-content-docs";
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
-/**
- * Creating a sidebar enables you to:
- - create an ordered group of docs
- - render a sidebar for each doc of that group
- - provide next/previous navigation
-
- The sidebars can be generated from the filesystem, or explicitly defined here.
-
- Create as many sidebars as you want.
- */
 const sidebars: SidebarsConfig = {
-  // Define the main docs sidebar structure manually
   tutorialSidebar: [
     "intro",
     {
@@ -21,7 +10,6 @@ const sidebars: SidebarsConfig = {
       label: "Getting Started",
       items: [
         "quick-start",
-        "installation",
         "key-concepts",
         "getting-started/installation",
         "getting-started/cli",
@@ -31,11 +19,26 @@ const sidebars: SidebarsConfig = {
       type: "category",
       label: "Core Concepts",
       items: [
-        "core/burger-class",
-        "core/server-options",
+        "core-concepts/applications",
+        "core-concepts/routing",
+        "core-concepts/handlers",
         "core/request-handling",
-        "core/response-types",
+        "core-concepts/middleware",
+        "core-concepts/validation",
+        "core-concepts/openapi",
         "core/configuration",
+        "core/response-types",
+      ],
+    },
+    {
+      type: "category",
+      label: "Architecture",
+      items: [
+        "architecture/overview",
+        "architecture/request-lifecycle",
+        "architecture/routing-engine",
+        "architecture/burger-context",
+        "architecture/design-decisions",
       ],
     },
     {
@@ -61,10 +64,7 @@ const sidebars: SidebarsConfig = {
         {
           type: "category",
           label: "Page Routing",
-          items: [
-            "routing/pages/static-pages",
-            "routing/pages/dynamic-pages",
-          ],
+          items: ["routing/pages/static-pages"],
         },
       ],
     },
@@ -93,21 +93,46 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
-      label: "OpenAPI & Documentation",
+      label: "API Reference",
       items: [
-        "openapi/generation",
-        "openapi/swagger-ui",
-        "openapi/metadata",
-        "api/openapi",
+        "core/burger-class",
+        "core/server-options",
+        "api/burger-request",
+        "api/context-set",
+        "api/route-meta",
+        "api/validation-types",
+        "api/middleware-types",
+        "api/request-api",
+        "api/response-mutation",
+        "api/route-metadata",
+        "api/query-parsing",
       ],
     },
     {
       type: "category",
-      label: "Request Handling",
+      label: "Performance",
+      items: ["performance/overview"],
+    },
+    {
+      type: "category",
+      label: "Examples",
       items: [
-        "request-handling/middleware",
-        "request-handling/validation",
+        "examples/basic-route",
+        "tutorials/hello-world",
+        "tutorials/todo-api",
+        "examples/crud-api",
+        "tutorials/blog-api",
+        "examples/authentication",
+        "examples/pagination",
+        "examples/validation",
+        "examples/middleware",
+        "examples/complete-project",
       ],
+    },
+    {
+      type: "category",
+      label: "Migration",
+      items: ["migration/upgrading", "migration/migrating-to-0.9"],
     },
     {
       type: "category",
@@ -125,16 +150,6 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
-      label: "Examples",
-      items: [
-        "examples/basic-route",
-        "examples/middleware",
-        "examples/validation",
-        "examples/complete-project",
-      ],
-    },
-    {
-      type: "category",
       label: "Ecosystem",
       items: [
         "ecosystem/introduction",
@@ -144,6 +159,16 @@ const sidebars: SidebarsConfig = {
         "ecosystem/rate-limiter",
         "ecosystem/jwt-auth",
         "ecosystem/api-key-auth",
+      ],
+    },
+    {
+      type: "category",
+      label: "OpenAPI & Documentation",
+      items: [
+        "openapi/generation",
+        "openapi/swagger-ui",
+        "openapi/metadata",
+        "api/openapi",
       ],
     },
     {
@@ -161,40 +186,19 @@ const sidebars: SidebarsConfig = {
       type: "category",
       label: "Advanced",
       items: [
-        "advanced/performance",
         "advanced/error-handling",
         "advanced/type-safety",
         "advanced/deployment",
-        "advanced/websockets",
       ],
-    },
-    {
-      type: "category",
-      label: "Deployment",
-      items: ["deployment/overview"],
     },
   ],
 
-  // Define the tutorials sidebar structure
   tutorialsSidebar: [
     "tutorials/intro",
     "tutorials/hello-world",
     "tutorials/todo-api",
     "tutorials/blog-api",
   ],
-
-  // But you can create a sidebar manually
-  /*
-  tutorialSidebar: [
-    'intro',
-    'hello',
-    {
-      type: 'category',
-      label: 'Tutorial',
-      items: ['tutorial-basics/create-a-document'],
-    },
-  ],
-   */
 };
 
 export default sidebars;

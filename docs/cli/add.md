@@ -18,3 +18,11 @@ burger-api add jwt-auth api-key-auth
 ```
 
 List available middleware with `burger-api list`. See [CLI Tool](/docs/getting-started/cli) and [Ecosystem](/docs/ecosystem/introduction).
+
+
+## Related
+
+- [CLI Installation](/docs/cli/installation)
+- [Create Command](/docs/cli/create)
+- [List Command](/docs/cli/list)
+- [Burger API CLI Tool](/docs/getting-started/cli)

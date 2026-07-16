@@ -4,21 +4,34 @@ sidebar_label: File-Based Routing
 
 # File-Based Routing
 
-BurgerAPI uses **file-based routing**: your folder structure under the API (or page) directory defines the URL paths. No manual route registration is needed.
+BurgerAPI uses file-based routing: the folders and files under your `apiDir` (with `apiPrefix` applied) become the URL paths. There is no manual route registration. Each folder adds a segment to the URL, and a file named `route.ts` at a path defines the handlers for that path.
 
-## How it works
+## Example
 
-- **Folders** under `apiDir` map to URL segments (with `apiPrefix` applied).
-- A file named **`route.ts`** at a path defines the handlers for that path.
-- Export **HTTP method** functions (`GET`, `POST`, `PUT`, `DELETE`, etc.) to handle each method.
+```
+api/products/route.ts     →  /api/products
+api/users/[id]/route.ts   →  /api/users/:id
+```
 
-Example: `api/products/route.ts` → `/api/products`; `api/users/[id]/route.ts` → `/api/users/:id`.
+Inside `route.ts`, export a function for each HTTP method you want to support (`GET`, `POST`, `PUT`, `DELETE`, and so on).
 
 ## Route types
 
-- **Static routes** — Fixed paths (e.g. `/api/products`). See [Static Routes](/docs/routing/static-routes).
-- **Dynamic routes** — Capture segments with `[param]` (e.g. `/api/products/[id]`). See [Dynamic Routes](/docs/routing/dynamic-routes).
-- **Wildcard routes** — Match the rest of the path with `[...rest]`. See [Wildcard Routes](/docs/routing/wildcard-routes).
-- **Route groups** — Organize with `(folder)` without changing the URL. See [Route Groups](/docs/routing/route-groups).
+BurgerAPI supports a few route shapes, all built from the same folder rules:
 
-For full details and examples, see [Static Routes](/docs/routing/api/static-routes) (API) and [Static Pages](/docs/routing/pages/static-pages) (pages).
+- **Static routes** — fixed paths. See [Static Routes](/docs/routing/static-routes).
+- **Dynamic routes** — capture a segment with `[param]`. See [Dynamic Routes](/docs/routing/dynamic-routes).
+- **Wildcard routes** — match the rest of the path with `[...rest]`. See [Wildcard Routes](/docs/routing/wildcard-routes).
+- **Route groups** — organize with `(folder)` without changing the URL. See [Route Groups](/docs/routing/route-groups).
+
+These shapes nest freely by folder depth. See [Nested Routes](/docs/routing/nested-routes) for how paths grow with folders.
+
+For full API details and examples, see [Static API Routes](/docs/routing/api/static-routes) (API) and [Static Pages](/docs/routing/pages/static-pages) (pages).
+
+
+## Related
+
+- [Static Routes](/docs/routing/static-routes)
+- [Dynamic Routes](/docs/routing/dynamic-routes)
+- [Wildcard Routes](/docs/routing/wildcard-routes)
+- [Request Lifecycle](/docs/architecture/request-lifecycle)

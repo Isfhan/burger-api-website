@@ -4,13 +4,24 @@ sidebar_label: Wildcard Routes
 
 # Wildcard Routes
 
-Wildcard routes match **the rest of the path** using a folder named `[...param]`. They are useful for catch-all or proxy-style endpoints.
+Wildcard routes capture the rest of the URL after a point. Use a folder named `[...path]`, and all remaining segments are collected for your handler in `req.wildcardParams`.
 
-## Syntax
+Use wildcard routes for catch-all or proxy-style endpoints, such as file paths or auth callbacks.
 
-- Folder name: `[...paramName]` — captures all remaining segments.
-- Example: `api/files/[...path]/route.ts` matches `/api/files/a`, `/api/files/a/b/c`, etc. The full path is in `req.params.path` (as a string or array depending on the framework version).
+## Example
 
-Wildcards are matched after static and dynamic routes. See the full guide for priority and examples.
+```
+api/files/[...path]/route.ts  →  /api/files/a/b/c
+```
 
-For full documentation and routing order, see [Wildcard Routes](/docs/routing/api/wildcard-routes).
+A request to `/api/files/a/b/c` captures the segments `["a", "b", "c"]`.
+
+Wildcards are matched last, after static and dynamic routes. For routing order, nesting, and real-world examples, see [Wildcard Routes](/docs/routing/api/wildcard-routes).
+
+
+## Related
+
+- [File-Based Routing](/docs/routing/file-based-routing)
+- [Static Routes](/docs/routing/static-routes)
+- [Dynamic Routes](/docs/routing/dynamic-routes)
+- [Request Lifecycle](/docs/architecture/request-lifecycle)

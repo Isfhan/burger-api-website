@@ -448,7 +448,7 @@ Which produces:
 
 - `.build/executable/<project>` (or `.exe` on Windows)
 
-These commands use the same AOT route discovery described in [Migrating to 0.9](../migration/migrating-to-0.9.md) and the [v0.9.3 release post](/blog/burger-api-v0.9.3-release).
+These commands build the app using BurgerAPI's production build, which discovers routes at build time so no runtime filesystem scanning is required.
 
 ## Key Concepts Learned
 

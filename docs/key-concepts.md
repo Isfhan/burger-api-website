@@ -42,3 +42,12 @@ See [OpenAPI Generation](/docs/openapi/generation), [Swagger UI](/docs/openapi/s
 The **Burger API CLI** lets you create projects, add middleware, run a dev server, and build for production (`burger-api build`, `burger-api build:exec`). New projects get a `burger.config.ts` at the root.
 
 See [CLI Tool](/docs/getting-started/cli) and [Build Command](/docs/cli/build).
+
+
+## Related
+
+- [Quick Start](/docs/quick-start)
+- [Installation](/docs/getting-started/installation)
+- [Burger API CLI Tool](/docs/getting-started/cli)
+- [Request Context](/docs/core/request-handling)
+

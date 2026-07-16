@@ -1,0 +1,102 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#09090b"/>
+      <stop offset="50%" style="stop-color:#111214"/>
+      <stop offset="100%" style="stop-color:#09090b"/>
+    </linearGradient>
+    <radialGradient id="orb1" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#f59e0b;stop-opacity:0.4"/>
+      <stop offset="70%" style="stop-color:#f59e0b;stop-opacity:0"/>
+    </radialGradient>
+    <radialGradient id="orb2" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#f97316;stop-opacity:0.3"/>
+      <stop offset="70%" style="stop-color:#f97316;stop-opacity:0"/>
+    </radialGradient>
+    <radialGradient id="orb3" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#fbbf24;stop-opacity:0.2"/>
+      <stop offset="70%" style="stop-color:#fbbf24;stop-opacity:0"/>
+    </radialGradient>
+    <pattern id="grid" width="64" height="64" patternUnits="userSpaceOnUse">
+      <path d="M 64 0 L 0 0 0 64" fill="none" stroke="#2a2d33" stroke-width="1" opacity="0.3"/>
+    </pattern>
+    <mask id="vignette">
+      <rect width="1200" height="630" fill="url(#vignetteGrad)"/>
+    </mask>
+    <radialGradient id="vignetteGrad" cx="50%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="white"/>
+      <stop offset="100%" stop-color="black"/>
+    </radialGradient>
+  </defs>
+  
+  <rect width="1200" height="630" fill="url(#bgGradient)"/>
+  <rect width="1200" height="630" fill="url(#grid)" mask="url(#vignette)"/>
+  
+  <!-- Amber orb - top right -->
+  <ellipse cx="950" cy="-100" rx="400" ry="300" fill="url(#orb1)"/>
+  
+  <!-- Orange orb - left middle -->
+  <ellipse cx="-100" cy="250" rx="350" ry="280" fill="url(#orb2)"/>
+  
+  <!-- Yellow center light -->
+  <ellipse cx="600" cy="100" rx="500" ry="200" fill="url(#orb3)"/>
+  
+  <!-- Mascot/Burger icon -->
+  <g transform="translate(600, 280)">
+    <!-- Burger bun top -->
+    <ellipse cx="0" cy="-70" rx="60" ry="25" fill="#f59e0b" filter="drop-shadow(0 8px 24px rgba(245,158,11,0.4))"/>
+    <ellipse cx="0" cy="-70" rx="55" ry="20" fill="#fbbf24"/>
+    
+    <!-- Lettuce -->
+    <path d="M-55,-50 Q-30,-55 0,-48 Q30,-55 55,-50 Q40,-40 55,-50 Q30,-55 0,-48 Q-30,-55 -55,-50 Z" fill="#10b981" opacity="0.9"/>
+    
+    <!-- Tomato -->
+    <ellipse cx="0" cy="-15" rx="50" ry="12" fill="#ef4444"/>
+    <ellipse cx="0" cy="-15" rx="45" ry="10" fill="#f87171"/>
+    
+    <!-- Cheese -->
+    <path d="M-50,15 Q-25,25 0,18 Q25,25 50,15 L50,5 Q25,12 0,8 Q-25,12 -50,5 Z" fill="#fbbf24"/>
+    
+    <!-- Patty -->
+    <ellipse cx="0" cy="40" rx="52" ry="14" fill="#78350f"/>
+    <ellipse cx="0" cy="40" rx="48" ry="12" fill="#92400e"/>
+    
+    <!-- Burger bun bottom -->
+    <ellipse cx="0" cy="85" rx="58" ry="22" fill="#d97706"/>
+    <ellipse cx="0" cy="85" rx="53" ry="18" fill="#f59e0b"/>
+    
+    <!-- Sesame seeds -->
+    <ellipse cx="-35" cy="-65" rx="4" ry="2" fill="#fde68a" transform="rotate(-15)"/>
+    <ellipse cx="15" cy="-72" rx="3.5" ry="2" fill="#fde68a" transform="rotate(10)"/>
+    <ellipse cx="40" cy="-68" rx="3" ry="1.5" fill="#fde68a" transform="rotate(-5)"/>
+    <ellipse cx="-20" cy="78" rx="3" ry="1.5" fill="#fde68a" transform="rotate(20)"/>
+    <ellipse cx="25" cy="82" rx="3.5" ry="2" fill="#fde68a" transform="rotate(-10)"/>
+  </g>
+  
+  <!-- Title -->
+  <text x="600" y="460" font-family="system-ui, -apple-system, sans-serif" font-size="48" font-weight="800" fill="#fafafa" text-anchor="middle" letter-spacing="-1">
+    BurgerAPI
+  </text>
+  
+  <!-- Subtitle -->
+  <text x="600" y="515" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="500" fill="#d4d4d8" text-anchor="middle">
+    Bun-native API framework
+  </text>
+  
+  <!-- Badges -->
+  <g transform="translate(600, 545)">
+    <rect x="-180" y="0" width="110" height="28" rx="14" fill="#f59e0b20" stroke="#f59e0b40" stroke-width="1"/>
+    <text x="-125" y="19" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600" fill="#f59e0b" text-anchor="middle">Bun Native</text>
+    
+    <rect x="-40" y="0" width="70" height="28" rx="14" fill="#10b98120" stroke="#10b98140" stroke-width="1"/>
+    <text x="-5" y="19" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600" fill="#10b981" text-anchor="middle">MIT</text>
+    
+    <rect x="60" y="0" width="100" height="28" rx="14" fill="#3b82f620" stroke="#3b82f640" stroke-width="1"/>
+    <text x="110" y="19" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600" fill="#3b82f6" text-anchor="middle">Open Source</text>
+  </g>
+  
+  <!-- Bottom brand -->
+  <text x="600" y="600" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="500" fill="#6b7280" text-anchor="middle">
+    burger-api.com  •  v0.11.0
+  </text>
+</svg>

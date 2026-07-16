@@ -38,35 +38,11 @@ import type { BurgerRequest } from "burger-api";
 
 // Handles GET requests to /api/products
 export function GET(req: BurgerRequest) {
-  // Example: Accessing query parameters
-  const query = new URL(req.url).searchParams;
-  const searchTerm = query.get("search");
-  console.log("Search Term:", searchTerm);
-
-  // Always return a Response object
-  return Response.json({
-    message: `Fetched products${
-      searchTerm ? ` matching \"${searchTerm}\"` : ""
-    }`,
-  });
-}
-
-// Handles POST requests to /api/products
-export async function POST(req: BurgerRequest) {
-  // Example: Reading and echoing the request body
-  try {
-    const body = await req.json();
-    console.log("Received product data:", body);
-    return Response.json({ message: "Product created", received: body });
-  } catch (error) {
-    return new Response("Invalid JSON body", { status: 400 });
-  }
+  return Response.json({ message: "Fetched products" });
 }
 ```
 
-This creates two static routes:
-- `GET /api/products` - Lists products
-- `POST /api/products` - Creates a new product
+This creates a static route `GET /api/products`. See [CRUD API](/docs/examples/crud-api) for the full `api/products/route.ts` file with GET and POST handlers.
 
 ## Route Handlers
 
@@ -84,7 +60,7 @@ This object extends the standard `Request` and provides helpful properties and m
 - `req.method`: The HTTP method.
 - `req.headers`: Request headers.
 - `await req.json()` and `await req.text()` etc.: Methods to read the request body.
-- `req.validated`: Contains validated data if using [Schema Validation](../../request-handling/validation.md).
+- `req.validated`: Contains validated data if using [Schema Validation](../../validation/zod.md).
 
 ### Return Value
 
@@ -136,7 +112,7 @@ export function GET(req: BurgerRequest) {
 ## Route Matching Priority
 
 :::tip Static Routes Have Highest Priority
-BurgerAPI uses a **hybrid router**. Static routes are dispatched directly by Bun's native `routes` map (the fast path), while dynamic (`/products/[id]`) and wildcard (`/products/[...]`) routes are matched by an internal trie. **Static routes are always matched first**, before dynamic or wildcard routes.
+BurgerAPI uses a hybrid router (static paths via Bun's native router, dynamic and wildcard via a trie). See [Routing Engine](/docs/architecture/routing-engine) for how routes are matched.
 
 - Static routes (e.g., `/products/featured`) are matched _before_ dynamic routes (`/products/[id]`).
 - Routes with more static segments are generally matched before routes with fewer.

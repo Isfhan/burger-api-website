@@ -69,3 +69,11 @@ Skills in `.agents/skills/` are automatically discovered by:
 - Any tool supporting the [agentskills.io](https://agentskills.io) open standard
 
 No configuration needed — agents detect skills automatically.
+
+
+## Related
+
+- [CLI Installation](/docs/cli/installation)
+- [Create Command](/docs/cli/create)
+- [Add Command](/docs/cli/add)
+- [Burger API CLI Tool](/docs/getting-started/cli)

@@ -34,3 +34,11 @@ return new Response(body, {
 ```
 
 Middleware can return a **Response** to stop the chain, or **undefined** to continue, or a **function** that receives the handler’s response and returns a new Response (e.g. for CORS). See [Middleware Return Types](/docs/middleware/return-types) and [After Middleware](/docs/middleware/after).
+
+
+## Related
+
+- [Applications](/docs/core-concepts/applications)
+- [Routing](/docs/core-concepts/routing)
+- [Handlers](/docs/core-concepts/handlers)
+- [Request Context](/docs/core/request-handling)

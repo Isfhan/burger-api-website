@@ -1,5 +1,5 @@
 ---
-sidebar_label: Burger Class
+sidebar_label: Burger
 ---
 
 # Burger Class
@@ -38,3 +38,11 @@ await app.serve(4000, () => {
 - **callback?** (function) — Optional function called after the server has started.
 
 For full configuration options and examples, see [Configuration](/docs/core/configuration).
+
+
+## Related
+
+- [Server Options](/docs/core/server-options)
+- [BurgerRequest](/docs/api/burger-request)
+- [ContextSet](/docs/api/context-set)
+- [Request API](/docs/api/request-api)

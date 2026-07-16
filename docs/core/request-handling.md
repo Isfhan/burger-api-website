@@ -1,24 +1,24 @@
 ---
-sidebar_label: Request Handling
+sidebar_label: Request Context
 ---
 
-# Request Handling
+# Request Context
 
-BurgerAPI handles each request by running **middleware** (if any) and then the **route handler**. Middleware can short-circuit by returning a `Response`, or continue by returning `undefined`, or return a function to run after the handler (e.g. to modify the response).
+Every handler and middleware receives a `BurgerRequest` — the request context for that request. It is a single, lightweight object that exposes the standard `Request` surface plus a few framework additions:
 
-## Flow
+- `req.params` — dynamic path parameters.
+- `req.query` — the parsed query string (evaluated lazily).
+- `req.route` — the matched route's path and pattern.
+- `req.validated` — data validated by your Zod schemas.
+- `req.set` — response mutations applied at the end of the pipeline.
 
-1. **Global middleware** runs first (in order).
-2. **Route-specific middleware** runs next (if the route defines any).
-3. **Route handler** runs (e.g. `GET`, `POST` exported from `route.ts`).
-4. **After-middleware** (if a middleware returned a function) runs with the response.
+Request data is read lazily — for example, `req.query` is parsed only when you use it, so a request that never reads the query pays nothing for parsing. See [BurgerContext](../architecture/burger-context.md) for how the context works under the hood.
 
-## Request object
+See [Request API](../api/request-api.md) for every property with examples, and [BurgerContext](../architecture/burger-context.md) for how it works under the hood.
 
-Handlers and middleware receive a **BurgerRequest** object (extends the standard request with `params`, `validated`, etc.). Use it to read headers, URL, and validated query/body from [Zod validation](/docs/request-handling/validation).
 
-## Key docs
+## Related
 
-- [Middleware System](/docs/middleware/system) — How middleware works.
-- [Global Middleware](/docs/middleware/global) and [Route-Specific Middleware](/docs/middleware/route-specific).
-- [Validation](/docs/request-handling/validation) — Validating params, query, and body with Zod.
+- [Applications](/docs/core-concepts/applications)
+- [Routing](/docs/core-concepts/routing)
+- [Handlers](/docs/core-concepts/handlers)

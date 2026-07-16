@@ -4,13 +4,24 @@ sidebar_label: Dynamic Routes
 
 # Dynamic Routes
 
-Dynamic routes capture **URL segments** as parameters. Use folder names in square brackets, e.g. `[id]` or `[slug]`. The captured values are available in your handler as `req.params`.
+Dynamic routes capture part of the URL as a value you can read in your handler. Use a folder name in square brackets, like `[id]`, and the captured value appears in `req.params`.
 
-## Syntax
+Use dynamic routes for resources addressed by an id or slug, such as `/api/products/123`.
 
-- Folder name: `[paramName]` — one segment.
-- Example: `api/products/[id]/route.ts` → `/api/products/123` with `req.params.id === "123"`.
+## Example
 
-For multiple segments or validation, see the full guide.
+```
+api/products/[id]/route.ts  →  /api/products/123
+```
 
-For full documentation, examples, and validation, see [Dynamic Routes](/docs/routing/api/dynamic-routes).
+A request to `/api/products/123` gives `req.params.id === "123"`.
+
+For multiple segments, validation with Zod, and matching rules, see [Dynamic Routes](/docs/routing/api/dynamic-routes).
+
+
+## Related
+
+- [File-Based Routing](/docs/routing/file-based-routing)
+- [Static Routes](/docs/routing/static-routes)
+- [Wildcard Routes](/docs/routing/wildcard-routes)
+- [Request Lifecycle](/docs/architecture/request-lifecycle)

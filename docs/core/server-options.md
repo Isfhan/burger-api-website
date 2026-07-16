@@ -1,5 +1,5 @@
 ---
-sidebar_label: Server Options
+sidebar_label: Burger Options
 ---
 
 # Server Options
@@ -21,3 +21,11 @@ The `Burger` constructor accepts a **ServerOptions** object. These are the main 
 | `debug` | `boolean` | Enable debug mode (e.g. stack traces). |
 
 You must provide either `apiDir`/`pageDir` (for development) or `apiRoutes`/`pageRoutes` (for production builds). See [Configuration](/docs/core/configuration) for full details and examples.
+
+
+## Related
+
+- [Burger Class](/docs/core/burger-class)
+- [BurgerRequest](/docs/api/burger-request)
+- [ContextSet](/docs/api/context-set)
+- [Request API](/docs/api/request-api)

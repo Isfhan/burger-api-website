@@ -59,3 +59,10 @@ The complete reference (~1700 lines) containing everything a developer needs to 
 :::tip Choosing the right file
 If you find the AI is "guessing" how an advanced feature works, switch from `small` to `full`. If the AI is giving too much irrelevant info, switch from `full` to `small`.
 :::
+
+
+## Related
+
+- [AI Agent Skills](/docs/ai-assistance/agent-skills)
+- [LLM Context Files](/docs/ai-assistance/llm-context-files)
+- [Using LLM Files](/docs/ai-assistance/using-llm-files)

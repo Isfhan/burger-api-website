@@ -13,3 +13,11 @@ burger-api add cors logger rate-limiter
 ```
 
 Middleware is copied to `ecosystem/middleware/`; import it in your entry and pass to `globalMiddleware` or use per-route. See [Ecosystem Introduction](/docs/ecosystem/introduction) and [CLI Add](/docs/cli/add).
+
+
+## Related
+
+- [Ecosystem & Extensibility](/docs/ecosystem/introduction)
+- [CORS Middleware](/docs/ecosystem/cors)
+- [Logger Middleware](/docs/ecosystem/logger)
+- [Middleware System](/docs/middleware/system)

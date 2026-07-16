@@ -13,4 +13,12 @@ const burger = new Burger({
 });
 ```
 
-Use global middleware for logging, CORS, auth checks, or any logic that should run for all routes. See [Middleware System](/docs/middleware/system) and the full [Middleware](/docs/request-handling/middleware) guide.
+Use global middleware for logging, CORS, auth checks, or any logic that should run for all routes. See [Middleware System](/docs/middleware/system) and the full [Middleware](/docs/middleware/system) guide.
+
+
+## Related
+
+- [Middleware System](/docs/middleware/system)
+- [Route-Specific Middleware](/docs/middleware/route-specific)
+- [Middleware Return Types](/docs/middleware/return-types)
+- [Request Context](/docs/core/request-handling)

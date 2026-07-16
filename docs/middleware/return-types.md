@@ -25,4 +25,12 @@ return (response) => {
 };
 ```
 
-See [Middleware](/docs/request-handling/middleware) and [After Middleware](/docs/middleware/after).
+See [Middleware](/docs/middleware/system) and [After Middleware](/docs/middleware/after).
+
+
+## Related
+
+- [Middleware System](/docs/middleware/system)
+- [Global Middleware](/docs/middleware/global)
+- [Route-Specific Middleware](/docs/middleware/route-specific)
+- [Request Context](/docs/core/request-handling)

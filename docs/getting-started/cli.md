@@ -9,39 +9,7 @@ The Burger API CLI is the recommended way to create, manage, and build your Burg
 
 ## Installation
 
-### Option 1: Bun Global Installation (Recommended if you have Bun installed)
-
-```bash
-# Global installation
-bun add -g @burger-api/cli
-```
-
-Or use with **bunx** (No Installation Needed):
-
-```bash
-bunx @burger-api/cli create my-project
-```
-
-### Option 2: Standalone Executable (Alternative Installation Method)
-
-- **macOS/Linux/WSL:**
-  ```bash
-  curl -fsSL https://burger-api.com/install.sh | bash
-  ```
-- **Windows PowerShell:**
-  ```powershell
-  irm https://burger-api.com/install.ps1 | iex
-  ```
-
-### Option 3: Manual Installation
-You can also download the latest binaries directly from the [GitHub Releases](https://github.com/isfhan/burger-api/releases/latest).
-
-### Verification
-After installation, verify that the CLI is working by checking its version:
-```bash
-burger-api --version
-```
-The CLI displays its version (read from `package.json` at runtime).
+Install the CLI as described in [Installation](/docs/getting-started/installation), then use the commands below.
 
 ---
 
@@ -214,3 +182,11 @@ my-api/
 
 - **Build failures on Windows (D:\ drive)**
   - If you encounter issues compiling executables on a secondary drive (like `D:\`), try moving the project to the `C:\` drive or ensuring your user has full permissions for the target output directory.
+
+
+## Related
+
+- [Quick Start](/docs/quick-start)
+- [Key Concepts](/docs/key-concepts)
+- [Installation](/docs/getting-started/installation)
+- [Request Context](/docs/core/request-handling)

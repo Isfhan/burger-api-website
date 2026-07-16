@@ -37,6 +37,22 @@ export async function GET(req: BurgerRequest) {
   return Response.json({ message: "Hello world" });
 }`,
   },
+  {
+    id: "context",
+    title: "api/products/route.ts",
+    code: `import type { BurgerRequest } from 'burger-api';
+
+// Query strings are parsed lazily through req.query
+export async function GET(req: BurgerRequest) {
+  const { limit = "10", tag } = req.query;
+
+  // ...look up products by tag and limit...
+
+  // Mutate the outgoing response in one place
+  req.set = { headers: { "x-total": String(total) } };
+  return Response.json(products);
+}`,
+  },
 ];
 
 // Custom colors for better code readability

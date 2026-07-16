@@ -107,3 +107,10 @@ const app = new Burger({
 :::info
 By referencing the context files, the AI "remembers" the specific naming conventions (like `req.validated`) that are unique to Burger API.
 :::
+
+
+## Related
+
+- [AI Agent Skills](/docs/ai-assistance/agent-skills)
+- [LLM Context Files](/docs/ai-assistance/llm-context-files)
+- [Using LLM Files](/docs/ai-assistance/using-llm-files)

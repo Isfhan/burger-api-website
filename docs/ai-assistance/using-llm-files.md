@@ -94,3 +94,10 @@ Here are some effective ways to phrase your requests:
 :::info
 The more context you provide about your specific needs, the better the AI can tailor the Burger API patterns to your project.
 :::
+
+
+## Related
+
+- [AI Agent Skills](/docs/ai-assistance/agent-skills)
+- [LLM Context Files](/docs/ai-assistance/llm-context-files)
+- [File Contents Reference](/docs/ai-assistance/llm-files-reference)

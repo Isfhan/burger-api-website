@@ -53,7 +53,7 @@ Let's break down the essential configuration options:
   Pre-built page route list. When set, `pageDir` is ignored and no page scanning runs. Typically used by the CLI-generated production entry; you can pass it for custom builds.
 
 - **`globalMiddleware`** (`Middleware[]`, Optional)
-  An array of [middleware functions](./../request-handling/middleware.md) that will run for _every_ incoming request before any route-specific logic.
+  An array of [middleware functions](./../middleware/system.md) that will run for _every_ incoming request before any route-specific logic.
 
 - **`apiPrefix`** (`string`, Optional, Default: `'api'`)
   Prepends a path segment to all your API routes. With the default, a route in `api/users/route.ts` becomes accessible at `/api/users`.
@@ -86,3 +86,11 @@ burger.serve(port, callback);
 
 - **`callback`** (`() => void`, Optional)
   A function that gets called _after_ the server has successfully started listening on the specified port. Useful for logging a confirmation message.
+
+
+## Related
+
+- [Applications](/docs/core-concepts/applications)
+- [Routing](/docs/core-concepts/routing)
+- [Handlers](/docs/core-concepts/handlers)
+- [Request Context](/docs/core/request-handling)

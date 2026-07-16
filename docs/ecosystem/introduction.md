@@ -41,3 +41,11 @@ burger-api skills available
 See the [Agent Skills](/docs/ai-assistance/agent-skills) documentation for more details.
 
 Stay tuned for updates as the BurgerAPI ecosystem develops! 
+
+
+## Related
+
+- [Available Middleware](/docs/ecosystem/middleware)
+- [CORS Middleware](/docs/ecosystem/cors)
+- [Logger Middleware](/docs/ecosystem/logger)
+- [Middleware System](/docs/middleware/system)

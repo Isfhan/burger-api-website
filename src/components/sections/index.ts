@@ -1,0 +1,14 @@
+export { Hero } from "./Hero";
+export { Features } from "./Features";
+export { Performance } from "./Performance";
+export { Architecture } from "./Architecture";
+export { CodeExamples } from "./CodeExamples";
+export { DeveloperExperience } from "./DeveloperExperience";
+export { FileRouting } from "./FileRouting";
+export { Validation } from "./Validation";
+export { Middleware } from "./Middleware";
+export { OpenAPI } from "./OpenAPI";
+export { CLI } from "./CLI";
+export { DocsCTA } from "./DocsCTA";
+export { GitHubCTA } from "./GitHubCTA";
+export { Community } from "./Community";

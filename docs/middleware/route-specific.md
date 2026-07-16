@@ -14,4 +14,12 @@ export function GET(req: BurgerRequest) {
 }
 ```
 
-Use it for admin checks, loading route-specific data, or any logic that applies to a single endpoint. See [Middleware System](/docs/middleware/system) and [Middleware](/docs/request-handling/middleware).
+Use it for admin checks, loading route-specific data, or any logic that applies to a single endpoint. See [Middleware System](/docs/middleware/system) and [Middleware](/docs/middleware/system).
+
+
+## Related
+
+- [Middleware System](/docs/middleware/system)
+- [Global Middleware](/docs/middleware/global)
+- [Middleware Return Types](/docs/middleware/return-types)
+- [Request Context](/docs/core/request-handling)

@@ -1,0 +1,48 @@
+import React from "react";
+import { Section, SectionHeader, CodeBlock, ScrollReveal, Button } from "../ui";
+
+const code = `import { z } from "zod";
+import type { BurgerRequest } from "burger-api";
+
+export const schema = {
+  query: z.object({
+    tag: z.string().optional(),
+    limit: z.coerce.number().min(1).max(100).default(10),
+  }),
+  body: z.object({
+    title: z.string().min(1),
+    published: z.boolean().default(false),
+  }),
+};
+
+export async function POST(req: BurgerRequest) {
+  // Fully typed from your Zod schemas
+  const { tag, limit } = req.validated.query;
+  const { title, published } = req.validated.body;
+
+  return Response.json({ tag, limit, title, published });
+}`;
+
+export function Validation() {
+  return (
+    <Section id="validation" secondary>
+      <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <ScrollReveal>
+          <SectionHeader
+            align="left"
+            eyebrow="Validation"
+            title="Zod schemas next to your routes"
+            subtitle="Export a schema object alongside your handlers. BurgerAPI validates before your code runs and puts typed data on req.validated."
+            className="mb-6 md:mb-8"
+          />
+          <Button to="/docs/validation/zod" variant="secondary">
+            Validation guide
+          </Button>
+        </ScrollReveal>
+        <ScrollReveal delay={0.05}>
+          <CodeBlock code={code} filename="api/posts/route.ts" />
+        </ScrollReveal>
+      </div>
+    </Section>
+  );
+}

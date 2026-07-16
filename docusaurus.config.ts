@@ -1,14 +1,15 @@
 import { themes as prismThemes } from "prism-react-renderer";
 import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
+import githubStarsPlugin from "./plugins/github-stars";
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const config: Config = {
   projectName: "BurgerAPI",
-  title: "A modern, open source Bun.js native framework",
+  title: "BurgerAPI — Bun-native API framework",
   tagline:
-    "A modern, open source Bun.js native framework with file-based routing, middleware support, Zod validation, and automatic OpenAPI generation.",
+    "A Bun-native API framework with file-based routing, a hybrid router, a shared request context, Zod validation, and automatic OpenAPI generation.",
   favicon: "img/favicon.ico",
 
   // Set the production url of your site here
@@ -25,11 +26,16 @@ const config: Config = {
   onBrokenLinks: "throw",
   onBrokenMarkdownLinks: "warn",
 
+  markdown: {
+    mermaid: true,
+  },
+
   // Custom fields for the homepage
   customFields: {
-    status: "Under Development",
+    status: "Active",
     license: "MIT License",
-    bunVersion: "Bun 1.2.4+",
+    bunVersion: "Bun 1.3.0+",
+    frameworkVersion: "0.11.0",
     getStartedUrl: "/docs/",
     githubUrl: "https://github.com/isfhan/burger-api",
   },
@@ -41,6 +47,8 @@ const config: Config = {
     defaultLocale: "en",
     locales: ["en"],
   },
+
+  plugins: [githubStarsPlugin],
 
   presets: [
     [
@@ -84,6 +92,7 @@ const config: Config = {
         explicitSearchResultPath: true,
       }),
     ],
+    [require.resolve("@docusaurus/theme-mermaid"), {}],
   ],
 
   themeConfig: {
@@ -96,7 +105,7 @@ const config: Config = {
       {
         name: "description",
         content:
-          "A modern, open source Bun.js native framework with file-based routing, middleware support, Zod validation, and automatic OpenAPI generation.",
+          "A Bun-native API framework with file-based routing, a hybrid router, a shared request context, Zod validation, and automatic OpenAPI generation.",
       },
       {
         name: "keywords",
@@ -104,28 +113,27 @@ const config: Config = {
       },
       { name: "author", content: "Isfhan Ahmed" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { property: "og:title", content: "BurgerAPI - Modern Bun.js Framework" },
+      { property: "og:title", content: "BurgerAPI — Bun-native API framework" },
       {
         property: "og:description",
         content:
-          "A modern, open source Bun.js native framework with file-based routing, middleware support, Zod validation, and automatic OpenAPI generation.",
+          "A Bun-native API framework with file-based routing, a hybrid router, a shared request context, Zod validation, and automatic OpenAPI generation.",
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://burger-api.com" },
-      {
-        property: "og:image",
-        content: "https://burger-api.com/img/og-image.png",
+      { property: "og:image",
+        content: "https://burger-api.com/img/og-image.svg",
       },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "BurgerAPI - Modern Bun.js Framework" },
+      { name: "twitter:title", content: "BurgerAPI — Bun-native API framework" },
       {
         name: "twitter:description",
         content:
-          "A modern, open source Bun.js native framework with file-based routing, middleware support, Zod validation, and automatic OpenAPI generation.",
+          "A Bun-native API framework with file-based routing, a hybrid router, a shared request context, Zod validation, and automatic OpenAPI generation.",
       },
       {
         name: "twitter:image",
-        content: "https://burger-api.com/img/og-image.png",
+        content: "https://burger-api.com/img/og-image.svg",
       },
     ],
     navbar: {

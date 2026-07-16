@@ -20,4 +20,12 @@ export function GET(req: BurgerRequest<{ query: z.infer<typeof schema.get.query>
 }
 ```
 
-See [Validation](/docs/request-handling/validation), [Schema Definition](/docs/validation/schema), and the [Todo API](/docs/tutorials/todo-api) tutorial.
+See the [Validation schema](/docs/validation/schema) for the canonical schema shape and the [CRUD API](/docs/examples/crud-api) example for the full route file.
+
+
+## Related
+
+- [Basic Route Example](/docs/examples/basic-route)
+- [Tutorial 1: Hello World API](/docs/tutorials/hello-world)
+- [Tutorial 2: Todo List API](/docs/tutorials/todo-api)
+- [Request Context](/docs/core/request-handling)

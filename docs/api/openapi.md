@@ -126,3 +126,11 @@ Once your server is running, BurgerAPI automatically serves:
 :::tip Tip
 Bookmark the `/docs` endpoint! It's a great way to visualize, test, and share your API.
 ::: 
+
+
+## Related
+
+- [OpenAPI Generation](/docs/openapi/generation)
+- [Swagger UI](/docs/openapi/swagger-ui)
+- [OpenAPI Metadata](/docs/openapi/metadata)
+- [OpenAPI](/docs/core-concepts/openapi)

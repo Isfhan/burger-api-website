@@ -11,3 +11,11 @@ burger-api add cors
 ```
 
 Then import from `ecosystem/middleware/` and add it to `globalMiddleware` in your Burger config. See [Ecosystem Introduction](/docs/ecosystem/introduction) and [CLI Add](/docs/cli/add).
+
+
+## Related
+
+- [Ecosystem & Extensibility](/docs/ecosystem/introduction)
+- [Available Middleware](/docs/ecosystem/middleware)
+- [Logger Middleware](/docs/ecosystem/logger)
+- [Middleware System](/docs/middleware/system)

@@ -18,4 +18,12 @@ export function GET(req: BurgerRequest) {
 }
 ```
 
-See [Middleware System](/docs/middleware/system), [Global Middleware](/docs/middleware/global), and [Middleware](/docs/request-handling/middleware).
+See [Middleware System](/docs/middleware/system), [Global Middleware](/docs/middleware/global), and [Middleware](/docs/middleware/system).
+
+
+## Related
+
+- [Basic Route Example](/docs/examples/basic-route)
+- [Tutorial 1: Hello World API](/docs/tutorials/hello-world)
+- [Tutorial 2: Todo List API](/docs/tutorials/todo-api)
+- [Request Context](/docs/core/request-handling)

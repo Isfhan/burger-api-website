@@ -118,13 +118,7 @@ GET /api/files/documents/2024/report.pdf
 Understanding how BurgerAPI matches routes is important when combining different route types.
 
 :::tip Route Matching Order
-BurgerAPI uses a **hybrid router**: static routes are dispatched by Bun's native `routes` map, while dynamic and wildcard routes are matched by an internal trie, in this order:
-
-1. **Static Routes** - Exact path matches (e.g., `/admin/settings`)
-2. **Dynamic Routes** - Single segment patterns (e.g., `/admin/[section]`)
-3. **Wildcard Routes** - Catch-all patterns (e.g., `/admin/[...]`)
-
-More specific routes always win! This prevents ambiguity and gives you precise control.
+BurgerAPI uses a hybrid router (static paths via Bun's native router, dynamic and wildcard via a trie). See [Routing Engine](/docs/architecture/routing-engine) for how routes are matched. Static routes are matched first, then dynamic, then wildcard, so more specific routes always win.
 :::
 
 ### Priority Examples
@@ -253,8 +247,7 @@ export async function GET(req: BurgerRequest) {
   }
 
   // Handle OAuth callback
-  const url = new URL(req.url);
-  const code = url.searchParams.get("code");
+  const code = req.query.code;
 
   if (!code) {
     return Response.json(
@@ -401,10 +394,9 @@ export async function GET(req: BurgerRequest) {
   const parentCategories = categoryPath.slice(0, -1);
 
   // Get query parameters for filtering
-  const url = new URL(req.url);
-  const minPrice = url.searchParams.get("min_price");
-  const maxPrice = url.searchParams.get("max_price");
-  const brand = url.searchParams.get("brand");
+  const minPrice = req.query.min_price;
+  const maxPrice = req.query.max_price;
+  const brand = req.query.brand;
 
   return Response.json({
     category: category,
@@ -505,10 +497,11 @@ export async function GET(req: BurgerRequest) {
 
   // Forward request to microservice
   const targetUrl = `${serviceUrl}/${path.join("/")}`;
-  const url = new URL(req.url);
+  const searchIndex = req.url.indexOf("?");
+  const search = searchIndex >= 0 ? req.url.slice(searchIndex) : "";
 
   try {
-    const response = await fetch(`${targetUrl}${url.search}`, {
+    const response = await fetch(`${targetUrl}${search}`, {
       method: req.method,
       headers: req.headers,
     });
@@ -592,3 +585,11 @@ Ready to build something amazing? Check out the other routing documentation to l
 - **[Static Routes](./static-routes.md)** - Learn about fixed API endpoints
 - **[Route Groups](./route-groups.md)** - Organize routes without affecting URLs
 - **[Dynamic Routes](./dynamic-routes.md)** - Capture URL parameters in your routes
+
+
+## Related
+
+- [File-Based Routing](/docs/routing/file-based-routing)
+- [Static Routes](/docs/routing/static-routes)
+- [Dynamic Routes](/docs/routing/dynamic-routes)
+- [Request Lifecycle](/docs/architecture/request-lifecycle)
