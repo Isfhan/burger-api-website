@@ -118,8 +118,8 @@ export default function Footer(): React.ReactElement {
         </div>
 
         {/* Level 3 — bottom bar */}
-        <div className="footer__bottom pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-small text-ink-muted">
+        <div className="footer__bottom pt-8">
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-small text-ink-muted">
             <span>© {new Date().getFullYear()} BurgerAPI</span>
             <span className="hidden sm:inline text-ink-muted/50">·</span>
             <span>MIT Licensed</span>
@@ -128,11 +128,6 @@ export default function Footer(): React.ReactElement {
               <Star size={13} className="text-brand-primary" aria-hidden />
               Built with Bun
             </span>
-          </div>
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-small text-ink-muted">
-            <span>Framework v{version}</span>
-            <span className="hidden sm:inline text-ink-muted/50">·</span>
-            <span>Made for the Bun ecosystem</span>
           </div>
         </div>
       </div>
