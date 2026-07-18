@@ -50,7 +50,7 @@ Exposing everything through one `req` keeps handler signatures simple and lets t
 ### set
 
 - **Type:** `ContextSet | undefined`
-- **Description:** Response mutation intent (`status` and/or `headers`). Merged into the response at the end of the pipeline.
+- **Description:** Response change request (`status` and/or `headers`). Merged into the response at the end of the request's processing steps.
 - **Example:** `req.set = { headers: { "x-total": "42" } };`
 - **Notes:** Applied by `applySet`. See [Response Mutation](./response-mutation.md).
 

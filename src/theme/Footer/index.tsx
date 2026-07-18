@@ -7,6 +7,9 @@ const docLinks = [
   { label: "Getting Started", to: "/docs/" },
   { label: "File Routing", to: "/docs/routing/file-based-routing" },
   { label: "Validation", to: "/docs/validation/zod" },
+  { label: "Model Registry", to: "/docs/validation/models" },
+  { label: "Response Validation", to: "/docs/validation/response" },
+  { label: "Problem Details", to: "/docs/validation/problem-details" },
   { label: "Middleware", to: "/docs/middleware/global" },
   { label: "OpenAPI", to: "/docs/openapi/generation" },
   { label: "CLI", to: "/docs/cli/installation" },
@@ -16,6 +19,7 @@ const resourceLinks = [
   { label: "Architecture", to: "/docs/architecture/overview" },
   { label: "Performance", to: "/docs/performance/overview" },
   { label: "Examples", to: "/docs/examples/basic-route" },
+  { label: "Benchmarks", href: "https://github.com/isfhan/burger-api-benchmarks" },
   { label: "Blog", to: "/blog" },
 ];
 
@@ -40,8 +44,9 @@ export default function Footer(): React.ReactElement {
               </span>
             </div>
             <p className="text-small text-ink-muted m-0 mb-4 leading-relaxed max-w-xs">
-              Bun-native API framework with file-based routing, Zod validation,
-              and automatic OpenAPI.
+              Bun-native API framework with file-based routing, schema
+              validation for query, params, headers, cookies, and body, and
+              automatic OpenAPI.
             </p>
             <div className="flex flex-wrap gap-2">
               <span className="text-[12px] px-2.5 py-1 rounded-full bg-brand-primary/10 text-brand-primary font-medium">
@@ -76,16 +81,29 @@ export default function Footer(): React.ReactElement {
               Resources
             </h3>
             <ul className="list-none m-0 p-0 flex flex-col gap-2.5">
-              {resourceLinks.map((link) => (
-                <li key={link.to}>
-                  <Link
-                    to={link.to}
-                    className="footer__link-item text-small no-underline"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
+              {resourceLinks.map((link) =>
+                "href" in link ? (
+                  <li key={link.href}>
+                    <a
+                      href={link.href}
+                      className="footer__link-item text-small no-underline"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {link.label}
+                    </a>
+                  </li>
+                ) : (
+                  <li key={link.to}>
+                    <Link
+                      to={link.to}
+                      className="footer__link-item text-small no-underline"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                )
+              )}
             </ul>
           </div>
 

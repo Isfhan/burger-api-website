@@ -15,7 +15,7 @@ export function GET(req: BurgerRequest) {
 }
 ```
 
-This maps to `GET /api/hello` (with default `apiPrefix`). See [Static Routes](/docs/routing/static-routes) and [Hello World tutorial](/docs/tutorials/hello-world).
+This maps to `GET /api/hello` (with default `apiPrefix`). See [Static API Routes](/docs/routing/api/static-routes) and [Hello World tutorial](/docs/tutorials/hello-world).
 
 
 ## Related

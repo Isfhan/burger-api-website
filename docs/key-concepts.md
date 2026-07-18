@@ -11,7 +11,7 @@ BurgerAPI is a Bun-native framework for APIs and web apps. Here are the main ide
 
 Routes are defined by your **file and folder structure**. Put `route.ts` files under your API directory (e.g. `src/api`), and BurgerAPI maps them to URLs. Same idea for static or dynamic pages. No manual route registration.
 
-See [File-Based Routing](/docs/routing/file-based-routing), [Static Routes](/docs/routing/static-routes), and [Configuration](/docs/core/configuration).
+See [File-Based Routing](/docs/routing/file-based-routing), [Static API Routes](/docs/routing/api/static-routes), and [Configuration](/docs/core/configuration).
 
 ## Burger instance and configuration
 
@@ -21,7 +21,7 @@ See [Burger Class](/docs/core/burger-class), [Server Options](/docs/core/server-
 
 ## Middleware
 
-**Middleware** runs before (and optionally after) your route handlers. Use it for auth, logging, CORS, etc. You can attach middleware globally or per route.
+**Middleware** is code that runs around your route handlers — before (and optionally after) them. Use it for auth, logging, CORS, etc. You can attach middleware globally or per route.
 
 See [Middleware System](/docs/middleware/system), [Global Middleware](/docs/middleware/global), and [Request Handling](/docs/core/request-handling).
 

@@ -4,16 +4,74 @@ sidebar_label: Schema Definition
 
 # Schema Definition
 
-The **validation schema** is the **`schema`** export from your `route.ts`. It is an object with one key per HTTP method (lowercase: `get`, `post`, etc.). Each method can have `query`, `body`, and (where applicable) `params` or `response` Zod schemas.
+The **validation schema** (often just called the `schema`) is the `schema` export from your `route.ts` file. It is an object with one key per HTTP method (lowercase: `get`, `post`, etc.). For each method you describe the data you expect.
+
+In short: a schema is a small description of "what the request should look like". BurgerAPI reads it, checks the real request against it, and gives you clean data to work with.
+
+## The full shape
 
 ```typescript
 export const schema = {
-  get: { query: z.object({ limit: z.coerce.number().optional() }) },
-  post: { body: z.object({ name: z.string(), price: z.number() }) },
+  get: {
+    // path parameters, e.g. /users/:id
+    params: z.object({ id: z.string() }),
+    // query string, e.g. ?limit=10
+    query: z.object({ limit: z.number() }),
+    // request headers
+    headers: z.object({ "x-api-key": z.string() }),
+    // cookies
+    cookie: z.object({ session: z.string() }),
+    // JSON request body (POST/PUT)
+    body: z.object({ name: z.string() }),
+    // per-route opt-in for automatic type conversion
+    coerce: true,
+  },
+  post: {
+    body: z.object({ name: z.string() }),
+    // validate what the handler returns
+    response: { 200: z.object({ id: z.string() }) },
+  },
 };
 ```
 
-Validated data is available on `req.validated.query`, `req.validated.body`, etc. See [Validation](/docs/validation/zod), [Query](/docs/validation/query), and [Body](/docs/validation/body).
+Every slot is optional. You only describe what you actually use.
+
+## Reusing a model by name
+
+Instead of writing a schema inline, you can register a named model and reference it by a string. This keeps shared shapes (like pagination) in one place:
+
+```typescript
+// burger.config.ts
+export default {
+  models: {
+    Pagination: z.object({
+      page: z.number().min(1).default(1),
+      limit: z.number().min(1).max(100).default(20),
+    }),
+  },
+};
+```
+
+```typescript
+// api/items/route.ts
+export const schema = {
+  get: { query: "Pagination" }, // string ref → resolves to the model
+};
+```
+
+See [Model Registry](/docs/validation/models) for the full story.
+
+## Validated data
+
+After validation, the result is available on `req.validated`:
+
+- `req.validated.params`
+- `req.validated.query`
+- `req.validated.headers`
+- `req.validated.cookie`
+- `req.validated.body`
+
+Each is typed from the corresponding schema. See [Zod Validation](/docs/validation/zod), [Query](/docs/validation/query), and [Body](/docs/validation/body).
 
 
 ## Related
@@ -21,4 +79,8 @@ Validated data is available on `req.validated.query`, `req.validated.body`, etc.
 - [Zod Validation](/docs/validation/zod)
 - [Params Validation](/docs/validation/params)
 - [Query Validation](/docs/validation/query)
+- [Body Validation](/docs/validation/body)
+- [Headers Validation](/docs/validation/headers)
+- [Cookie Validation](/docs/validation/cookie)
+- [Model Registry](/docs/validation/models)
 - [Validation Types](/docs/api/validation-types)

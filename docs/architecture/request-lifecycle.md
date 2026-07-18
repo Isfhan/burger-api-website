@@ -4,7 +4,7 @@ sidebar_label: Request Lifecycle
 
 # Request Lifecycle
 
-A request moves through BurgerAPI in a single, predictable pipeline. The diagram below shows the stages from the moment a connection arrives to the moment a response is returned.
+A request moves through BurgerAPI in a single, predictable set of processing steps (also called a pipeline). The diagram below shows the life stages (lifecycle) of a request — from the moment a connection arrives to the moment a response is returned.
 
 ```mermaid
 flowchart TD
@@ -31,7 +31,7 @@ flowchart TD
 8. **Response Processing** — any `req.set` mutations (status and headers) are merged into the response exactly once, and auto-`HEAD` responses are derived from `GET`.
 9. **Response** — the final `Response` is sent back to the client.
 
-Because the pipeline is fixed, behavior is consistent across every route: global middleware and validation always run before the handler, route-specific middleware always runs after validation, and response mutations are always applied at the same point.
+Because these steps are fixed, behavior is consistent across every route: global middleware and validation always run before the handler, route-specific middleware always runs after validation, and response mutations are always applied at the same point.
 
 
 ## Related

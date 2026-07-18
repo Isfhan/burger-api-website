@@ -42,7 +42,7 @@ Replace jargon: `shared prototype` → "same object template", `shape` (hidden c
 ## 2. BurgerAPI Content Constraints (carried over)
 
 - **Source of truth:** the framework package `D:\Coding\BurgerAPI-work\burger-api\packages\burger-api`
-  (currently **v0.11.0**). Verify behavior there before documenting it.
+  (currently **v0.12.0**). Verify behavior there before documenting it.
 - **Runtime:** requires **Bun ≥ 1.3.0**; **Zod ^4**. State these in install/prereq docs.
 - **Document only real public APIs.** `BurgerRequest` handler type is class-based at the
   type level; `BurgerContext` is the shared-prototype implementation behind it. `req.query`,
@@ -51,6 +51,21 @@ Replace jargon: `shared prototype` → "same object template", `shape` (hidden c
   soon", "under development", "introduced in", or "now supports". Describe them as inherent.
 - **No comparisons to other frameworks** (Elysia, etc.).
 - **No published benchmark numbers.** Performance pages describe design philosophy only.
+
+## 2b. Related Repositories
+
+BurgerAPI is split across several repositories. This repo is docs only — keep
+framework code and benchmarks out of it:
+
+- **`burger-api-website`** (this repo) — the Docusaurus site + blog
+  (`https://burger-api.com`). User-facing documentation and release posts.
+- **`burger-api`** — the framework + CLI. The source of truth for API behavior
+  (currently **v0.12.0**). Verify behavior there before documenting it; do not
+  copy framework code here.
+- **`burger-api-benchmarks`** — the dedicated, official home for all BurgerAPI
+  performance benchmarks. Do **not** publish benchmark numbers on this site;
+  link to that repo instead of embedding measurements.
+
 - The framework uses **`route.ts`** files for routes (never `<name>.ts` as a route file).
 
 ## 3. Terminology (use consistently)

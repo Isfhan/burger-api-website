@@ -10,7 +10,7 @@ Middleware runs around your handlers. It can be applied globally (for every requ
 - **Short-circuit** by returning a `Response`.
 - **Transform** the response by returning a function that receives the final `Response`.
 
-This makes middleware a natural fit for cross-cutting concerns such as authentication, logging, and CORS. See [Middleware](../middleware/system.md) for the full model, including global, route-specific, return types, and after-middleware.
+This makes middleware a natural fit for logic shared by many routes, such as authentication, logging, and CORS. See [Middleware](../middleware/system.md) for the full model, including global, route-specific, return types, and after-middleware.
 
 
 ## Related

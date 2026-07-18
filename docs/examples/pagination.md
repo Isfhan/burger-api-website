@@ -36,7 +36,7 @@ export async function GET(req: BurgerRequest) {
 }
 ```
 
-`req.query` parses only when read, and `req.set` applies the pagination headers at the end of the pipeline. See also the [CRUD API](./crud-api.md).
+`req.query` parses only when read, and `req.set` applies the pagination headers at the end of the request's processing steps. See also the [CRUD API](./crud-api.md).
 
 
 ## Related

@@ -61,6 +61,6 @@ Good old `.html` files require no special handling. BurgerAPI serves them direct
 ## Related
 
 - [File-Based Routing](/docs/routing/file-based-routing)
-- [Static Routes](/docs/routing/static-routes)
-- [Dynamic Routes](/docs/routing/dynamic-routes)
+- [Static API Routes](/docs/routing/api/static-routes)
+- [Dynamic Routes](/docs/routing/api/dynamic-routes)
 - [Request Lifecycle](/docs/architecture/request-lifecycle)

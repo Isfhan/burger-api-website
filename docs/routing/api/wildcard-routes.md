@@ -590,6 +590,6 @@ Ready to build something amazing? Check out the other routing documentation to l
 ## Related
 
 - [File-Based Routing](/docs/routing/file-based-routing)
-- [Static Routes](/docs/routing/static-routes)
-- [Dynamic Routes](/docs/routing/dynamic-routes)
+- [Static API Routes](/docs/routing/api/static-routes)
+- [Dynamic Routes](/docs/routing/api/dynamic-routes)
 - [Request Lifecycle](/docs/architecture/request-lifecycle)

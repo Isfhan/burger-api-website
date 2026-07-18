@@ -19,6 +19,8 @@ The `Burger` constructor accepts a **ServerOptions** object. These are the main 
 | `description` | `string` | API description for OpenAPI. |
 | `version` | `string` | API version for OpenAPI. |
 | `debug` | `boolean` | Enable debug mode (e.g. stack traces). |
+| `validation` | `ValidatorConfig` | Validation settings: `coerce`, `responseValidation`, `errorFormat`, `errorRenderer`. See [Validation Configuration](/docs/validation/configuration). |
+| `models` | `Record<string, Schema>` | Named, reusable validation shapes referenced by string from any route's `schema`. See [Model Registry](/docs/validation/models). |
 
 You must provide either `apiDir`/`pageDir` (for development) or `apiRoutes`/`pageRoutes` (for production builds). See [Configuration](/docs/core/configuration) for full details and examples.
 
@@ -29,3 +31,5 @@ You must provide either `apiDir`/`pageDir` (for development) or `apiRoutes`/`pag
 - [BurgerRequest](/docs/api/burger-request)
 - [ContextSet](/docs/api/context-set)
 - [Request API](/docs/api/request-api)
+- [Validation Configuration](/docs/validation/configuration)
+- [Model Registry](/docs/validation/models)

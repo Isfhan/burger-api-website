@@ -24,10 +24,12 @@ const config: Config = {
   // projectName: 'burger-api', // Usually your repo name.
 
   onBrokenLinks: "throw",
-  onBrokenMarkdownLinks: "warn",
 
   markdown: {
     mermaid: true,
+    hooks: {
+      onBrokenMarkdownLinks: "warn",
+    },
   },
 
   // Custom fields for the homepage
@@ -35,7 +37,7 @@ const config: Config = {
     status: "Active",
     license: "MIT License",
     bunVersion: "Bun 1.3.0+",
-    frameworkVersion: "0.11.0",
+    frameworkVersion: "0.12.0",
     getStartedUrl: "/docs/",
     githubUrl: "https://github.com/isfhan/burger-api",
   },

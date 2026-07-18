@@ -19,7 +19,7 @@ export async function GET(req: BurgerRequest) {
 
 - Parses lazily — only when you first read it.
 - Uses a fast Bun-native parser that matches `URLSearchParams` semantics (including `+` → space and lenient handling of malformed escapes).
-- Avoids allocating a `URL` object for every request.
+- Avoids using memory for a `URL` object on every request.
 
 So `req.query` is both simpler to read and cheaper when the query is unused.
 

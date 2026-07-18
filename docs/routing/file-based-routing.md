@@ -19,19 +19,19 @@ Inside `route.ts`, export a function for each HTTP method you want to support (`
 
 BurgerAPI supports a few route shapes, all built from the same folder rules:
 
-- **Static routes** — fixed paths. See [Static Routes](/docs/routing/static-routes).
-- **Dynamic routes** — capture a segment with `[param]`. See [Dynamic Routes](/docs/routing/dynamic-routes).
-- **Wildcard routes** — match the rest of the path with `[...rest]`. See [Wildcard Routes](/docs/routing/wildcard-routes).
-- **Route groups** — organize with `(folder)` without changing the URL. See [Route Groups](/docs/routing/route-groups).
+ - **Static routes** — fixed paths. See [Static API Routes](/docs/routing/api/static-routes).
+ - **Dynamic routes** — capture a segment with `[param]`. See [Dynamic Routes](/docs/routing/api/dynamic-routes).
+ - **Wildcard routes** — match the rest of the path with `[...rest]`. See [Wildcard Routes](/docs/routing/api/wildcard-routes).
+ - **Route groups** — organize with `(folder)` without changing the URL. See [Route Groups](/docs/routing/api/route-groups).
 
-These shapes nest freely by folder depth. See [Nested Routes](/docs/routing/nested-routes) for how paths grow with folders.
+These shapes nest freely by folder depth. See [Nested Routes](/docs/routing/api/nested-routes) for how paths grow with folders.
 
 For full API details and examples, see [Static API Routes](/docs/routing/api/static-routes) (API) and [Static Pages](/docs/routing/pages/static-pages) (pages).
 
 
 ## Related
 
-- [Static Routes](/docs/routing/static-routes)
-- [Dynamic Routes](/docs/routing/dynamic-routes)
-- [Wildcard Routes](/docs/routing/wildcard-routes)
+- [Static API Routes](/docs/routing/api/static-routes)
+- [Dynamic Routes](/docs/routing/api/dynamic-routes)
+- [Wildcard Routes](/docs/routing/api/wildcard-routes)
 - [Request Lifecycle](/docs/architecture/request-lifecycle)

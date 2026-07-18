@@ -15,7 +15,7 @@ Through these progressive tutorials, you'll discover how BurgerAPI makes buildin
 - **File-based routing** that maps your folder structure to API endpoints
 - **Automatic OpenAPI documentation** generation
 - **Zod validation** for request data
-- **Middleware** for cross-cutting concerns
+- **Middleware** for logic shared by many routes
 - **TypeScript-first** development experience
 
 :::tip Why Tutorials?

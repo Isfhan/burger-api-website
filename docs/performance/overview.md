@@ -12,7 +12,7 @@ Static paths are served by Bun's native router, while dynamic and wildcard paths
 
 ## Native Bun routing
 
-By leaning on Bun's built-in HTTP router for static routes, BurgerAPI avoids a user-space catch-all handler. This removes a layer of dispatching for the most frequent kind of request.
+By leaning on Bun's built-in HTTP router for static routes, BurgerAPI avoids a catch-all handler that would do the routing in our own code. This removes a layer of extra work for the most frequent kind of request.
 
 ## Lazy query parsing
 
@@ -24,7 +24,7 @@ Each request gets one context object built from the same template. It is cheap t
 
 ## Efficient request processing
 
-Middleware, validation, and response handling run in one pipeline. Response mutations collected in `req.set` are applied in a single step at the end, and when nothing is set the original `Response` is returned without rebuild. Using less memory on the busiest code path keeps response times steady under heavy load.
+Middleware, validation, and response handling run in one set of processing steps (a pipeline). Response changes collected in `req.set` are applied in a single step at the end, and when nothing is set the original `Response` is returned without rebuild. Using less memory in the code that runs for every request keeps response times steady under heavy load.
 
 These choices are described in more detail in [Architecture](../architecture/overview.md).
 

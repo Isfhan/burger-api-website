@@ -27,7 +27,7 @@ export async function GET(req: BurgerRequest) {
 }
 ```
 
-The middleware runs before the handler, so unauthorized requests never reach it. Because middleware is part of the single pipeline, the same rules apply consistently across every method.
+The middleware runs before the handler, so unauthorized requests never reach it. Because middleware is part of the single request flow (the processing steps every request goes through), the same rules apply consistently across every method.
 
 For JWT specifically, see the [JWT Auth](../ecosystem/jwt-auth.md) ecosystem middleware.
 

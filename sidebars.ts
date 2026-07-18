@@ -46,11 +46,6 @@ const sidebars: SidebarsConfig = {
       label: "Routing",
       items: [
         "routing/file-based-routing",
-        "routing/static-routes",
-        "routing/dynamic-routes",
-        "routing/wildcard-routes",
-        "routing/route-groups",
-        "routing/nested-routes",
         {
           type: "category",
           label: "API Routing",
@@ -59,6 +54,7 @@ const sidebars: SidebarsConfig = {
             "routing/api/route-groups",
             "routing/api/dynamic-routes",
             "routing/api/wildcard-routes",
+            "routing/api/nested-routes",
           ],
         },
         {
@@ -88,7 +84,17 @@ const sidebars: SidebarsConfig = {
         "validation/params",
         "validation/query",
         "validation/body",
+        "validation/headers",
+        "validation/cookie",
+        "validation/models",
+        "validation/coercion",
+        "validation/response",
+        "validation/standard-schema",
         "validation/errors",
+        "validation/problem-details",
+        "validation/configuration",
+        "validation/best-practices",
+        "validation/migration",
       ],
     },
     {

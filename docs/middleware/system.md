@@ -4,13 +4,13 @@ sidebar_label: Middleware System
 
 # Middleware System
 
-Middleware runs **before** (and optionally **after**) your route handlers. Use it for logging, auth, CORS, and other cross-cutting logic. BurgerAPI supports **global** middleware (all routes) and **route-specific** middleware.
+Middleware is code that runs around your route handlers — **before** (and optionally **after**) them. Use it for logging, auth, CORS, and other logic shared by many routes. BurgerAPI supports **global** middleware (all routes) and **route-specific** middleware.
 
 ## Execution order
 
-Middleware is one stage of a single pipeline: **Global → Validation → Route-specific → Handler**. If any middleware returns a `Response`, the chain stops and that response is sent.
+Middleware is one stage of a single set of processing steps (a pipeline): **Global → Validation → Route-specific → Handler**. If any middleware returns a `Response`, the chain stops and that response is sent.
 
-See [Request Lifecycle](/docs/architecture/request-lifecycle) for the full pipeline, and [Route-Specific Middleware](/docs/middleware/route-specific) for examples.
+See [Request Lifecycle](/docs/architecture/request-lifecycle) for the full request flow, and [Route-Specific Middleware](/docs/middleware/route-specific) for examples.
 
 
 ## Related

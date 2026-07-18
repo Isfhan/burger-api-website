@@ -4,7 +4,7 @@ sidebar_label: ContextSet
 
 # ContextSet
 
-`ContextSet` is the type of `req.set`. It describes response mutations that the framework applies at the end of the pipeline.
+`ContextSet` is the type of `req.set`. It describes response changes that the framework applies at the end of the request's processing steps (the request flow).
 
 ```ts
 interface ContextSet {

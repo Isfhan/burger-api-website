@@ -175,7 +175,7 @@ my-api/
   - The `create` command requires a target directory that doesn't exist yet. Choose a new name or remove the existing folder.
 
 - **Could not get middleware list from GitHub**
-  - Check your internet connection. The CLI needs to reach `github.com` to fetch the middleware registry.
+  - Check your internet connection. The CLI needs to reach `github.com` to fetch the list of available middleware (the middleware registry).
 
 - **Entry file not found**
   - Ensure you are running the command from the root of your project or specify the correct path using the `-f` flag.

@@ -67,9 +67,15 @@ Let's break down the essential configuration options:
 - **`debug`** (`boolean`, Optional)
   Setting this to `true` will enable stack traces page for errors.
 
+- **`validation`** (`object`, Optional)
+  Validation settings for the whole app: `coerce` (automatic type conversion), `responseValidation` (`off`/`dev`/`enforce`), `errorFormat` (`plain`/`problem+json`), and `errorRenderer`. See [Validation Configuration](./../validation/configuration.md).
+
+- **`models`** (`object`, Optional)
+  Named, reusable validation shapes you can reference by string from any route's `schema`. See [Model Registry](./../validation/models.md).
+
 ## Project config file (burger.config.ts)
 
-If you use the CLI to create a project, you get a **`burger.config.ts`** (or `.js`) at the project root. It defines `apiDir`, `pageDir`, `apiPrefix`, `pagePrefix`, and `debug` in one place. The CLI uses this file for `burger-api build` and `burger-api build:exec` so dev and production stay in sync. You can also load it in your app if you want a single source for paths and prefixes. See [CLI Tool](./../getting-started/cli.md) for create and build commands.
+If you use the CLI to create a project, you get a **`burger.config.ts`** (or `.js`) at the project root. It defines `apiDir`, `pageDir`, `apiPrefix`, `pagePrefix`, `debug`, and (optionally) `validation` and `models` in one place. The CLI uses this file for `burger-api build` and `burger-api build:exec` so dev and production stay in sync. You can also load it in your app if you want a single source for paths and prefixes. See [CLI Tool](./../getting-started/cli.md) for create and build commands.
 
 If you don't provide either `apiDir`/`pageDir` or `apiRoutes`/`pageRoutes`, the Burger class will throw: *"Please provide apiDir/pageDir (for dev) or apiRoutes/pageRoutes (for production builds) when initializing the Burger class."*
 

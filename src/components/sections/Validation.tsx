@@ -32,7 +32,7 @@ export function Validation() {
             align="left"
             eyebrow="Validation"
             title="Zod schemas next to your routes"
-            subtitle="Export a schema object alongside your handlers. BurgerAPI validates before your code runs and puts typed data on req.validated."
+            subtitle="Export a schema object alongside your handlers. BurgerAPI validates before your code runs and puts typed data on req.validated — for query, params, headers, cookies, and body. Reuse shapes as models and validate responses too."
             className="mb-6 md:mb-8"
           />
           <Button to="/docs/validation/zod" variant="secondary">

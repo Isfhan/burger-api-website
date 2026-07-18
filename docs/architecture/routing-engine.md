@@ -11,7 +11,7 @@ BurgerAPI routes requests with a **hybrid router** that combines two matching st
 
 ## Matching priority
 
-When more than one pattern could match a path, the router resolves in this order:
+When more than one pattern could match a path, the router picks the right one (resolves) in this order:
 
 1. **Static** — an exact path segment (e.g. `/users/me`).
 2. **Dynamic** — a single parameter segment (e.g. `/users/:id`).
@@ -21,7 +21,7 @@ This priority is what lets you define both `/users/me` and `/users/:id` and have
 
 ## Route discovery
 
-Routes are discovered from the file system: files and folders under your API directory become routes, with `[param]` and `[...slug]` as dynamic and wildcard segments. In production builds, routes can be supplied pre-built so the running server does not scan the filesystem at request time.
+Routes are discovered from the file system: files and folders under your API directory become routes, with `[param]` and `[...slug]` as dynamic and wildcard segments. In production builds, routes can be supplied pre-built (prepared before the server starts) so the running server does not scan the filesystem when a request comes in.
 
 See [Routing](../routing/file-based-routing.md) for the full set of route shapes, including static, dynamic, wildcard, nested, and grouped routes.
 

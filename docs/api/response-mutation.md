@@ -4,7 +4,7 @@ sidebar_label: Response Mutation
 
 # Response Mutation
 
-Handlers can express response changes through `req.set`. The framework applies them once, at the end of the pipeline, via `applySet`.
+Handlers can express response changes through `req.set`. The framework applies them once, at the end of the request flow (the processing steps a request goes through), via `applySet`.
 
 ## Setting status and headers
 
@@ -23,14 +23,14 @@ export async function GET(req: BurgerRequest) {
 
 ## applySet
 
-At the single pipeline exit, `applySet` merges `req.set` into the outgoing `Response`:
+At the single exit point of the request flow, `applySet` merges `req.set` into the outgoing `Response`:
 
 - If `req.set` is empty (no status, no headers), the original `Response` is returned unchanged — no extra memory is used.
 - It runs uniformly on `GET` responses and on the auto-`HEAD` responses derived from `GET`.
 
 ## Why a single merge step
 
-Collecting response changes in `req.set` and applying them in one place keeps response handling predictable: middleware and handlers all influence the response the same way, and the framework controls exactly when the `Response` is finalized. This also keeps the busiest code path light on memory.
+Collecting response changes in `req.set` and applying them in one place keeps response handling predictable: middleware and handlers all influence the response the same way, and the framework controls exactly when the `Response` is finalized. This also keeps the code that runs for every request light on memory.
 
 
 ## Related
