@@ -673,6 +673,42 @@ Decorative glow orbs and the hero grid stay subtle and behind content.
 
 ---
 
+# Install Command Panel
+
+The CLI install command is the focal point of the terminal section. It is a
+dedicated dark panel (not a plain code block):
+
+Terminal-style header with traffic-light dots, "Install BurgerAPI" label, and
+a "bun" badge.
+
+Large JetBrains Mono command with a brand-colored "$" prompt.
+
+Copy button with a hover/focus tooltip and a "Copied!" confirmation animation.
+
+Soft orange glow on hover, elevated shadow, subtle top radial highlight.
+
+Left column flows top-down (heading → description → command → CLI Reference
+button 20px below → code example on the right). Columns align to the top so
+the command is the visual anchor.
+
+# Footer
+
+Three-level hierarchy:
+
+Level 1 — brand: mascot, name, one-line description, version + MIT + GitHub
+stars badges.
+
+Level 2 — navigation: categorized columns (Documentation, Resources,
+Community, Project) with consistent 15px links and hover arrow animation.
+
+Level 3 — bottom bar: copyright / MIT / Built with Bun on the left, framework
+version / "Made for the Bun ecosystem" on the right, separated by a divider.
+
+Background: dark #0D0E10 with rgba(255,255,255,.05) top border and a faint
+orange radial; light #F2F2EF with a soft border. Generous vertical spacing.
+
+---
+
 # Overall Goal
 
 Visitors should think:

@@ -1,7 +1,7 @@
 import React from "react";
-import { Search, Boxes, Workflow } from "lucide-react";
+import { Search, Boxes, Workflow, BookOpen, ArrowRight } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { Section, SectionHeader, Card, ScrollReveal, TextLink } from "../ui";
+import { Section, SectionHeader, Card, ScrollReveal, Button } from "../ui";
 
 const cards: { icon: LucideIcon; title: string; description: string }[] = [
   {
@@ -51,9 +51,15 @@ export function Performance() {
       </div>
       <ScrollReveal>
         <div className="text-center mt-2">
-          <TextLink to="/docs/performance/overview">
+          <Button to="/docs/performance/overview" variant="secondary">
+            <BookOpen size={16} aria-hidden />
             Read the performance philosophy
-          </TextLink>
+            <ArrowRight
+              size={16}
+              className="transition-transform duration-200 ease-out group-hover:translate-x-0.5"
+              aria-hidden
+            />
+          </Button>
         </div>
       </ScrollReveal>
     </Section>

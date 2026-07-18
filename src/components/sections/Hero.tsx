@@ -6,7 +6,6 @@ import {
   Button,
   GradientBackground,
   GitHubStars,
-  InstallCommand,
   CodeBlock,
   ScrollReveal,
 } from "../ui";
@@ -120,8 +119,6 @@ export function Hero() {
                   />
                 </Button>
               </div>
-
-              <InstallCommand command="bunx burger-api create my-app" />
             </div>
           </ScrollReveal>
 
