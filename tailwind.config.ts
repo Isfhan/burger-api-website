@@ -8,9 +8,9 @@ const config: Config = {
     extend: {
       colors: {
         brand: {
-          primary: "#F59E0B",
-          secondary: "#F97316",
-          accent: "#FBBF24",
+          primary: "#FFA62B",
+          secondary: "#FFB84D",
+          accent: "#FFC861",
           success: "#10B981",
           danger: "#EF4444",
           info: "#3B82F6",
@@ -19,7 +19,11 @@ const config: Config = {
           DEFAULT: "var(--ba-bg)",
           secondary: "var(--ba-bg-secondary)",
           card: "var(--ba-card)",
+          "card-soft": "var(--ba-card-soft)",
+          elevated: "var(--ba-card-elevated)",
+          hover: "var(--ba-card-hover)",
           border: "var(--ba-border)",
+          divider: "var(--ba-divider)",
         },
         ink: {
           DEFAULT: "var(--ba-text)",
@@ -32,10 +36,11 @@ const config: Config = {
         mono: ["JetBrains Mono", "ui-monospace", "monospace"],
       },
       fontSize: {
-        "hero": ["clamp(2.5rem, 5vw, 4.5rem)", { lineHeight: "1.1", fontWeight: "800" }],
-        "section": ["2.5rem", { lineHeight: "1.2", fontWeight: "700" }],
+        "hero": ["clamp(2.75rem, 6vw, 4.5rem)", { lineHeight: "1.08", fontWeight: "800" }],
+        "section": ["2.75rem", { lineHeight: "1.18", fontWeight: "700" }],
         "card-title": ["1.375rem", { lineHeight: "1.3", fontWeight: "600" }],
         "body": ["1.0625rem", { lineHeight: "1.65" }],
+        "description": ["1rem", { lineHeight: "1.6" }],
         "small": ["0.875rem", { lineHeight: "1.5" }],
       },
       borderRadius: {
@@ -49,7 +54,7 @@ const config: Config = {
         "ba-sm": "var(--ba-shadow-sm)",
         "ba-md": "var(--ba-shadow-md)",
         "ba-lg": "var(--ba-shadow-lg)",
-        "ba-glow": "0 0 24px rgba(245, 158, 11, 0.35)",
+        "ba-glow": "0 0 24px rgba(255, 166, 43, 0.35)",
       },
       transitionDuration: {
         DEFAULT: "200ms",

@@ -33,7 +33,7 @@ export default function Footer(): React.ReactElement {
       ?.frameworkVersion || "0.11.0";
 
   return (
-    <footer className="footer !bg-surface-secondary border-t border-surface-border">
+    <footer className="footer border-t border-surface-border [background:linear-gradient(180deg,var(--ba-bg-secondary)_0%,var(--ba-bg)_100%)]">
       <div className="mx-auto max-w-content px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
           <div className="lg:col-span-1">

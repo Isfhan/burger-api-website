@@ -1,5 +1,5 @@
 import React from "react";
-import { FileJson, Globe, RefreshCw } from "lucide-react";
+import { FileJson, Globe, RefreshCw, ArrowRight } from "lucide-react";
 import { Section, SectionHeader, Card, ScrollReveal, Button, StaggerChildren } from "../ui";
 
 const points = [
@@ -50,8 +50,14 @@ export function OpenAPI() {
 
       <ScrollReveal>
         <div className="text-center">
-          <Button to="/docs/openapi/generation" variant="secondary">
+          <Button to="/docs/openapi/generation" variant="secondary" className="mt-2">
+            <FileJson size={16} aria-hidden />
             OpenAPI documentation
+            <ArrowRight
+              size={16}
+              className="transition-transform duration-200 ease-out group-hover:translate-x-0.5"
+              aria-hidden
+            />
           </Button>
         </div>
       </ScrollReveal>

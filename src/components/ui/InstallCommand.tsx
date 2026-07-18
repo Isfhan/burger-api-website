@@ -28,7 +28,7 @@ export function InstallCommand({
       className={clsx(
         "group inline-flex items-center gap-3 rounded-button border border-surface-border",
         "bg-[#0d0d0f] dark:bg-[#0d0d0f] px-4 py-3 shadow-ba-lg",
-        "transition-all duration-200 hover:border-brand-primary/40 hover:shadow-[0_0_30px_rgba(255,107,0,0.15)]",
+        "transition-all duration-200 hover:border-brand-primary/40 hover:shadow-[0_0_30px_rgba(255,166,43,0.15)]",
         className,
       )}
       style={{ minWidth: "380px" }}

@@ -1,5 +1,5 @@
 import React from "react";
-import { Section, SectionHeader, CodeBlock, ScrollReveal, Button, InstallCommand } from "../ui";
+import { Section, SectionHeader, CodeBlock, ScrollReveal, TextLink, InstallCommand } from "../ui";
 
 const createExample = `# Create a new project
 bunx burger-api create my-api
@@ -26,10 +26,8 @@ export function CLI() {
           <div className="flex flex-col sm:flex-row gap-3 items-start">
             <InstallCommand command="bunx burger-api create my-api" />
           </div>
-          <div className="mt-6">
-            <Button to="/docs/cli/installation" variant="ghost">
-              CLI reference →
-            </Button>
+          <div className="mt-5">
+            <TextLink to="/docs/cli/installation">CLI reference</TextLink>
           </div>
         </ScrollReveal>
         <ScrollReveal delay={0.05}>

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
-import { Zap, Scale, GitBranch, BookOpen, Zap as ZapIcon } from "lucide-react";
+import { Zap, Scale, GitBranch, BookOpen, Zap as ZapIcon, ArrowRight } from "lucide-react";
 import {
   Badge,
   Button,
@@ -69,7 +69,7 @@ export function Hero() {
                   className="drop-shadow-ba-md"
                 />
                 <h1 className="text-hero text-ink tracking-tight m-0">
-                  Burger<span className="text-brand-accent">API</span>
+                  Burger<span className="">API</span>
                 </h1>
               </div>
 
@@ -113,6 +113,11 @@ export function Hero() {
                 >
                   <GitBranch size={18} aria-hidden />
                   View on GitHub
+                  <ArrowRight
+                    size={18}
+                    className="transition-transform duration-200 ease-out group-hover:translate-x-0.5"
+                    aria-hidden
+                  />
                 </Button>
               </div>
 

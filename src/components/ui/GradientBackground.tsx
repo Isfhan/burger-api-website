@@ -31,7 +31,7 @@ export function GradientBackground({
         }}
       />
 
-      {/* Amber orb — top right */}
+      {/* Orange orb — top right */}
       <div
         className={clsx(
           "absolute rounded-full blur-3xl",
@@ -41,11 +41,11 @@ export function GradientBackground({
         )}
         style={{
           background:
-            "radial-gradient(circle, rgba(245,158,11,0.5) 0%, transparent 70%)",
+            "radial-gradient(circle, rgba(255,166,43,0.45) 0%, transparent 70%)",
         }}
       />
 
-      {/* Orange orb — left */}
+      {/* Secondary orange orb — left */}
       <div
         className={clsx(
           "absolute rounded-full blur-3xl",
@@ -55,7 +55,7 @@ export function GradientBackground({
         )}
         style={{
           background:
-            "radial-gradient(circle, rgba(249,115,22,0.4) 0%, transparent 70%)",
+            "radial-gradient(circle, rgba(255,184,77,0.4) 0%, transparent 70%)",
         }}
       />
 
@@ -64,7 +64,7 @@ export function GradientBackground({
         className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] opacity-40 dark:opacity-20"
         style={{
           background:
-            "radial-gradient(ellipse at center, rgba(251,191,36,0.15) 0%, transparent 70%)",
+            "radial-gradient(ellipse at center, rgba(255,166,43,0.14) 0%, transparent 70%)",
         }}
       />
     </div>

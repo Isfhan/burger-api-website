@@ -1,5 +1,5 @@
 import React from "react";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Network } from "lucide-react";
 import { Section, SectionHeader, ScrollReveal, Button, Card } from "../ui";
 
 const steps = [
@@ -51,8 +51,14 @@ export function Architecture() {
 
       <ScrollReveal>
         <div className="text-center">
-          <Button to="/docs/architecture/overview" variant="secondary">
+          <Button to="/docs/architecture/overview" variant="secondary" className="mt-2">
+            <Network size={16} aria-hidden />
             Explore the architecture
+            <ArrowRight
+              size={16}
+              className="transition-transform duration-200 ease-out group-hover:translate-x-0.5"
+              aria-hidden
+            />
           </Button>
         </div>
       </ScrollReveal>

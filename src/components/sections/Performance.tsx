@@ -1,7 +1,7 @@
 import React from "react";
 import { Search, Boxes, Workflow } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { Section, SectionHeader, Card, ScrollReveal, Button } from "../ui";
+import { Section, SectionHeader, Card, ScrollReveal, TextLink } from "../ui";
 
 const cards: { icon: LucideIcon; title: string; description: string }[] = [
   {
@@ -50,10 +50,10 @@ export function Performance() {
         ))}
       </div>
       <ScrollReveal>
-        <div className="text-center">
-          <Button to="/docs/performance/overview" variant="ghost">
-            Read the performance philosophy →
-          </Button>
+        <div className="text-center mt-2">
+          <TextLink to="/docs/performance/overview">
+            Read the performance philosophy
+          </TextLink>
         </div>
       </ScrollReveal>
     </Section>

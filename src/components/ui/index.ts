@@ -1,4 +1,5 @@
 export { Button } from "./Button";
+export { TextLink } from "./TextLink";
 export { Badge } from "./Badge";
 export { Card } from "./Card";
 export { Section } from "./Section";

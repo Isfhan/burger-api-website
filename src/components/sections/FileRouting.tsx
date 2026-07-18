@@ -1,4 +1,5 @@
 import React from "react";
+import { Folder, ArrowRight } from "lucide-react";
 import { Section, SectionHeader, CodeBlock, ScrollReveal, Button, Card } from "../ui";
 
 const tree = `api/
@@ -44,13 +45,22 @@ export function FileRouting() {
         </ScrollReveal>
         <ScrollReveal delay={0.05}>
           <CodeBlock code={routeCode} filename="api/users/[id]/route.ts" />
-          <div className="mt-6">
-            <Button to="/docs/routing/file-based-routing" variant="secondary">
-              File-based routing docs
-            </Button>
-          </div>
         </ScrollReveal>
       </div>
+
+      <ScrollReveal>
+        <div className="mt-6 flex justify-center">
+          <Button to="/docs/routing/file-based-routing" variant="secondary">
+            <Folder size={16} aria-hidden />
+            File-based routing docs
+            <ArrowRight
+              size={16}
+              className="transition-transform duration-200 ease-out group-hover:translate-x-0.5"
+              aria-hidden
+            />
+          </Button>
+        </div>
+      </ScrollReveal>
     </Section>
   );
 }

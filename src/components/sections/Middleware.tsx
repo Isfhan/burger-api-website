@@ -1,4 +1,5 @@
 import React from "react";
+import { ShieldCheck, ArrowRight } from "lucide-react";
 import { Section, SectionHeader, CodeBlock, ScrollReveal, Button, Card } from "../ui";
 
 const code = `import type { BurgerRequest } from "burger-api";
@@ -53,8 +54,14 @@ export function Middleware() {
               ))}
             </ol>
           </Card>
-          <Button to="/docs/middleware/global" variant="secondary">
+          <Button to="/docs/middleware/global" variant="secondary" className="mt-0">
+            <ShieldCheck size={16} aria-hidden />
             Middleware docs
+            <ArrowRight
+              size={16}
+              className="transition-transform duration-200 ease-out group-hover:translate-x-0.5"
+              aria-hidden
+            />
           </Button>
         </ScrollReveal>
         <ScrollReveal delay={0.05}>

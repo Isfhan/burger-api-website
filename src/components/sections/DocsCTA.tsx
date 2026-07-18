@@ -21,7 +21,11 @@ export function DocsCTA() {
             </p>
             <Button to="/docs/" size="lg" variant="primary">
               Open Documentation
-              <ArrowRight size={18} aria-hidden />
+              <ArrowRight
+                size={18}
+                className="transition-transform duration-200 ease-out group-hover:translate-x-0.5"
+                aria-hidden
+              />
             </Button>
           </div>
         </div>

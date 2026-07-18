@@ -136,27 +136,29 @@ Hero Panels:
 
 # Shadows
 
+Layered, soft, and never harsh. Cards use small by default and large on hover.
+
 Light Mode
 
 small:
-0 2px 6px rgba(0,0,0,.06)
+0 2px 6px rgba(0,0,0,.04)
 
 medium:
-0 12px 32px rgba(0,0,0,.08)
+0 16px 40px rgba(0,0,0,.08)
 
 large:
-0 30px 60px rgba(0,0,0,.10)
+0 24px 60px rgba(0,0,0,.12)
 
 Dark Mode
 
 small:
-0 4px 12px rgba(0,0,0,.30)
+0 2px 8px rgba(0,0,0,.40)
 
 medium:
-0 20px 40px rgba(0,0,0,.35)
+0 16px 40px rgba(0,0,0,.50)
 
 large:
-0 30px 80px rgba(0,0,0,.45)
+0 24px 60px rgba(0,0,0,.60)
 
 ---
 
@@ -180,11 +182,11 @@ Weights
 
 Hero Title
 
-64-72px
+clamp(44px → 72px)
 
 Section Title
 
-40px
+44px
 
 Card Title
 
@@ -194,25 +196,34 @@ Body
 
 17px
 
+Description
+
+16px
+
 Small
 
 14px
+
+Leave generous space between a section title and its paragraph.
 
 ---
 
 # Color Palette
 
+Orange is an accent only — used for buttons, links, icons, badges, active
+states, and selected tabs. It is never a dominant background.
+
 Primary
 
-#F59E0B
+#FFA62B
 
 Secondary
 
-#F97316
+#FFB84D
 
 Accent
 
-#FBBF24
+#FFC861
 
 Success
 
@@ -232,31 +243,39 @@ Info
 
 Background
 
-#FFFFFF
+#F7F7F5
 
 Secondary Background
 
-#F8FAFC
+#F2F2EF
 
 Card
 
 #FFFFFF
 
+Soft Card
+
+#FCFCFA
+
 Border
 
-#E5E7EB
+rgba(0,0,0,.06)
+
+Divider
+
+rgba(0,0,0,.04)
 
 Primary Text
 
-#111827
+#0A0A0B
 
 Secondary Text
 
-#4B5563
+#3F3F46
 
 Muted
 
-#6B7280
+#52525B
 
 ---
 
@@ -268,15 +287,31 @@ Background
 
 Secondary Background
 
-#111214
+#0F1012
 
 Card
 
 #17181C
 
+Soft Card
+
+#141519
+
+Elevated Card
+
+#1D1F24
+
+Hover Card
+
+#23262D
+
 Border
 
-#2A2D33
+rgba(255,255,255,.08)
+
+Divider
+
+rgba(255,255,255,.05)
 
 Primary Text
 
@@ -292,35 +327,112 @@ Muted
 
 ---
 
-# Buttons
+# Surface Hierarchy
 
-Primary
+Sections alternate between two warm-neutral backgrounds to create rhythm
+without harsh contrast jumps:
 
-Amber gradient
+• Base sections use Background (#F7F7F5 / #09090B)
+• Secondary sections use Secondary Background (#F2F2EF / #0F1012)
+• Cards sit one layer above their section (Card → Soft Card in light,
+  Card → Elevated in dark) with subtle gradient and soft shadow
+• Hover raises a card to the Elevated/Hover layer with a deeper shadow
 
-Hover
+Homepage rhythm (base / secondary alternation):
+Hero (base) → Features (secondary) → Performance (base) → Architecture
+(secondary) → Code Examples (base) → Developer Experience (secondary) →
+File Routing (base) → Validation (secondary) → Middleware (base) → OpenAPI
+(secondary) → CLI (base) → Docs CTA (base) → GitHub CTA (secondary) →
+Community (base).
 
-Lift 2px
+---
 
-Glow
+# Buttons & CTAs
 
-Small shadow
+Every interactive element belongs to one of three tiers. No stray
+browser-default buttons, no plain white pills, no mixed personalities.
 
-Transition
+Tier 1 — Primary CTA
 
-200ms
+Used only for the most important actions (Get Started, Open Documentation,
+View Repository).
 
-Secondary
+Orange gradient (Accent → Primary)
 
-Outline
+Dark text
 
-Ghost
+Glow shadow
 
-Transparent
+Bold text, 15px
 
-Danger
+Min width 160px, ~48px height
 
-Solid Red
+Large radius
+
+Hover: lift 2px, brighter, stronger glow
+
+Never a plain orange rectangle.
+
+Tier 2 — Secondary CTA
+
+Most section "docs" buttons live here (Explore architecture, Browse
+middleware, Validation guide, OpenAPI docs, File routing docs).
+
+Warm tinted background
+
+Light mode: #ECECE8, hover #E3E3DF, text #18181B
+
+Dark mode: rgba(255,255,255,.05), hover rgba(255,255,255,.08)
+
+Very soft border rgba(0,0,0,.08) / rgba(255,255,255,.08)
+
+Slight backdrop blur
+
+Medium radius
+
+Font weight 600, 14px
+
+Hover: darken, lift 2px, tiny shadow
+
+Never pure white.
+
+Tier 3 — Text CTA
+
+Low-priority navigation becomes a premium inline link, not a pill
+(Read the performance philosophy, CLI reference).
+
+Medium weight
+
+Orange color
+
+Underline fades in on hover
+
+Arrow slides right 4px
+
+Smooth color transition
+
+180ms ease-out, no bounce
+
+Placement & rhythm
+
+Buttons hang off the content above them — never float alone in whitespace.
+
+Title → 16px → Description → 32px → Cards/Code → 24px → CTA →
+80–120px → next section.
+
+Alignment follows the section: centered sections keep a centered CTA,
+left-aligned sections start the CTA at the text edge.
+
+Icons
+
+Secondary and primary buttons carry a 16px Lucide icon (Book, Folder,
+Shield, Network, FileJson, GitBranch) plus an animated ArrowRight that
+slides 0.5–1px on hover.
+
+Accessibility
+
+Visible hover, visible keyboard focus, WCAG AA contrast, pointer cursor,
+no disappearing outlines.
 
 ---
 
@@ -392,17 +504,23 @@ Floating
 
 Rounded
 
+Subtle vertical gradient (Card → Soft Card / Card → Elevated)
+
 Glass effect
 
-Very soft border
+Very soft low-alpha border (rgba, never thick solid)
+
+Soft layered shadow
 
 Hover:
 
-lift
+lift (translateY -4px)
 
-slightly brighter
+deeper shadow
 
-slightly larger shadow
+brand-tinted border
+
+Never plain white rectangles.
 
 ---
 
@@ -434,31 +552,31 @@ Consistent stroke width.
 
 Hero
 
-Trusted Features
+Features
 
 Performance
 
-Developer Experience
+Architecture
 
 Code Examples
 
-Architecture
-
-Why BurgerAPI
-
-OpenAPI
+Developer Experience
 
 File Routing
 
-Middleware
-
 Validation
 
+Middleware
+
+OpenAPI
+
+CLI
+
+Docs CTA
+
+GitHub CTA
+
 Community
-
-Roadmap
-
-Sponsors
 
 Footer
 
@@ -535,6 +653,23 @@ Soft radial gradients
 Tiny floating particles
 
 Never distract from content.
+
+---
+
+# Premium UI Principles
+
+Depth comes from layered surfaces and soft shadows, not from borders.
+
+Use low-alpha rgba borders (rgba(0,0,0,.06) light / rgba(255,255,255,.08)
+dark). Separate cards by contrast and elevation, not thick outlines.
+
+Orange is an accent only. Dominant areas are warm neutrals; orange appears on
+buttons, links, icons, eyebrows, active nav, badges, and selected tabs.
+
+Motion is 150–250ms ease-out. Cards lift, buttons scale slightly, icons nudge,
+code blocks deepen their shadow on hover. No bounce, no spin-forever.
+
+Decorative glow orbs and the hero grid stay subtle and behind content.
 
 ---
 

@@ -20,10 +20,10 @@ export function Card({
   href,
 }: CardProps) {
   const classes = clsx(
-    "rounded-card border border-surface-border bg-surface-card p-6 shadow-ba-sm",
-    glass && "backdrop-blur-md bg-surface-card/80",
+    "rounded-card border border-surface-border bg-gradient-to-b from-surface-card to-surface-card-soft dark:from-surface-card dark:to-surface-card-elevated p-6 shadow-ba-sm",
+    glass && "backdrop-blur-md bg-surface-card/80 dark:bg-surface-card/70",
     hover &&
-      "transition-all duration-200 ease-out hover:-translate-y-0.5 hover:shadow-ba-md hover:border-brand-primary/30",
+      "transition-all duration-200 ease-out hover:-translate-y-1 hover:shadow-ba-lg hover:border-brand-primary/25",
     className
   );
 

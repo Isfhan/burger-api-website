@@ -1,4 +1,5 @@
 import React from "react";
+import { BookOpen, ArrowRight } from "lucide-react";
 import { Section, SectionHeader, CodeBlock, ScrollReveal, Button } from "../ui";
 
 const code = `import { z } from "zod";
@@ -35,8 +36,14 @@ export function Validation() {
             subtitle="Export a schema object alongside your handlers. BurgerAPI validates before your code runs and puts typed data on req.validated — for query, params, headers, cookies, and body. Reuse shapes as models and validate responses too."
             className="mb-6 md:mb-8"
           />
-          <Button to="/docs/validation/zod" variant="secondary">
+          <Button to="/docs/validation/zod" variant="secondary" className="mt-2">
+            <BookOpen size={16} aria-hidden />
             Validation guide
+            <ArrowRight
+              size={16}
+              className="transition-transform duration-200 ease-out group-hover:translate-x-0.5"
+              aria-hidden
+            />
           </Button>
         </ScrollReveal>
         <ScrollReveal delay={0.05}>
