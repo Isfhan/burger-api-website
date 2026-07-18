@@ -1,5 +1,6 @@
 import React from "react";
-import { Section, SectionHeader, CodeBlock, ScrollReveal, TextLink, InstallCommand } from "../ui";
+import { Terminal, ArrowRight } from "lucide-react";
+import { Section, SectionHeader, CodeBlock, ScrollReveal, Button, InstallCommand } from "../ui";
 
 const createExample = `# Create a new project
 bunx burger-api create my-api
@@ -27,7 +28,15 @@ export function CLI() {
             <InstallCommand command="bunx burger-api create my-api" />
           </div>
           <div className="mt-5">
-            <TextLink to="/docs/cli/installation">CLI reference</TextLink>
+            <Button to="/docs/cli/installation" variant="secondary">
+              <Terminal size={16} aria-hidden />
+              CLI reference
+              <ArrowRight
+                size={16}
+                className="transition-transform duration-200 ease-out group-hover:translate-x-0.5"
+                aria-hidden
+              />
+            </Button>
           </div>
         </ScrollReveal>
         <ScrollReveal delay={0.05}>
