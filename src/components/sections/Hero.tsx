@@ -59,7 +59,7 @@ export function Hero() {
           <ScrollReveal>
             <div className="flex flex-col items-start">
 
-              <div className="mb-6 flex items-center gap-0 ml-[-20px]">
+              <div className="mb-6 flex items-end gap-0 ml-[-20px]">
                 <img
                   src="/img/android-chrome-192x192.png"
                   alt="BurgerAPI"

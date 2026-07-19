@@ -87,9 +87,9 @@ export default function Footer(): React.ReactElement {
         {/* Level 1 — brand */}
         <div className="flex flex-col md:flex-row md:items-start gap-12 mb-14">
           <div className="md:max-w-sm">
-            <div className="flex items-center gap-3 mb-4">
+            <div className="flex gap-0 mb-4 items-end">
               <MascotImage size={44} className="shrink-0" />
-              <span className="text-xl font-bold text-ink tracking-tight">
+              <span className="text-3xl font-bold text-ink tracking-tight">
                 BurgerAPI
               </span>
             </div>
