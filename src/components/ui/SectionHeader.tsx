@@ -19,7 +19,7 @@ export function SectionHeader({
   return (
     <div
       className={clsx(
-        "mb-12 md:mb-16 max-w-3xl",
+        "mb-6 md:mb-9 max-w-3xl",
         align === "center" && "mx-auto text-center",
         className
       )}

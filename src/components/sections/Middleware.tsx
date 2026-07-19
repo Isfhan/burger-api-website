@@ -1,5 +1,6 @@
 import React from "react";
-import { ShieldCheck, ArrowRight } from "lucide-react";
+import { ShieldCheck, ArrowRight, Zap, GitBranch, Filter, ShieldCheck as Shield, Code2 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { Section, SectionHeader, CodeBlock, ScrollReveal, Button, Card } from "../ui";
 
 const code = `import type { BurgerRequest } from "burger-api";
@@ -15,12 +16,12 @@ export async function middleware(req: BurgerRequest) {
   // Continue to the next middleware or handler
 }`;
 
-const pipeline = [
-  "Request",
-  "Global middleware",
-  "Route middleware",
-  "Validation",
-  "Handler",
+const pipeline: { label: string; icon: LucideIcon }[] = [
+  { label: "Request", icon: Zap },
+  { label: "Global middleware", icon: GitBranch },
+  { label: "Route middleware", icon: Filter },
+  { label: "Validation", icon: Shield },
+  { label: "Handler", icon: Code2 },
 ];
 
 export function Middleware() {
@@ -34,40 +35,46 @@ export function Middleware() {
         />
       </ScrollReveal>
 
-      <div className="grid lg:grid-cols-2 gap-8 items-start">
+      <div className="grid lg:grid-cols-2 gap-10 items-center">
         <ScrollReveal>
-          <Card className="mb-6">
-            <p className="text-small font-semibold text-ink mb-4 m-0">
-              Request pipeline
-            </p>
-            <ol className="m-0 p-0 list-none flex flex-col gap-2">
-              {pipeline.map((step, i) => (
-                <li
-                  key={step}
-                  className="flex items-center gap-3 text-small text-ink-secondary"
-                >
-                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-brand-primary/10 text-brand-primary font-semibold text-[12px]">
-                    {i + 1}
+          <div className="ba-pipeline">
+            {pipeline.map((step, i) => (
+              <div key={step.label} className="ba-pipeline__step">
+                <div className="ba-pipeline__node">
+                  <step.icon size={18} strokeWidth={1.75} aria-hidden />
+                </div>
+                <div className="ba-pipeline__body">
+                  <span className="ba-pipeline__index">0{i + 1}</span>
+                  <span className="text-card-title text-ink font-semibold">
+                    {step.label}
                   </span>
-                  {step}
-                </li>
-              ))}
-            </ol>
-          </Card>
-          <Button to="/docs/middleware/global" variant="secondary" className="mt-0">
-            <ShieldCheck size={16} aria-hidden />
-            Middleware docs
-            <ArrowRight
-              size={16}
-              className="transition-transform duration-200 ease-out group-hover:translate-x-0.5"
-              aria-hidden
-            />
-          </Button>
+                </div>
+                {i < pipeline.length - 1 && (
+                  <span className="ba-pipeline__connector" aria-hidden />
+                )}
+              </div>
+            ))}
+          </div>
         </ScrollReveal>
+
         <ScrollReveal delay={0.05}>
           <CodeBlock code={code} filename="api/admin/middleware.ts" />
         </ScrollReveal>
       </div>
+
+      <ScrollReveal delay={0.1}>
+        <div className="mt-10 flex justify-center">
+          <Button to="/docs/middleware/global" variant="secondary">
+            <ShieldCheck size={16} aria-hidden />
+            Middleware docs
+            <ArrowRight
+              size={16}
+              className="transition-transform duration-150 ease-out group-hover:translate-x-0.5"
+              aria-hidden
+            />
+          </Button>
+        </div>
+      </ScrollReveal>
     </Section>
   );
 }

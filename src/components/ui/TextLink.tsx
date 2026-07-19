@@ -23,11 +23,11 @@ export function TextLink({
       {Icon && <Icon size={16} className="shrink-0" aria-hidden />}
       <span className="relative">
         {children}
-        <span className="absolute -bottom-0.5 left-0 right-0 h-px bg-brand-primary/40 scale-x-0 origin-left transition-transform duration-200 ease-out group-hover:scale-x-100" />
+        <span className="absolute -bottom-0.5 left-0 right-0 h-px bg-brand-primary/40 scale-x-0 origin-left transition-transform duration-150 ease-out group-hover:scale-x-100" />
       </span>
       <ArrowRight
         size={16}
-        className="transition-transform duration-200 ease-out group-hover:translate-x-1"
+        className="transition-transform duration-150 ease-out group-hover:translate-x-0.5"
         aria-hidden
       />
     </span>

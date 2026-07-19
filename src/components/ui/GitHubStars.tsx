@@ -48,7 +48,7 @@ export function GitHubStars({ className, showLabel = true }: GitHubStarsProps) {
       className={clsx(
         "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-small font-medium",
         "border border-surface-border bg-surface-card text-ink-secondary",
-        "no-underline transition-all duration-200 hover:-translate-y-0.5 hover:border-brand-primary/40 hover:shadow-ba-sm",
+        "no-underline transition-[border-color,background-color,color] duration-150 ease-out hover:border-brand-primary/40",
         className
       )}
       aria-label={`${stars} GitHub stars`}

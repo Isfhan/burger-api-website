@@ -22,15 +22,15 @@ export function CLI() {
             eyebrow="CLI"
             title="Scaffold and ship from the terminal"
             subtitle="Create projects, add routes, and run your API with the BurgerAPI CLI. One-liners that match how Bun developers work."
-            className="mb-8"
+            className="mb-6"
           />
-          <div className="mt-5">
+          <div className="mt-4">
             <Button to="/docs/cli/installation" variant="secondary">
               <Terminal size={16} aria-hidden />
               CLI reference
               <ArrowRight
                 size={16}
-                className="transition-transform duration-200 ease-out group-hover:translate-x-0.5"
+                className="transition-transform duration-150 ease-out group-hover:translate-x-0.5"
                 aria-hidden
               />
             </Button>

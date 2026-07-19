@@ -41,7 +41,7 @@ export function Validation() {
             Validation guide
             <ArrowRight
               size={16}
-              className="transition-transform duration-200 ease-out group-hover:translate-x-0.5"
+              className="transition-transform duration-150 ease-out group-hover:translate-x-0.5"
               aria-hidden
             />
           </Button>

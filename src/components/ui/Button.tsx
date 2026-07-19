@@ -19,9 +19,9 @@ interface ButtonProps {
 
 const variantClasses: Record<Variant, string> = {
   primary:
-    "bg-gradient-to-br from-brand-accent to-brand-primary text-gray-900 font-semibold shadow-[0_4px_14px_rgba(255,166,43,0.3)] hover:-translate-y-0.5 hover:shadow-ba-glow hover:brightness-105 border-0",
+    "bg-gradient-to-br from-brand-accent to-brand-primary text-gray-900 font-semibold shadow-[0_2px_8px_rgba(255,166,43,0.22)] hover:-translate-y-px hover:brightness-105 border-0",
   secondary:
-    "bg-[#ECECE8] dark:bg-white/[0.05] border border-[rgba(0,0,0,0.08)] dark:border-white/[0.08] text-ink font-semibold hover:bg-[#E3E3DF] dark:hover:bg-white/[0.08] hover:-translate-y-0.5 hover:shadow-ba-sm backdrop-blur-sm",
+    "bg-[#ECECE8] dark:bg-white/[0.05] border border-[rgba(0,0,0,0.08)] dark:border-white/[0.08] text-ink font-semibold hover:bg-[#E3E3DF] dark:hover:bg-white/[0.08] hover:border-[rgba(0,0,0,0.12)] dark:hover:border-white/[0.12] hover:-translate-y-px",
   ghost:
     "bg-transparent border border-transparent text-ink-secondary font-medium hover:text-brand-primary hover:bg-brand-primary/5 dark:hover:bg-white/5",
 };
@@ -44,7 +44,7 @@ export function Button({
   ariaLabel,
 }: ButtonProps) {
   const classes = clsx(
-    "group inline-flex items-center justify-center gap-2 no-underline transition-all duration-200 ease-out cursor-pointer",
+    "group inline-flex items-center justify-center gap-2 no-underline transition-[background-color,border-color,color,transform,filter] duration-150 ease-out cursor-pointer",
     variantClasses[variant],
     sizeClasses[size],
     className

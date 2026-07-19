@@ -23,7 +23,7 @@ export function Card({
     "rounded-card border border-surface-border bg-gradient-to-b from-surface-card to-surface-card-soft dark:from-surface-card dark:to-surface-card-elevated p-6 shadow-ba-sm",
     glass && "backdrop-blur-md bg-surface-card/80 dark:bg-surface-card/70",
     hover &&
-      "transition-all duration-200 ease-out hover:-translate-y-1 hover:shadow-ba-lg hover:border-brand-primary/25",
+      "transition-[transform,border-color,box-shadow] duration-150 ease-out hover:-translate-y-px hover:border-brand-primary/25",
     className
   );
 

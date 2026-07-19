@@ -26,14 +26,14 @@ export function ScrollReveal({
     return <div className={className}>{children}</div>;
   }
 
-  const yOffset = direction === "up" ? 16 : direction === "down" ? -16 : 0;
+  const yOffset = direction === "up" ? 8 : direction === "down" ? -8 : 0;
 
   const variants: Variants = {
     hidden: { opacity: 0, y: yOffset },
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.25, ease: "easeOut", delay },
+      transition: { duration: 0.2, ease: "easeOut", delay },
     },
   };
 
@@ -81,11 +81,11 @@ export function StaggerChildren({
       {React.Children.map(children, (child) => (
         <motion.div
           variants={{
-            hidden: { opacity: 0, y: 16 },
+            hidden: { opacity: 0, y: 8 },
             visible: {
               opacity: 1,
               y: 0,
-              transition: { duration: 0.25, ease: "easeOut" },
+              transition: { duration: 0.2, ease: "easeOut" },
             },
           }}
         >
