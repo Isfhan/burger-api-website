@@ -5,6 +5,8 @@ authors: [isfhan]
 tags: [release, performance, middleware, monorepo]
 ---
 
+> **Note:** This post predates the BurgerAPI v0.14.0 architecture reset. Some statements (for example "backward compatible") no longer apply. The current framework does not promise backward compatibility, and the request lifecycle runs through the middleware pipeline. Verify current behavior against the docs and the v0.14.0 release post.
+
 We're excited to announce the release of **BurgerAPI v0.6.2**! This update focuses on performance optimization, architectural simplification, and improved project structure while maintaining 100% backward compatibility.
 
 {/* truncate */}
@@ -38,7 +40,7 @@ Different execution paths optimized for common scenarios:
 
 ### Key Optimizations
 
-**AOT (Ahead-of-Time) Compilation**: Routes are now compiled at server startup with pre-computed middleware arrays, reducing runtime overhead.
+**Startup Compilation**: Routes are now compiled at server startup with pre-computed middleware arrays, reducing runtime overhead.
 
 **Zero Runtime Allocations**: Pre-allocated arrays eliminate dynamic memory allocations during request processing.
 

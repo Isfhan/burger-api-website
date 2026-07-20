@@ -4,7 +4,7 @@ sidebar_label: Migrating to Validation 2.0
 
 # Migrating to Validation 2.0
 
-Validation 2.0 is **backward compatible**. If your app already uses Zod schemas, it keeps working with no changes. The new features are additive — you opt in only where you want them.
+Validation 2.0 was additive for existing Zod apps. Note that v0.14.0 is a pre-1.0 architecture reset and does **not** promise backward compatibility. If you are moving to v0.14.0, treat it as a new setup rather than an in-place upgrade.
 
 ## Existing Zod apps: no changes needed
 

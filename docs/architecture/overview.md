@@ -6,6 +6,7 @@ sidebar_label: Overview
 
 BurgerAPI is organized around a small set of cooperating pieces. This page is the map; the pages linked below go deeper.
 
+- **Compiler Pipeline** — the file tree is compiled into immutable `CompiledRoute`s before the server handles a single request ([Compiler Pipeline](./compiler-pipeline.md)).
 - **Hybrid Router** — matches each request on the fastest available strategy ([Routing Engine](./routing-engine.md)).
 - **Shared Request Context** — one lightweight object per request that exposes `req.query`, `req.params`, `req.route`, `req.validated`, and `req.set` ([BurgerContext](./burger-context.md)).
 - **Single Pipeline** — middleware, validation, and response handling run in one predictable set of processing steps, from the request coming in to the response going out ([Request Lifecycle](./request-lifecycle.md)).

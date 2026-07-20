@@ -5,7 +5,9 @@ authors: [isfhan]
 tags: [release, production, cli, config]
 ---
 
-**v0.9.3** focuses on production readiness and consistency. Builds use **AOT route discovery**: the CLI discovers routes at build time and embeds them so your app doesn't depend on the filesystem in production. New projects get a **`burger.config.ts`** for API/page dirs and prefixes, and the Burger constructor supports **`apiRoutes`** and **`pageRoutes`** for pre-built route lists. The CLI command for standalone executables is now **`burger-api build:exec`**, with default outputs under `.build/bundle/` and `.build/executable/`. Your middleware and options are preserved in the generated build entry.
+> **Note:** This post predates the BurgerAPI v0.14.0 architecture reset. Some statements (for example "backward compatible") no longer apply. The current framework does not promise backward compatibility, and the request lifecycle runs through the middleware pipeline. Verify current behavior against the docs and the v0.14.0 release post.
+
+**v0.9.3** focuses on production readiness and consistency. Builds use **build-time route discovery**: the CLI discovers routes at build time and embeds them so your app't depend on the filesystem in production. New projects get a **`burger.config.ts`** for API/page dirs and prefixes, and the Burger constructor supports **`apiRoutes`** and **`pageRoutes`** for pre-built route lists. The CLI command for standalone executables is now **`burger-api build:exec`**, with default outputs under `.build/bundle/` and `.build/executable/`. Your middleware and options are preserved in the generated build entry.
 
 {/* truncate */}
 
@@ -60,7 +62,7 @@ export default {
 
 Edit as needed. For build, the CLI resolves config from the current working directory (convention defaults: `./src/api`, `./src/pages`, `/api`, `/`).
 
-## Build-Time (AOT) Route Discovery
+## Build-Time Route Discovery
 
 `burger-api build` and `burger-api build:exec` no longer rely on runtime file scanning. The CLI discovers routes at build time, generates a virtual entry that imports them and passes `apiRoutes` / `pageRoutes` into `new Burger({ ... })`, then runs Bun's build. Your middleware and other options are preserved in that generated entry.
 

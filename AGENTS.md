@@ -42,7 +42,7 @@ Replace jargon: `shared prototype` → "same object template", `shape` (hidden c
 ## 2. BurgerAPI Content Constraints (carried over)
 
 - **Source of truth:** the framework package `D:\Coding\BurgerAPI-work\burger-api\packages\burger-api`
-  (currently **v0.12.0**). Verify behavior there before documenting it.
+  (currently **v0.14.0**). Verify behavior there before documenting it.
 - **Runtime:** requires **Bun ≥ 1.3.0**; **Zod ^4**. State these in install/prereq docs.
 - **Document only real public APIs.** `BurgerRequest` handler type is class-based at the
   type level; `BurgerContext` is the shared-prototype implementation behind it. `req.query`,
@@ -60,7 +60,7 @@ framework code and benchmarks out of it:
 - **`burger-api-website`** (this repo) — the Docusaurus site + blog
   (`https://burger-api.com`). User-facing documentation and release posts.
 - **`burger-api`** — the framework + CLI. The source of truth for API behavior
-  (currently **v0.12.0**). Verify behavior there before documenting it; do not
+  (currently **v0.14.0**). Verify behavior there before documenting it; do not
   copy framework code here.
 - **`burger-api-benchmarks`** — the dedicated, official home for all BurgerAPI
   performance benchmarks. Do **not** publish benchmark numbers on this site;
@@ -88,3 +88,48 @@ framework code and benchmarks out of it:
 - After edits, grep the docs for regressions of forbidden wording (`Phase`, `Roadmap`,
   `milestone`, `AOT`, `Elysia`, `Coming Soon`, `Under Development`) and leftover jargon
   (`shared prototype`, `hot path`, `dead-path elimination`).
+
+## 5. Writing Conventions (hard rules)
+
+- **No em dashes (`—`) in any doc/blog/changelog content.** Use a colon, period,
+  or `:` bullet separator instead. This rule applies to all newly generated
+  content. (Pre-existing pages written before this rule may still contain them;
+  do not silently rewrite those unless the task is an explicit cleanup.)
+- **Diagrams:** Mermaid is enabled (`markdown.mermaid: true`,
+  `@docusaurus/theme-mermaid`). Use ` ```mermaid ` fenced code blocks for
+  architecture/flow diagrams instead of ASCII art where it improves clarity.
+- **Release post titles** follow the form `BurgerAPI vX.Y.Z Released`
+  (not `BurgerAPI vX.Y.Z — The <Name>`). The blog `slug` stays
+  `burger-api-vX.Y.Z-release`.
+
+## 6. Architecture Reset Context
+
+BurgerAPI underwent a pre-1.0 architecture reset (see framework `ROADMAP.md`).
+The reset sets the version to **v0.14.0** and does **not** promise backward
+compatibility. Source of truth for current behavior is the `burger-api` package
+(currently **v0.14.0**); verify there before documenting.
+
+**What the current code actually does (document this, not the vision):**
+
+- The request lifecycle runs through a **middleware pipeline**:
+  `ServerOptions.globalMiddleware` followed by a route's `middleware` array.
+  A middleware returns `Response` (stop early), a function `(Response) =>
+  Promise<Response>` (transform the final response, applied in reverse order), or
+  `undefined` (continue). Validation, `405`/`Allow`, auto-`HEAD`, and loose
+  trailing-slash are compiled into the runtime.
+- Route-file conventions are `route.ts`, `schema.ts`, `openapi.ts`, and the
+  **reserved** `hooks.ts` / `use.ts` / `webhook.ts`. A `middleware.ts` route
+  file is rejected (middleware is registered as functions, not discovered as a
+  route file).
+- `hooks.ts`, `use.ts`, and `webhook.ts` are discovered and carried through the
+  compiler but are **not yet executed at runtime**. Document them only as
+  "reserved / carried through, not yet wired". Do not present `beforeHandle`,
+  `afterHandle`, `onError`, `onResponse`, or `provide` as working v0.14.0
+  features.
+- Pre-reset release posts (`v0.3.0` through `v0.9.9`) carry a disclaimer banner
+  noting they predate the reset. Their wording (e.g. "backward compatible",
+  "AOT") no longer applies. Do not use them as a source of current behavior.
+
+- No `Phase` / `roadmap` / `milestone` / `AOT` language in current docs.
+- When editing older pages that conflict with the reset, flag the conflict; do not
+  rewrite large pre-reset docs without an explicit request.

@@ -5,6 +5,8 @@ authors: [isfhan]
 tags: [release, typescript, cors, middleware]
 ---
 
+> **Note:** This post predates the BurgerAPI v0.14.0 architecture reset. Some statements (for example "backward compatible") no longer apply. The current framework does not promise backward compatibility, and the request lifecycle runs through the middleware pipeline. Verify current behavior against the docs and the v0.14.0 release post.
+
 We're excited to announce the release of **BurgerAPI v0.5.0**! This critical update fixes TypeScript support and adds new features to make your API development experience even better.
 
 {/* truncate */}

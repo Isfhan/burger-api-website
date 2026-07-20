@@ -35,7 +35,9 @@ const sidebars: SidebarsConfig = {
       label: "Architecture",
       items: [
         "architecture/overview",
+        "architecture/compiler-pipeline",
         "architecture/request-lifecycle",
+        "architecture/internal-flow",
         "architecture/routing-engine",
         "architecture/burger-context",
         "architecture/design-decisions",
