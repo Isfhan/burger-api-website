@@ -1,21 +1,56 @@
 ---
-sidebar_label: Middleware System
+sidebar_label: Hook System
 ---
 
-# Middleware System
+# Hook System
 
-Middleware is code that runs around your route handlers — **before** (and optionally **after**) them. Use it for logging, auth, CORS, and other logic shared by many routes. BurgerAPI supports **global** middleware (all routes) and **route-specific** middleware.
+BurgerAPI uses a **hook-based request lifecycle**. Hooks are not a traditional middleware stack renamed. They are named stages with clear jobs.
 
-## Execution order
+**Hooks** control when code runs on a request.  
+**Plugins** extend the application (and may register hooks). Keep them separate.
 
-Middleware is one stage of a single set of processing steps (a pipeline): **Global → Validation → Route-specific → Handler**. If any middleware returns a `Response`, the chain stops and that response is sent.
+## Six hooks (vision)
 
-See [Request Lifecycle](/docs/architecture/request-lifecycle) for the full request flow, and [Route-Specific Middleware](/docs/middleware/route-specific) for examples.
+| Hook | When |
+|------|------|
+| `onRequest` | Request enters the app |
+| `transform` | After routing, before validation (context decoration) |
+| `beforeRoute` | After validation, before the handler |
+| `afterRoute` | After the handler returns |
+| `mapResponse` | Before the response is sent (headers, cookies, etc.) |
+| `onError` | Any error in the lifecycle |
 
+```
+onRequest → Routing → transform → Validation → beforeRoute
+  → Handler → afterRoute → mapResponse
+```
+
+Errors jump to `onError`.
+
+## Scopes
+
+1. Framework  
+2. Plugin  
+3. Global (`src/hooks.ts`)  
+4. Route (`api/**/hooks.ts`)
+
+Request hooks run Framework → Plugin → Global → Route.  
+Response and error hooks run in reverse (Route first).
+
+There is **no** folder or group inheritance of hooks. Each route directory is self-contained.
+
+## Route convention files
+
+Alongside `route.ts`:
+
+- `hooks.ts` : route hooks  
+- `schema.ts` : validation  
+- `openapi.ts` : OpenAPI  
+- `config.ts` : route options (auth, cache, timeout, …)
 
 ## Related
 
-- [Global Middleware](/docs/middleware/global)
-- [Route-Specific Middleware](/docs/middleware/route-specific)
-- [Middleware Return Types](/docs/middleware/return-types)
-- [Request Context](/docs/core/request-handling)
+- [Global hooks](/docs/middleware/global)
+- [Route hooks](/docs/middleware/route-specific)
+- [Request lifecycle](/docs/architecture/request-lifecycle)
+- [BurgerContext](/docs/architecture/burger-context)

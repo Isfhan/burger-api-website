@@ -73,9 +73,7 @@ export function Hero() {
               </div>
 
               <p className="text-body text-ink-secondary m-0 mb-6  max-w-xl leading-relaxed">
-                File-based routing, Zod validation, automatic OpenAPI, and a
-                shared request context — a Bun-native framework built for
-                developer experience and performance.
+               BurgerAPI is a Bun-first, WinterCG-compatible TypeScript framework for building modern APIs with file-based routing, end-to-end type safety, and a clear project structure.
               </p>
 
               <div className="flex flex-wrap items-center gap-3 mb-6">

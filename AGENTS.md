@@ -1,135 +1,134 @@
-# BurgerAPI Website — Implementation & Documentation Standards
+# BurgerAPI Website — Documentation Standards
 
-These instructions apply to all edits to the `burger-api-website` Docusaurus site
-(`D:\Coding\BurgerAPI-work\burger-api-website`). Follow them for every documentation
-change so the site stays cohesive, beginner-friendly, and consistent.
+These instructions apply to all edits to `burger-api-website`.
 
-## 1. Documentation Writing Standards
+## 0. Source of truth
 
-Goal: documentation that is **easy to read, easy to navigate, and enjoyable to learn from**.
+**Architecture and product decisions:**
 
-1. **Do not repeat content.** Before writing a new page, search existing docs. Keep one
-   page as the **canonical source** for each topic. Summarize elsewhere and link to it.
-2. **Keep docs DRY.** Do not copy API descriptions, code snippets, architecture
-   explanations, validation rules, install steps, or config steps. Reuse via links.
-3. **Use simple English.** Short sentences, common words, active voice. Write for
-   developers whose first language may not be English.
-4. **Explain gradually.** What it is → why it exists → simple example → how it works →
-   related docs. Do not open with implementation details.
-5. **Keep examples simple.** Teach one idea at a time. Combine concepts only in dedicated
-   end-to-end tutorials.
-6. **Consistent structure.** Prefer: Introduction → Why use it → Basic example →
-   Explanation → Common use cases → Best practices → Related documentation.
-7. **Avoid unnecessary jargon.** Use plain language (shared request object, fewer memory
-   allocations, lazy loading, faster request processing). If a technical term is required,
-   explain it immediately in simple words.
-8. **Link instead of repeating.** Write a short summary + link to the dedicated page.
-9. **Final audit.** Before done: no duplicated explanations/examples, one primary page per
-   topic, natural cross-links, consistent terminology, clear simple writing, no need to
-   read the same explanation twice.
+`../burger-api-roadmaps/BURGERAPI_VISION.md`
 
-### Writing-style examples
-- ❌ "BurgerContext facilitates deferred query-string materialization through lazily evaluated accessors."
-- ✅ "BurgerContext only parses the query string when you use `req.query`."
-- ❌ "BurgerAPI leverages prototype sharing to maximize hidden-class stability."
-- ✅ "BurgerAPI shares one request structure across all requests. This helps Bun process requests more efficiently."
+When website content conflicts with the vision, **the vision wins**.  
+Do not invent or redesign architecture. If unclear, stop and ask.
 
-Replace jargon: `shared prototype` → "same object template", `shape` (hidden class) →
-"structure", `hot path` → "busiest code path", `allocat*` → "use memory", `overhead` →
-"extra cost", `dead-path elimination` → one plain sentence, `micro-optimizations` →
-"small low-level tweaks", `user-space dispatch` → "routing in our own code".
+Also: `../burger-api-roadmaps/ARCHITECTURE.md`, framework `AGENTS.md`.
 
-## 2. BurgerAPI Content Constraints (carried over)
+The site should teach the **vision-aligned public API**. Where the shipped package
+still uses legacy names, say so briefly and show the target API.
 
-- **Source of truth:** the framework package `D:\Coding\BurgerAPI-work\burger-api\packages\burger-api`
-  (currently **v0.14.0**). Verify behavior there before documenting it.
-- **Runtime:** requires **Bun ≥ 1.3.0**; **Zod ^4**. State these in install/prereq docs.
-- **Document only real public APIs.** `BurgerRequest` handler type is class-based at the
-  type level; `BurgerContext` is the shared-prototype implementation behind it. `req.query`,
-  `req.route`, `req.set`, `req.validated`, `req.params` are the public request fields.
-- **No roadmap / phase / milestone / AOT language.** Do not present capabilities as "coming
-  soon", "under development", "introduced in", or "now supports". Describe them as inherent.
-- **No comparisons to other frameworks** (Elysia, etc.).
-- **No published benchmark numbers.** Performance pages describe design philosophy only.
+---
 
-## 2b. Related Repositories
+## 1. Documentation writing standards
 
-BurgerAPI is split across several repositories. This repo is docs only — keep
-framework code and benchmarks out of it:
+1. Do not repeat content. One canonical page per topic; link elsewhere.
+2. Keep docs DRY.
+3. Simple English. Short sentences. Active voice.
+4. Explain gradually: what → why → example → how → related.
+5. One idea per example.
+6. Prefer: Introduction → Why → Example → Explanation → Use cases → Best practices → Related.
+7. Avoid jargon; explain terms when required.
+8. Link instead of copying.
+9. Final audit for duplication and terminology.
 
-- **`burger-api-website`** (this repo) — the Docusaurus site + blog
-  (`https://burger-api.com`). User-facing documentation and release posts.
-- **`burger-api`** — the framework + CLI. The source of truth for API behavior
-  (currently **v0.14.0**). Verify behavior there before documenting it; do not
-  copy framework code here.
-- **`burger-api-benchmarks`** — the dedicated, official home for all BurgerAPI
-  performance benchmarks. Do **not** publish benchmark numbers on this site;
-  link to that repo instead of embedding measurements.
+### Writing style
 
-- The framework uses **`route.ts`** files for routes (never `<name>.ts` as a route file).
+- Prefer `ctx` / `BurgerContext` in new examples.
+- No em dashes (`—`). Use colon, period, or bullets.
+- No comparisons to other frameworks.
+- No published benchmark numbers (link to `burger-api-benchmarks` only).
+- No Phase / roadmap / milestone language in user docs.
 
-## 3. Terminology (use consistently)
+---
 
-- **BurgerContext** = the canonical name for the shared request context. "request context"
-  is the plain-language description. Reserve "request object" for the native `Request` /
-  `BurgerRequest` instance (`req`).
-- **route handler** (not "handler") in prose; `Handlers` page title → "Route Handlers".
-- **query string** = raw `?…` portion / lazy parsing; **query parameters** = parsed values
-  via `req.query`.
-- **API directory** (capitalized) in prose; `apiDir` is the config key.
-- **route** is the primary term in framework/routing docs; **endpoint** only for OpenAPI/REST.
-- **validation schema** = "the `schema` export" (define on first use per page).
+## 2. Target architecture (document this)
+
+### Runtime
+
+- Bun ≥ 1.3.0 primary; Node 24+ and WinterCG edge where practical
+- Zod ^4 / Standard Schema
+
+### Project shape
+
+```
+burger.build.ts          # build-time only
+src/index.ts
+src/plugins.ts
+src/providers.ts
+src/hooks.ts
+src/api/**/
+ecosystem/hooks/
+ecosystem/plugins/
+ecosystem/skills/
+```
+
+### Route convention files (first-class)
+
+Each route directory is self-contained (**no group inheritance**):
+
+| File | Role |
+|------|------|
+| `route.ts` | `export async function GET(ctx: BurgerContext)` → `Response` |
+| `schema.ts` | `export const GET = { body, query, ... }` |
+| `hooks.ts` | Route hooks |
+| `openapi.ts` | `export const GET = { summary, tags, ... }` |
+| `config.ts` | Route options (auth, cache, timeout, …) |
+
+Per-method named exports (`GET`, `POST`, …) on route/schema/openapi.
+
+### Hooks vs plugins
+
+- **Hooks** = request lifecycle (`onRequest`, `transform`, `beforeRoute`, `afterRoute`, `mapResponse`, `onError`)
+- **Plugins** = application extensions (`burger.usePlugin` in `src/plugins.ts`)
+
+Keep separate. Do not teach a middleware framework model as the primary API.
+
+### Context
+
+Public type: **`BurgerContext`**. Standard Web `Response` only.
+
+### Validation
+
+After `transform`, before `beforeRoute`. Throw `ValidationError` → `onError` → default 422 + RFC 9457.
+
+### Auth
+
+Official ecosystem **plugins** under `ecosystem/plugins/` integrating with hooks + `config.ts`. Core is auth-agnostic.
+
+### Config layers
+
+| Layer | Where |
+|-------|--------|
+| Build | `burger.build.ts` |
+| App | `new Burger({...})` |
+| Plugins | `src/plugins.ts` |
+| Route | `config.ts` |
+
+### Planned / not planned
+
+- Planned: file-based WebSocket router (`src/websocket/**/ws.ts`)
+- Not planned: dedicated webhook router, ORM, group inheritance
+
+### Legacy (do not teach as primary)
+
+`globalMiddleware`, `export const middleware`, `BurgerRequest` as primary type,
+`beforeHandle`/`afterHandle`/`onResponse`/lifecycle `provide`, `burger.config.ts`,
+route `use.ts`/`webhook.ts`, group inheritance, lowercase schema `get`/`post` as primary.
+
+---
+
+## 3. Related repositories
+
+- `burger-api-website` — this site
+- `burger-api` — framework + CLI
+- `burger-api-benchmarks` — benchmarks only
+- `burger-api-roadmaps` — vision + roadmaps
 
 ## 4. Verification
 
-- `bun run build` must pass. `docusaurus.config.ts` sets `onBrokenLinks: "throw"`, so every
-  new/kept link must resolve to a real page.
-- `bun run typecheck` (tsc) must pass.
-- After edits, grep the docs for regressions of forbidden wording (`Phase`, `Roadmap`,
-  `milestone`, `AOT`, `Elysia`, `Coming Soon`, `Under Development`) and leftover jargon
-  (`shared prototype`, `hot path`, `dead-path elimination`).
+- `bun run build` must pass (`onBrokenLinks: "throw"`)
+- `bun run typecheck` must pass
+- Grep for forbidden: Phase, roadmap, Elysia, Coming Soon, middleware-as-primary framing
 
-## 5. Writing Conventions (hard rules)
+## 5. Sidebar migration note
 
-- **No em dashes (`—`) in any doc/blog/changelog content.** Use a colon, period,
-  or `:` bullet separator instead. This rule applies to all newly generated
-  content. (Pre-existing pages written before this rule may still contain them;
-  do not silently rewrite those unless the task is an explicit cleanup.)
-- **Diagrams:** Mermaid is enabled (`markdown.mermaid: true`,
-  `@docusaurus/theme-mermaid`). Use ` ```mermaid ` fenced code blocks for
-  architecture/flow diagrams instead of ASCII art where it improves clarity.
-- **Release post titles** follow the form `BurgerAPI vX.Y.Z Released`
-  (not `BurgerAPI vX.Y.Z — The <Name>`). The blog `slug` stays
-  `burger-api-vX.Y.Z-release`.
-
-## 6. Architecture Reset Context
-
-BurgerAPI underwent a pre-1.0 architecture reset (see framework `ROADMAP.md`).
-The reset sets the version to **v0.14.0** and does **not** promise backward
-compatibility. Source of truth for current behavior is the `burger-api` package
-(currently **v0.14.0**); verify there before documenting.
-
-**What the current code actually does (document this, not the vision):**
-
-- The request lifecycle runs through a **middleware pipeline**:
-  `ServerOptions.globalMiddleware` followed by a route's `middleware` array.
-  A middleware returns `Response` (stop early), a function `(Response) =>
-  Promise<Response>` (transform the final response, applied in reverse order), or
-  `undefined` (continue). Validation, `405`/`Allow`, auto-`HEAD`, and loose
-  trailing-slash are compiled into the runtime.
-- Route-file conventions are `route.ts`, `schema.ts`, `openapi.ts`, and the
-  **reserved** `hooks.ts` / `use.ts` / `webhook.ts`. A `middleware.ts` route
-  file is rejected (middleware is registered as functions, not discovered as a
-  route file).
-- `hooks.ts`, `use.ts`, and `webhook.ts` are discovered and carried through the
-  compiler but are **not yet executed at runtime**. Document them only as
-  "reserved / carried through, not yet wired". Do not present `beforeHandle`,
-  `afterHandle`, `onError`, `onResponse`, or `provide` as working v0.14.0
-  features.
-- Pre-reset release posts (`v0.3.0` through `v0.9.9`) carry a disclaimer banner
-  noting they predate the reset. Their wording (e.g. "backward compatible",
-  "AOT") no longer applies. Do not use them as a source of current behavior.
-
-- No `Phase` / `roadmap` / `milestone` / `AOT` language in current docs.
-- When editing older pages that conflict with the reset, flag the conflict; do not
-  rewrite large pre-reset docs without an explicit request.
+Prefer category **Hooks** over **Middleware**. Prefer **BurgerContext** over **BurgerRequest** API pages. Ecosystem = hooks + plugins.

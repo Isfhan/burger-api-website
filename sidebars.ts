@@ -23,7 +23,7 @@ const sidebars: SidebarsConfig = {
         "core-concepts/routing",
         "core-concepts/handlers",
         "core/request-handling",
-        "core-concepts/middleware",
+        "core-concepts/middleware", // legacy path; content → hooks (vision)
         "core-concepts/validation",
         "core-concepts/openapi",
         "core/configuration",
@@ -68,7 +68,7 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
-      label: "Middleware",
+      label: "Hooks",
       items: [
         "middleware/system",
         "middleware/global",
@@ -105,11 +105,11 @@ const sidebars: SidebarsConfig = {
       items: [
         "core/burger-class",
         "core/server-options",
-        "api/burger-request",
+        "api/burger-request", // migrate content to BurgerContext (vision)
         "api/context-set",
         "api/route-meta",
         "api/validation-types",
-        "api/middleware-types",
+        "api/middleware-types", // legacy name; hooks types
         "api/request-api",
         "api/response-mutation",
         "api/route-metadata",
@@ -133,7 +133,7 @@ const sidebars: SidebarsConfig = {
         "examples/authentication",
         "examples/pagination",
         "examples/validation",
-        "examples/middleware",
+        "examples/middleware", // hooks examples (legacy path)
         "examples/complete-project",
       ],
     },
@@ -161,7 +161,7 @@ const sidebars: SidebarsConfig = {
       label: "Ecosystem",
       items: [
         "ecosystem/introduction",
-        "ecosystem/middleware",
+        "ecosystem/middleware", // hooks + plugins overview (legacy slug)
         "ecosystem/cors",
         "ecosystem/logger",
         "ecosystem/rate-limiter",
