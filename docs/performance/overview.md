@@ -16,7 +16,7 @@ By leaning on Bun's built-in HTTP router for static routes, BurgerAPI avoids a c
 
 ## Lazy query parsing
 
-`req.query` parses the query string only when you read it. Requests that never read the query do no parsing and use no extra memory. The cost grows only with what the handler actually uses.
+`ctx.query` parses the query string only when you read it. Requests that never read the query do no parsing and use no extra memory. The cost grows only with what the handler actually uses.
 
 ## Shared request context
 
@@ -24,12 +24,10 @@ Each request gets one context object built from the same template. It is cheap t
 
 ## Efficient request processing
 
-Middleware, validation, and response handling run in one set of processing steps (a pipeline). Response changes collected in `req.set` are applied in a single step at the end, and when nothing is set the original `Response` is returned without rebuild. Using less memory in the code that runs for every request keeps response times steady under heavy load.
+Hooks, validation, and response handling run in one set of processing steps (a pipeline). Response changes collected in `ctx.set` are applied in a single step at the end, and when nothing is set the original `Response` is returned without rebuild. Using less memory in the code that runs for every request keeps response times steady under heavy load.
 
-These choices are described in more detail in [Architecture](../architecture/overview.md).
-
+These choices keep response times steady under heavy load.
 
 ## Related
 
-- [Architecture Overview](/docs/architecture/overview)
 - [Request Context](/docs/core/request-handling)

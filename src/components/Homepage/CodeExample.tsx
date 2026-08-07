@@ -19,7 +19,7 @@ import { Burger } from 'burger-api';
 
 // Step 2: Create and configure your API server
 const burger = new Burger({
-  apiDir: "api", // Where your API routes are
+  apiDir: "./src/api", // Where your API routes are
 });
 
 // Step 3: Start the server on port 4000
@@ -28,11 +28,11 @@ burger.serve(4000);`,
   {
     id: "route",
     title: "api/route.ts",
-    code: `// Step 1: Import the BurgerRequest type from burger-api 
-import type { BurgerRequest } from 'burger-api';
+    code: `// Step 1: Import the BurgerContext type from burger-api 
+import type { BurgerContext } from 'burger-api';
 
-// Step 2: Define a GET route handler that takes a BurgerRequest
-export async function GET(req: BurgerRequest) {
+// Step 2: Define a GET route handler that takes a BurgerContext
+export async function GET(ctx: BurgerContext) {
   // Step 3: Return a JSON response with a hello world message
   return Response.json({ message: "Hello world" });
 }`,
@@ -40,16 +40,16 @@ export async function GET(req: BurgerRequest) {
   {
     id: "context",
     title: "api/products/route.ts",
-    code: `import type { BurgerRequest } from 'burger-api';
+    code: `import type { BurgerContext } from 'burger-api';
 
-// Query strings are parsed lazily through req.query
-export async function GET(req: BurgerRequest) {
-  const { limit = "10", tag } = req.query;
+// Query strings are parsed lazily through ctx.query
+export async function GET(ctx: BurgerContext) {
+  const { limit = "10", tag } = ctx.query;
 
   // ...look up products by tag and limit...
 
   // Mutate the outgoing response in one place
-  req.set = { headers: { "x-total": String(total) } };
+  ctx.set = { headers: { "x-total": String(total) } };
   return Response.json(products);
 }`,
   },

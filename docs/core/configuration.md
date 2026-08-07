@@ -89,5 +89,5 @@ BurgerAPI does not ship its own `.env` loader. Bun loads `.env` natively. Option
 ## Related
 
 - [Applications](/docs/core-concepts/applications)
-- [Hooks](/docs/middleware/system)
+- [Hooks](/docs/hooks/system)
 - [Ecosystem](/docs/ecosystem/introduction)

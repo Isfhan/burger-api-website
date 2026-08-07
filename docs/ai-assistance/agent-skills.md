@@ -7,7 +7,7 @@ sidebar_position: 1
 
 # AI Agent Skills
 
-Agent Skills provide structured, AI-readable documentation for your BurgerAPI project. They replace the legacy flat `.llm-context` files with a standard format that modern agentic IDEs discover automatically.
+Agent Skills provide structured, AI-readable documentation for your BurgerAPI project. Modern agentic IDEs discover them automatically.
 
 ## What Are Agent Skills?
 
@@ -19,7 +19,7 @@ Instead of attaching files manually, you install a skill once and your AI assist
 
 1. **Install** — `burger-api skills install` downloads the burger-api skill to `.agents/skills/burger-api/`
 2. **Discover** — Agentic IDEs scan `.agents/skills/` at project root and load relevant skills
-3. **Activate** — When you ask about routing, middleware, or CLI tasks, the agent uses the skill as context
+3. **Activate** — When you ask about routing, hooks, or CLI tasks, the agent uses the skill as context
 
 ## Installation
 
@@ -59,7 +59,7 @@ When skills are installed, your project includes:
         └── references/
             ├── routing.md
             ├── validation.md
-            ├── middleware.md
+            ├── hooks.md
             ├── cli.md
             └── openapi.md
 ```
@@ -75,17 +75,6 @@ No configuration needed — these tools discover `.agents/skills/` automatically
 - **GitHub Copilot** — reads from `.agents/skills/`
 - Any tool supporting the agentskills.io standard
 
-## Migration from `.llm-context`
-
-If your project was created before CLI v0.9.9, it may have an `ecosystem/.llm-context/` folder. To adopt the new format:
-
-```bash
-burger-api skills install
-```
-
-The skill at `.agents/skills/burger-api/` provides the same context in a structured format. The old `ecosystem/.llm-context/` folder can be safely removed.
-
 ## Next Steps
 
 - [Skills CLI Command Reference](/docs/cli/skills)
-- [LLM Context Files (Legacy)](/docs/ai-assistance/llm-context-files)

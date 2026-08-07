@@ -21,7 +21,7 @@ BurgerAPI supports a few route shapes, all built from the same folder rules:
 
  - **Static routes** — fixed paths. See [Static API Routes](/docs/routing/api/static-routes).
  - **Dynamic routes** — capture a segment with `[param]`. See [Dynamic Routes](/docs/routing/api/dynamic-routes).
- - **Wildcard routes** — match the rest of the path with `[...rest]`. See [Wildcard Routes](/docs/routing/api/wildcard-routes).
+ - **Wildcard routes** — match the rest of the path with a `[...]` folder. See [Wildcard Routes](/docs/routing/api/wildcard-routes).
  - **Route groups** — organize with `(folder)` without changing the URL. See [Route Groups](/docs/routing/api/route-groups).
 
 These shapes nest freely by folder depth. See [Nested Routes](/docs/routing/api/nested-routes) for how paths grow with folders.
@@ -34,4 +34,3 @@ For full API details and examples, see [Static API Routes](/docs/routing/api/sta
 - [Static API Routes](/docs/routing/api/static-routes)
 - [Dynamic Routes](/docs/routing/api/dynamic-routes)
 - [Wildcard Routes](/docs/routing/api/wildcard-routes)
-- [Request Lifecycle](/docs/architecture/request-lifecycle)

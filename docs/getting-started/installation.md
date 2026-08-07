@@ -19,7 +19,7 @@ BurgerAPI is built for the [Bun.js](https://bun.sh/) runtime. Make sure you have
 
 ## Recommended: Using the Burger API CLI
 
-Burger API comes with a powerful CLI tool that makes it easy to scaffold new projects and manage middleware. Install it globally to get started:
+Burger API comes with a powerful CLI tool that makes it easy to scaffold new projects and manage hooks and plugins. Install it globally to get started:
 
 ### Installation
 

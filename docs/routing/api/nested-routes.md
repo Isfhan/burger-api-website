@@ -26,4 +26,3 @@ For each route type, see [Static API Routes](/docs/routing/api/static-routes), [
 - [File-Based Routing](/docs/routing/file-based-routing)
 - [Static API Routes](/docs/routing/api/static-routes)
 - [Dynamic Routes](/docs/routing/api/dynamic-routes)
-- [Request Lifecycle](/docs/architecture/request-lifecycle)

@@ -10,11 +10,11 @@ A few habits that keep validation clear, fast, and easy to maintain.
 
 Begin with plain Zod schemas on the slots you actually use. You do not need every feature on day one:
 
-```typescript
-export const schema = {
-  post: {
-    body: z.object({ name: z.string().min(1), price: z.number() }),
-  },
+```typescript title="api/orders/schema.ts"
+import { z } from "zod";
+
+export const POST = {
+  body: z.object({ name: z.string().min(1), price: z.number() }),
 };
 ```
 
@@ -28,7 +28,7 @@ When the same shape appears in more than one route, register it as a [model](/do
 
 ## Keep handlers thin
 
-Validation runs before your handler, so the handler can trust `req.validated`. Do not re-check types inside the handler — just use the data.
+Validation runs before your handler, so the handler can trust `ctx.validated`. Do not re-check types inside the handler — just use the data.
 
 ## Add response validation where it matters
 
@@ -36,7 +36,7 @@ Use `response` schemas in `dev` mode to get free feedback that a handler returns
 
 ## Choose the right error format
 
-The default `plain` error is easy to parse. If your clients expect RFC 9457, set `errorFormat: "problem+json"` — see [Problem Details](/docs/validation/problem-details). For full control, supply an `errorRenderer`.
+The default error body follows RFC 9457. If your clients expect the simpler grouped body, set `errorFormat: "plain"` — see [Problem Details](/docs/validation/problem-details). For full control, supply an `errorRenderer`.
 
 ## Don't over-validate
 

@@ -8,16 +8,15 @@ BurgerAPI can also check what your handler **returns**. Declare a `response` sch
 
 ## Example
 
-```typescript
-// api/status/route.ts
+```typescript title="api/status/schema.ts"
 import { z } from "zod";
 
-export const schema = {
-  get: {
-    response: { 200: z.object({ ok: z.boolean() }) },
-  },
+export const GET = {
+  response: { 200: z.object({ ok: z.boolean() }) },
 };
+```
 
+```typescript title="api/status/route.ts"
 export function GET() {
   return Response.json({ ok: true });
 }

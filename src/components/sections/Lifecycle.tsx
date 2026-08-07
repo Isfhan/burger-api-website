@@ -1,37 +1,45 @@
 import React from "react";
-import { ShieldCheck, ArrowRight, Zap, GitBranch, Filter, ShieldCheck as Shield, Code2 } from "lucide-react";
+import { ShieldCheck, ArrowRight, Zap, Filter, Workflow, Code2, Network } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { Section, SectionHeader, CodeBlock, ScrollReveal, Button, Card } from "../ui";
+import { Section, SectionHeader, CodeBlock, ScrollReveal, Button } from "../ui";
 
-const code = `import type { BurgerRequest } from "burger-api";
+const code = `// src/hooks.ts — global lifecycle hooks
+import type { BurgerContext } from "burger-api";
 
-export async function middleware(req: BurgerRequest) {
-  const token = req.headers.get("authorization");
-  if (!token) {
-    return Response.json(
-      { error: "Unauthorized" },
-      { status: 401 }
-    );
-  }
-  // Continue to the next middleware or handler
-}`;
+export const onRequest = [
+  (ctx: BurgerContext) => {
+    ctx.headers.set("x-request-id", crypto.randomUUID());
+  },
+];
+
+export const beforeRoute = [
+  (ctx: BurgerContext) => {
+    if (!ctx.headers.get("authorization")) {
+      return Response.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+  },
+];`;
 
 const pipeline: { label: string; icon: LucideIcon }[] = [
   { label: "Request", icon: Zap },
-  { label: "Global middleware", icon: GitBranch },
-  { label: "Route middleware", icon: Filter },
-  { label: "Validation", icon: Shield },
+  { label: "onRequest", icon: Network },
+  { label: "transform", icon: Workflow },
+  { label: "Validation", icon: ShieldCheck },
+  { label: "beforeRoute", icon: Filter },
   { label: "Handler", icon: Code2 },
 ];
 
-export function Middleware() {
+export function Lifecycle() {
   return (
-    <Section id="middleware">
+    <Section id="lifecycle">
       <ScrollReveal>
         <SectionHeader
-          eyebrow="Middleware"
+          eyebrow="Lifecycle hooks"
           title="Compose auth, logging, and CORS"
-          subtitle="Apply middleware globally or per route. Return a Response to short-circuit, or continue down the pipeline."
+          subtitle="Six named hooks control every request: onRequest, transform, beforeRoute, afterRoute, mapResponse, and onError. Return a Response to short-circuit, or continue down the pipeline."
         />
       </ScrollReveal>
 
@@ -58,15 +66,15 @@ export function Middleware() {
         </ScrollReveal>
 
         <ScrollReveal delay={0.05}>
-          <CodeBlock code={code} filename="api/admin/middleware.ts" />
+          <CodeBlock code={code} filename="src/hooks.ts" />
         </ScrollReveal>
       </div>
 
       <ScrollReveal delay={0.1}>
         <div className="mt-10 flex justify-center">
-          <Button to="/docs/middleware/global" variant="secondary">
+          <Button to="/docs/hooks/system" variant="secondary">
             <ShieldCheck size={16} aria-hidden />
-            Middleware docs
+            Hooks docs
             <ArrowRight
               size={16}
               className="transition-transform duration-150 ease-out group-hover:translate-x-0.5"

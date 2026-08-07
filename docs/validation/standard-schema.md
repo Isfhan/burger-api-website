@@ -4,27 +4,29 @@ sidebar_label: Standard Schema Support
 
 # Standard Schema Support
 
-BurgerAPI is not locked to Zod. Any schema library that follows the [Standard Schema](https://standardschema.dev/) contract works through the same `schema` export — no extra setup, no new dependency.
+BurgerAPI is not locked to Zod. Any schema library that follows the [Standard Schema](https://standardschema.dev/) contract works through the same `schema.ts` convention — no extra setup, no new dependency.
 
 Libraries that implement Standard Schema include [Valibot](https://valibot.dev/), [ArkType](https://arktype.io/), and Zod v4 itself.
 
 ## Example with a Standard Schema library
 
-```typescript
+```typescript title="api/products/schema.ts"
 import { object, string, number } from "valibot"; // or any ~standard library
-import type { BurgerRequest } from "burger-api";
 
-export const schema = {
-  post: {
-    body: object({
-      name: string(),
-      price: number(),
-    }),
-  },
+export const POST = {
+  body: object({
+    name: string(),
+    price: number(),
+  }),
 };
+```
 
-export function POST(req: BurgerRequest) {
-  const { name, price } = req.validated.body;
+```typescript title="api/products/route.ts"
+import type { BurgerContext } from "burger-api";
+import type { POST as RouteSchema } from "./schema";
+
+export function POST(ctx: BurgerContext<typeof RouteSchema>) {
+  const { name, price } = ctx.validated.body;
   return Response.json({ name, price });
 }
 ```

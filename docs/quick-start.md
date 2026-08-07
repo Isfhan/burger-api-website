@@ -28,15 +28,28 @@ This is the short version. For every install method, see [Installation](/docs/ge
 2. **Create a project, enter it, and start the dev server:**
 
     ```bash
-    burger-api create my-app
-    cd my-app
+    burger-api create my-api
+    cd my-api
     bun run dev
     ```
 
 3. **Open** [http://localhost:4000](http://localhost:4000) in your browser.
 
+## Language choice
+
+BurgerAPI treats TypeScript and JavaScript as first-class languages. The
+scaffold defaults to TypeScript; pass `--lang js` for a JavaScript project
+(`jsconfig.json` with `checkJs`, `.js` / `.mjs` route files, JSDoc types):
+
+```bash
+burger-api create my-api --lang js
+```
+
+See [JavaScript](/docs/javascript) for details.
+
 ## Next steps
 
 - [Installation](/docs/getting-started/installation) — Full install options (standalone executable, manual setup).
-- [CLI Tool](/docs/getting-started/cli) — All CLI commands (create, add, list, serve, build, build:exec).
-- [Configuration](/docs/core/configuration) — Configure the Burger instance (apiDir, middleware, OpenAPI).
+- [CLI Tool](/docs/getting-started/cli) — All CLI commands (create, add, list, dev, build, start).
+- [Key Concepts](/docs/key-concepts) — Routing, hooks, plugins, validation.
+- [JavaScript](/docs/javascript) — JavaScript with JSDoc types.

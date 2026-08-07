@@ -12,25 +12,27 @@ Query strings, path parameters, headers, and cookies always arrive as **text**. 
 
 Coercion is **opt-in and off by default**, so existing apps keep their exact behavior. Enable it for the whole app:
 
-```typescript
-// burger.config.ts
-export default {
+```typescript title="src/index.ts"
+import { Burger } from "burger-api";
+
+const app = new Burger({
+  apiDir: "./src/api",
   validation: { coerce: true },
+});
+```
+
+Or just for one route, with the `coerce` flag on that method's schema:
+
+```typescript title="api/stats/schema.ts"
+import { z } from "zod";
+
+export const GET = {
+  query: z.object({ n: z.number(), b: z.boolean() }),
+  coerce: true,
 };
 ```
 
-Or just for one route, with the `coerce` flag on that method:
-
-```typescript
-export const schema = {
-  get: {
-    query: z.object({ n: z.number(), b: z.boolean() }),
-    coerce: true,
-  },
-};
-```
-
-Now `?n=42&b=true` validates cleanly and `req.validated.query` holds `{ n: 42, b: true }` (real number and boolean).
+Now `?n=42&b=true` validates cleanly and `ctx.validated.query` holds `{ n: 42, b: true }` (real number and boolean).
 
 ## What gets converted
 
@@ -40,7 +42,7 @@ Now `?n=42&b=true` validates cleanly and `req.validated.query` holds `{ n: 42, b
 | `z.boolean()` | boolean (`"true"` → `true`, `"false"` → `false`) |
 | `z.date()` | `Date` |
 
-Coercion applies to `query`, `params`, `headers`, and `cookie` — not to the request `body` (JSON bodies are already typed).
+Coercion applies to `query`, `params`, `headers`, and `cookies` — not to the request `body` (JSON bodies are already typed).
 
 ## Safe by design
 

@@ -4,7 +4,7 @@ sidebar_label: Response Types
 
 # Response Types
 
-Route handlers and middleware return **Response** objects. BurgerAPI uses the standard Web API [Response](https://developer.mozilla.org/en-US/docs/Web/API/Response).
+Route handlers and hooks return **Response** objects. BurgerAPI uses the standard Web API [Response](https://developer.mozilla.org/en-US/docs/Web/API/Response) only.
 
 ## Common patterns
 
@@ -33,7 +33,7 @@ return new Response(body, {
 });
 ```
 
-Middleware can return a **Response** to stop the chain, or **undefined** to continue, or a **function** that receives the handler’s response and returns a new Response (e.g. for CORS). See [Middleware Return Types](/docs/middleware/return-types) and [After Middleware](/docs/middleware/after).
+A hook can return a **Response** to stop the pipeline, or **undefined** to continue, or a function that receives the handler's response and returns a new Response (e.g. for CORS). Response phases like `mapResponse` decorate the final response. See [Hook System](/docs/hooks/system) and [Hook Return Types](/docs/hooks/return-types).
 
 
 ## Related

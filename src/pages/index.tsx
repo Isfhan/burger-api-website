@@ -10,11 +10,6 @@ const Performance = lazy(() =>
     default: m.Performance,
   }))
 );
-const Architecture = lazy(() =>
-  import("../components/sections/Architecture").then((m) => ({
-    default: m.Architecture,
-  }))
-);
 const CodeExamples = lazy(() =>
   import("../components/sections/CodeExamples").then((m) => ({
     default: m.CodeExamples,
@@ -35,9 +30,9 @@ const Validation = lazy(() =>
     default: m.Validation,
   }))
 );
-const Middleware = lazy(() =>
-  import("../components/sections/Middleware").then((m) => ({
-    default: m.Middleware,
+const Lifecycle = lazy(() =>
+  import("../components/sections/Lifecycle").then((m) => ({
+    default: m.Lifecycle,
   }))
 );
 const OpenAPI = lazy(() =>
@@ -86,12 +81,11 @@ export default function Home(): ReactNode {
           <Features />
           <Suspense fallback={<SectionFallback />}>
             <Performance />
-            <Architecture />
             <CodeExamples />
             <DeveloperExperience />
             <FileRouting />
             <Validation />
-            <Middleware />
+            <Lifecycle />
             <OpenAPI />
             <CLI />
             <DocsCTA />

@@ -6,8 +6,9 @@ slug: /
 
 # Welcome to BurgerAPI
 
-BurgerAPI is a Bun-first, WinterCG-compatible TypeScript framework for building modern APIs with file-based routing, end-to-end type safety, and a clear project structure.
+BurgerAPI is a Bun-first, WinterCG-compatible framework for building modern APIs with file-based routing, end-to-end type safety, and a clear project structure. TypeScript and JavaScript are both first-class: the same conventions work with `.ts`, `.js`, and `.mjs` route files, and JavaScript projects get full JSDoc type-checking.
 
+Version 1.0.0 is out: `burger-api` and `@burger-api/cli` are stable at `1.0.0`.
 
 ### What BurgerAPI is built around
 
@@ -26,22 +27,17 @@ BurgerAPI is a Bun-first, WinterCG-compatible TypeScript framework for building 
 
 - **[CLI Quick Start](./getting-started/cli.md)**
 - **[Key Concepts](./key-concepts.md)**
+- **[JavaScript](./javascript.md)**
 - **[Routing](./routing/file-based-routing.md)**
-- **[Hooks](./middleware/system.md)** (sidebar label: Hooks; path may still say middleware until pages are renamed)
+- **[Hooks](./hooks/system.md)**
 - **[Validation](./validation/zod.md)**
 - **[OpenAPI](./api/openapi.md)**
+- **[Deployment](./deployment/bun.md)**
 - **[Ecosystem](./ecosystem/introduction.md)**
 
 ### Core ideas
 
-- **[Architecture](./architecture/overview.md)**
-- **[BurgerContext](./architecture/burger-context.md)**
 - **[Performance](./performance/overview.md)**
-
-### Planned / not planned
-
-- **Planned:** file-based WebSocket router under `src/websocket/`.
-- **Not planned:** dedicated webhook router (use normal HTTP routes), ORM, group inheritance.
 
 ## Related
 

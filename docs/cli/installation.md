@@ -4,7 +4,7 @@ sidebar_label: CLI Installation
 
 # CLI Installation
 
-Install the Burger API CLI to create projects, add middleware, and build for production.
+Install the Burger API CLI to create projects, add hooks and plugins, and build for production.
 
 ```bash
 bun add -g @burger-api/cli

@@ -5,8 +5,6 @@ authors: [isfhan]
 tags: [release, production, cli, config]
 ---
 
-> **Note:** This post predates the BurgerAPI v0.14.0 architecture reset. Some statements (for example "backward compatible") no longer apply. The current framework does not promise backward compatibility, and the request lifecycle runs through the middleware pipeline. Verify current behavior against the docs and the v0.14.0 release post.
-
 **v0.9.3** focuses on production readiness and consistency. Builds use **build-time route discovery**: the CLI discovers routes at build time and embeds them so your app't depend on the filesystem in production. New projects get a **`burger.config.ts`** for API/page dirs and prefixes, and the Burger constructor supports **`apiRoutes`** and **`pageRoutes`** for pre-built route lists. The CLI command for standalone executables is now **`burger-api build:exec`**, with default outputs under `.build/bundle/` and `.build/executable/`. Your middleware and options are preserved in the generated build entry.
 
 {/* truncate */}
@@ -95,7 +93,7 @@ Both are optional. Existing code using only `apiDir` / `pageDir` is unchanged.
 
 ## Upgrade and Migration
 
-If you use `burger-api build:executable` or rely on the old default output paths, see **[Migrating to BurgerAPI 0.9](/docs/migration/migrating-to-0.9)** for a short checklist.
+If you use `burger-api build:executable`, note that the command is now `burger-api build:exec`.
 
 Otherwise, upgrade and enjoy production-ready builds:
 

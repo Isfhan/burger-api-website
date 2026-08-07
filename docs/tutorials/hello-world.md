@@ -31,9 +31,8 @@ cd my-burger-api
 
 This command:
 
-- Generates a basic project structure.
-- Sets up a TypeScript entry file.
-- Creates a `burger.config.ts` with sensible defaults for `apiDir`, `pageDir`, and URL prefixes.
+- Scaffolds the `src/` layout: `src/index.ts`, `src/api/`, `src/hooks.ts`, `src/plugins.ts`.
+- Creates a `burger.build.ts` with build-time defaults for `apiDir`, `pageDir`, and URL prefixes.
 
 For more details on what `burger-api create` does, see the [CLI Tool](../getting-started/cli.md) guide.
 
@@ -52,29 +51,28 @@ Then follow the same `index.ts` and `api` setup from the rest of this tutorial.
 
 ## Step 2: Configure Your Server
 
-If you used `burger-api create`, you should already have an entry file similar to this. Open or create `index.ts` in your project root:
+If you used `burger-api create`, you should already have an entry file similar to this. Open or create `src/index.ts` in your project:
 
-```typescript title="index.ts"
+```typescript title="src/index.ts"
 import { Burger } from "burger-api";
 
 const burger = new Burger({
-  apiDir: "api",           // Directory where API routes live
-  title: "Hello World API", // Title for OpenAPI docs
-  version: "1.0.0",        // Version for OpenAPI docs
+  apiDir: "./src/api",       // Directory where API routes live
+  title: "Hello World API",  // Title for OpenAPI docs
+  version: "1.0.0",          // Version for OpenAPI docs
   description: "My first BurgerAPI application",
-  debug: true,             // Enable debug mode for development
 });
 
 // Start the server on port 4000
 burger.serve(4000, () => {
-  console.log("🚀 Server running at http://localhost:4000");
-  console.log("📚 API docs available at http://localhost:4000/docs");
+  console.log("Server running at http://localhost:4000");
+  console.log("API docs available at http://localhost:4000/docs");
 });
 ```
 
 :::tip What's Happening?
-- `apiDir: "api"` tells BurgerAPI to look for route files in the `api` directory
-- `debug: true` enables helpful error messages during development
+- `apiDir: "./src/api"` tells BurgerAPI to look for route files in the `src/api` directory
+- `title`, `version`, and `description` feed the generated OpenAPI docs
 - The callback function runs after the server starts successfully
 :::
 
@@ -82,18 +80,18 @@ For a deeper dive into these options, see [Configuration](../core/configuration.
 
 ## Step 3: Create Your First API Route
 
-Create an `api` directory in your project:
+Create the route directory in your project:
 
 ```bash
-mkdir api
+mkdir -p src/api/hello
 ```
 
 Now create your first route file:
 
-```typescript title="api/hello/route.ts"
-import type { BurgerRequest } from "burger-api";
+```typescript title="src/api/hello/route.ts"
+import type { BurgerContext } from "burger-api";
 
-export function GET(req: BurgerRequest) {
+export async function GET(ctx: BurgerContext) {
   return Response.json({
     message: "Hello, World!",
     timestamp: new Date().toISOString(),
@@ -103,21 +101,21 @@ export function GET(req: BurgerRequest) {
 ```
 
 :::tip Understanding File-Based Routing
-The file `api/hello/route.ts` creates an endpoint at `/api/hello`. The folder structure directly maps to the URL path!
+The file `src/api/hello/route.ts` creates an endpoint at `/api/hello`. The folder structure directly maps to the URL path!
 :::
 
 ## Step 4: Run Your Server
 
-Start your BurgerAPI server:
+Start the dev server:
 
 ```bash
-bun run index.ts
+bun run dev
 ```
 
 You should see output like:
 ```
-🚀 Server running at http://localhost:4000
-📚 API docs available at http://localhost:4000/docs
+Server running at http://localhost:4000
+API docs available at http://localhost:4000/docs
 ```
 
 ## Step 5: Test Your API
@@ -161,19 +159,18 @@ BurgerAPI automatically generates this documentation from your code. As you add 
 
 Let's break down what we just built:
 
-### Server Configuration (`index.ts`)
+### Server Configuration (`src/index.ts`)
 ```typescript
 const burger = new Burger({
-  apiDir: "api",           // Look for routes in ./api/
+  apiDir: "./src/api",      // Look for routes in ./src/api/
   title: "Hello World API", // Used in OpenAPI docs
-  version: "1.0.0",        // API version
-  debug: true,             // Development mode
+  version: "1.0.0",         // API version
 });
 ```
 
-### Route Handler (`api/hello/route.ts`)
+### Route Handler (`src/api/hello/route.ts`)
 ```typescript
-export function GET(req: BurgerRequest) {
+export async function GET(ctx: BurgerContext) {
   // Export functions named after HTTP methods
   return Response.json({   // Return a standard Response object
     message: "Hello, World!",
@@ -186,7 +183,7 @@ export function GET(req: BurgerRequest) {
 - **File-based routing**: Folder structure = URL structure
 - **HTTP method exports**: Export functions named `GET`, `POST`, etc.
 - **Standard Response objects**: Return `Response.json()` or `new Response()`
-- **TypeScript support**: Use `BurgerRequest` type for request objects
+- **TypeScript support**: Use `BurgerContext` (`ctx`) to read request data: query, params, body, headers, cookies. See [Request API](../api/request-api.md).
 :::
 
 ## Project Structure
@@ -195,10 +192,12 @@ Your project should now look like this:
 
 ```
 my-burger-api/
-├── api/
-│   └── hello/
-│       └── route.ts
-├── index.ts
+├── src/
+│   ├── index.ts
+│   └── api/
+│       └── hello/
+│           └── route.ts
+├── burger.build.ts
 ├── package.json
 └── bun.lockb
 ```
@@ -228,8 +227,9 @@ This creates a binary under:
 
 For more details on build outputs and options, see:
 
-- [Migrating to 0.9](../migration/migrating-to-0.9.md)
-- [BurgerAPI v0.9.3 Release](/blog/burger-api-v0.9.3-release)
+- [CLI Tool](../getting-started/cli.md)
+- [Build Command](../cli/build.md)
+- [Build Executable](../cli/build-exec.md)
 
 ## Next Steps
 
@@ -252,8 +252,8 @@ Ready for something more challenging? In the next tutorial, you'll build a [Todo
 
 **"Cannot GET /api/hello"**
 - Make sure your file is named exactly `route.ts` (not `hello.ts`)
-- Check that the `api` directory exists
-- Restart your server after making changes
+- Check that the `src/api/hello` directory exists
+- The dev server reloads on changes; restart it if the file was created after startup
 
 **TypeScript errors**
-- Make sure you're importing the type correctly: `import type { BurgerRequest }`
+- Make sure you're importing the type correctly: `import type { BurgerContext } from "burger-api"`

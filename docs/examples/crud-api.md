@@ -4,11 +4,13 @@ sidebar_label: CRUD API
 
 # CRUD API Example
 
-A complete products API with list, read, create, update, and delete — using file-based routing, Zod validation, lazy query access, and `req.set`.
+A complete products API with list, read, create, update, and delete — using file-based routing, Zod validation, lazy query access, and `ctx.set`.
+
+Each route directory is self-contained: `route.ts` holds the handlers, `schema.ts` holds the per-method validation schemas.
 
 ## Store
 
-```ts title="api/products/store.ts"
+```ts title="src/api/products/store.ts"
 export interface Product {
   id: string;
   name: string;
@@ -20,56 +22,61 @@ export const products: Product[] = [];
 
 ## List with query + response headers
 
-```ts title="api/products/route.ts"
-import type { BurgerRequest } from "burger-api";
+```ts title="src/api/products/schema.ts"
 import { z } from "zod";
-import { products } from "./store";
 
-export const schema = {
-  get: {
-    query: z.object({
-      limit: z.coerce.number().int().min(1).max(100).default(10),
-      page: z.coerce.number().int().min(1).default(1),
-    }),
-  },
-  post: {
-    body: z.object({
-      name: z.string().min(1),
-      price: z.number().positive(),
-    }),
-  },
+export const GET = {
+  query: z.object({
+    limit: z.coerce.number().int().min(1).max(100).default(10),
+    page: z.coerce.number().int().min(1).default(1),
+  }),
 };
 
-export async function GET(req: BurgerRequest) {
-  const { limit, page } = req.validated.query;
+export const POST = {
+  body: z.object({
+    name: z.string().min(1),
+    price: z.number().positive(),
+  }),
+};
+```
+
+```ts title="src/api/products/route.ts"
+import type { BurgerContext } from "burger-api";
+import type { GET as GETSchema, POST as POSTSchema } from "./schema";
+import { products } from "./store";
+
+export async function GET(ctx: BurgerContext<typeof GETSchema>) {
+  const { limit, page } = ctx.validated.query;
   const start = (page - 1) * limit;
   const items = products.slice(start, start + limit);
 
-  req.set = { headers: { "x-total": String(products.length) } };
+  ctx.set = { headers: { "x-total": String(products.length) } };
   return Response.json({ page, limit, items });
 }
 
-export async function POST(req: BurgerRequest) {
-  const body = await req.json();
+export async function POST(ctx: BurgerContext<typeof POSTSchema>) {
+  const body = await ctx.json();
   const product = { id: crypto.randomUUID(), ...body };
   products.push(product);
-  req.set = { status: 201 };
+  ctx.set = { status: 201 };
   return Response.json(product);
 }
 ```
 
 ## Read one
 
-```ts title="api/products/[id]/route.ts"
-import type { BurgerRequest } from "burger-api";
+```ts title="src/api/products/[id]/route.ts"
+import type { BurgerContext } from "burger-api";
 import { products } from "../store";
 
-export async function GET(req: BurgerRequest) {
-  const product = products.find((p) => p.id === req.params.id);
+export async function GET(ctx: BurgerContext) {
+  const product = products.find((p) => p.id === ctx.params.id);
   if (!product) return Response.json({ error: "Not found" }, { status: 404 });
   return Response.json(product);
 }
 ```
+
+`ctx.query` and `ctx.params` are lazy: they parse only when read. `ctx.set` collects status and header changes, applied once when the response leaves the app. See [Response Mutation](/docs/api/response-mutation).
 
 This example shows routing, validation, lazy query access, and response mutation working together. See also the [Todo API](../tutorials/todo-api.md) and [Blog API](../tutorials/blog-api.md).
 

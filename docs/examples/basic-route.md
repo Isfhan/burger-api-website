@@ -7,15 +7,17 @@ sidebar_label: Basic Route Example
 A minimal API route that responds to GET:
 
 ```typescript
-// api/hello/route.ts
-import type { BurgerRequest } from "burger-api";
+// src/api/hello/route.ts
+import type { BurgerContext } from "burger-api";
 
-export function GET(req: BurgerRequest) {
+export async function GET(ctx: BurgerContext) {
   return Response.json({ message: "Hello, Burger API!" });
 }
 ```
 
-This maps to `GET /api/hello` (with default `apiPrefix`). See [Static API Routes](/docs/routing/api/static-routes) and [Hello World tutorial](/docs/tutorials/hello-world).
+The handler receives a `BurgerContext` (`ctx`) and always returns a standard Web `Response`. Use `ctx` to read request data: query, params, body, headers, cookies. See [Request API](/docs/api/request-api).
+
+This maps to `GET /api/hello` (with the default `apiPrefix`). See [Static API Routes](/docs/routing/api/static-routes) and the [Hello World tutorial](/docs/tutorials/hello-world).
 
 
 ## Related

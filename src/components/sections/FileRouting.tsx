@@ -12,10 +12,10 @@ const tree = `api/
     └── route.ts             →  GET /docs/*`;
 
 const routeCode = `// api/users/[id]/route.ts
-import type { BurgerRequest } from "burger-api";
+import type { BurgerContext } from "burger-api";
 
-export async function GET(req: BurgerRequest) {
-  const { id } = req.params;
+export async function GET(ctx: BurgerContext) {
+  const { id } = ctx.params;
   return Response.json({ id });
 }`;
 

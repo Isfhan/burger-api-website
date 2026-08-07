@@ -570,7 +570,7 @@ article {
   overflow-x: clip;
 }
 
-/* Middleware pipeline timeline */
+/* Lifecycle pipeline timeline */
 .ba-pipeline {
   display: flex;
   flex-direction: column;

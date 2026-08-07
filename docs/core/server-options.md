@@ -8,28 +8,30 @@ The `Burger` constructor accepts a **ServerOptions** object. These are the main 
 
 | Option | Type | Description |
 |--------|------|-------------|
-| `apiDir` | `string` | Directory containing API route files (e.g. `route.ts`). Required unless `apiRoutes` is set. |
-| `apiRoutes` | `RouteDefinition[]` | Pre-built API routes for production; when set, `apiDir` is ignored. |
-| `pageDir` | `string` | Directory for static/dynamic page files. Optional unless you serve pages. |
-| `pageRoutes` | `PageDefinition[]` | Pre-built page routes for production; when set, `pageDir` is ignored. |
+| `apiDir` | `string` | Directory containing API route files (e.g. `./src/api`). Required unless `apiRoutes` is set. |
+| `apiRoutes` | `RouteDefinition[]` | Pre-built API routes from the CLI build. When present, `apiDir` is ignored and no runtime filesystem scan happens. |
+| `pageDir` | `string` | Directory for page files. Optional. |
+| `pageRoutes` | `PageDefinition[]` | Pre-built page routes from the CLI build. When present, `pageDir` is ignored. |
 | `apiPrefix` | `string` | URL prefix for API routes (default: `'api'`). |
 | `pagePrefix` | `string` | URL prefix for page routes (default: `''`). |
-| `globalMiddleware` | `Middleware[]` | Middleware that runs on every request. |
-| `title` | `string` | API title for OpenAPI docs. |
-| `description` | `string` | API description for OpenAPI. |
-| `version` | `string` | API version for OpenAPI. |
-| `debug` | `boolean` | Enable debug mode (e.g. stack traces). |
-| `validation` | `ValidatorConfig` | Validation settings: `coerce`, `responseValidation`, `errorFormat`, `errorRenderer`. See [Validation Configuration](/docs/validation/configuration). |
+| `title` | `string` | API title for the OpenAPI document. |
+| `description` | `string` | API description for the OpenAPI document. |
+| `version` | `string` | API version for the OpenAPI document. |
+| `debug` | `boolean` | Enable debug mode (e.g. richer error rendering). |
+| `validation` | `ValidatorConfig` | Validation settings: `coerce`, `responseValidation`, `errorFormat`. See [Validation Configuration](/docs/validation/configuration). |
 | `models` | `Record<string, Schema>` | Named, reusable validation shapes referenced by string from any route's `schema`. See [Model Registry](/docs/validation/models). |
+| `openapi` | `OpenAPIConfig` | OpenAPI configuration for production builds. In dev, `openapi.config.ts` is auto-discovered and this field is ignored. |
+| `globalHooks` | `Record<string, unknown>` | Pre-resolved global hooks module (from `src/hooks.ts`). Used in production builds with `apiRoutes`; in dev, `src/hooks.ts` is auto-discovered and this field is ignored. |
+| `pluginsModule` | `Record<string, unknown>` | Pre-resolved plugins module (from `src/plugins.ts`). In dev, `src/plugins.ts` is auto-discovered. |
+| `providersModule` | `Record<string, unknown>` | Pre-resolved providers module (from `src/providers.ts`). In dev, `src/providers.ts` is auto-discovered. |
 
-You must provide either `apiDir`/`pageDir` (for development) or `apiRoutes`/`pageRoutes` (for production builds). See [Configuration](/docs/core/configuration) for full details and examples.
+## Dev vs production
 
+You must provide either `apiDir`/`pageDir` (development) or `apiRoutes`/`pageRoutes` (production builds). The CLI build produces the AOT route tables: `burger-api build` embeds them into the bundle, so production never scans the filesystem at runtime. See [CLI Tool](/docs/getting-started/cli) and [Burger Class](/docs/core/burger-class).
 
 ## Related
 
 - [Burger Class](/docs/core/burger-class)
-- [BurgerRequest](/docs/api/burger-request)
-- [ContextSet](/docs/api/context-set)
-- [Request API](/docs/api/request-api)
+- [Configuration](/docs/core/configuration)
+- [CLI Tool](/docs/getting-started/cli)
 - [Validation Configuration](/docs/validation/configuration)
-- [Model Registry](/docs/validation/models)

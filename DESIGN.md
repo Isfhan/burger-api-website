@@ -339,9 +339,9 @@ without harsh contrast jumps:
 • Hover raises a card to the Elevated/Hover layer with a deeper shadow
 
 Homepage rhythm (base / secondary alternation):
-Hero (base) → Features (secondary) → Performance (base) → Architecture
-(secondary) → Code Examples (base) → Developer Experience (secondary) →
-File Routing (base) → Validation (secondary) → Middleware (base) → OpenAPI
+Hero (base) → Features (secondary) → Performance (base) → Code Examples
+(secondary) → Developer Experience (secondary) →
+File Routing (base) → Validation (secondary) → Lifecycle (base) → OpenAPI
 (secondary) → CLI (base) → Docs CTA (base) → GitHub CTA (secondary) →
 Community (base).
 
@@ -375,8 +375,8 @@ Never a plain orange rectangle.
 
 Tier 2 — Secondary CTA
 
-Most section "docs" buttons live here (Explore architecture, Browse
-middleware, Validation guide, OpenAPI docs, File routing docs).
+Most section "docs" buttons live here (Explore architecture, request
+lifecycle, Validation guide, OpenAPI docs, File routing docs).
 
 Warm tinted background
 
@@ -556,8 +556,6 @@ Features
 
 Performance
 
-Architecture
-
 Code Examples
 
 Developer Experience
@@ -566,7 +564,7 @@ File Routing
 
 Validation
 
-Middleware
+Lifecycle
 
 OpenAPI
 

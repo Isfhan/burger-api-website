@@ -3,7 +3,7 @@ import { BookOpen, ArrowRight } from "lucide-react";
 import { Section, SectionHeader, CodeBlock, ScrollReveal, Button } from "../ui";
 
 const code = `import { z } from "zod";
-import type { BurgerRequest } from "burger-api";
+import type { BurgerContext } from "burger-api";
 
 export const schema = {
   query: z.object({
@@ -16,10 +16,10 @@ export const schema = {
   }),
 };
 
-export async function POST(req: BurgerRequest) {
+export async function POST(ctx: BurgerContext) {
   // Fully typed from your Zod schemas
-  const { tag, limit } = req.validated.query;
-  const { title, published } = req.validated.body;
+  const { tag, limit } = ctx.validated.query;
+  const { title, published } = ctx.validated.body;
 
   return Response.json({ tag, limit, title, published });
 }`;
@@ -33,7 +33,7 @@ export function Validation() {
             align="left"
             eyebrow="Validation"
             title="Zod schemas next to your routes"
-            subtitle="Export a schema object alongside your handlers. BurgerAPI validates before your code runs and puts typed data on req.validated — for query, params, headers, cookies, and body. Reuse shapes as models and validate responses too."
+            subtitle="Export a schema object alongside your handlers. BurgerAPI validates before your code runs and puts typed data on ctx.validated — for query, params, headers, cookies, and body. Reuse shapes as models and validate responses too."
             className="mb-6 md:mb-8"
           />
           <Button to="/docs/validation/zod" variant="secondary" className="mt-2">

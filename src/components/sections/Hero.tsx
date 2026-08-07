@@ -34,9 +34,9 @@ burger.serve(4000);`,
   {
     id: "route",
     title: "api/route.ts",
-    code: `import type { BurgerRequest } from "burger-api";
+    code: `import type { BurgerContext } from "burger-api";
 
-export async function GET(req: BurgerRequest) {
+export async function GET(ctx: BurgerContext) {
   return Response.json({
     message: "Hello from BurgerAPI",
   });
@@ -84,7 +84,7 @@ export function Hero() {
                 <Badge variant="muted">Open Source</Badge>
 
                 <Badge variant="muted">
-                  v{fields.frameworkVersion || "0.11.0"}
+                  v{fields.frameworkVersion || "1.0.0"}
                 </Badge>
                 <Badge icon={Zap} variant="info">
                   {fields.bunVersion || "Bun 1.3.0+"}

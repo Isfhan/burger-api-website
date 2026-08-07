@@ -15,7 +15,7 @@ Through these progressive tutorials, you'll discover how BurgerAPI makes buildin
 - **File-based routing** that maps your folder structure to API endpoints
 - **Automatic OpenAPI documentation** generation
 - **Zod validation** for request data
-- **Middleware** for logic shared by many routes
+- **Hooks** for logic shared by many routes
 - **TypeScript-first** development experience
 
 :::tip Why Tutorials?
@@ -40,7 +40,7 @@ bun --version
 
 In each tutorial you'll:
 
-- **Develop locally** using commands like `bun run index.ts` (see [Configuration](../core/configuration.md) for how the `Burger` server is set up).
+- **Develop locally** using `bun run dev`, the scaffolded dev server (see [Configuration](../core/configuration.md) for how the `Burger` server is set up).
 - Optionally **build for production** using the `burger-api` CLI:
   - `burger-api build src/index.ts` to produce a bundle under `.build/bundle/app.js`.
   - `burger-api build:exec src/index.ts` to create a standalone executable under `.build/executable/<project>`.
@@ -62,7 +62,7 @@ For more on the CLI, see [CLI Tool](../getting-started/cli.md).
 ### 3. [Blog API](./blog-api.md) ⏱️ 60 minutes
 **Perfect for:** Understanding complex applications
 **What you'll build:** Multi-resource API with posts and comments
-**Concepts:** Resource relationships, middleware, nested routes, project organization
+**Concepts:** Resource relationships, hooks and plugins, nested routes, project organization
 
 ## Getting Help
 
@@ -90,6 +90,6 @@ If you get stuck:
 
 **TypeScript errors**
 - Make sure your `tsconfig.json` is properly configured
-- Check that you're importing types correctly: `import type { BurgerRequest } from "burger-api"`
+- Check that you're importing types correctly: `import type { BurgerContext } from "burger-api"`
 
 Ready to start building? Let's begin with the [Hello World API](./hello-world.md)!

@@ -8,13 +8,14 @@ As your app grows, the same data shape shows up in many routes — a `Pagination
 
 ## Define models
 
-Models are registered in your server configuration under the `models` key. With a config file:
+Models are registered in the `Burger` options under the `models` key:
 
-```typescript
-// burger.config.ts
+```typescript title="src/index.ts"
+import { Burger } from "burger-api";
 import { z } from "zod";
 
-export default {
+const app = new Burger({
+  apiDir: "./src/api",
   models: {
     Pagination: z.object({
       page: z.number().min(1).default(1),
@@ -25,38 +26,25 @@ export default {
       name: z.string().min(1),
     }),
   },
-};
-```
-
-Or directly in the `Burger` options:
-
-```typescript
-import { Burger } from "burger-api";
-import { z } from "zod";
-
-const app = new Burger({
-  apiDir: "./api",
-  models: {
-    Pagination: z.object({
-      page: z.number().min(1).default(1),
-      limit: z.number().min(1).max(100).default(20),
-    }),
-  },
 });
 ```
+
+The CLI can also seed `models` from `burger.build.ts` when it generates the production app. Either way, the compiled validators are shared across every route that uses the same model.
 
 ## Use a model by reference
 
 Anywhere you would write a schema, you can write the model's name as a string instead:
 
-```typescript
-// api/items/route.ts
-export const schema = {
-  get: { query: "Pagination" },
-};
+```typescript title="api/items/schema.ts"
+export const GET = { query: "Pagination" };
+```
 
-export function GET(req: BurgerRequest) {
-  const { page, limit } = req.validated.query;
+```typescript title="api/items/route.ts"
+import type { BurgerContext } from "burger-api";
+import type { GET as RouteSchema } from "./schema";
+
+export async function GET(ctx: BurgerContext<typeof RouteSchema>) {
+  const { page, limit } = ctx.validated.query;
   return Response.json({ page, limit });
 }
 ```

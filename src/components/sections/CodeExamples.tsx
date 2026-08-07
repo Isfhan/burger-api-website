@@ -10,8 +10,7 @@ const examples = [
     code: `import { Burger } from "burger-api";
 
 const burger = new Burger({
-  apiDir: "api",
-  openApi: true,
+  apiDir: "./src/api",
 });
 
 burger.serve(4000);`,
@@ -20,15 +19,15 @@ burger.serve(4000);`,
     id: "route",
     label: "Route",
     filename: "api/users/route.ts",
-    code: `import type { BurgerRequest } from "burger-api";
+    code: `import type { BurgerContext } from "burger-api";
 
-export async function GET(req: BurgerRequest) {
-  const { page = "1" } = req.query;
+export async function GET(ctx: BurgerContext) {
+  const { page = "1" } = ctx.query;
   return Response.json({ page, users: [] });
 }
 
-export async function POST(req: BurgerRequest) {
-  const body = await req.json();
+export async function POST(ctx: BurgerContext) {
+  const body = await ctx.json();
   return Response.json(body, { status: 201 });
 }`,
   },
@@ -37,7 +36,7 @@ export async function POST(req: BurgerRequest) {
     label: "Validation",
     filename: "api/products/[id]/route.ts",
     code: `import { z } from "zod";
-import type { BurgerRequest } from "burger-api";
+import type { BurgerContext } from "burger-api";
 
 export const schema = {
   params: z.object({
@@ -49,9 +48,9 @@ export const schema = {
   }),
 };
 
-export async function PUT(req: BurgerRequest) {
-  const { id } = req.validated.params;
-  const { name, price } = req.validated.body;
+export async function PUT(ctx: BurgerContext) {
+  const { id } = ctx.validated.params;
+  const { name, price } = ctx.validated.body;
   return Response.json({ id, name, price });
 }`,
   },

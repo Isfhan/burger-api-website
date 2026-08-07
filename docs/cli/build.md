@@ -4,7 +4,7 @@ sidebar_label: Build Command
 
 # Build Command
 
-`burger-api build <file>` bundles your project into a single JavaScript file. Routes are discovered at build time (via `burger.config.ts` or conventions) and embedded so production doesn’t depend on the filesystem.
+`burger-api build <file>` bundles your project into a single JavaScript file. Routes are discovered at build time (via `burger.build.ts` or conventions) and embedded so production doesn’t depend on the filesystem.
 
 **Options:**
 
@@ -18,6 +18,8 @@ sidebar_label: Build Command
 ```bash
 burger-api build src/index.ts --minify
 ```
+
+Production flow: run `burger-api build`, then start the server with `burger-api start`.
 
 See [CLI Tool](/docs/getting-started/cli).
 

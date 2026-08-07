@@ -4,28 +4,30 @@ sidebar_label: Pagination
 
 # Pagination Example
 
-Paginate a list using `req.query` and advertise totals via `req.set`.
+Paginate a list using `ctx.query` and advertise totals via `ctx.set`.
 
-```ts title="api/posts/route.ts"
-import type { BurgerRequest } from "burger-api";
+```ts title="src/api/posts/schema.ts"
 import { z } from "zod";
+
+export const GET = {
+  query: z.object({
+    page: z.coerce.number().int().min(1).default(1),
+    limit: z.coerce.number().int().min(1).max(50).default(20),
+  }),
+};
+```
+
+```ts title="src/api/posts/route.ts"
+import type { BurgerContext } from "burger-api";
+import type { GET as GETSchema } from "./schema";
 import { posts } from "./store";
 
-export const schema = {
-  get: {
-    query: z.object({
-      page: z.coerce.number().int().min(1).default(1),
-      limit: z.coerce.number().int().min(1).max(50).default(20),
-    }),
-  },
-};
-
-export async function GET(req: BurgerRequest) {
-  const { page, limit } = req.validated.query;
+export async function GET(ctx: BurgerContext<typeof GETSchema>) {
+  const { page, limit } = ctx.validated.query;
   const start = (page - 1) * limit;
   const items = posts.slice(start, start + limit);
 
-  req.set = {
+  ctx.set = {
     headers: {
       "x-total": String(posts.length),
       "x-page": String(page),
@@ -36,7 +38,7 @@ export async function GET(req: BurgerRequest) {
 }
 ```
 
-`req.query` parses only when read, and `req.set` applies the pagination headers at the end of the request's processing steps. See also the [CRUD API](./crud-api.md).
+`ctx.query` parses only when read, and `ctx.set` applies the pagination headers once at the end of the request lifecycle. See also the [CRUD API](./crud-api.md).
 
 
 ## Related

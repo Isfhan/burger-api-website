@@ -4,20 +4,21 @@ sidebar_label: Add Command
 
 # Add Command
 
-`burger-api add <middleware...>` adds one or more middleware from the ecosystem to your project.
+`burger-api add <name...>` adds hooks and plugins from the ecosystem to your project.
 
-- Downloads middleware from GitHub and copies to `ecosystem/middleware/`.
-- Prints usage instructions after install.
+- Downloads the package from GitHub.
+- Hooks install to `ecosystem/hooks/`; plugins install to `ecosystem/plugins/`.
+- Prints usage instructions after install: compose hooks in `src/hooks.ts`, register plugins in `src/plugins.ts`.
 
 **Examples:**
 
 ```bash
 burger-api add cors
 burger-api add cors logger rate-limiter
-burger-api add jwt-auth api-key-auth
+burger-api add jwt api-key
 ```
 
-List available middleware with `burger-api list`. See [CLI Tool](/docs/getting-started/cli) and [Ecosystem](/docs/ecosystem/introduction).
+List available hooks and plugins with `burger-api list`. See [CLI Tool](/docs/getting-started/cli) and [Ecosystem](/docs/ecosystem/introduction).
 
 
 ## Related

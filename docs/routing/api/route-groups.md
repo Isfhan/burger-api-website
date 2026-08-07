@@ -32,7 +32,7 @@ api/
     route.ts           → /api/orders
 ```
 
-All files are at the root level—hard to organize as your API grows.
+All files are at the root level: hard to organize as your API grows.
 
 ### With Route Groups
 

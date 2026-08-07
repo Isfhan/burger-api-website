@@ -20,7 +20,7 @@ const cards: { icon: LucideIcon; title: string; description: string }[] = [
     icon: Workflow,
     title: "Efficient Pipeline",
     description:
-      "Middleware, validation, and responses run in one pipeline with minimal allocations so steady-state latency stays consistent.",
+      "Hooks, validation, and responses run in one pipeline with minimal allocations so steady-state latency stays consistent.",
   },
 ];
 

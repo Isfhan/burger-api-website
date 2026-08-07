@@ -63,7 +63,7 @@ export function HomepageHero() {
 
               {/* Framework Version Badge */}
               <span className={styles.versionBadge}>
-                v{customFields?.frameworkVersion || "0.11.0"}
+                v{customFields?.frameworkVersion || "1.0.0"}
               </span>
             </div>
 

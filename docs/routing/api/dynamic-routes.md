@@ -8,7 +8,7 @@ Dynamic routes allow you to capture values from the URL and use them in your rou
 
 ## What Are Dynamic Routes?
 
-Dynamic routes use square brackets `[param]` in folder names to capture URL segments as parameters. These captured values become available in your route handler through `req.params`.
+Dynamic routes use square brackets `[param]` in folder names to capture URL segments as parameters. These captured values become available in your route handler through `ctx.params`.
 
 ## Syntax
 
@@ -18,7 +18,7 @@ Create a folder with square brackets to define a dynamic segment:
 [paramName]
 ```
 
-The `paramName` will be the key in `req.params` object.
+The `paramName` will be the key in `ctx.params` object.
 
 ## Basic Example
 
@@ -34,23 +34,23 @@ api/
 ### Route Handler
 
 ```typescript title="api/products/[id]/route.ts"
-import type { BurgerRequest } from "burger-api";
+import type { BurgerContext } from "burger-api";
 
-export function GET(req: BurgerRequest) {
+export async function GET(ctx: BurgerContext) {
   // Access the captured parameter
-  const productId = req.params.id;
-  
+  const productId = ctx.params.id;
+
   return Response.json({
     message: `Fetching product with ID: ${productId}`,
     productId,
   });
 }
 
-export function DELETE(req: BurgerRequest) {
-  const productId = req.params.id;
-  
+export async function DELETE(ctx: BurgerContext) {
+  const productId = ctx.params.id;
+
   // Delete logic here...
-  
+
   return Response.json({
     message: `Product ${productId} deleted successfully`,
   });
@@ -61,13 +61,13 @@ export function DELETE(req: BurgerRequest) {
 
 ```
 GET /api/products/123
-→ req.params.id = "123"
+→ ctx.params.id = "123"
 
 GET /api/products/abc-def
-→ req.params.id = "abc-def"
+→ ctx.params.id = "abc-def"
 
 DELETE /api/products/456
-→ req.params.id = "456"
+→ ctx.params.id = "456"
 ```
 
 ## Multiple Dynamic Segments
@@ -88,10 +88,10 @@ api/
 ### Route Handler
 
 ```typescript title="api/users/[userId]/posts/[postId]/route.ts"
-import type { BurgerRequest } from "burger-api";
+import type { BurgerContext } from "burger-api";
 
-export function GET(req: BurgerRequest) {
-  const { userId, postId } = req.params;
+export async function GET(ctx: BurgerContext) {
+  const { userId, postId } = ctx.params;
   
   return Response.json({
     message: `Fetching post ${postId} from user ${userId}`,
@@ -105,21 +105,23 @@ export function GET(req: BurgerRequest) {
 
 ```
 GET /api/users/42/posts/789
-→ req.params.userId = "42"
-→ req.params.postId = "789"
+→ ctx.params.userId = "42"
+→ ctx.params.postId = "789"
 ```
 
 ## Accessing Parameters
 
-Parameters are always available as strings in the `req.params` object:
+Parameters are always available as strings in the `ctx.params` object:
 
 ```typescript
-export function GET(req: BurgerRequest) {
+import type { BurgerContext } from "burger-api";
+
+export async function GET(ctx: BurgerContext) {
   // Direct destructuring
-  const { id } = req.params;
+  const { id } = ctx.params;
   
   // Or access by key
-  const userId = req.params.userId;
+  const userId = ctx.params.userId;
   
   // Convert to number if needed
   const numericId = parseInt(id, 10);
@@ -129,34 +131,36 @@ export function GET(req: BurgerRequest) {
 ```
 
 :::tip Trailing Slash and Unsupported Methods
-A trailing slash on a dynamic route is treated as an **empty parameter value**: `GET /api/users/` sets `req.params.id === ""` (your Zod schema can then reject it). Requesting a route with an unsupported method returns `405` with an `Allow` header listing the methods the route does support.
+A trailing slash on a dynamic route is treated as an **empty parameter value**: `GET /api/users/` sets `ctx.params.id === ""` (your Zod schema can then reject it). Requesting a route with an unsupported method returns `405` with an `Allow` header listing the methods the route does support.
 :::
 
 ## Validation with Zod
 
-For type safety and validation, use Zod schemas:
+For type safety and validation, declare per-method schemas in a `schema.ts` file next to the route. See [Zod Validation](/docs/validation/zod) for the full shape.
 
-```typescript title="api/products/[id]/route.ts"
-import type { BurgerRequest } from "burger-api";
+```typescript title="api/products/[id]/schema.ts"
 import { z } from "zod";
 
-// Define validation schema
-export const schema = {
-  get: {
-    params: z.object({
-      id: z.string().uuid(), // Validate as UUID
-    }),
-  },
-  delete: {
-    params: z.object({
-      id: z.string().min(1), // Ensure non-empty
-    }),
-  },
+export const GET = {
+  params: z.object({
+    id: z.string().uuid(), // Validate as UUID
+  }),
 };
 
-export function GET(req: BurgerRequest) {
+export const DELETE = {
+  params: z.object({
+    id: z.string().min(1), // Ensure non-empty
+  }),
+};
+```
+
+```typescript title="api/products/[id]/route.ts"
+import type { BurgerContext } from "burger-api";
+import type { GET as GetSchema, DELETE as DeleteSchema } from "./schema";
+
+export async function GET(ctx: BurgerContext<typeof GetSchema>) {
   // Access validated params
-  const { id } = req.validated.params;
+  const { id } = ctx.validated.params;
   
   // TypeScript knows 'id' is a valid UUID string
   return Response.json({
@@ -165,8 +169,8 @@ export function GET(req: BurgerRequest) {
   });
 }
 
-export function DELETE(req: BurgerRequest) {
-  const { id } = req.validated.params;
+export async function DELETE(ctx: BurgerContext<typeof DeleteSchema>) {
+  const { id } = ctx.validated.params;
   
   return Response.json({
     message: `Product ${id} deleted`,
@@ -176,25 +180,23 @@ export function DELETE(req: BurgerRequest) {
 
 ### Advanced Validation
 
-```typescript
+```typescript title="api/users/[userId]/posts/[slug]/schema.ts"
 import { z } from "zod";
 
-export const schema = {
-  get: {
-    params: z.object({
-      // Must be numeric string
-      userId: z.string().regex(/^\d+$/),
-      // Slug format: lowercase, hyphens only
-      slug: z.string().regex(/^[a-z0-9-]+$/),
-    }),
-  },
+export const GET = {
+  params: z.object({
+    // Must be numeric string
+    userId: z.string().regex(/^\d+$/),
+    // Slug format: lowercase, hyphens only
+    slug: z.string().regex(/^[a-z0-9-]+$/),
+  }),
 };
 ```
 
 ## Route Matching Priority
 
 :::tip Understanding Priority
-BurgerAPI uses a hybrid router (static paths via Bun's native router, dynamic and wildcard via a trie). See [Routing Engine](/docs/architecture/routing-engine) for how routes are matched. Static routes are matched first, then dynamic, then wildcard.
+BurgerAPI uses a hybrid router (static paths via Bun's native router, dynamic and wildcard via a trie). Static routes are matched first, then dynamic, then wildcard.
 :::
 
 ### Priority Example
@@ -231,34 +233,38 @@ api/
       route.ts         → GET, PUT, DELETE /api/users/[userId]
 ```
 
-```typescript title="api/users/[userId]/route.ts"
-import type { BurgerRequest } from "burger-api";
+```typescript title="api/users/[userId]/schema.ts"
 import { z } from "zod";
 
-export const schema = {
-  get: {
-    params: z.object({ userId: z.string().min(1) }),
-  },
-  put: {
-    params: z.object({ userId: z.string().min(1) }),
-    body: z.object({
-      name: z.string(),
-      email: z.string().email(),
-    }),
-  },
-  delete: {
-    params: z.object({ userId: z.string().min(1) }),
-  },
+export const GET = {
+  params: z.object({ userId: z.string().min(1) }),
 };
 
-export function GET(req: BurgerRequest) {
-  const { userId } = req.validated.params;
+export const PUT = {
+  params: z.object({ userId: z.string().min(1) }),
+  body: z.object({
+    name: z.string(),
+    email: z.string().email(),
+  }),
+};
+
+export const DELETE = {
+  params: z.object({ userId: z.string().min(1) }),
+};
+```
+
+```typescript title="api/users/[userId]/route.ts"
+import type { BurgerContext } from "burger-api";
+import type { GET as GetSchema, PUT as PutSchema, DELETE as DeleteSchema } from "./schema";
+
+export async function GET(ctx: BurgerContext<typeof GetSchema>) {
+  const { userId } = ctx.validated.params;
   return Response.json({ userId, action: "fetch" });
 }
 
-export async function PUT(req: BurgerRequest) {
-  const { userId } = req.validated.params;
-  const { name, email } = req.validated.body;
+export async function PUT(ctx: BurgerContext<typeof PutSchema>) {
+  const { userId } = ctx.validated.params;
+  const { name, email } = ctx.validated.body;
   
   return Response.json({
     userId,
@@ -267,8 +273,8 @@ export async function PUT(req: BurgerRequest) {
   });
 }
 
-export function DELETE(req: BurgerRequest) {
-  const { userId } = req.validated.params;
+export async function DELETE(ctx: BurgerContext<typeof DeleteSchema>) {
+  const { userId } = ctx.validated.params;
   return Response.json({ userId, action: "delete" });
 }
 ```
@@ -285,8 +291,10 @@ api/
 ```
 
 ```typescript
-export function GET(req: BurgerRequest) {
-  const { projectId, taskId } = req.params;
+import type { BurgerContext } from "burger-api";
+
+export async function GET(ctx: BurgerContext) {
+  const { projectId, taskId } = ctx.params;
   
   return Response.json({
     message: `Task ${taskId} in project ${projectId}`,
@@ -305,20 +313,22 @@ api/
       route.ts         → /api/blog/[slug]
 ```
 
-```typescript title="api/blog/[slug]/route.ts"
-import type { BurgerRequest } from "burger-api";
+```typescript title="api/blog/[slug]/schema.ts"
 import { z } from "zod";
 
-export const schema = {
-  get: {
-    params: z.object({
-      slug: z.string().regex(/^[a-z0-9-]+$/),
-    }),
-  },
+export const GET = {
+  params: z.object({
+    slug: z.string().regex(/^[a-z0-9-]+$/),
+  }),
 };
+```
 
-export function GET(req: BurgerRequest) {
-  const { slug } = req.validated.params;
+```typescript title="api/blog/[slug]/route.ts"
+import type { BurgerContext } from "burger-api";
+import type { GET as RouteSchema } from "./schema";
+
+export async function GET(ctx: BurgerContext<typeof RouteSchema>) {
+  const { slug } = ctx.validated.params;
   
   return Response.json({
     slug,
@@ -358,18 +368,16 @@ api/items/[x]/route.ts   // What is 'x'?
 ### 2. Always Validate Parameters
 
 ```typescript
-// ✅ Good: Validate with Zod
-export const schema = {
-  get: {
-    params: z.object({
-      userId: z.string().uuid(),
-    }),
-  },
+// ✅ Good: Validate with Zod in schema.ts
+export const GET = {
+  params: z.object({
+    userId: z.string().uuid(),
+  }),
 };
 
 // ❌ Avoid: Trusting raw params
-export function GET(req: BurgerRequest) {
-  const id = req.params.userId; // Could be anything!
+export async function GET(ctx: BurgerContext) {
+  const id = ctx.params.userId; // Could be anything!
   // Use without validation...
 }
 ```
@@ -377,8 +385,10 @@ export function GET(req: BurgerRequest) {
 ### 3. Handle Invalid Parameters
 
 ```typescript
-export function GET(req: BurgerRequest) {
-  const { userId } = req.params;
+import type { BurgerContext } from "burger-api";
+
+export async function GET(ctx: BurgerContext) {
+  const { userId } = ctx.params;
   
   // Validate format
   if (!/^\d+$/.test(userId)) {
@@ -405,18 +415,14 @@ export function GET(req: BurgerRequest) {
 
 ### 4. Type Safety with TypeScript
 
+Prefer schema-driven typing over manual casts. Passing the schema export as the generic gives `ctx.validated` its exact shape:
+
 ```typescript
-import type { BurgerRequest } from "burger-api";
+import type { GET as RouteSchema } from "./schema";
 
-// Define expected params type
-type Params = {
-  userId: string;
-  postId: string;
-};
-
-export function GET(req: BurgerRequest) {
-  const { userId, postId } = req.params as Params;
-  // Now TypeScript knows the shape of params
+export async function GET(ctx: BurgerContext<typeof RouteSchema>) {
+  const { userId, postId } = ctx.validated.params; // typed from the schema
+  return Response.json({ userId, postId });
 }
 ```
 
@@ -447,10 +453,12 @@ api/
 All parameters come in as strings. Convert them to other types as needed:
 
 ```typescript
-export function GET(req: BurgerRequest) {
-  const idStr = req.params.id;           // "123" (string)
+import type { BurgerContext } from "burger-api";
+
+export async function GET(ctx: BurgerContext) {
+  const idStr = ctx.params.id;           // "123" (string)
   const idNum = parseInt(idStr, 10);     // 123 (number)
-  const isActive = req.params.active === "true";  // boolean
+  const isActive = ctx.params.active === "true";  // boolean
 }
 ```
 

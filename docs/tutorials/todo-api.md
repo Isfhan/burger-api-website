@@ -49,34 +49,33 @@ cd todo-api
 bun add zod
 ```
 
-If you used `burger-api create`, it already wired up a basic `Burger` instance and a `burger.config.ts`. We will customize the server entry a bit for this tutorial.
+If you used `burger-api create`, it already wired up a basic `Burger` instance and a `burger.build.ts`. We will customize the server entry a bit for this tutorial.
 
 For more about these options, see [Configuration](../core/configuration.md) and [CLI Tool](../getting-started/cli.md).
 
 ## Step 2: Configure Your Server
 
-Update or create your `index.ts` file:
+Update or create your `src/index.ts` file:
 
-```typescript title="index.ts"
+```typescript title="src/index.ts"
 import { Burger } from "burger-api";
 
 const burger = new Burger({
-  apiDir: "api",
+  apiDir: "./src/api",
   title: "Todo List API",
   version: "1.0.0",
   description: "A CRUD API for managing todos",
-  debug: true,
 });
 
 burger.serve(4000, () => {
-  console.log("🚀 Todo API running at http://localhost:4000");
-  console.log("📚 API docs at http://localhost:4000/docs");
+  console.log("Todo API running at http://localhost:4000");
+  console.log("API docs at http://localhost:4000/docs");
 });
 ```
 
 ## Step 3: Create the Todo Model
 
-First, let's define what a todo looks like. Create a `types.ts` file:
+First, let's define what a todo looks like. Create a `src/types.ts` file:
 
 ```typescript title="types.ts"
 export interface Todo {
@@ -102,7 +101,7 @@ export interface UpdateTodoRequest {
 
 Create a simple in-memory database:
 
-```typescript title="database.ts"
+```typescript title="src/database.ts"
 import type { Todo } from "./types";
 
 // In-memory storage (in a real app, you'd use a database)
@@ -174,36 +173,54 @@ export const todoDatabase = {
 
 ## Step 5: Create Validation Schemas
 
-Create validation schemas using Zod:
+BurgerAPI validates requests against per-method schemas in a `schema.ts` file next to each route. The `POST /api/todos` schema validates the request body:
 
-```typescript title="schemas.ts"
+```typescript title="src/api/todos/schema.ts"
 import { z } from "zod";
 
-export const createTodoSchema = z.object({
-  title: z.string().min(1, "Title is required").max(100, "Title too long"),
-  completed: z.boolean().optional().default(false),
-});
-
-export const updateTodoSchema = z.object({
-  title: z.string().min(1, "Title is required").max(100, "Title too long").optional(),
-  completed: z.boolean().optional(),
-}).refine(
-  (data) => Object.keys(data).length > 0,
-  "At least one field must be provided"
-);
+export const POST = {
+  body: z.object({
+    title: z.string().min(1, "Title is required").max(100, "Title too long"),
+    completed: z.boolean().optional().default(false),
+  }),
+};
 ```
+
+The individual-todo route validates the `id` path parameter for every method, plus the body for `PUT`:
+
+```typescript title="src/api/todos/[id]/schema.ts"
+import { z } from "zod";
+
+const id = z.string().regex(/^\d+$/);
+
+export const GET = { params: z.object({ id }) };
+
+export const PUT = {
+  params: z.object({ id }),
+  body: z
+    .object({
+      title: z.string().min(1, "Title is required").max(100, "Title too long").optional(),
+      completed: z.boolean().optional(),
+    })
+    .refine((data) => Object.keys(data).length > 0, "At least one field must be provided"),
+};
+
+export const DELETE = { params: z.object({ id }) };
+```
+
+BurgerAPI validates before your handler runs. Invalid input returns `422 Unprocessable Content` in the RFC 9457 Problem Details format, so handlers only ever receive validated data. See [Zod Validation](../validation/zod.md).
 
 ## Step 6: Create the Todos Collection Route
 
 Create the main todos endpoint:
 
-```typescript title="api/todos/route.ts"
-import type { BurgerRequest } from "burger-api";
+```typescript title="src/api/todos/route.ts"
+import type { BurgerContext } from "burger-api";
+import type { POST as PostSchema } from "./schema";
 import { todoDatabase } from "../../database";
-import { createTodoSchema } from "../../schemas";
 
 // GET /api/todos - List all todos
-export function GET(req: BurgerRequest) {
+export async function GET(ctx: BurgerContext) {
   const todos = todoDatabase.getAll();
   return Response.json({
     todos,
@@ -212,65 +229,34 @@ export function GET(req: BurgerRequest) {
 }
 
 // POST /api/todos - Create a new todo
-export async function POST(req: BurgerRequest) {
-  try {
-    const body = await req.json();
-    
-    // Validate the request body
-    const validationResult = createTodoSchema.safeParse(body);
-    
-    if (!validationResult.success) {
-      return Response.json(
-        { 
-          error: "Validation failed", 
-          details: validationResult.error.format() 
-        },
-        { status: 400 }
-      );
-    }
+export async function POST(ctx: BurgerContext<typeof PostSchema>) {
+  const { title, completed } = ctx.validated.body;
+  const newTodo = todoDatabase.create(title, completed);
 
-    const { title, completed } = validationResult.data;
-    const newTodo = todoDatabase.create(title, completed);
-
-    return Response.json(newTodo, { status: 201 });
-  } catch (error) {
-    return Response.json(
-      { error: "Invalid JSON body" },
-      { status: 400 }
-    );
-  }
+  return Response.json(newTodo, { status: 201 });
 }
 ```
 
 :::tip What's Happening?
 - `GET` returns all todos with a count
-- `POST` validates the request body using Zod
-- We return appropriate HTTP status codes (201 for created, 400 for errors)
-- Error responses include helpful details
+- `POST` reads validated data from `ctx.validated.body`, typed from `schema.ts` via `BurgerContext<typeof POST>`
+- Validation errors return 422 automatically, so the handler contains no manual checks
+- We return 201 for created resources
 :::
 
 ## Step 7: Create the Individual Todo Route
 
 Create the dynamic route for individual todos:
 
-```typescript title="api/todos/[id]/route.ts"
-import type { BurgerRequest } from "burger-api";
+```typescript title="src/api/todos/[id]/route.ts"
+import type { BurgerContext } from "burger-api";
+import type { GET as GetSchema, PUT as PutSchema, DELETE as DeleteSchema } from "./schema";
 import { todoDatabase } from "../../../database";
-import { updateTodoSchema } from "../../../schemas";
 
 // GET /api/todos/[id] - Get a specific todo
-export function GET(req: BurgerRequest) {
-  const id = parseInt(req.params.id);
-  
-  if (isNaN(id)) {
-    return Response.json(
-      { error: "Invalid todo ID" },
-      { status: 400 }
-    );
-  }
+export async function GET(ctx: BurgerContext<typeof GetSchema>) {
+  const todo = todoDatabase.getById(parseInt(ctx.validated.params.id, 10));
 
-  const todo = todoDatabase.getById(id);
-  
   if (!todo) {
     return Response.json(
       { error: "Todo not found" },
@@ -282,63 +268,26 @@ export function GET(req: BurgerRequest) {
 }
 
 // PUT /api/todos/[id] - Update a todo
-export async function PUT(req: BurgerRequest) {
-  try {
-    const id = parseInt(req.params.id);
-    
-    if (isNaN(id)) {
-      return Response.json(
-        { error: "Invalid todo ID" },
-        { status: 400 }
-      );
-    }
+export async function PUT(ctx: BurgerContext<typeof PutSchema>) {
+  const updatedTodo = todoDatabase.update(
+    parseInt(ctx.validated.params.id, 10),
+    ctx.validated.body
+  );
 
-    const body = await req.json();
-    
-    // Validate the request body
-    const validationResult = updateTodoSchema.safeParse(body);
-    
-    if (!validationResult.success) {
-      return Response.json(
-        { 
-          error: "Validation failed", 
-          details: validationResult.error.format() 
-        },
-        { status: 400 }
-      );
-    }
-
-    const updatedTodo = todoDatabase.update(id, validationResult.data);
-    
-    if (!updatedTodo) {
-      return Response.json(
-        { error: "Todo not found" },
-        { status: 404 }
-      );
-    }
-
-    return Response.json(updatedTodo);
-  } catch (error) {
+  if (!updatedTodo) {
     return Response.json(
-      { error: "Invalid JSON body" },
-      { status: 400 }
+      { error: "Todo not found" },
+      { status: 404 }
     );
   }
+
+  return Response.json(updatedTodo);
 }
 
 // DELETE /api/todos/[id] - Delete a todo
-export function DELETE(req: BurgerRequest) {
-  const id = parseInt(req.params.id);
-  
-  if (isNaN(id)) {
-    return Response.json(
-      { error: "Invalid todo ID" },
-      { status: 400 }
-    );
-  }
+export async function DELETE(ctx: BurgerContext<typeof DeleteSchema>) {
+  const deleted = todoDatabase.delete(parseInt(ctx.validated.params.id, 10));
 
-  const deleted = todoDatabase.delete(id);
-  
   if (!deleted) {
     return Response.json(
       { error: "Todo not found" },
@@ -351,7 +300,7 @@ export function DELETE(req: BurgerRequest) {
 ```
 
 :::tip Understanding Dynamic Routes
-The `[id]` folder creates a dynamic route parameter. When someone visits `/api/todos/123`, the value `123` becomes available as `req.params.id`.
+The `[id]` folder creates a dynamic route parameter. When someone visits `/api/todos/123`, the value `123` becomes available as `ctx.params.id`. Because `schema.ts` declares `id` as a numeric string, `ctx.validated.params.id` is typed and validated, and a non-numeric id never reaches the handler.
 :::
 
 ## Step 8: Test Your API
@@ -359,7 +308,7 @@ The `[id]` folder creates a dynamic route parameter. When someone visits `/api/t
 Start your server:
 
 ```bash
-bun run index.ts
+bun run dev
 ```
 
 Now test all your endpoints:
@@ -413,15 +362,18 @@ Your project should now look like this:
 
 ```
 todo-api/
-├── api/
-│   └── todos/
-│       ├── route.ts          # GET /api/todos, POST /api/todos
-│       └── [id]/
-│           └── route.ts      # GET, PUT, DELETE /api/todos/[id]
-├── database.ts              # In-memory storage
-├── schemas.ts               # Zod validation schemas
-├── types.ts                 # TypeScript interfaces
-├── index.ts                 # Server configuration
+├── src/
+│   ├── index.ts                 # Server configuration
+│   ├── types.ts                 # TypeScript interfaces
+│   ├── database.ts              # In-memory storage
+│   └── api/
+│       └── todos/
+│           ├── route.ts         # GET /api/todos, POST /api/todos
+│           ├── schema.ts        # Validation for /api/todos
+│           └── [id]/
+│               ├── route.ts     # GET, PUT, DELETE /api/todos/[id]
+│               └── schema.ts    # Validation for /api/todos/[id]
+├── burger.build.ts
 └── package.json
 ```
 
@@ -450,26 +402,32 @@ Which produces:
 
 These commands build the app using BurgerAPI's production build, which discovers routes at build time so no runtime filesystem scanning is required.
 
+For more details on build outputs and options, see:
+
+- [CLI Tool](../getting-started/cli.md)
+- [Build Command](../cli/build.md)
+- [Build Executable](../cli/build-exec.md)
+
 ## Key Concepts Learned
 
 ### Dynamic Routes
 - Use `[paramName]` folders to create dynamic route segments
-- Access parameters via `req.params.paramName`
+- Access parameters via `ctx.params.paramName`
 
 ### Request Validation
-- Use Zod schemas to validate incoming data
-- Return helpful error messages for validation failures
-- Use `safeParse()` for non-throwing validation
+- Declare per-method schemas in a route's `schema.ts` file
+- Access validated data via `ctx.validated`, typed from your schema
+- Invalid requests return 422 automatically, so handlers only see valid data
 
 ### HTTP Status Codes
 - `200` - Success
 - `201` - Created (for POST requests)
 - `204` - No Content (for DELETE requests)
-- `400` - Bad Request (validation errors)
 - `404` - Not Found
+- `422` - Unprocessable Content (validation errors, RFC 9457)
 
 ### Error Handling
-- Always validate input data
+- Validate input with schemas instead of manual checks
 - Return consistent error response format
 - Include helpful error messages
 
@@ -483,13 +441,14 @@ Excellent work! You've built a complete CRUD API with validation. You now unders
 - ✅ Error handling and status codes
 - ✅ Data storage patterns
 
-Ready for something even more complex? In the next tutorial, you'll build a [Blog API](./blog-api.md) with multiple related resources, middleware, and advanced features!
+Ready for something even more complex? In the next tutorial, you'll build a [Blog API](./blog-api.md) with multiple related resources, hooks, plugins, and advanced features!
 
 ## Troubleshooting
 
-**"Validation failed" errors**
-- Check that your request body matches the Zod schema
+**"422 Unprocessable Content" errors**
+- Check that your request body matches the Zod schema in `schema.ts`
 - Make sure you're sending `Content-Type: application/json` header
+- For path params, make sure the URL segment matches the schema (for example a numeric `id`)
 
 **"Todo not found" errors**
 - Verify the todo ID exists by checking `GET /api/todos` first

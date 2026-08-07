@@ -8,26 +8,27 @@ You can validate request **headers** the same way you validate the query string 
 
 ## Example
 
-```typescript
-// api/secure/route.ts
+```typescript title="api/secure/schema.ts"
 import { z } from "zod";
-import type { BurgerRequest } from "burger-api";
 
-export const schema = {
-  get: {
-    headers: z.object({
-      "x-api-key": z.string().min(1),
-    }),
-  },
+export const GET = {
+  headers: z.object({
+    "x-api-key": z.string().min(1),
+  }),
 };
+```
 
-export function GET(req: BurgerRequest) {
-  const key = req.validated.headers["x-api-key"];
+```typescript title="api/secure/route.ts"
+import type { BurgerContext } from "burger-api";
+import type { GET as RouteSchema } from "./schema";
+
+export async function GET(ctx: BurgerContext<typeof RouteSchema>) {
+  const key = ctx.validated.headers["x-api-key"];
   return Response.json({ key });
 }
 ```
 
-If the `x-api-key` header is missing or empty, BurgerAPI responds with `400` and a structured error. The validated value is available on `req.validated.headers`.
+If the `x-api-key` header is missing or empty, BurgerAPI responds with `422` and a structured error. The validated value is available on `ctx.validated.headers`.
 
 ## Notes
 

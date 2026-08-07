@@ -52,7 +52,7 @@ When you install the `burger-api` skill, you get:
 └── references/           # Reference documentation
     ├── routing.md
     ├── validation.md
-    ├── middleware.md
+    ├── hooks.md
     ├── cli.md
     └── openapi.md
 ```

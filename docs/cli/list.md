@@ -4,10 +4,10 @@ sidebar_label: List Command
 
 # List Command
 
-`burger-api list` (alias: `ls`) shows all available middleware from the official ecosystem.
+`burger-api list` (alias: `ls`) shows all available hooks and plugins from the official ecosystem.
 
 - Fetches the latest list and displays names and descriptions in a table.
-- Use with `burger-api add <name>` to install middleware.
+- Use with `burger-api add <name>` to install hooks or plugins.
 
 **Example:**
 

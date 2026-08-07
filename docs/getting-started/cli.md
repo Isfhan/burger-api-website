@@ -5,24 +5,22 @@ sidebar_position: 2
 
 # Burger API CLI Tool
 
-The Burger API CLI is the recommended way to create, manage, and build your Burger API projects. It provides a streamlined experience for scaffolding new projects, managing middleware, and compiling your application for production.
+The Burger API CLI creates, manages, and builds Burger API projects. Use it to scaffold new projects, install hooks and plugins, run the dev server, and compile your application for production.
 
 ## Installation
 
 Install the CLI as described in [Installation](/docs/getting-started/installation), then use the commands below.
 
----
-
 ## Quick Start
 
-Get a new project up and running in seconds:
+Get a new project running in seconds:
 
 ```bash
 # 1. Create a new project
-burger-api create my-awesome-api
+burger-api create my-api
 
 # 2. Navigate to your project
-cd my-awesome-api
+cd my-api
 
 # 3. Start the development server
 bun run dev
@@ -30,159 +28,165 @@ bun run dev
 # 4. Open http://localhost:4000 in your browser
 ```
 
----
+See [Quick Start](/docs/quick-start) for the full walkthrough.
 
-## Available Commands
+## Command reference
 
-### 1. `burger-api create <project-name>`
-Creates a new Burger API project with interactive prompts.
+### `burger-api create <project-name>`
 
-- **What it does:** Scaffolds a complete project structure, configures initial settings, and automatically installs dependencies. New projects get a **config file: `burger.config.ts`** at the project root for API/page dirs and prefixes.
-- **Interactive Prompts:** You'll be asked about API routes, API directory, API prefix, debug mode, Page routes, Page directory, and Page prefix.
-- **Next steps after create:** Edit config if needed (`burger.config.ts`), open your browser, add middleware as needed.
-- **Example:**
-  ```bash
-  burger-api create my-api
-  ```
+Scaffolds a new project with interactive prompts.
 
-### 2. `burger-api list` (alias: `ls`)
-Shows all available middleware from the official ecosystem.
+- Creates the project structure and installs dependencies.
+- Writes `burger.build.ts` at the project root (apiDir, pageDir, apiPrefix, pagePrefix, debug). This file is build-time only.
+- Generates the `dev`, `build`, and `start` scripts.
+- Options: `--lang ts|js` (default `ts`), `--yes` / `--defaults` (skip prompts).
 
-- **What it does:** Fetches the latest list of curated middleware from the repository and displays their names and descriptions in a table.
-- **Example:**
-  ```bash
-  burger-api list
-  ```
+```bash
+burger-api create my-api
+burger-api create my-api --lang js
+```
 
-### 3. `burger-api skills`
+Next steps: run `bun run dev`, then add hooks and plugins with `burger-api add`. See [Create Command](/docs/cli/create).
+
+### `burger-api list` (alias: `ls`)
+
+Shows available hooks and plugins from the official ecosystem.
+
+```bash
+burger-api list
+```
+
+See [List Command](/docs/cli/list).
+
+### `burger-api add <name...>`
+
+Installs hooks and plugins from the ecosystem into your project.
+
+- Hooks install to `ecosystem/hooks/` and compose in `src/hooks.ts`.
+- Plugins install to `ecosystem/plugins/` and register in `src/plugins.ts` via `burger.usePlugin(...)`.
+- Prints usage instructions after install.
+
+```bash
+burger-api add cors
+burger-api add cors logger rate-limiter
+burger-api add jwt api-key
+```
+
+See [Add Command](/docs/cli/add) and [Ecosystem](/docs/ecosystem/introduction).
+
+### `burger-api dev`
+
+Starts the development server with hot reload. The server restarts when you change files.
+
+- Options: `-p, --port <port>` (default `4000`), `-f, --file <file>` (default `src/index.ts`).
+
+```bash
+burger-api dev
+```
+
+`bun run dev` runs the same command through the project's `dev` script.
+
+### `burger-api build <file>`
+
+Bundles your project into a single JavaScript file. Routes are discovered at build time (via `burger.build.ts` or conventions) and embedded, so production does not depend on the filesystem.
+
+- Options: `--outfile <path>` (default `.build/bundle/app.js`), `--minify`, `--sourcemap <type>`, `--target <target>` (e.g. `bun`, `node`).
+
+```bash
+burger-api build src/index.ts --minify
+```
+
+See [Build Command](/docs/cli/build).
+
+### `burger-api start`
+
+Runs the production server (no hot reload). Run `burger-api build` first.
+
+- Options: `-p, --port <port>` (default `4000`), `-f, --file <file>`.
+
+```bash
+burger-api start
+```
+
+`bun run start` runs the same command through the project's `start` script.
+
+### `burger-api build:exec <file>`
+
+Compiles your project into a standalone executable that runs without Bun installed.
+
+- Options: `--outfile <path>`, `--target <target>` (e.g. `bun-windows-x64`, `bun-linux-x64`, `bun-darwin-arm64`), `--minify` (default on), `--no-bytecode`.
+
+```bash
+burger-api build:exec src/index.ts --target bun-linux-x64
+```
+
+See [Build Exec Command](/docs/cli/build-exec).
+
+### `burger-api skills`
+
 Manages AI agent skills for agentic IDEs.
 
-- **`skills install [name]`** — Download a skill (defaults to `burger-api`). Installs to `.agents/skills/<name>/`.
-- **`skills list`** — Show locally installed skills.
-- **`skills available`** — Browse the remote skills catalog on GitHub.
-- **Examples:**
-  ```bash
-  burger-api skills install
-  burger-api skills list
-  burger-api skills available
-  ```
-- **Compatible with:** Cursor, Claude Code, OpenCode, Copilot, Codex — all auto-discover `.agents/skills/`.
+- `skills install [name]`: Install a skill (defaults to `burger-api`) to `.agents/skills/<name>/`.
+- `skills list`: Show locally installed skills.
+- `skills available`: Browse the remote catalog.
 
-### 4. `burger-api add <middleware...>`
-Adds one or more middleware to your project.
+```bash
+burger-api skills install
+burger-api skills list
+burger-api skills available
+```
 
-- **What it does:** Downloads the specified middleware from GitHub and copies them to your `ecosystem/middleware/` directory. It also provides usage instructions after installation.
-- **Examples:**
-  ```bash
-  burger-api add cors
-  burger-api add cors logger rate-limiter
-  burger-api add jwt-auth api-key-auth
-  ```
+See [Skills Command](/docs/cli/skills).
 
-### 5. `burger-api build <file>`
-Bundles your project into a single JavaScript file. The CLI discovers routes at build time (using `burger.config.ts` or conventions) and embeds them so production doesn't depend on the filesystem.
+## Project structure
 
-- **Options:**
-  - `--outfile <path>`: Output file path (default: `.build/bundle/app.js`)
-  - `--minify`: Minify the output code
-  - `--sourcemap <type>`: Generate sourcemaps (`inline`, `linked`, or `none`)
-  - `--target <target>`: Target environment (e.g., `bun`, `node`)
-- **Example:**
-  ```bash
-  burger-api build src/index.ts --minify
-  ```
-
-### 6. `burger-api build:exec <file>`
-Compiles your project into a standalone executable that doesn't require a runtime to be pre-installed.
-
-- **Options:**
-  - `--outfile <path>`: Output file path (default: `.build/executable/<project>.exe` on Windows, `.build/executable/<project>` on Unix)
-  - `--target <target>`: Target platform (e.g., `bun-windows-x64`, `bun-linux-x64`, `bun-darwin-arm64`)
-  - `--minify`: Minify the output (enabled by default)
-  - `--no-bytecode`: Disable bytecode compilation
-- **Example:**
-  ```bash
-  burger-api build:exec src/index.ts --target bun-linux-x64
-  ```
-
-### 7. `burger-api serve`
-Starts a development server with hot reload, automatically restarting when you make file changes.
-
-- **Options:**
-  - `-p, --port <port>`: Port to run on (default: `4000`)
-  - `-f, --file <file>`: Entry file (default: `src/index.ts`)
-- **Example:**
-  ```bash
-  burger-api serve --port 4000
-  ```
-
----
-
-## Common Workflows
-
-### Creating and Running a Project
-1. Use `burger-api create` to set up your directory.
-2. Run `burger-api serve` or `bun run dev` to start coding.
-
-### Adding Middleware
-1. Browse available middleware with `burger-api list`.
-2. Add what you need with `burger-api add <name>`.
-3. Import the middleware from `ecosystem/middleware/` in your `index.ts`.
-
-### Installing AI Agent Skills
-1. Answer Yes to "Add AI agent skills?" when creating a project, or run `burger-api skills install` in an existing project.
-2. Your AI assistant discovers `.agents/skills/burger-api/` automatically — no configuration needed.
-3. Start working: the skill activates when you ask about routing, validation, middleware, or CLI tasks.
-
-### Building for Production
-1. For a single JS file: `burger-api build src/index.ts --minify` (output: `.build/bundle/app.js` by default).
-2. For a standalone binary: `burger-api build:exec src/index.ts --target bun-linux-x64` (output: `.build/executable/<project>` by default).
-
----
-
-## Project Structure (CLI Created)
-
-When you create a project using `burger-api create`, it generates the following structure:
+`burger-api create` generates:
 
 ```text
 my-api/
 ├── src/
-│   ├── index.ts          # Main entry point
-│   └── api/              # Your file-based API routes
+│   ├── index.ts           # Main entry point
+│   ├── hooks.ts           # Global hooks
+│   ├── plugins.ts         # burger.usePlugin(...)
+│   ├── providers.ts       # burger.provide(...)
+│   ├── openapi.config.ts  # OpenAPI metadata and docs UI
+│   └── api/               # File-based API routes
 ├── ecosystem/
-│   └── middleware/       # Middleware installed via `burger-api add`
+│   └── hooks/             # Installed hooks (plugins dir is created by `burger-api add`)
 ├── .agents/
-│   └── skills/
-│       └── burger-api/   # AI agent skills (optional, when opted in)
-├── burger.config.ts      # Project config: apiDir, pageDir, apiPrefix, pagePrefix (used by CLI for build)
+│   └── skills/            # AI agent skills (optional)
+├── burger.build.ts        # Build-time config: apiDir, pageDir, apiPrefix, pagePrefix, debug
 ├── package.json
 └── tsconfig.json
 ```
 
-- **`burger.config.ts`**: Config file at the project root. Edit it to change API/page directories and URL prefixes; the CLI uses it for `burger-api build` and `burger-api build:exec`.
-- **`ecosystem/middleware/`**: This is where the CLI places all downloaded middleware files. Each middleware is usually in its own subdirectory.
-- **`.agents/skills/`**: This is where the CLI places downloaded agent skills (when opted in). Skills are auto-discovered by agentic IDEs.
+## Common workflows
 
----
+### Create and run
+
+1. `burger-api create my-api`
+2. `cd my-api`
+3. `bun run dev`
+
+### Add hooks and plugins
+
+1. Browse available hooks and plugins with `burger-api list`.
+2. Install them with `burger-api add <name>`.
+3. Compose hooks in `src/hooks.ts`; register plugins in `src/plugins.ts`.
+
+### Build for production
+
+1. `burger-api build src/index.ts` for a single JS file.
+2. `burger-api start` to run it.
+3. `burger-api build:exec src/index.ts --target bun-linux-x64` for a standalone binary.
 
 ## Troubleshooting
 
-- **`burger-api: command not found`**
-  - Ensure the installation directory (usually `~/.burger-api/bin`) is in your system's `PATH`.
-  - Restart your terminal or run `source ~/.bashrc` (or equivalent).
-
-- **`Directory already exists`**
-  - The `create` command requires a target directory that doesn't exist yet. Choose a new name or remove the existing folder.
-
-- **Could not get middleware list from GitHub**
-  - Check your internet connection. The CLI needs to reach `github.com` to fetch the list of available middleware (the middleware registry).
-
-- **Entry file not found**
-  - Ensure you are running the command from the root of your project or specify the correct path using the `-f` flag.
-
-- **Build failures on Windows (D:\ drive)**
-  - If you encounter issues compiling executables on a secondary drive (like `D:\`), try moving the project to the `C:\` drive or ensuring your user has full permissions for the target output directory.
-
+- **`burger-api: command not found`**: Ensure the installation directory (usually `~/.burger-api/bin`) is in your system's `PATH`. Restart your terminal or run `source ~/.bashrc` (or equivalent).
+- **`Directory already exists`**: The `create` command requires a target directory that does not exist yet. Choose a new name or remove the existing folder.
+- **Could not fetch the hooks and plugins list**: Check your internet connection. The CLI needs to reach GitHub to fetch the list.
+- **Entry file not found**: Ensure you are running the command from the root of your project or specify the correct path with `-f`.
+- **Build failures on Windows (D:\ drive)**: If you hit issues compiling executables on a secondary drive (like `D:\`), try moving the project to the `C:\` drive or ensure your user has full permissions for the output directory.
 
 ## Related
 

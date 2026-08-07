@@ -87,7 +87,7 @@ export function HomepageFeatures() {
           icon: "🚀",
           title: "Efficient Request Processing",
           description:
-            "A single pipeline handles middleware, validation, and responses with minimal allocations, so steady-state latency stays predictable.",
+            "A single pipeline handles hooks, validation, and responses with minimal allocations, so steady-state latency stays predictable.",
         },
       ],
     },
@@ -96,9 +96,9 @@ export function HomepageFeatures() {
       features: [
         {
           icon: "⚙️",
-          title: "Middleware",
+          title: "Hooks & Plugins",
           description:
-            "Apply global or route-specific middleware that can continue, short-circuit, or transform the response — useful for auth, logging, and CORS.",
+            "Lifecycle hooks (onRequest, transform, beforeRoute, afterRoute, mapResponse, onError) plus plugins for auth, logging, and CORS.",
         },
         {
           icon: "✅",

@@ -4,17 +4,15 @@ These instructions apply to all edits to `burger-api-website`.
 
 ## 0. Source of truth
 
-**Architecture and product decisions:**
+**Architecture and product decisions** are locked in the framework's
+[`burger-api/AGENTS.md`](../burger-api/AGENTS.md).
 
-`../burger-api-roadmaps/BURGERAPI_VISION.md`
-
-When website content conflicts with the vision, **the vision wins**.  
+When website content conflicts with the locked architecture, **AGENTS.md wins**.  
 Do not invent or redesign architecture. If unclear, stop and ask.
 
-Also: `../burger-api-roadmaps/ARCHITECTURE.md`, framework `AGENTS.md`.
-
-The site should teach the **vision-aligned public API**. Where the shipped package
-still uses legacy names, say so briefly and show the target API.
+The site teaches the **locked public API**. Write as if BurgerAPI has always
+worked this way: file-based routing, `BurgerContext`, six lifecycle hooks,
+plugins, providers, macros, OpenAPI generation, and WebSocket under `src/ws/`.
 
 ---
 
@@ -103,17 +101,6 @@ Official ecosystem **plugins** under `ecosystem/plugins/` integrating with hooks
 | Plugins | `src/plugins.ts` |
 | Route | `config.ts` |
 
-### Planned / not planned
-
-- Planned: file-based WebSocket router (`src/websocket/**/ws.ts`)
-- Not planned: dedicated webhook router, ORM, group inheritance
-
-### Legacy (do not teach as primary)
-
-`globalMiddleware`, `export const middleware`, `BurgerRequest` as primary type,
-`beforeHandle`/`afterHandle`/`onResponse`/lifecycle `provide`, `burger.config.ts`,
-route `use.ts`/`webhook.ts`, group inheritance, lowercase schema `get`/`post` as primary.
-
 ---
 
 ## 3. Related repositories
@@ -121,14 +108,13 @@ route `use.ts`/`webhook.ts`, group inheritance, lowercase schema `get`/`post` as
 - `burger-api-website` — this site
 - `burger-api` — framework + CLI
 - `burger-api-benchmarks` — benchmarks only
-- `burger-api-roadmaps` — vision + roadmaps
 
 ## 4. Verification
 
 - `bun run build` must pass (`onBrokenLinks: "throw"`)
 - `bun run typecheck` must pass
-- Grep for forbidden: Phase, roadmap, Elysia, Coming Soon, middleware-as-primary framing
 
-## 5. Sidebar migration note
+## 5. Style notes
 
-Prefer category **Hooks** over **Middleware**. Prefer **BurgerContext** over **BurgerRequest** API pages. Ecosystem = hooks + plugins.
+Prefer the **Hooks** category for lifecycle content. Use **BurgerContext** in
+all API pages. Ecosystem = hooks + plugins.

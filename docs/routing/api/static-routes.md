@@ -8,7 +8,7 @@ Static routes are the foundation of BurgerAPI's file-based routing system. They 
 
 ## What Are Static Routes?
 
-Static routes are API endpoints with fixed, predetermined paths. Unlike dynamic or wildcard routes, static routes don't capture any URL parameters—they match exact paths only.
+Static routes are API endpoints with fixed, predetermined paths. Unlike dynamic or wildcard routes, static routes don't capture any URL parameters: they match exact paths only.
 
 **Examples:**
 - `/api/products` - Lists all products
@@ -17,7 +17,7 @@ Static routes are API endpoints with fixed, predetermined paths. Unlike dynamic 
 
 ## File-Based Routing Basics
 
-BurgerAPI makes defining API endpoints intuitive using a file-based routing approach. Simply create files and folders within your designated `apiDir` (configured in the `Burger` constructor, e.g., `apiDir: 'api'`), and BurgerAPI handles the rest.
+BurgerAPI makes defining API endpoints intuitive using a file-based routing approach. Simply create files and folders within your designated `apiDir` (configured in the `Burger` constructor, e.g., `apiDir: './src/api'`), and BurgerAPI handles the rest.
 
 ### How It Works
 
@@ -34,10 +34,10 @@ Example: `api/users/profile/route.ts` becomes `/api/users/profile` (assuming the
 Let's create a simple products API endpoint:
 
 ```typescript title="api/products/route.ts"
-import type { BurgerRequest } from "burger-api";
+import type { BurgerContext } from "burger-api";
 
 // Handles GET requests to /api/products
-export function GET(req: BurgerRequest) {
+export async function GET(ctx: BurgerContext) {
   return Response.json({ message: "Fetched products" });
 }
 ```
@@ -50,17 +50,23 @@ Your exported HTTP method functions are the route handlers:
 
 ### Handler Arguments
 
-- **Argument:** They receive a single argument: the `BurgerRequest` object.
+- **Argument:** They receive a single argument: the `BurgerContext` object.
 
-### BurgerRequest Object
+### BurgerContext
 
-This object extends the standard `Request` and provides helpful properties and methods:
+`ctx` is a `BurgerContext`. It is not a `Request` subclass: the original request is available as `ctx.request`, and the standard request surface is delegated. The fields you will use most:
 
-- `req.url`: The full request URL.
-- `req.method`: The HTTP method.
-- `req.headers`: Request headers.
-- `await req.json()` and `await req.text()` etc.: Methods to read the request body.
-- `req.validated`: Contains validated data if using [Schema Validation](../../validation/zod.md).
+- `ctx.request`: The raw `Request`.
+- `ctx.params`: Dynamic path parameters (`[id]` segments).
+- `ctx.query`: The parsed query string.
+- `ctx.body` and `await ctx.json()`: Request body access.
+- `ctx.headers`, `ctx.method`, `ctx.url`: Standard request data.
+- `ctx.cookies`: Parsed cookies.
+- `ctx.validated`: Validated data if you declared schemas in `schema.ts`.
+- `ctx.set`: Response mutations.
+- `ctx.services` and `ctx.config`: Injected services and route options.
+
+See [Request API](/docs/api/request-api) for the full field list.
 
 ### Return Value
 
@@ -96,9 +102,9 @@ api/
 ```
 
 ```typescript title="api/products/featured/route.ts"
-import type { BurgerRequest } from "burger-api";
+import type { BurgerContext } from "burger-api";
 
-export function GET(req: BurgerRequest) {
+export async function GET(ctx: BurgerContext) {
   return Response.json({
     message: "Featured products",
     products: [
@@ -112,7 +118,7 @@ export function GET(req: BurgerRequest) {
 ## Route Matching Priority
 
 :::tip Static Routes Have Highest Priority
-BurgerAPI uses a hybrid router (static paths via Bun's native router, dynamic and wildcard via a trie). See [Routing Engine](/docs/architecture/routing-engine) for how routes are matched.
+BurgerAPI uses a hybrid router (static paths via Bun's native router, dynamic and wildcard via a trie).
 
 - Static routes (e.g., `/products/featured`) are matched _before_ dynamic routes (`/products/[id]`).
 - Routes with more static segments are generally matched before routes with fewer.
@@ -139,7 +145,7 @@ You do not need to write a separate `HEAD` handler. A `HEAD` request to any rout
 
 ### Trailing Slash
 
-Trailing slashes are matched loosely — `/api/products` and `/api/products/` resolve to the same route. On a dynamic route, a trailing slash is treated as an empty parameter value (e.g. `/api/users/` → `req.params.id === ""`), which your Zod schema can then reject.
+Trailing slashes are matched loosely: `/api/products` and `/api/products/` resolve to the same route. On a dynamic route, a trailing slash is treated as an empty parameter value (e.g. `/api/users/` → `ctx.params.id === ""`), which your Zod schema can then reject.
 
 ### Priority Example
 
@@ -172,24 +178,24 @@ api/v1/data/users/info/personal/route.ts
 
 ```typescript
 // ✅ Good: RESTful methods
-export function GET(req: BurgerRequest) { /* Get resource */ }
-export function POST(req: BurgerRequest) { /* Create resource */ }
-export function DELETE(req: BurgerRequest) { /* Delete resource */ }
+export async function GET(ctx: BurgerContext) { /* Get resource */ }
+export async function POST(ctx: BurgerContext) { /* Create resource */ }
+export async function DELETE(ctx: BurgerContext) { /* Delete resource */ }
 
 // ❌ Avoid: Using GET for mutations
-export function GET(req: BurgerRequest) { /* Don't delete in GET! */ }
+export async function GET(ctx: BurgerContext) { /* Don't delete in GET! */ }
 ```
 
 ### 3. Return Proper Response Objects
 
 ```typescript
 // ✅ Good: Always return Response
-export function GET(req: BurgerRequest) {
+export async function GET(ctx: BurgerContext) {
   return Response.json({ data: [] });
 }
 
 // ❌ Avoid: Returning plain objects
-export function GET(req: BurgerRequest) {
+export async function GET(ctx: BurgerContext) {
   return { data: [] }; // Won't work!
 }
 ```
@@ -197,9 +203,9 @@ export function GET(req: BurgerRequest) {
 ### 4. Handle Errors Gracefully
 
 ```typescript
-export async function POST(req: BurgerRequest) {
+export async function POST(ctx: BurgerContext) {
   try {
-    const body = await req.json();
+    const body = await ctx.json();
     // Process body...
     return Response.json({ success: true });
   } catch (error) {

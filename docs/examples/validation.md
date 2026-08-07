@@ -4,39 +4,37 @@ sidebar_label: Validation Example
 
 # Validation Example
 
-Validate query and body with a schema, and turn on automatic type conversion app-wide so text inputs become real types.
+Validate query and body with per-method schemas in `schema.ts`, then read the validated data from `ctx.validated`.
 
 ```typescript
-// burger.config.ts
-export default {
-  validation: { coerce: true },
-};
+// src/api/products/schema.ts
+import { z } from "zod";
+
+export const GET = { query: z.object({ limit: z.coerce.number().optional() }) };
+export const POST = { body: z.object({ name: z.string().min(1), price: z.number() }) };
 ```
 
 ```typescript
-// api/products/route.ts
-import { z } from "zod";
-import type { BurgerRequest } from "burger-api";
+// src/api/products/route.ts
+import type { BurgerContext } from "burger-api";
+import type { GET as GETSchema, POST as POSTSchema } from "./schema";
 
-export const schema = {
-  get: { query: z.object({ limit: z.number().optional() }) },
-  post: { body: z.object({ name: z.string().min(1), price: z.number() }) },
-};
-
-export function GET(req: BurgerRequest) {
-  const { limit } = req.validated.query;
+export async function GET(ctx: BurgerContext<typeof GETSchema>) {
+  const { limit } = ctx.validated.query;
   return Response.json({ items: [], limit });
 }
 
-export function POST(req: BurgerRequest) {
-  const { name, price } = req.validated.body;
+export async function POST(ctx: BurgerContext<typeof POSTSchema>) {
+  const { name, price } = ctx.validated.body;
   return Response.json({ name, price });
 }
 ```
 
-With `coerce: true`, a request like `?limit=10` gives you the number `10` (not the string `"10"`). You can also reuse a shared shape by registering a [model](/docs/validation/models) and referencing it by name.
+The `BurgerContext<typeof GET>` generic types `ctx.validated` from the matching schema export, so `limit` is a validated number, not a string.
 
-See the [Schema Definition](/docs/validation/schema) for the full schema shape and the [CRUD API](/docs/examples/crud-api) example for a complete route file.
+With `z.coerce.number()`, a request like `?limit=10` gives you the number `10` (not the string `"10"`). You can also turn coercion on app-wide: see [Coercion](/docs/validation/coercion).
+
+See [Schema Definition](/docs/validation/schema) for the full schema shape, [Validation Errors](/docs/validation/errors) for how failures are reported (default `422` with RFC 9457 problem details), and the [CRUD API](/docs/examples/crud-api) example for a complete route directory.
 
 
 ## Related

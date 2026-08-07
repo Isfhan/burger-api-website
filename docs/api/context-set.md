@@ -4,7 +4,7 @@ sidebar_label: ContextSet
 
 # ContextSet
 
-`ContextSet` is the type of `req.set`. It describes response changes that the framework applies at the end of the request's processing steps (the request flow).
+`ContextSet` is the type of `ctx.set`. It describes response changes that the framework applies at the end of the request lifecycle, after `mapResponse`.
 
 ```ts
 interface ContextSet {
@@ -28,18 +28,18 @@ interface ContextSet {
 ## Example
 
 ```ts
-req.set = {
-  status: 201,
-  headers: { "x-version": "0.14.0" },
-};
+export async function POST(ctx: BurgerContext) {
+  ctx.set = {
+    status: 201,
+    headers: { "x-version": "1.0.0" },
+  };
+  return Response.json({ created: true });
+}
 ```
 
-The mutation is applied by `applySet`. See [Response Mutation](./response-mutation.md).
-
+The mutation is applied by `applySet` at the pipeline exit, after `mapResponse` hooks run. See [Response Mutation](./response-mutation.md).
 
 ## Related
 
+- [Response Mutation](/docs/api/response-mutation)
 - [Burger Class](/docs/core/burger-class)
-- [Server Options](/docs/core/server-options)
-- [BurgerRequest](/docs/api/burger-request)
-- [Request API](/docs/api/request-api)

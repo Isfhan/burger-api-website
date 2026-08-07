@@ -4,30 +4,31 @@ sidebar_label: Cookie Validation
 
 # Cookie Validation
 
-You can validate **cookie** values by declaring a `cookie` schema. BurgerAPI reads the `Cookie` header, splits it into name/value pairs, and checks each value against your schema.
+You can validate **cookie** values by declaring a `cookies` schema. BurgerAPI reads the `Cookie` header, splits it into name/value pairs, and checks each value against your schema.
 
 ## Example
 
-```typescript
-// api/session/route.ts
+```typescript title="api/session/schema.ts"
 import { z } from "zod";
-import type { BurgerRequest } from "burger-api";
 
-export const schema = {
-  get: {
-    cookie: z.object({
-      session: z.string().min(1),
-    }),
-  },
+export const GET = {
+  cookies: z.object({
+    session: z.string().min(1),
+  }),
 };
+```
 
-export function GET(req: BurgerRequest) {
-  const session = req.validated.cookie.session;
+```typescript title="api/session/route.ts"
+import type { BurgerContext } from "burger-api";
+import type { GET as RouteSchema } from "./schema";
+
+export async function GET(ctx: BurgerContext<typeof RouteSchema>) {
+  const session = ctx.validated.cookies.session;
   return Response.json({ session });
 }
 ```
 
-If the `session` cookie is missing, BurgerAPI responds with `400`. The validated value is available on `req.validated.cookie`.
+If the `session` cookie is missing, BurgerAPI responds with `422`. The validated value is available on `ctx.validated.cookies`.
 
 ## Notes
 

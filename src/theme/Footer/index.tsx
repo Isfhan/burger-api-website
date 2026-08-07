@@ -9,7 +9,7 @@ const docLinks = [
   { label: "Getting Started", to: "/docs/" },
   { label: "Routing", to: "/docs/routing/file-based-routing" },
   { label: "Validation", to: "/docs/validation/zod" },
-  { label: "Middleware", to: "/docs/middleware/global" },
+  { label: "Hooks", to: "/docs/hooks/system" },
   { label: "OpenAPI", to: "/docs/openapi/generation" },
 ];
 
@@ -17,7 +17,6 @@ const resourceLinks = [
   { label: "CLI", to: "/docs/cli/installation" },
   { label: "API Reference", to: "/docs/" },
   { label: "Examples", to: "/docs/examples/basic-route" },
-  { label: "Architecture", to: "/docs/architecture/overview" },
   { label: "Performance", to: "/docs/performance/overview" },
 ];
 
@@ -79,7 +78,7 @@ export default function Footer(): React.ReactElement {
     "https://github.com/isfhan/burger-api";
   const version =
     (siteConfig.customFields as { frameworkVersion?: string })
-      ?.frameworkVersion || "0.11.0";
+      ?.frameworkVersion || "1.0.0";
 
   return (
     <footer className="footer ba-footer">

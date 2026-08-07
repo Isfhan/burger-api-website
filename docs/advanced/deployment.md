@@ -4,12 +4,14 @@ sidebar_label: Deployment
 
 # Deployment
 
-Deploy BurgerAPI by building for production and running the output:
+Deployment depends on your runtime. BurgerAPI's deployment guides cover each target:
 
-1. **Bundle:** `burger-api build src/index.ts` → run with `bun .build/bundle/app.js` (default path). Deploy this single file and run it with Bun on the server.
-2. **Executable:** `burger-api build:exec src/index.ts` → output in `.build/executable/`. Deploy the binary; no Bun install required on the target.
+- [Deploy on Bun](/docs/deployment/bun) — `burger.serve(port)` with `burger-api build` and `burger-api start`.
+- [Deploy on Cloudflare Workers](/docs/deployment/cloudflare)
+- [Deploy on Vercel](/docs/deployment/vercel)
+- [Deploy on Deno](/docs/deployment/deno)
 
-Routes and options are embedded at build time. For pages, the build may output assets to a directory—deploy that directory together with the bundle or binary. See [CLI Build](/docs/cli/build) and [Build Exec](/docs/cli/build-exec).
+The production flow is `burger-api build` (routes and options are embedded at build time), then `burger-api start` for Bun, or `toFetchHandler(app)` for WinterCG targets. See [CLI Build](/docs/cli/build) and [Build Exec](/docs/cli/build-exec).
 
 
 ## Related

@@ -45,9 +45,9 @@ const features: Feature[] = [
   },
   {
     icon: Layers,
-    title: "Middleware",
+    title: "Lifecycle Hooks",
     description:
-      "Global or route-specific middleware that can continue, short-circuit, or transform the response.",
+      "Six named hooks control every request: onRequest, transform, beforeRoute, afterRoute, mapResponse, and onError.",
   },
   {
     icon: Braces,
@@ -75,7 +75,7 @@ export function Features() {
       <SectionHeader
         eyebrow="Why BurgerAPI"
         title="Everything you need to ship APIs"
-        subtitle="A focused toolkit for Bun backends — routing, validation, OpenAPI, and middleware that work together out of the box."
+        subtitle="A focused toolkit for Bun backends — routing, validation, OpenAPI, and lifecycle hooks that work together out of the box."
       />
       <StaggerChildren className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {features.map((f) => (
