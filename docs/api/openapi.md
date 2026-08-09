@@ -41,10 +41,10 @@ The `openapi` type allows `summary`, `description`, `tags`, `operationId`, `depr
 
 ## Docs UI providers
 
-BurgerAPI serves an interactive UI at `/docs` and the raw spec at `/openapi.json`. The default provider is Scalar. The alternatives are exported from `burger-api`:
+BurgerAPI serves an interactive UI at `/docs` and the raw spec at `/openapi.json`. The default provider is Swagger UI. The alternatives are exported from `burger-api`:
 
-- `scalarDocs()`
 - `swaggerDocs()`
+- `scalarDocs()`
 - `redocDocs()`
 
 The provider is set in the OpenAPI config, along with the spec path, docs path, and optional basic auth for `/docs`. In dev, this config is auto-discovered from `openapi.config.ts`; production builds pass it in the `openapi` option. See [Swagger UI](/docs/openapi/swagger-ui).

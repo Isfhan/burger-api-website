@@ -4,7 +4,7 @@ sidebar_label: Swagger UI
 
 # Swagger UI
 
-BurgerAPI serves an interactive docs UI so you can explore and call your API from the browser. The default provider is [Scalar](https://scalar.com/); you can switch to [Swagger UI](https://swagger.io/tools/swagger-ui/) with `swaggerDocs()` or to [ReDoc](https://redocly.com/redoc/) with `redocDocs()`. The provider is set in the OpenAPI config, which is auto-discovered from `openapi.config.ts` in dev.
+BurgerAPI serves an interactive docs UI so you can explore and call your API from the browser. The default provider is [Swagger UI](https://swagger.io/tools/swagger-ui/); you can switch to [Scalar](https://scalar.com/) with `scalarDocs()` or to [ReDoc](https://redocly.com/redoc/) with `redocDocs()`. The provider is set in the OpenAPI config, which is auto-discovered from `openapi.config.ts` in dev.
 
 Once the server is running and OpenAPI is configured, the spec is available at `/openapi.json` and the UI at `/docs` (both paths are configurable).
 
