@@ -8,7 +8,7 @@ const tree = `api/
 │   └── route.ts             →  GET /users
 ├── users/[id]/
 │   └── route.ts             →  GET /users/:id
-└── docs/[...slug]/
+└── docs/[...]/
     └── route.ts             →  GET /docs/*`;
 
 const routeCode = `// api/users/[id]/route.ts
@@ -26,7 +26,7 @@ export function FileRouting() {
         <SectionHeader
           eyebrow="File Routing"
           title="Routes that match your folders"
-          subtitle="Organize your API directory and BurgerAPI maps files to endpoints. Use [param] for dynamic segments and [...slug] for wildcards."
+          subtitle="Organize your API directory and BurgerAPI maps files to endpoints. Use [param] for dynamic segments and [...] for wildcards."
         />
       </ScrollReveal>
 

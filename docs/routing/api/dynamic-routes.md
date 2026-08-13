@@ -462,6 +462,40 @@ export async function GET(ctx: BurgerContext) {
 }
 ```
 
+## Types for this feature
+
+TypeScript checks two things here: the handler parameter and the URL parameters.
+
+The types you use (from `burger-api`):
+
+- `BurgerContext<typeof GET>` — the request object, typed from your schema
+- `ctx.params` (raw) — always `Record<string, string> | undefined`, not typed by name
+- `ctx.validated.params` — typed from the `params` schema in `schema.ts`
+
+✅ Correct — use a `params` schema and read `ctx.validated.params`:
+
+```typescript
+import type { BurgerContext } from "burger-api";
+import type { GET as RouteSchema } from "./schema";
+
+export async function GET(ctx: BurgerContext<typeof RouteSchema>) {
+    const { id } = ctx.validated.params; // typed: string
+    return Response.json({ id });
+}
+```
+
+❌ Wrong — reading a parameter name that is not in the schema:
+
+```typescript
+export async function GET(ctx: BurgerContext<typeof RouteSchema>) {
+    const { wrongName } = ctx.validated.params; // ❌ Property 'wrongName' does not exist
+}
+```
+
+`ctx.params` is always the raw string record. For typed parameters, prefer `ctx.validated.params`. See the [TypeScript overview](/docs/advanced/type-safety).
+
+Check your code: `bun run typecheck`.
+
 ## Next Steps
 
 Now that you understand dynamic routes, explore other routing patterns:

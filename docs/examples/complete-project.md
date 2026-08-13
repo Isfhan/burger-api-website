@@ -9,8 +9,8 @@ A full BurgerAPI project follows the 1.0 layout. App-level files live in `src/`,
 ```
 src/
 ├── index.ts           # Burger instance + burger.serve(port)
-├── plugins.ts         # burger.usePlugin(...)
-├── providers.ts       # burger.provide(name, service)
+├── plugins.ts         # register plugins
+├── providers.ts       # declare shared services
 ├── hooks.ts           # global hooks (onRequest, beforeRoute, ...)
 ├── openapi.config.ts  # OpenAPI metadata and docs config
 └── api/               # routes

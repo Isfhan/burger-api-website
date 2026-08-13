@@ -1,30 +1,45 @@
-import React from "react";
+import React, { useState } from "react";
 import { BookOpen, ArrowRight } from "lucide-react";
 import { Section, SectionHeader, CodeBlock, ScrollReveal, Button } from "../ui";
 
-const code = `import { z } from "zod";
-import type { BurgerContext } from "burger-api";
+const schemaCode = `// api/posts/schema.ts
+import { z } from "zod";
 
-export const schema = {
+export const GET = {
   query: z.object({
     tag: z.string().optional(),
     limit: z.coerce.number().min(1).max(100).default(10),
   }),
+};
+
+export const POST = {
   body: z.object({
     title: z.string().min(1),
     published: z.boolean().default(false),
   }),
-};
+};`;
 
-export async function POST(ctx: BurgerContext) {
-  // Fully typed from your Zod schemas
-  const { tag, limit } = ctx.validated.query;
+const routeCode = `// api/posts/route.ts
+import type { BurgerContext } from "burger-api";
+import type { POST as PostSchema } from "./schema";
+
+export async function POST(ctx: BurgerContext<typeof PostSchema>) {
+  // Fully typed from your Zod schema
   const { title, published } = ctx.validated.body;
 
-  return Response.json({ tag, limit, title, published });
+  return Response.json({ title, published }, { status: 201 });
 }`;
 
+const validationTabs = [
+  { id: "schema", title: "schema.ts", code: schemaCode },
+  { id: "route", title: "route.ts", code: routeCode },
+];
+
 export function Validation() {
+  const [activeTab, setActiveTab] = useState(validationTabs[0].id);
+  const active =
+    validationTabs.find((t) => t.id === activeTab) ?? validationTabs[0];
+
   return (
     <Section id="validation" secondary>
       <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -33,7 +48,7 @@ export function Validation() {
             align="left"
             eyebrow="Validation"
             title="Zod schemas next to your routes"
-            subtitle="Export a schema object alongside your handlers. BurgerAPI validates before your code runs and puts typed data on ctx.validated — for query, params, headers, cookies, and body. Reuse shapes as models and validate responses too."
+            subtitle="Export a schema per method in schema.ts. BurgerAPI validates before your code runs and puts typed data on ctx.validated — for query, params, headers, cookies, and body. Reuse shapes as models and validate responses too."
             className="mb-6 md:mb-8"
           />
           <Button to="/docs/validation/zod" variant="secondary" className="mt-2">
@@ -47,7 +62,14 @@ export function Validation() {
           </Button>
         </ScrollReveal>
         <ScrollReveal delay={0.05}>
-          <CodeBlock code={code} filename="api/posts/route.ts" />
+          <CodeBlock
+            code={active.code}
+            language="tsx"
+            tabs={validationTabs}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+            className="mt-1"
+          />
         </ScrollReveal>
       </div>
     </Section>

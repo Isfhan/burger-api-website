@@ -8,6 +8,10 @@ import {
   Zap,
   Route,
   Gauge,
+  Radio,
+  Puzzle,
+  Cable,
+  Globe,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Section, SectionHeader, Card, StaggerChildren } from "../ui";
@@ -23,7 +27,7 @@ const features: Feature[] = [
     icon: FolderTree,
     title: "File-Based Routing",
     description:
-      "Define routes with route.ts files. Dynamic segments use [param] and wildcards use [...slug] — declarative and convention-driven.",
+      "Define routes with route.ts files. Dynamic segments use [param] and wildcards use [...] — declarative and convention-driven.",
   },
   {
     icon: Route,
@@ -35,7 +39,25 @@ const features: Feature[] = [
     icon: ShieldCheck,
     title: "Zod Validation",
     description:
-      "Define schemas next to your routes. Validate params, query, and body with full type inference and clear errors.",
+      "Define schemas next to your routes. Validate params, query, headers, cookies, and body with full type inference and clear errors.",
+  },
+  {
+    icon: Radio,
+    title: "WebSocket",
+    description:
+      "File-based WebSocket routes under src/websocket/, or programmatic burger.websocket(). Typed connections with ws.data and ws.services.",
+  },
+  {
+    icon: Puzzle,
+    title: "Plugins",
+    description:
+      "Register plugins in src/plugins.ts. Official packages cover jwt-auth, api-key, session, oidc, basic-auth, and env.",
+  },
+  {
+    icon: Cable,
+    title: "Providers",
+    description:
+      "Declare shared services in src/providers.ts. They become typed ctx.services in every handler and hook.",
   },
   {
     icon: FileJson,
@@ -53,7 +75,7 @@ const features: Feature[] = [
     icon: Braces,
     title: "TypeScript First",
     description:
-      "End-to-end TypeScript with inferred request types. Handlers know exactly what they receive.",
+      "End-to-end TypeScript with inferred request types. Handlers and hooks know exactly what they receive.",
   },
   {
     icon: Zap,
@@ -62,10 +84,16 @@ const features: Feature[] = [
       "Built for Bun from the ground up. Use the runtime's HTTP server, router, and tooling without abstraction layers.",
   },
   {
-    icon: Gauge,
-    title: "Shared Request Context",
+    icon: Globe,
+    title: "Edge-Ready",
     description:
-      "Each request gets a lightweight context built from a shared structure, keeping memory use and allocations low.",
+      "WinterCG-compatible. Ship the same app to Cloudflare Workers, Vercel, Deno, or Node 24+ with toFetchHandler().",
+  },
+  {
+    icon: Gauge,
+    title: "Lean by Design",
+    description:
+      "Lazy query and cookie parsing, a shared request context, and AOT route builds keep allocations and latency low.",
   },
 ];
 
@@ -75,7 +103,7 @@ export function Features() {
       <SectionHeader
         eyebrow="Why BurgerAPI"
         title="Everything you need to ship APIs"
-        subtitle="A focused toolkit for Bun backends — routing, validation, OpenAPI, and lifecycle hooks that work together out of the box."
+        subtitle="A focused toolkit for Bun backends — routing, validation, WebSocket, OpenAPI, and lifecycle hooks that work together out of the box."
       />
       <StaggerChildren className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {features.map((f) => (

@@ -2,7 +2,15 @@ import React, { useState } from "react";
 import clsx from "clsx";
 import { Section, SectionHeader, CodeBlock, ScrollReveal } from "../ui";
 
-const examples = [
+interface Example {
+  id: string;
+  label: string;
+  filename?: string;
+  code?: string;
+  tabs?: { id: string; title: string; code: string }[];
+}
+
+const examples: Example[] = [
   {
     id: "server",
     label: "Server",
@@ -32,33 +40,56 @@ export async function POST(ctx: BurgerContext) {
 }`,
   },
   {
-    id: "zod",
+    id: "validation",
     label: "Validation",
-    filename: "api/products/[id]/route.ts",
-    code: `import { z } from "zod";
-import type { BurgerContext } from "burger-api";
+    tabs: [
+      {
+        id: "schema",
+        title: "schema.ts",
+        code: `// api/products/[id]/schema.ts
+import { z } from "zod";
 
-export const schema = {
-  params: z.object({
-    id: z.string().uuid(),
-  }),
+export const GET = {
+  params: z.object({ id: z.string().uuid() }),
+};
+
+export const PUT = {
+  params: z.object({ id: z.string().uuid() }),
   body: z.object({
     name: z.string().min(1),
     price: z.number().positive(),
   }),
-};
+};`,
+      },
+      {
+        id: "route",
+        title: "route.ts",
+        code: `// api/products/[id]/route.ts
+import type { BurgerContext } from "burger-api";
+import type { PUT as PutSchema } from "./schema";
 
-export async function PUT(ctx: BurgerContext) {
+export async function PUT(ctx: BurgerContext<typeof PutSchema>) {
   const { id } = ctx.validated.params;
   const { name, price } = ctx.validated.body;
   return Response.json({ id, name, price });
 }`,
+      },
+    ],
   },
 ];
 
 export function CodeExamples() {
   const [active, setActive] = useState(examples[0].id);
+  const [innerTab, setInnerTab] = useState<string>("schema");
   const current = examples.find((e) => e.id === active) ?? examples[0];
+
+  const selectExample = (id: string) => {
+    setActive(id);
+    setInnerTab(examples.find((e) => e.id === id)?.tabs?.[0]?.id ?? "schema");
+  };
+
+  const inner =
+    current.tabs?.find((t) => t.id === innerTab) ?? current.tabs?.[0];
 
   return (
     <Section id="examples">
@@ -83,7 +114,7 @@ export function CodeExamples() {
                 type="button"
                 role="tab"
                 aria-selected={active === ex.id}
-                onClick={() => setActive(ex.id)}
+                onClick={() => selectExample(ex.id)}
                 className={clsx(
                   "px-4 py-2 rounded-[10px] text-small font-medium border-0 cursor-pointer transition-all duration-150",
                   active === ex.id
@@ -95,11 +126,21 @@ export function CodeExamples() {
               </button>
             ))}
           </div>
-          <CodeBlock
-            code={current.code}
-            filename={current.filename}
-            language="tsx"
-          />
+          {current.tabs && inner ? (
+            <CodeBlock
+              code={inner.code}
+              language="tsx"
+              tabs={current.tabs}
+              activeTab={innerTab}
+              onTabChange={setInnerTab}
+            />
+          ) : (
+            <CodeBlock
+              code={current.code ?? ""}
+              filename={current.filename}
+              language="tsx"
+            />
+          )}
         </div>
       </ScrollReveal>
     </Section>

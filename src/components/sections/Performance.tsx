@@ -8,7 +8,7 @@ const cards: { icon: LucideIcon; title: string; description: string }[] = [
     icon: Search,
     title: "Lazy Query Parsing",
     description:
-      "Query strings are parsed only when you read req.query. Requests that never use the query pay nothing for parsing.",
+      "Query strings are parsed only when you read ctx.query. Requests that never use the query pay nothing for parsing.",
   },
   {
     icon: Boxes,

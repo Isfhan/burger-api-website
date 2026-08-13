@@ -65,6 +65,44 @@ If you reference a model that was never registered, BurgerAPI reports the error 
 - You want one place to change a shared contract.
 - You want the compiled validator to be shared (a small performance win).
 
+## Types for this feature
+
+Model references are checked at runtime, not by TypeScript.
+
+The types you use (from `burger-api`):
+
+- `BurgerContext<typeof GET>` — the handler type
+- `ctx.validated.query` — the validated data
+
+✅ Correct — the handler still gets typed data from a model reference:
+
+```typescript title="api/items/route.ts"
+import type { BurgerContext } from "burger-api";
+import type { GET as RouteSchema } from "./schema";
+
+export async function GET(ctx: BurgerContext<typeof RouteSchema>) {
+    const { page, limit } = ctx.validated.query; // works at runtime
+    return Response.json({ page, limit });
+}
+```
+
+⚠️ TypeScript note — a slot written as a string (`query: "Pagination"`) has type `unknown` in `ctx.validated`. The model is resolved at runtime (when the app starts), so TypeScript cannot know its shape. If you need the type too, import the schema directly:
+
+```typescript title="api/items/schema.ts"
+import { Pagination } from "../../src/models";
+
+export const GET = { query: Pagination }; // inline schema → typed
+```
+
+❌ Wrong — a model name that does not exist fails when the app starts (not at compile time):
+
+```typescript
+export const GET = { query: "Paginate" }; // ❌ Unknown model reference at startup
+```
+
+See the [TypeScript overview](/docs/advanced/type-safety).
+
+Check your code: `bun run typecheck`.
 
 ## Related
 

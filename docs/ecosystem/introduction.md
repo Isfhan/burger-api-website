@@ -17,7 +17,7 @@ ecosystem/
 | Folder | Role |
 |--------|------|
 | **hooks/** | Compose in `src/hooks.ts` or route `hooks.ts` |
-| **plugins/** | Register in `src/plugins.ts` via `burger.usePlugin()` |
+| **plugins/** | Register in `src/plugins.ts` |
 | **skills/** | Help AI tools understand BurgerAPI projects |
 
 **Hooks** control the request lifecycle. **Plugins** extend the application. They are separate concepts.

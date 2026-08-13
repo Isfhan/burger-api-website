@@ -111,11 +111,46 @@ export async function GET(ctx: BurgerContext<typeof RouteSchema>) {
 
 ## ctx.services
 
-Application services registered with `burger.provide()` in `src/providers.ts`, typed via module augmentation. See [Configuration](/docs/core/configuration).
+Application services registered in `src/providers.ts`, typed via module augmentation. See [Configuration](/docs/core/configuration).
 
 ## ctx.set
 
 Response mutations, covered in [Response Mutation](./response-mutation.md).
+
+## Types for this feature
+
+The type you use: `BurgerContext`, or `BurgerContext<typeof GET>` when the route has a schema.
+
+✅ Correct — type the handler parameter:
+
+```ts
+import type { BurgerContext } from "burger-api";
+export async function GET(ctx: BurgerContext) {
+    const { limit = "10" } = ctx.query;
+    return Response.json({ limit });
+}
+```
+
+✅ Correct — give the JSON body a type with `ctx.json<T>()`:
+
+```ts
+export async function POST(ctx: BurgerContext) {
+    const body = await ctx.json<{ name: string }>();
+    return Response.json({ name: body.name });
+}
+```
+
+❌ Wrong — untyped handler parameters:
+
+```ts
+export async function GET(ctx) {
+    // ❌ Parameter 'ctx' implicitly has an 'any' type
+}
+```
+
+Unannoted `BurgerContext` keeps every request field (query, params, cookies) untyped. For typed request data, add a schema and use `BurgerContext<typeof GET>` — see [Validation](/docs/validation/zod) and the [TypeScript overview](/docs/advanced/type-safety).
+
+Check your code: `bun run typecheck`.
 
 ## Related
 

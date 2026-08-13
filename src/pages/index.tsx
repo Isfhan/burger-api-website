@@ -35,6 +35,11 @@ const Lifecycle = lazy(() =>
     default: m.Lifecycle,
   }))
 );
+const WebSocket = lazy(() =>
+  import("../components/sections/WebSocket").then((m) => ({
+    default: m.WebSocket,
+  }))
+);
 const OpenAPI = lazy(() =>
   import("../components/sections/OpenAPI").then((m) => ({
     default: m.OpenAPI,
@@ -86,11 +91,12 @@ export default function Home(): ReactNode {
             <FileRouting />
             <Validation />
             <Lifecycle />
+            <WebSocket />
             <OpenAPI />
             <CLI />
-            <DocsCTA />
             <GitHubCTA />
             <Community />
+            {/* <DocsCTA /> */}
           </Suspense>
         </main>
       </LazyMotion>

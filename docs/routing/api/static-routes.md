@@ -217,6 +217,38 @@ export async function POST(ctx: BurgerContext) {
 }
 ```
 
+## Types for this feature
+
+TypeScript checks your handlers before they run.
+
+The types you use (all from `burger-api`):
+
+- `BurgerContext` — the request object passed to a handler
+- `RequestHandler` — the type of a handler function
+
+✅ Correct — type the handler parameter with `BurgerContext`:
+
+```typescript
+import type { BurgerContext } from "burger-api";
+
+export async function GET(ctx: BurgerContext) {
+    return Response.json({ message: "ok" });
+}
+```
+
+❌ Wrong — no parameter type and a non-`Response` return:
+
+```typescript
+export async function GET(ctx) {
+    return { message: "ok" }; // ❌ Parameter 'ctx' needs a type
+}
+// ❌ Return type must be Response
+```
+
+For typed request data (query, params, body), use `BurgerContext<typeof GET>` from your schema. See [Validation](/docs/validation/zod) and the [TypeScript overview](/docs/advanced/type-safety).
+
+Check your code: `bun run typecheck`.
+
 ## Next Steps
 
 Now that you understand static routes, learn about other routing patterns:

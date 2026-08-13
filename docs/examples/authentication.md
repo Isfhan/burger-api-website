@@ -24,7 +24,7 @@ See [API Key Auth](/docs/ecosystem/api-key-auth) and [JWT Auth](/docs/ecosystem/
 
 ## Register the plugin
 
-Register it in `src/plugins.ts` with `burger.usePlugin(...)`:
+Register it in `src/plugins.ts`:
 
 ```ts
 // src/plugins.ts

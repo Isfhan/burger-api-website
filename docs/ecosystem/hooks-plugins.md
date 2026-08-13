@@ -27,7 +27,7 @@ Plugins are application extensions. They can register hooks, register providers,
 
 - **What they do:** integrate with the application, often combining hooks with route `config.ts` (for example, auth).
 - **Where they live:** `ecosystem/plugins/` after install.
-- **Where you register them:** `src/plugins.ts` via `burger.usePlugin(...)`.
+- **Where you register them:** `src/plugins.ts`.
 - **Examples:** jwt-auth, api-key, session, oidc, basic-auth, env.
 
 ```ts title="src/plugins.ts"
@@ -44,6 +44,60 @@ export default (burger) => {
 - Need an application feature like authentication or environment validation? Use a **plugin**.
 
 Hooks control the request lifecycle. Plugins extend the application. They are separate concepts. Do not treat plugins as a replacement for hooks.
+
+## Types for this feature
+
+The types you use (all from `burger-api`):
+
+- `Plugin` — a plugin: `{ name, hooks? }`
+- `RouteHooks` — the hook object (for typing `hooks.ts` files)
+- `BurgerServices` — the services on `ctx.services` — you extend it
+- `MacroFn` — a macro factory: `(...args) => RouteHooks`
+
+✅ Correct — type the plugin when you write one:
+
+```ts title="src/plugins.ts"
+import type { Plugin } from "burger-api";
+
+const logger: Plugin = {
+    name: "logger",
+    hooks: {
+        afterRoute: [(ctx) => (res) => res],
+    },
+};
+
+export default (burger) => {
+    burger.usePlugin(logger);
+};
+```
+
+✅ Correct — type the services your plugin provides (augmentation, in any app file):
+
+```ts
+declare module "burger-api" {
+    interface BurgerServices {
+        db: Database;
+    }
+}
+
+// In a handler: ctx.services.db — typed
+```
+
+❌ Wrong — an unknown hook point on a plugin:
+
+```ts
+const bad: Plugin = {
+    name: "bad",
+    hooks: {
+        // ❌ Property 'beforeHandle' does not exist (the hook is beforeRoute)
+        beforeHandle: [],
+    },
+};
+```
+
+See the [TypeScript overview](/docs/advanced/type-safety).
+
+Check your code: `bun run typecheck`.
 
 ## Related
 

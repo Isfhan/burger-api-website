@@ -88,6 +88,11 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
+      label: "WebSocket",
+      items: ["websocket/overview"],
+    },
+    {
+      type: "category",
       label: "OpenAPI & Documentation",
       items: [
         "openapi/generation",

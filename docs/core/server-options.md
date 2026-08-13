@@ -8,7 +8,7 @@ The `Burger` constructor accepts a **ServerOptions** object. These are the main 
 
 | Option | Type | Description |
 |--------|------|-------------|
-| `apiDir` | `string` | Directory containing API route files (e.g. `./src/api`). Required unless `apiRoutes` is set. |
+| `apiDir` | `string` | Directory containing API route files (e.g. `./src/api`). Required unless `apiRoutes` is set. Relative to the project root, with an entry-file fallback (`src/`) under `burger-api dev`. See [How directories resolve](/docs/core/configuration#how-directories-resolve). |
 | `apiRoutes` | `RouteDefinition[]` | Pre-built API routes from the CLI build. When present, `apiDir` is ignored and no runtime filesystem scan happens. |
 | `pageDir` | `string` | Directory for page files. Optional. |
 | `pageRoutes` | `PageDefinition[]` | Pre-built page routes from the CLI build. When present, `pageDir` is ignored. |
@@ -28,6 +28,55 @@ The `Burger` constructor accepts a **ServerOptions** object. These are the main 
 ## Dev vs production
 
 You must provide either `apiDir`/`pageDir` (development) or `apiRoutes`/`pageRoutes` (production builds). The CLI build produces the AOT route tables: `burger-api build` embeds them into the bundle, so production never scans the filesystem at runtime. See [CLI Tool](/docs/getting-started/cli) and [Burger Class](/docs/core/burger-class).
+
+## Types for this feature
+
+The options object is typed as `ServerOptions`. TypeScript checks every option you pass.
+
+The types you use (all from `burger-api`):
+
+- `ServerOptions` — the options of `new Burger({...})`
+- `RouteDefinition` — a route for `apiRoutes`
+- `RouteSchema` — the shape of a `schema.ts` export
+- `HTTPMethod` — the allowed method names
+
+✅ Correct — typed options and a typed route definition:
+
+```typescript
+import { Burger } from "burger-api";
+import type { RouteDefinition } from "burger-api";
+
+const routes: RouteDefinition[] = [
+    {
+        path: "/users",
+        handlers: { GET: (ctx) => Response.json({ ok: true }) },
+    },
+];
+
+const app = new Burger({
+    apiDir: "./src/api",
+    apiRoutes: routes,
+    debug: true,
+});
+```
+
+❌ Wrong — an unknown option or a bad method key:
+
+```typescript
+new Burger({
+    apiDir: "./src/api",
+    apiDri: "./src/api", // ❌ Property 'apiDri' does not exist
+});
+
+const bad: RouteDefinition = {
+    path: "/x",
+    handlers: { Get: () => new Response() }, // ❌ 'Get' is not an HTTP method
+};
+```
+
+See the [TypeScript overview](/docs/advanced/type-safety).
+
+Check your code: `bun run typecheck`.
 
 ## Related
 

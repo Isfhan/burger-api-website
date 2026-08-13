@@ -63,7 +63,7 @@ See [List Command](/docs/cli/list).
 Installs hooks and plugins from the ecosystem into your project.
 
 - Hooks install to `ecosystem/hooks/` and compose in `src/hooks.ts`.
-- Plugins install to `ecosystem/plugins/` and register in `src/plugins.ts` via `burger.usePlugin(...)`.
+- Plugins install to `ecosystem/plugins/` and register in `src/plugins.ts`.
 - Prints usage instructions after install.
 
 ```bash
@@ -147,8 +147,8 @@ my-api/
 ├── src/
 │   ├── index.ts           # Main entry point
 │   ├── hooks.ts           # Global hooks
-│   ├── plugins.ts         # burger.usePlugin(...)
-│   ├── providers.ts       # burger.provide(...)
+│   ├── plugins.ts         # Register plugins
+│   ├── providers.ts       # Declare shared services
 │   ├── openapi.config.ts  # OpenAPI metadata and docs UI
 │   └── api/               # File-based API routes
 ├── ecosystem/

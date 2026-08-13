@@ -592,6 +592,38 @@ Ready to build something amazing? Check out the other routing documentation to l
 - **[Dynamic Routes](./dynamic-routes.md)** - Capture URL parameters in your routes
 
 
+## Types for this feature
+
+TypeScript checks the handler parameter. The wildcard segments themselves have no schema.
+
+The types you use (from `burger-api`):
+
+- `BurgerContext` — the request object
+- `ctx.wildcardParams` — always `string[] | undefined` (there is no schema for wildcard segments)
+
+✅ Correct — type the handler and handle the optional array:
+
+```typescript
+import type { BurgerContext } from "burger-api";
+
+export async function GET(ctx: BurgerContext) {
+    const segments = ctx.wildcardParams ?? [];
+    return Response.json({ segments });
+}
+```
+
+❌ Wrong — wildcard segments are not typed by name:
+
+```typescript
+export async function GET(ctx: BurgerContext) {
+    ctx.wildcardParams.foo; // ❌ Property 'foo' does not exist on 'string[]'
+}
+```
+
+If you need typed parameters, use [dynamic segments](/docs/routing/api/dynamic-routes) (`[id]`) with a `params` schema instead. See the [TypeScript overview](/docs/advanced/type-safety).
+
+Check your code: `bun run typecheck`.
+
 ## Related
 
 - [File-Based Routing](/docs/routing/file-based-routing)

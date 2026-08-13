@@ -10,7 +10,7 @@ BurgerAPI uses four clear configuration layers.
 |-------|--------|---------|
 | Build | `burger.build.ts` | Dirs, prefixes, debug (CLI only) |
 | App | `new Burger({...})` | Title, version, OpenAPI metadata, runtime app options |
-| Plugins | `src/plugins.ts` | `burger.usePlugin(...)` |
+| Plugins | `src/plugins.ts` | Register plugins |
 | Route | `api/**/config.ts` | Auth overrides, cache, timeout, … |
 
 `burger.build.ts` is **not** runtime configuration.
@@ -30,6 +30,31 @@ const burger = new Burger({
 });
 
 burger.serve(4000);
+```
+
+## How directories resolve
+
+`apiDir`, `pageDir`, and `wsDir` are looked up in this order until one exists:
+
+1. Absolute path, used as-is.
+2. Relative to the project root, for example `./src/api`.
+3. Relative to the entry file's directory, when the app runs via `burger-api dev` or `burger-api build`. For the default entry `src/index.ts`, that directory is `src/`, so `apiDir: "api"` finds `src/api`.
+
+Both forms work with the default scaffold layout:
+
+```typescript
+apiDir: "./src/api",   // relative to the project root
+// or
+apiDir: "api",         // found under src/ via the entry-file fallback
+```
+
+The project root always wins when both locations exist. Running the app with plain `bun src/index.ts` (no CLI) skips the entry-file fallback.
+
+If a directory cannot be resolved, the error names the exact paths that were tried:
+
+```
+Routes directory "backend" does not exist. Tried "./backend" (project root)
+and "./src/backend" (src/). Check the apiDir option in src/index.ts.
 ```
 
 ## Build file
@@ -85,6 +110,52 @@ export const onError = (error, ctx) => { /* ... */ };
 ## Environment variables
 
 BurgerAPI does not ship its own `.env` loader. Bun loads `.env` natively. Optional validation can live in an ecosystem plugin.
+
+## Types for this feature
+
+Every configuration layer has a type.
+
+The types you use (all from `burger-api`):
+
+- `ServerOptions` — the `new Burger({...})` options
+- `RouteDefinition` — a route with handlers, schema, and openapi metadata
+- `RouteSchema` — the shape of a `schema.ts` export
+- `HTTPMethod` — the allowed method names
+- `BurgerContext` — the request object (for typing handlers and hooks)
+
+✅ Correct — typed configuration:
+
+```typescript title="src/index.ts"
+import { Burger } from "burger-api";
+import type { RouteDefinition } from "burger-api";
+
+const routes: RouteDefinition[] = [
+    {
+        path: "/users",
+        handlers: { GET: (ctx) => Response.json({ ok: true }) },
+    },
+];
+
+const burger = new Burger({
+    apiDir: "./src/api",
+    apiRoutes: routes,
+});
+```
+
+❌ Wrong — a typo in an option name or a method key:
+
+```typescript
+new Burger({ apiDri: "./src/api" }); // ❌ Property 'apiDri' does not exist
+
+const bad: RouteDefinition = {
+    path: "/x",
+    handlers: { get: () => new Response() }, // ❌ lowercase 'get' is not an HTTP method
+};
+```
+
+For typed `ctx.services` and custom context values, use the augmentation pattern — see the [TypeScript overview](/docs/advanced/type-safety).
+
+Check your code: `bun run typecheck`.
 
 ## Related
 

@@ -44,6 +44,39 @@ BurgerAPI picks the schema by status code: an exact code first (`200`), then a c
 
 For full RFC-style error documents on request failures, see [Problem Details](/docs/validation/problem-details).
 
+## Types for this feature
+
+The `response` schema describes the shape your handler should return. It is checked at runtime (in `dev` mode it only logs); the type of the handler itself is still `Response`, so the schema's output type is not connected to the handler return type.
+
+The types you use (from `burger-api`):
+
+- `RouteSchema` — the shape of a `schema.ts` export (for programmatic routes)
+- `z.infer<typeof GET.response["200"]>` — the documented response shape, for reuse
+
+✅ Correct — declare the response shape, and reuse its type for helper functions:
+
+```typescript title="api/status/schema.ts"
+import { z } from "zod";
+export const GET = { response: { 200: z.object({ ok: z.boolean() }) } };
+```
+
+```typescript
+import type { GET } from "./schema";
+type StatusResponse = z.infer<typeof GET.response["200"]>; // { ok: boolean }
+```
+
+❌ Wrong — the schema key is not a status code or class:
+
+```typescript
+export const GET = {
+    // ❌ Only status codes like "200" or classes like "2xx" are valid
+    response: { good: z.object({ ok: z.boolean() }) },
+};
+```
+
+The runtime check happens after the handler; for strict typing of what the handler produces, keep the schema and handler in the same file pair. See the [TypeScript overview](/docs/advanced/type-safety).
+
+Check your code: `bun run typecheck`.
 
 ## Related
 

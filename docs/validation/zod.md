@@ -36,6 +36,46 @@ Here `z.coerce.number()` turns the text `"50"` into the number `50` before the c
 
 See [Schema Definition](/docs/validation/schema) for the full shape of a validation schema and [Validation](/docs/core-concepts/validation) for the big picture.
 
+## Types for this feature
+
+Your Zod schema is both a runtime check and a type. The handler that uses it gets the inferred type for free.
+
+The types you use (from `burger-api`):
+
+- `BurgerContext<typeof GET>` — types `ctx.validated` from your schema
+- `z.infer<typeof GET.query>` — the type of one slot, for variables or helpers
+
+✅ Correct — annotate with the schema type:
+
+```ts title="api/products/route.ts"
+import type { BurgerContext } from "burger-api";
+import type { GET as RouteSchema } from "./schema";
+
+export async function GET(ctx: BurgerContext<typeof RouteSchema>) {
+    const { limit } = ctx.validated.query; // typed: number | undefined
+    return Response.json({ limit });
+}
+```
+
+✅ Correct — reuse a slot's type elsewhere:
+
+```ts
+import type { GET } from "./schema";
+type Query = z.infer<typeof GET.query>; // { limit?: number }
+function usesLimit(limit: Query["limit"]) { /* ... */ }
+```
+
+❌ Wrong — an unannoted handler has no validated types:
+
+```ts
+export async function GET(ctx: BurgerContext) {
+    ctx.validated.query.limit; // ❌ Property 'limit' does not exist (untyped)
+}
+```
+
+See the [TypeScript overview](/docs/advanced/type-safety).
+
+Check your code: `bun run typecheck`.
 
 ## Related
 

@@ -309,6 +309,26 @@ Don't use route groups when:
    api/users/route.ts
    ```
 
+## Types for this feature
+
+Route groups do not change the types of a route. A group folder is removed from the URL, and the handlers inside are typed exactly like any other route.
+
+✅ Correct — the handler type is the same as without the group:
+
+```typescript
+// api/(admin)/users/route.ts → /api/users
+import type { BurgerContext } from "burger-api";
+import type { GET as RouteSchema } from "./schema";
+
+export async function GET(ctx: BurgerContext<typeof RouteSchema>) {
+    return Response.json({ ok: true });
+}
+```
+
+There is no group type to learn. For the handler and parameter types, see [Static Routes](/docs/routing/api/static-routes) and [Dynamic Routes](/docs/routing/api/dynamic-routes). See the [TypeScript overview](/docs/advanced/type-safety).
+
+Check your code: `bun run typecheck`.
+
 ## Next Steps
 
 Learn about other routing patterns:

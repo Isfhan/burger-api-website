@@ -12,7 +12,7 @@ burger-api add api-key
 
 ## Usage
 
-Register the plugin in `src/plugins.ts` with `burger.usePlugin(...)`:
+Register the plugin in `src/plugins.ts`:
 
 ```ts title="src/plugins.ts"
 import { apiKey } from "../ecosystem/plugins/api-key/api-key";

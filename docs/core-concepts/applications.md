@@ -22,8 +22,8 @@ The application brings together:
 
 - **Routes** discovered from the file system (see [Routing](./routing.md)).
 - **Hooks** that run at named stages of the request lifecycle (see [Hook System](/docs/hooks/system)).
-- **Plugins** that extend the application, registered with `burger.usePlugin(...)`.
-- **Providers** that inject shared services into `ctx.services`, registered with `burger.provide(...)`.
+- **Plugins** that extend the application, registered in `src/plugins.ts`.
+- **Providers** that inject shared services into `ctx.services`, declared in `src/providers.ts`.
 - **Validation** schemas that guard requests (see [Validation](./validation.md)).
 - **OpenAPI** documentation generated automatically from your routes (see [OpenAPI](./openapi.md)).
 
@@ -35,8 +35,8 @@ Scaffolded projects split configuration across convention files:
 |---------|-------|
 | Runtime options | `new Burger({...})` in `src/index.ts` |
 | Global hooks | `src/hooks.ts` |
-| Plugins | `src/plugins.ts` via `burger.usePlugin(...)` |
-| Providers | `src/providers.ts` via `burger.provide(...)` |
+| Plugins | `src/plugins.ts` |
+| Providers | `src/providers.ts` |
 | Build-time settings | `burger.build.ts` (CLI only) |
 
 Runtime options such as `apiDir`, `apiPrefix`, and `version` are described in [Server Options](../core/server-options.md) and [Configuration](../core/configuration.md).

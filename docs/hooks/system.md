@@ -47,6 +47,45 @@ Alongside `route.ts`:
 - `openapi.ts` : OpenAPI  
 - `config.ts` : route options (auth, cache, timeout, …)
 
+## Types for this feature
+
+Each hook point has its own type. TypeScript checks the return value of your hook against that type.
+
+The types you use (all from `burger-api`):
+
+- `ForwardHook` — for `onRequest` and `beforeRoute`: returns `Response` (stop) or `undefined` (continue)
+- `ResponseHook` — for `afterRoute` and `mapResponse`: can also return a function to change the response
+- `ErrorHook` — for `onError`: takes `(error, ctx)`, returns `Response` or `undefined`
+- `RouteHooks` — the object with all hook points, for typing `hooks.ts` files
+
+✅ Correct — each hook returns something from its contract:
+
+```typescript
+// hooks.ts
+import type { RouteHooks } from "burger-api";
+
+export const beforeRoute: RouteHooks["beforeRoute"] = [
+    (ctx) => new Response("blocked", { status: 401 }), // stop
+    () => undefined, // continue
+];
+
+export const afterRoute: RouteHooks["afterRoute"] = [
+    (ctx) => (res) => res, // change the response
+];
+```
+
+❌ Wrong — a hook returns a value that is not in the contract:
+
+```typescript
+export const beforeRoute: RouteHooks["beforeRoute"] = [
+    () => 42, // ❌ Type 'number' is not assignable to 'Response | undefined'
+];
+```
+
+The full rules for each return value are on the [Hook Return Types](/docs/hooks/return-types) page. See the [TypeScript overview](/docs/advanced/type-safety).
+
+Check your code: `bun run typecheck`.
+
 ## Related
 
 - [Global hooks](/docs/hooks/global)

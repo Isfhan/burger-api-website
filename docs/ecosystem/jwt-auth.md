@@ -12,7 +12,7 @@ burger-api add jwt-auth
 
 ## Usage
 
-Register the plugin in `src/plugins.ts` with `burger.usePlugin(...)`:
+Register the plugin in `src/plugins.ts`:
 
 ```ts title="src/plugins.ts"
 import { jwtAuth } from "../ecosystem/plugins/jwt-auth/jwt-auth";

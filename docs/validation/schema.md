@@ -74,6 +74,40 @@ After validation, the result is available on `ctx.validated`:
 
 Each is typed from the corresponding schema. Annotate the handler with `BurgerContext<typeof GET>` to get the inferred types. See [Zod Validation](/docs/validation/zod), [Query](/docs/validation/query), and [Body](/docs/validation/body).
 
+## Types for this feature
+
+The schema is the source of your types. The handler that uses it gets those types for free.
+
+The types you use (from `burger-api`):
+
+- `BurgerContext<typeof GET>` — the handler type. `typeof GET` is the schema export.
+- `ctx.validated` — the validated data, typed slot by slot.
+- `RouteSchema` — the shape of a `schema.ts` export (for programmatic routes).
+
+✅ Correct — annotate the handler with the schema type:
+
+```typescript title="api/products/route.ts"
+import type { BurgerContext } from "burger-api";
+import type { GET as RouteSchema } from "./schema";
+
+export async function GET(ctx: BurgerContext<typeof RouteSchema>) {
+    const { id } = ctx.validated.params; // typed: string
+    const { limit } = ctx.validated.query; // typed: number
+    return Response.json({ id, limit });
+}
+```
+
+❌ Wrong — reading a slot you did not declare:
+
+```typescript
+export async function GET(ctx: BurgerContext<typeof RouteSchema>) {
+    ctx.validated.body; // ❌ Property 'body' does not exist (no body schema on GET)
+}
+```
+
+A slot without a schema is `unknown`. A schema written as a string reference (model) is also `unknown` — the model is checked at runtime, not by TypeScript. See the [TypeScript overview](/docs/advanced/type-safety).
+
+Check your code: `bun run typecheck`.
 
 ## Related
 

@@ -100,8 +100,8 @@ Scaffolded projects split configuration across convention files:
 |------|------|
 | `src/index.ts` | `Burger` instance, `serve()` only |
 | `src/hooks.ts` | Global lifecycle hooks |
-| `src/plugins.ts` | `burger.usePlugin(...)` |
-| `src/providers.ts` | `burger.provide(...)` |
+| `src/plugins.ts` | Register plugins |
+| `src/providers.ts` | Declare shared services |
 | `burger.build.ts` | Build-time only (CLI) |
 
 ## Related

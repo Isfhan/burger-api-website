@@ -49,6 +49,46 @@ BurgerAPI serves an interactive UI at `/docs` and the raw spec at `/openapi.json
 
 The provider is set in the OpenAPI config, along with the spec path, docs path, and optional basic auth for `/docs`. In dev, this config is auto-discovered from `openapi.config.ts`; production builds pass it in the `openapi` option. See [Swagger UI](/docs/openapi/swagger-ui).
 
+## Types for this feature
+
+The types you use (from `burger-api`):
+
+- `openapi` — the per-route metadata object, keyed by lowercase method
+- `OpenAPIMethodMeta` — one method's metadata (`summary`, `tags`, `responses`, ...)
+- `OpenAPIConfig` — the docs configuration (dev `openapi.config.ts`, production `openapi` option)
+
+✅ Correct — lowercase keys in programmatic metadata:
+
+```ts
+import type { RouteDefinition } from "burger-api";
+
+const def: RouteDefinition = {
+    path: "/products",
+    handlers: { GET: (ctx) => Response.json([]) },
+    openapi: { get: { summary: "List products" } }, // lowercase 'get'
+};
+```
+
+❌ Wrong — an uppercase key is a silent no-op at runtime, so it fails at compile time:
+
+```ts
+const def: RouteDefinition = {
+    path: "/products",
+    handlers: { GET: (ctx) => Response.json([]) },
+    openapi: { GET: { summary: "List" } }, // ❌ 'GET' is not allowed (use 'get')
+};
+```
+
+❌ Wrong — a response value must be an object:
+
+```ts
+openapi: { get: { responses: { "200": 42 } } }; // ❌ 42 is not an object
+```
+
+See the [TypeScript overview](/docs/advanced/type-safety).
+
+Check your code: `bun run typecheck`.
+
 ## Related
 
 - [OpenAPI Generation](/docs/openapi/generation)

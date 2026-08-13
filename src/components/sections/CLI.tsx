@@ -5,9 +5,12 @@ import { Section, SectionHeader, CodeBlock, ScrollReveal, Button } from "../ui";
 const createExample = `# Create a new project
 bunx burger-api create my-api
 
-# Add a route
+# Scaffold a route
 cd my-api
-bunx burger-api add users
+bunx burger-api generate route users
+
+# Add an ecosystem hook (CORS)
+bunx burger-api add cors
 
 # Start the server
 bun run dev`;

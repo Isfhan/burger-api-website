@@ -35,7 +35,7 @@ See [Burger Class](/docs/core/burger-class), [Server Options](/docs/core/server-
 `src/hooks.ts`; route hooks in `api/**/hooks.ts`.
 
 **Plugins** extend the application. They are registered in `src/plugins.ts`
-with `burger.usePlugin(...)` and may register hooks, register providers, and
+and may register hooks, register providers, and
 extend `BurgerContext`. Hooks and plugins are separate concepts.
 
 See [Hooks](/docs/hooks/system) and [Ecosystem](/docs/ecosystem/introduction).
