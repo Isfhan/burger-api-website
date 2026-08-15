@@ -76,7 +76,6 @@ const sidebars: SidebarsConfig = {
         "validation/body",
         "validation/headers",
         "validation/cookie",
-        "validation/models",
         "validation/coercion",
         "validation/response",
         "validation/standard-schema",

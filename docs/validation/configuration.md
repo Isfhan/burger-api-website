@@ -4,7 +4,7 @@ sidebar_label: Validation Config
 
 # Validation Configuration
 
-Validation behavior is controlled by the `validation` option in the `Burger` constructor, and by the `models` option for reusable shapes.
+Validation behavior is controlled by the `validation` option in the `Burger` constructor.
 
 ## `validation`
 
@@ -41,33 +41,28 @@ const app = new Burger({
 | `errorFormat` | `"plain"` \| `"problem+json"` | `"problem+json"` | The shape of the error body. |
 | `errorRenderer` | `(result, { slot, status }) => Response` | — | Override the error body completely. |
 
-## `models`
+## Reusing schemas across routes
 
-```typescript title="src/index.ts"
-import { Burger } from "burger-api";
+To share a shape between routes, define it once in its own file and import it:
+
+```typescript title="src/schemas.ts"
 import { z } from "zod";
 
-const app = new Burger({
-  models: {
-    Pagination: z.object({
-      page: z.number().min(1).default(1),
-      limit: z.number().min(1).max(100).default(20),
-    }),
-  },
+export const Pagination = z.object({
+  page: z.number().min(1).default(1),
+  limit: z.number().min(1).max(100).default(20),
 });
 ```
 
-Registered models are referenced by string from any route's `schema.ts`. See [Model Registry](/docs/validation/models).
+```typescript title="api/items/schema.ts"
+import { Pagination } from "../../schemas";
 
-## Build-time seeds
-
-The CLI can seed `models` from `burger.build.ts` when it generates the production app. `burger.build.ts` itself is build-time only (dirs, prefixes, debug); runtime behavior belongs in `new Burger({...})`. See [Configuration](/docs/core/configuration).
-
+export const GET = { query: Pagination };
+```
 
 ## Related
 
 - [Coercion](/docs/validation/coercion)
 - [Response Validation](/docs/validation/response)
 - [Problem Details](/docs/validation/problem-details)
-- [Model Registry](/docs/validation/models)
 - [Server Options](/docs/core/server-options)

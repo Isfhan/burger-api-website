@@ -44,5 +44,4 @@ See [Schema Definition](/docs/validation/schema) for the full schema shape, [Val
 - [Tutorial 2: Todo List API](/docs/tutorials/todo-api)
 - [Schema Definition](/docs/validation/schema)
 - [Coercion](/docs/validation/coercion)
-- [Model Registry](/docs/validation/models)
 - [Request Context](/docs/core/request-handling)

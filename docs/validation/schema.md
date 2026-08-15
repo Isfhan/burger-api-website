@@ -37,30 +37,24 @@ export const POST = {
 
 Every slot is optional. You only describe what you actually use.
 
-## Reusing a model by name
+## Reusing a schema across routes
 
-Instead of writing a schema inline, you can register a named model and reference it by a string. This keeps shared shapes (like pagination) in one place:
+When the same shape appears in several routes, define it once and import it. Plain TypeScript — no registry to learn:
 
-```typescript title="src/index.ts"
-import { Burger } from "burger-api";
+```typescript title="src/schemas.ts"
 import { z } from "zod";
 
-const app = new Burger({
-  apiDir: "./src/api",
-  models: {
-    Pagination: z.object({
-      page: z.number().min(1).default(1),
-      limit: z.number().min(1).max(100).default(20),
-    }),
-  },
+export const Pagination = z.object({
+  page: z.number().min(1).default(1),
+  limit: z.number().min(1).max(100).default(20),
 });
 ```
 
 ```typescript title="api/items/schema.ts"
-export const GET = { query: "Pagination" }; // string ref → resolves to the model
-```
+import { Pagination } from "../../schemas";
 
-See [Model Registry](/docs/validation/models) for the full story.
+export const GET = { query: Pagination }; // shared, fully typed
+```
 
 ## Validated data
 
@@ -117,5 +111,4 @@ Check your code: `bun run typecheck`.
 - [Body Validation](/docs/validation/body)
 - [Headers Validation](/docs/validation/headers)
 - [Cookie Validation](/docs/validation/cookie)
-- [Model Registry](/docs/validation/models)
 - [Validation Types](/docs/api/validation-types)

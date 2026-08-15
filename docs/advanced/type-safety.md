@@ -105,7 +105,6 @@ These stay untyped on purpose:
 
 - **`ctx.params`** — the raw URL parameters, always `Record<string, string> | undefined`. For typed parameters, add a `params` schema and use `ctx.validated.params`. See [Dynamic Routes](/docs/routing/api/dynamic-routes).
 - **`ctx.wildcardParams`** — always `string[] | undefined`. There is no schema for wildcard segments.
-- **Model references** — a schema slot written as a string (`query: "Pagination"`) becomes `unknown` in `ctx.validated`. The model itself is checked at runtime, not by TypeScript.
 - **`ctx.json()`** — the default is `any` (the same as the browser `Request`). Use `ctx.json<T>()` to give it a type: `await ctx.json<{ id: number }>()`.
 
 ## Where types live in each feature

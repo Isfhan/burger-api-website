@@ -50,7 +50,7 @@ interface ValidationIssue {
 
 ## Validation configuration
 
-The server accepts a `validation` option (`coerce`, `responseValidation`, `errorFormat`) and a `models` option for reusable shapes. See [Validation Configuration](/docs/validation/configuration).
+The server accepts a `validation` option (`coerce`, `responseValidation`, `errorFormat`). See [Validation Configuration](/docs/validation/configuration).
 
 ## Related
 

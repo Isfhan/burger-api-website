@@ -22,9 +22,9 @@ export const POST = {
 
 Query strings, params, headers, and cookies are always text. If you expect numbers or booleans there, turn on [coercion](/docs/validation/coercion) (`coerce: true`) instead of hand-writing `z.coerce.*` on every field.
 
-## Share shapes with models
+## Share shapes across routes
 
-When the same shape appears in more than one route, register it as a [model](/docs/validation/models) and reference it by name. One source of truth, shared compiled validator.
+When the same shape appears in more than one route, define it once in a schemas file and import it — see [Schema Definition](/docs/validation/schema). One source of truth, still fully typed.
 
 ## Keep handlers thin
 
@@ -47,6 +47,5 @@ Validate what your handler depends on. Validating fields you never read adds no 
 
 - [Schema Definition](/docs/validation/schema)
 - [Coercion](/docs/validation/coercion)
-- [Model Registry](/docs/validation/models)
 - [Response Validation](/docs/validation/response)
 - [Validation Configuration](/docs/validation/configuration)

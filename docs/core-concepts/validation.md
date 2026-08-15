@@ -38,7 +38,7 @@ For each method you may describe:
 - `body`: the JSON sent in POST/PUT
 - `response`: what your handler returns (see [Response Validation](/docs/validation/response))
 
-You can also reuse a shared shape by name with the [Model Registry](/docs/validation/models), get better errors with [Problem Details](/docs/validation/problem-details), and validate other schema libraries via [Standard Schema Support](/docs/validation/standard-schema).
+You can also reuse a shared shape across routes (see [Schema Definition](/docs/validation/schema)), get better errors with [Problem Details](/docs/validation/problem-details), and validate other schema libraries via [Standard Schema Support](/docs/validation/standard-schema).
 
 ## Errors
 
@@ -59,7 +59,6 @@ See [Schema Definition](/docs/validation/schema) for the full shape and [Validat
 - [Query Validation](/docs/validation/query)
 - [Body Validation](/docs/validation/body)
 - [Coercion](/docs/validation/coercion)
-- [Model Registry](/docs/validation/models)
 - [Response Validation](/docs/validation/response)
 - [Routing](/docs/core-concepts/routing)
 - [Handlers](/docs/core-concepts/handlers)

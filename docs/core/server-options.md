@@ -19,7 +19,6 @@ The `Burger` constructor accepts a **ServerOptions** object. These are the main 
 | `version` | `string` | API version for the OpenAPI document. |
 | `debug` | `boolean` | Enable debug mode (e.g. richer error rendering). |
 | `validation` | `ValidatorConfig` | Validation settings: `coerce`, `responseValidation`, `errorFormat`. See [Validation Configuration](/docs/validation/configuration). |
-| `models` | `Record<string, Schema>` | Named, reusable validation shapes referenced by string from any route's `schema`. See [Model Registry](/docs/validation/models). |
 | `openapi` | `OpenAPIConfig` | OpenAPI configuration for production builds. In dev, `openapi.config.ts` is auto-discovered and this field is ignored. |
 | `globalHooks` | `Record<string, unknown>` | Pre-resolved global hooks module (from `src/hooks.ts`). Used in production builds with `apiRoutes`; in dev, `src/hooks.ts` is auto-discovered and this field is ignored. |
 | `pluginsModule` | `Record<string, unknown>` | Pre-resolved plugins module (from `src/plugins.ts`). In dev, `src/plugins.ts` is auto-discovered. |
