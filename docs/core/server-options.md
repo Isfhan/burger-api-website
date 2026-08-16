@@ -36,7 +36,7 @@ The types you use (all from `burger-api`):
 
 - `ServerOptions` — the options of `new Burger({...})`
 - `RouteDefinition` — a route for `apiRoutes`
-- `RouteSchema` — the shape of a `schema.ts` export
+- `RouteSchema` — a route's full schema map
 - `HTTPMethod` — the allowed method names
 
 ✅ Correct — typed options and a typed route definition:

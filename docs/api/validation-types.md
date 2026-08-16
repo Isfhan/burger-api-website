@@ -32,7 +32,7 @@ After validation, the result is available on `ctx.validated`. Each key exists on
 - `ctx.validated.cookies`
 - `ctx.validated.body`
 
-Typing flows from `schema.ts`: annotate the handler with `BurgerContext<typeof GET>` where `GET` is imported from `./schema`. The `InferValidated` type drives the inference. See [Validation](/docs/validation/zod) and [Type Safety](/docs/advanced/type-safety).
+Typing flows from `schema.ts`: annotate the handler with `BurgerContext<typeof GET>` where `GET` is imported from `./schema`. The inference happens automatically. See [Validation](/docs/validation/zod) and [Type Safety](/docs/advanced/type-safety).
 
 ## Errors
 

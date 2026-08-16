@@ -119,7 +119,7 @@ The types you use (all from `burger-api`):
 
 - `ServerOptions` — the `new Burger({...})` options
 - `RouteDefinition` — a route with handlers, schema, and openapi metadata
-- `RouteSchema` — the shape of a `schema.ts` export
+- `RouteSchema` — a route's full schema map
 - `HTTPMethod` — the allowed method names
 - `BurgerContext` — the request object (for typing handlers and hooks)
 

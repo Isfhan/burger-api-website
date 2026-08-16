@@ -59,7 +59,12 @@ No errors means your types are correct. Your editor shows the same problems whil
 | `RequestHandler` | A handler function: takes `BurgerContext`, returns `Response` | Typing handler variables |
 | `HTTPMethod` | The allowed methods: `GET`, `POST`, `PUT`, `DELETE`, `PATCH`, `HEAD`, `OPTIONS` | Typing method keys |
 | `RouteDefinition` | A route with handlers, schema, and openapi metadata | Programmatic `apiRoutes` |
-| `RouteSchema` | The shape of a `schema.ts` export | Programmatic `schema` |
+| `RouteSchema` | The shape of a route's full schema map | Programmatic `schema` |
+| `MethodSchema` | The shape of one `schema.ts` method export | `satisfies MethodSchema` in `schema.ts` |
+| `OpenAPIMeta` | The shape of one `openapi.ts` method export | `satisfies OpenAPIMeta` in `openapi.ts` |
+| `RouteConfig` | The route `config.ts` options; you extend it | `satisfies RouteConfig` in `config.ts`, `ctx.config` |
+| `BuildConfig` | The shape of `burger.build.ts` | `satisfies BuildConfig` in `burger.build.ts` |
+| `OpenAPIConfig` | The shape of `openapi.config.ts` | `satisfies OpenAPIConfig` |
 | `ForwardHook` | A before-handler hook: returns `Response` or `undefined` | `onRequest`, `beforeRoute` |
 | `ResponseHook` | An after-handler hook: can also return a transform function | `afterRoute`, `mapResponse` |
 | `ErrorHook` | An error hook: takes `(error, ctx)`, returns `Response` or `undefined` | `onError` |
@@ -70,9 +75,29 @@ No errors means your types are correct. Your editor shows the same problems whil
 | `BurgerWS` | The WebSocket object passed to WS handlers | WS handlers |
 | `openapi` | OpenAPI metadata, keyed by lowercase method | Programmatic `openapi` |
 
+## Convention files and their types
+
+Every convention file has a consumer type. The scaffolded templates already use them:
+
+| File | Type | Example |
+|------|------|---------|
+| `burger.build.ts` | `BuildConfig` | `export default {...} satisfies BuildConfig;` |
+| `src/hooks.ts` | `RouteHooks` | `export const beforeRoute: RouteHooks["beforeRoute"] = [];` |
+| `src/index.ts` | `ServerOptions` | typed by `new Burger({...})` |
+| `openapi.config.ts` | `OpenAPIConfig` | `export default {...} satisfies OpenAPIConfig;` |
+| route `schema.ts` | `MethodSchema` | `export const GET = {...} satisfies MethodSchema;` |
+| route `openapi.ts` | `OpenAPIMeta` | `export const GET = {...} satisfies OpenAPIMeta;` |
+| route `hooks.ts` | `RouteHooks` | same as `src/hooks.ts` |
+| route `config.ts` | `RouteConfig` | `export default {...} satisfies RouteConfig;` |
+| route `route.ts` | `BurgerContext` | `export async function GET(ctx: BurgerContext<typeof GET>)` |
+| ws `ws.ts` | `BurgerWS`, `WebSocketHandlers` | typed handler parameters |
+| `src/types.ts` | app type extensions | `declare module 'burger-api' { ... }` |
+
+JavaScript projects get the same checks through JSDoc hints (`/** @type {import('burger-api').BuildConfig} */`).
+
 ## Augmentation: add your own types
 
-Some BurgerAPI types start empty. You fill them with your own types. This is called **augmentation**. Put this block in any file of your app (for example `src/types.ts`):
+Some BurgerAPI types start empty. You fill them with your own types. This is called **augmentation**. Put this block in `src/types.ts` (the single home for app-wide type extensions):
 
 ```ts
 import type { Database, Logger, User } from "./my-types";

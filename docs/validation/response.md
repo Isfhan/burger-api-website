@@ -50,7 +50,7 @@ The `response` schema describes the shape your handler should return. It is chec
 
 The types you use (from `burger-api`):
 
-- `RouteSchema` — the shape of a `schema.ts` export (for programmatic routes)
+- `RouteSchema` — a route's full schema map (for programmatic routes)
 - `z.infer<typeof GET.response["200"]>` — the documented response shape, for reuse
 
 ✅ Correct — declare the response shape, and reuse its type for helper functions:

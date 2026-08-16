@@ -54,7 +54,7 @@ The provider is set in the OpenAPI config, along with the spec path, docs path, 
 The types you use (from `burger-api`):
 
 - `openapi` — the per-route metadata object, keyed by lowercase method
-- `OpenAPIMethodMeta` — one method's metadata (`summary`, `tags`, `responses`, ...)
+- `OpenAPIMeta` — one method's metadata (`summary`, `tags`, `responses`, ...)
 - `OpenAPIConfig` — the docs configuration (dev `openapi.config.ts`, production `openapi` option)
 
 ✅ Correct — lowercase keys in programmatic metadata:

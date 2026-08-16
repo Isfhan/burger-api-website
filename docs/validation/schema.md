@@ -76,7 +76,7 @@ The types you use (from `burger-api`):
 
 - `BurgerContext<typeof GET>` — the handler type. `typeof GET` is the schema export.
 - `ctx.validated` — the validated data, typed slot by slot.
-- `RouteSchema` — the shape of a `schema.ts` export (for programmatic routes).
+- `RouteSchema` — a route's full schema map (for programmatic routes).
 
 ✅ Correct — annotate the handler with the schema type:
 
