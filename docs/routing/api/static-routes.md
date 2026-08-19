@@ -141,7 +141,7 @@ DELETE /api/products   → 405  Allow: GET, POST
 
 ### Automatic HEAD
 
-You do not need to write a separate `HEAD` handler. A `HEAD` request to any route that defines `GET` runs the `GET` handler and returns the same response with the body removed.
+You do not need to write a separate `HEAD` handler. A `HEAD` request to any route that defines `GET` runs the `GET` handler and returns the same response with the body removed. The route's validation also applies to `HEAD` requests, so `ctx.validated` is fully populated inside the handler.
 
 ### Trailing Slash
 

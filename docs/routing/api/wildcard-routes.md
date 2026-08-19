@@ -558,7 +558,7 @@ ctx.wildcardParams = ["settings", "users", "permissions"];
 :::warning Limitations
 When working with wildcard routes, keep these limitations in mind:
 
-1. **No Mixing in Same Directory:** You cannot have both dynamic `[id]` and wildcard `[...]` folders in the same directory level. Choose one pattern per level.
+1. **Mixing with Dynamic Routes:** Dynamic `[id]` and wildcard `[...]` folders can coexist at the same directory level. The router resolves them by priority: static > dynamic > wildcard. See [Dynamic Routes](/docs/routing/api/dynamic-routes) for the full rule.
 2. **Lowest Priority:** Wildcard routes are always matched last. If a static or dynamic route exists that matches the path, it will be chosen first.
 
 3. **Single Wildcard Per Branch:** Each route branch should have only one wildcard route. Having multiple wildcards in the same path can lead to unpredictable behavior.

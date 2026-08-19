@@ -428,24 +428,24 @@ export async function GET(ctx: BurgerContext<typeof RouteSchema>) {
 
 ## Limitations
 
-### Cannot Mix with Wildcards
+### Mixing with Wildcards
 
-You **cannot** have both dynamic `[param]` and wildcard `[...]` folders at the same directory level:
+Dynamic `[param]` and wildcard `[...]` folders can coexist at the same directory level. The router resolves a request by priority:
+
+1. Static routes match first (exact segment).
+2. Dynamic `[param]` matches a single segment next.
+3. Wildcard `[...]` captures everything else.
 
 ```typescript
-// ❌ This won't work:
+// ✅ All three can coexist:
 api/
   products/
+    featured/
+      route.ts        // GET /api/products/featured → static
     [id]/
-      route.ts
+      route.ts        // GET /api/products/42      → dynamic
     [...]/
-      route.ts
-
-// ✅ Choose one pattern per level:
-api/
-  products/
-    [id]/
-      route.ts
+      route.ts        // GET /api/products/a/b     → wildcard
 ```
 
 ### Parameters Are Always Strings
