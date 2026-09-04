@@ -34,7 +34,7 @@ Errors jump to `onError`.
 3. Global (`src/hooks.ts`)  
 4. Route (`api/**/hooks.ts`)
 
-Request hooks run Framework → Plugin → Global → Route. Response hooks (`afterRoute`, `mapResponse`) run Global → Route → Plugin → Framework. Error hooks (`onError`) run nearest-first, Route → Global.
+Request hooks run Framework → Plugin → Global → Route. Response hooks (`afterRoute`, `mapResponse`) run Route → Global → Plugin → Framework. Error hooks (`onError`) run nearest-first, Route → Global.
 
 There is **no** folder or group inheritance of hooks. Each route directory is self-contained.
 

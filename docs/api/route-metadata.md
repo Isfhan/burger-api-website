@@ -46,5 +46,5 @@ Per-method named exports (`GET`, `POST`, ...) are used on `route.ts`, `schema.ts
 
 ## Related
 
-- [RouteMeta](/docs/api/route-meta)
 - [File-Based Routing](/docs/routing/file-based-routing)
+- [Request API](/docs/api/request-api)

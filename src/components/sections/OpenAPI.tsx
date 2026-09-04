@@ -50,7 +50,7 @@ export function OpenAPI() {
 
       <ScrollReveal>
         <div className="text-center">
-          <Button to="/docs/openapi/generation" variant="secondary" className="mt-2">
+          <Button to="/docs/api/openapi" variant="secondary" className="mt-2">
             <FileJson size={16} aria-hidden />
             OpenAPI documentation
             <ArrowRight

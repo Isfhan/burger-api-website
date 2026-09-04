@@ -26,7 +26,6 @@ const sidebars: SidebarsConfig = {
         "core/request-handling",
         "core-concepts/hooks",
         "core-concepts/validation",
-        "core-concepts/openapi",
         "core/configuration",
         "core/response-types",
       ],
@@ -93,12 +92,7 @@ const sidebars: SidebarsConfig = {
     {
       type: "category",
       label: "OpenAPI & Documentation",
-      items: [
-        "openapi/generation",
-        "openapi/swagger-ui",
-        "openapi/metadata",
-        "api/openapi",
-      ],
+      items: ["api/openapi"],
     },
     {
       type: "category",
@@ -148,6 +142,8 @@ const sidebars: SidebarsConfig = {
         { type: "doc", id: "cli/dev", label: "dev (start)" },
         "cli/build",
         "cli/build-exec",
+        "cli/inspect",
+        "cli/doctor",
       ],
     },
     {
@@ -173,7 +169,6 @@ const sidebars: SidebarsConfig = {
         "core/burger-class",
         "core/server-options",
         "api/context-set",
-        "api/route-meta",
         "api/validation-types",
         "api/hook-types",
         "api/request-api",

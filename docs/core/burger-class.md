@@ -62,13 +62,30 @@ Services are registered in `src/providers.ts` and accessed as `ctx.services.name
 
 ### macro(name, fn)
 
-Registers a reusable hook factory. Macros expand at compile time into plugin-scoped hooks applied to every route.
+Registers a reusable hook factory. Macros expand at compile time into plugin-scoped hooks applied to every route. `fn` takes no arguments — a macro is a zero-arg bundle of hooks, not a per-call-site configurable unit.
 
 ```ts
-app.macro("requireAuth", (opts) => ({
+app.macro("requireAuth", () => ({
   beforeRoute: [/* ... */],
 }));
 ```
+
+### websocket(path, handlers)
+
+Registers a WebSocket route programmatically (as an alternative to a file-based route under `wsDir`). Returns `this` for chaining.
+
+```ts
+app.websocket("/chat", {
+  open(ws) {
+    ws.send("connected");
+  },
+  message(ws, message) {
+    ws.send(message);
+  },
+});
+```
+
+Programmatic WebSocket routes are a **dev-only** convenience — they are not captured by production AOT builds. Use a file-based route under `wsDir` for anything that needs to survive `burger-api build`. See [WebSocket](/docs/websocket/overview).
 
 ### fetchHandler()
 
@@ -91,6 +108,35 @@ Deno.serve(toFetchHandler(app));
 ```
 
 WinterCG targets must pass AOT `apiRoutes`: there is no filesystem at runtime. See [Deployment](/docs/deployment/bun).
+
+### createNodeWsBridge(options)
+
+Node WebSocket integration: returns a bridge that plugs the framework's WebSocket pipeline into `node:http`'s `'upgrade'` event, using a framing library's `WebSocketServer` (e.g. the `ws` package). Requires WebSocket routes to already be configured (`wsDir`, `wsRoutes`, or `app.websocket()`) — throws otherwise.
+
+```ts
+import http from "node:http";
+import { WebSocketServer } from "ws";
+import { Burger, toFetchHandler } from "burger-api";
+
+const app = new Burger({ apiRoutes, wsRoutes });
+const bridge = app.createNodeWsBridge({ WebSocketServer });
+
+http
+  .createServer((req, res) => toFetchHandler(app)(req, undefined))
+  .on("upgrade", (req, socket, head) => bridge.handleUpgrade(req, socket, head))
+  .listen(3000);
+```
+
+This is the escape hatch for running BurgerAPI's WebSocket routes on plain Node — see [WebSocket](/docs/websocket/overview#nodejs) and [Compatibility](/docs/compatibility).
+
+### getServer()
+
+Returns the underlying `Server` instance, or `undefined` if `serve()` hasn't started one yet (e.g. no routes were configured). Mainly useful for test harnesses and benchmark scripts that need to stop the server cleanly.
+
+```ts
+const server = app.getServer();
+server?.stop();
+```
 
 ## App files
 

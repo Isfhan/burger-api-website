@@ -28,7 +28,7 @@ burger.serve(4000);
 Organize your page files within the `pageDir` directory:
 
 - **Directory Structure = URL Path:** Just like API routes, the folder structure maps directly to the URL path (relative to any `pagePrefix`).
-- **Supported Files:** BurgerAPI looks for `.html` files.
+- **Supported Files:** BurgerAPI looks for `.html` files (served as static assets) and `.tsx` files (plain handler functions — see below).
 - **URL Mapping Examples:**
   - `src/pages/index.html` or `src/pages/index.tsx` → `/`
   - `src/pages/about.html` → `/about`
@@ -57,6 +57,31 @@ Good old `.html` files require no special handling. BurgerAPI serves them direct
 </html>
 ```
 
+## Dynamic Pages (`.tsx`)
+
+A `.tsx` page is **not** React/JSX server-side rendering — it's a plain handler
+function, exactly like an API route's `GET` handler, that returns a `Response`
+directly. Use it when a page needs to compute its HTML from a route param,
+a service, or anything else that a static `.html` file can't express.
+
+```tsx title="src/pages/posts/[slug].tsx"
+import type { BurgerContext } from "burger-api";
+
+export default async function GET(ctx: BurgerContext): Promise<Response> {
+  const slug = (ctx.params as Record<string, string>)?.slug ?? "unknown";
+  return new Response(
+    `<!doctype html><html><body><h1>Post: ${slug}</h1></body></html>`,
+    { headers: { "Content-Type": "text/html" } }
+  );
+}
+```
+
+The default export receives the same `BurgerContext` an API route handler
+does (`ctx.params`, `ctx.services`, etc.) and must return a `Response` —
+returning a JSX element instead will not render anything. If you want actual
+JSX templating, build the HTML string yourself (e.g. with a template
+function or a JSX-to-string helper) and pass it to `new Response(...)`; there
+is no built-in SSR renderer in 1.0.
 
 ## Related
 

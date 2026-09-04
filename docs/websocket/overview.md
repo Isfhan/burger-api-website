@@ -64,7 +64,7 @@ TypeScript checks your WebSocket handlers before they run.
 
 The types you use (all from `burger-api`):
 
-- `BurgerWS` — the WebSocket object: `send`, `data`, `services`, `close`
+- `BurgerWS` — the WebSocket object: `send`, `sendText`, `sendBinary`, `data`, `services`, `user`, `subscribe`/`unsubscribe`/`publish` (pub/sub — see below), `close`, `terminate`, `cork`, `remoteAddress`, `readyState`, `raw`
 - `WebSocketData` — the data on `ws.data`. You extend it (see below).
 - `WebSocketHandlers` — the shape of `open`, `message`, `close`, `drain`, `ping`, `pong`
 - `WebSocketHooks` — the shape of `onOpen`, `onMessage`, `onClose`
@@ -80,13 +80,13 @@ export function open(ws: BurgerWS) {
 }
 ```
 
-❌ Wrong — `sendText` does not exist on `BurgerWS`. This does not compile:
+`send` accepts a `string | Buffer`. If you already know which one you're sending, `sendText(message: string)` and `sendBinary(message: Buffer)` are the same operation with a narrower, self-documenting signature — both are real `BurgerWS` methods:
 
 ```ts
 import type { BurgerWS } from "burger-api";
 
 export function open(ws: BurgerWS) {
-    ws.sendText("hello"); // ❌ Property 'sendText' does not exist
+    ws.sendText("hello"); // ✅ compiles — same as ws.send("hello")
 }
 ```
 
@@ -143,6 +143,67 @@ export function message(ws: BurgerWS, message: string | Buffer) {
         | undefined;
 }
 ```
+
+## Pub/sub
+
+Every `BurgerWS` connection can subscribe to named topics and publish messages to every other connection subscribed to a topic — this is Bun's native pub/sub, exposed directly on `BurgerWS`, with no separate broker to run.
+
+```ts
+import type { BurgerWS } from "burger-api";
+
+export function open(ws: BurgerWS) {
+    ws.subscribe("room:general");
+}
+
+export function message(ws: BurgerWS, message: string | Buffer) {
+    // Broadcast to every OTHER connection subscribed to the topic.
+    // (The sender does not receive its own publish.)
+    ws.publish("room:general", message);
+}
+
+export function close(ws: BurgerWS) {
+    ws.unsubscribe("room:general");
+}
+```
+
+The full pub/sub surface on `BurgerWS`:
+
+- `subscribe(topic: string): void` — join a topic.
+- `unsubscribe(topic: string): void` — leave a topic.
+- `isSubscribed(topic: string): boolean` — check membership.
+- `publish(topic: string, message: string | Buffer): void` — broadcast to the topic's other subscribers.
+- `publishText(topic: string, message: string): void` — same as `publish`, narrowed to text.
+- `publishBinary(topic: string, message: Buffer): void` — same as `publish`, narrowed to binary.
+
+A connection is automatically unsubscribed from every topic when it closes — you don't need to call `unsubscribe` yourself in `close`, though doing so is harmless.
+
+## Node.js
+
+BurgerAPI's WebSocket routes are built on Bun's native `ServerWebSocket`. Plain
+Node has no equivalent built in, so running the same routes on Node needs one
+extra piece: a framing library (e.g. the `ws` package) plus
+`app.createNodeWsBridge()`, which bridges `node:http`'s `'upgrade'` event into
+the framework's WebSocket pipeline:
+
+```ts
+import http from "node:http";
+import { WebSocketServer } from "ws";
+import { Burger, toFetchHandler } from "burger-api";
+
+const app = new Burger({ apiRoutes, wsRoutes }); // AOT routes — see Deployment
+const bridge = app.createNodeWsBridge({ WebSocketServer });
+
+http
+  .createServer((req, res) => toFetchHandler(app)(req, undefined))
+  .on("upgrade", (req, socket, head) => bridge.handleUpgrade(req, socket, head))
+  .listen(3000);
+```
+
+`createNodeWsBridge()` throws if no WebSocket routes are configured
+(`wsDir`, `wsRoutes`, or `app.websocket()`). This is Node-specific — it needs
+raw socket access to `node:http`'s `'upgrade'` event, which true edge runtimes
+(Cloudflare Workers, Vercel, Deno Deploy) don't expose. See
+[Compatibility](/docs/compatibility) for the full runtime matrix.
 
 ## Check your code
 

@@ -10,7 +10,7 @@ const docLinks = [
   { label: "Routing", to: "/docs/routing/file-based-routing" },
   { label: "Validation", to: "/docs/validation/zod" },
   { label: "Hooks", to: "/docs/hooks/system" },
-  { label: "OpenAPI", to: "/docs/openapi/generation" },
+  { label: "OpenAPI", to: "/docs/api/openapi" },
 ];
 
 const resourceLinks = [

@@ -25,7 +25,7 @@ The application brings together:
 - **Plugins** that extend the application, registered in `src/plugins.ts`.
 - **Providers** that inject shared services into `ctx.services`, declared in `src/providers.ts`.
 - **Validation** schemas that guard requests (see [Validation](./validation.md)).
-- **OpenAPI** documentation generated automatically from your routes (see [OpenAPI](./openapi.md)).
+- **OpenAPI** documentation generated automatically from your routes (see [OpenAPI & Swagger](/docs/api/openapi)).
 
 ## Where things live
 

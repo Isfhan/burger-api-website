@@ -37,7 +37,7 @@ export const GET = {
 };
 ```
 
-The `openapi` type allows `summary`, `description`, `tags`, `operationId`, `deprecated`, `responses`, and `externalDocs` per HTTP method. BurgerAPI infers request and response schemas from your `schema.ts` where possible. See [OpenAPI Metadata](/docs/openapi/metadata).
+The `openapi` type allows `summary`, `description`, `tags`, `operationId`, `deprecated`, `responses`, and `externalDocs` per HTTP method. BurgerAPI infers request and response schemas from your `schema.ts` where possible.
 
 ## Docs UI providers
 
@@ -47,7 +47,7 @@ BurgerAPI serves an interactive UI at `/docs` and the raw spec at `/openapi.json
 - `scalarDocs()`
 - `redocDocs()`
 
-The provider is set in the OpenAPI config, along with the spec path, docs path, and optional basic auth for `/docs`. In dev, this config is auto-discovered from `openapi.config.ts`; production builds pass it in the `openapi` option. See [Swagger UI](/docs/openapi/swagger-ui).
+The provider is set in the OpenAPI config, along with the spec path, docs path, and optional basic auth for `/docs`. In dev, this config is auto-discovered from `openapi.config.ts`; production builds pass it in the `openapi` option. Both the spec path (`/openapi.json` by default) and the docs path (`/docs` by default) are configurable there.
 
 ## Types for this feature
 
@@ -91,7 +91,6 @@ Check your code: `bun run typecheck`.
 
 ## Related
 
-- [OpenAPI Generation](/docs/openapi/generation)
-- [Swagger UI](/docs/openapi/swagger-ui)
-- [OpenAPI Metadata](/docs/openapi/metadata)
-- [OpenAPI](/docs/core-concepts/openapi)
+- [Applications](/docs/core-concepts/applications)
+- [Routing](/docs/core-concepts/routing)
+- [Handlers](/docs/core-concepts/handlers)

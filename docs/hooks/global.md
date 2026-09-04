@@ -31,7 +31,7 @@ import { logger } from "./ecosystem/hooks/logger/logger";
 export const onRequest = [logger(), cors({ origin: ["https://app.example.com"] })];
 ```
 
-Scope order: Framework → Plugin → Global → Route for request hooks. Response hooks (`afterRoute`, `mapResponse`) run Global → Route → Plugin → Framework. Error hooks (`onError`) run nearest-first, Route → Global.
+Scope order: Framework → Plugin → Global → Route for request hooks. Response hooks (`afterRoute`, `mapResponse`) run Route → Global → Plugin → Framework. Error hooks (`onError`) run nearest-first, Route → Global.
 
 Use global hooks for logging, CORS, auth checks, or any logic that should run for all routes. See [Hook System](/docs/hooks/system) and [Ecosystem](/docs/ecosystem/introduction).
 

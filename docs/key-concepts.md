@@ -65,7 +65,7 @@ See [Zod Validation](/docs/validation/zod), [Schema Definition](/docs/validation
 BurgerAPI can **generate an OpenAPI 3.0 specification** from your routes and
 schemas and serve an interactive docs UI.
 
-See [OpenAPI Generation](/docs/openapi/generation) and [Swagger UI](/docs/openapi/swagger-ui).
+See [OpenAPI & Swagger](/docs/api/openapi).
 
 ## CLI and builds
 
