@@ -60,16 +60,6 @@ app.provide("db", createDb());
 
 Services are registered in `src/providers.ts` and accessed as `ctx.services.name`, typed via module augmentation.
 
-### macro(name, fn)
-
-Registers a reusable hook factory. Macros expand at compile time into plugin-scoped hooks applied to every route. `fn` takes no arguments — a macro is a zero-arg bundle of hooks, not a per-call-site configurable unit.
-
-```ts
-app.macro("requireAuth", () => ({
-  beforeRoute: [/* ... */],
-}));
-```
-
 ### websocket(path, handlers)
 
 Registers a WebSocket route programmatically (as an alternative to a file-based route under `wsDir`). Returns `this` for chaining.

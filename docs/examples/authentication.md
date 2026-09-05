@@ -28,9 +28,10 @@ Register it in `src/plugins.ts`:
 
 ```ts
 // src/plugins.ts
+import type { PluginRegistrar } from "burger-api";
 import { apiKey } from "../ecosystem/plugins/api-key/api-key";
 
-export default (burger) => {
+export default (burger: PluginRegistrar) => {
   burger.usePlugin(apiKey({ keys: ["demo-api-key-123"] }));
 };
 ```

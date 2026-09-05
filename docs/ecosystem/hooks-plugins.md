@@ -31,9 +31,10 @@ Plugins are application extensions. They can register hooks, register providers,
 - **Examples:** jwt-auth, api-key, session, oidc, basic-auth, env.
 
 ```ts title="src/plugins.ts"
+import type { PluginRegistrar } from "burger-api";
 import { apiKey } from "../ecosystem/plugins/api-key/api-key";
 
-export default (burger) => {
+export default (burger: PluginRegistrar) => {
   burger.usePlugin(apiKey({ keys: ["demo-api-key-123"] }));
 };
 ```
@@ -52,12 +53,11 @@ The types you use (all from `burger-api`):
 - `Plugin` — a plugin: `{ name, hooks? }`
 - `RouteHooks` — the hook object (for typing `hooks.ts` files)
 - `BurgerServices` — the services on `ctx.services` — you extend it
-- `MacroFn` — a macro factory: `(...args) => RouteHooks`
 
 ✅ Correct — type the plugin when you write one:
 
 ```ts title="src/plugins.ts"
-import type { Plugin } from "burger-api";
+import type { Plugin, PluginRegistrar } from "burger-api";
 
 const logger: Plugin = {
     name: "logger",
@@ -66,7 +66,7 @@ const logger: Plugin = {
     },
 };
 
-export default (burger) => {
+export default (burger: PluginRegistrar) => {
     burger.usePlugin(logger);
 };
 ```

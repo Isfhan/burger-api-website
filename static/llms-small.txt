@@ -325,9 +325,10 @@ Production build notes:
 
 ```typescript
 // src/plugins.ts
+import type { PluginRegistrar } from "burger-api";
 import { apiKey } from "./ecosystem/plugins/api-key/api-key";
 
-export default (burger) => {
+export default (burger: PluginRegistrar) => {
     burger.usePlugin(apiKey({ keys: ["demo-api-key-123"] }));
 };
 ```
@@ -336,7 +337,9 @@ export default (burger) => {
 
 ```typescript
 // src/providers.ts
-export default (burger) => {
+import type { ProviderRegistrar } from "burger-api";
+
+export default (burger: ProviderRegistrar) => {
     burger.provide("db", createDatabase());
 };
 // Access via ctx.services.db in any handler

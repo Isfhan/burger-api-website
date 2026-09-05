@@ -31,13 +31,17 @@ burger.serve(4000);
 ```
 
 ```ts title="src/plugins.ts"
-export default (burger) => {
+import type { PluginRegistrar } from "burger-api";
+
+export default (burger: PluginRegistrar) => {
   burger.usePlugin(/* ... */);
 };
 ```
 
 ```ts title="src/providers.ts"
-export default (burger) => {
+import type { ProviderRegistrar } from "burger-api";
+
+export default (burger: ProviderRegistrar) => {
   burger.provide("db", createDb());
 };
 ```
