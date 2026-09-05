@@ -180,29 +180,41 @@ A connection is automatically unsubscribed from every topic when it closes — y
 ## Node.js
 
 BurgerAPI's WebSocket routes are built on Bun's native `ServerWebSocket`. Plain
-Node has no equivalent built in, so running the same routes on Node needs one
-extra piece: a framing library (e.g. the `ws` package) plus
+Node has no equivalent built in, so running the same routes on Node needs two
+extra pieces: a framing library (e.g. the `ws` package) plus
 `app.createNodeWsBridge()`, which bridges `node:http`'s `'upgrade'` event into
-the framework's WebSocket pipeline:
+the framework's WebSocket pipeline — and a request/response bridge for the
+plain HTTP path, since `toFetchHandler` expects a Fetch API `Request`, not a
+raw `IncomingMessage` (write your own, matching your body/streaming needs, or
+reuse an existing WinterCG-to-Node adapter):
 
 ```ts
 import http from "node:http";
 import { WebSocketServer } from "ws";
 import { Burger, toFetchHandler } from "burger-api";
+import { toWebRequest, sendWebResponse } from "./node-bridge"; // your own bridge
 
 const app = new Burger({ apiRoutes, wsRoutes }); // AOT routes — see Deployment
+
+// fetchHandler() lazily processes routes (including WS ones) the first time
+// it runs — call/await it before createNodeWsBridge(), not just for HTTP.
+const fetchHandler = await app.fetchHandler();
 const bridge = app.createNodeWsBridge({ WebSocketServer });
 
 http
-  .createServer((req, res) => toFetchHandler(app)(req, undefined))
+  .createServer(async (req, res) => {
+    const response = await fetchHandler(toWebRequest(req));
+    await sendWebResponse(res, response);
+  })
   .on("upgrade", (req, socket, head) => bridge.handleUpgrade(req, socket, head))
   .listen(3000);
 ```
 
 `createNodeWsBridge()` throws if no WebSocket routes are configured
-(`wsDir`, `wsRoutes`, or `app.websocket()`). This is Node-specific — it needs
-raw socket access to `node:http`'s `'upgrade'` event, which true edge runtimes
-(Cloudflare Workers, Vercel, Deno Deploy) don't expose. See
+(`wsDir`, `wsRoutes`, or `app.websocket()`), or if called before
+`fetchHandler()`/`serve()` has run at least once. This is Node-specific — it
+needs raw socket access to `node:http`'s `'upgrade'` event, which true edge
+runtimes (Cloudflare Workers, Vercel, Deno Deploy) don't expose. See
 [Compatibility](/docs/compatibility) for the full runtime matrix.
 
 ## Check your code
