@@ -17,13 +17,16 @@ export const GET = {
 ```
 
 ```ts title="api/products/route.ts"
-import type { GET as RouteSchema } from "./schema";
+import { defineRoute } from "burger-api";
+import { GET as GetSchema } from "./schema";
 
-export function GET(ctx: BurgerContext<typeof RouteSchema>) {
+export const GET = defineRoute(GetSchema, (ctx) => {
   const { limit } = ctx.validated.query;
   return Response.json({ limit });
-}
+});
 ```
+
+`defineRoute(schema, handler)` infers `ctx.validated`'s shape from `schema` — the older `BurgerContext<typeof RouteSchema>` generic form still works if you'd rather annotate by hand.
 
 Here `z.coerce.number()` uses automatic type conversion: query values always arrive as text, so `"50"` is turned into the number `50` before the checks run. BurgerAPI also offers built-in [coercion](/docs/validation/coercion) you can turn on for a whole app.
 

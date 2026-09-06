@@ -215,6 +215,8 @@ This produces a bundle under:
 
 - `.build/bundle/app.js`
 
+Pass `--target=<platform>` to build for somewhere other than Bun — `node`, `cloudflare`, `deno`, or `vercel` — see [Deployment](../deployment/bun.md).
+
 If you prefer a standalone executable (great for simple deployments), run:
 
 ```bash

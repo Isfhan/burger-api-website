@@ -177,6 +177,30 @@ The full pub/sub surface on `BurgerWS`:
 
 A connection is automatically unsubscribed from every topic when it closes — you don't need to call `unsubscribe` yourself in `close`, though doing so is harmless.
 
+**`subscribe`/`publish` are Bun-only** — they wrap Bun's native topic pub/sub directly, and throw on every other runtime (Node, Cloudflare Workers, Deno). The portable equivalent is a plain connection registry, fanning out manually:
+
+```ts
+import type { BurgerWS } from "burger-api";
+
+const clients = new Set<BurgerWS>();
+
+export function open(ws: BurgerWS) {
+    clients.add(ws);
+}
+
+export function message(ws: BurgerWS, message: string | Buffer) {
+    for (const client of clients) {
+        if (client !== ws) client.send(message); // skip the sender, like publish() does
+    }
+}
+
+export function close(ws: BurgerWS) {
+    clients.delete(ws);
+}
+```
+
+This is the one part of a WebSocket route that isn't automatically portable across targets — everything else (`open`/`message`/`close`, `ws.data`, `ws.services`) works unchanged on Bun, Node, Cloudflare Workers, and Deno.
+
 ## Node.js
 
 BurgerAPI's WebSocket routes are built on Bun's native `ServerWebSocket`. Plain
@@ -207,10 +231,69 @@ configured." You don't need to know any of that to use it; see
 [Deploy on Node.js](/docs/deployment/node) for the full picture, including
 what to do if you'd rather wire it by hand.
 
-This is Node-specific — it needs raw socket access to `node:http`'s
-`'upgrade'` event, which true edge runtimes (Cloudflare Workers, Vercel, Deno
-Deploy) don't expose. See [Compatibility](/docs/compatibility) for the full
-runtime matrix.
+This bridge is Node-specific — it exists because Node has no `fetch`-handler
+upgrade path at all, unlike the runtimes below.
+
+## Cloudflare Workers
+
+WebSocket works natively here — no bridge, no extra package. Workers expose
+`WebSocketPair` directly, and `burger-api build --target=cloudflare` wires it
+in automatically: the generated entry's `toFetchHandler(app)` handles the
+upgrade the same way it handles any other request.
+
+```bash
+burger-api build src/index.ts --target=cloudflare
+wrangler dev
+```
+
+Nothing route-level changes — the same `src/websocket/chat/ws.ts` file that
+runs on Bun runs on Workers unmodified. Pub/sub (`subscribe`/`publish`) is the
+one exception: it's Bun's own native primitive and isn't available here — see
+the Pub/sub section above for the portable `Set<BurgerWS>` fallback pattern.
+
+## Deno
+
+Same story: `Deno.upgradeWebSocket()` is native, and `burger-api build
+--target=deno` wires it in automatically.
+
+```bash
+burger-api build src/index.ts --target=deno
+deno serve --port 8000 .build/deno/index.ts
+```
+
+## Vercel — not supported
+
+Vercel Functions have no persistent-connection model to upgrade a request
+into — there's no runtime primitive to bridge to, unlike Node (which at least
+has `node:http`'s `'upgrade'` event). `burger-api build --target=vercel`
+**fails at build time** if the project has any WebSocket routes, rather than
+shipping a build that would 501 on every real connection attempt:
+
+```
+--target=vercel does not support WebSocket routes, but 1 were found under
+./src/websocket. This platform has no persistent-connection model for
+WebSocket upgrades — see the compatibility docs for what each runtime
+supports.
+```
+
+If you need both an HTTP API on Vercel and real-time features, keep the
+WebSocket routes on a different target (Bun, Node, Cloudflare, or Deno) and
+call that service from your Vercel-hosted app, the same way you'd reach for
+any other external realtime provider from a serverless function.
+
+## Runtime summary
+
+| Runtime | WebSocket | How |
+|---|---|---|
+| Bun | Yes | Native `ServerWebSocket` |
+| Node.js | Yes | `@burger-api/node-server`'s bridge (`createNodeWsBridge` + `ws`) |
+| Cloudflare Workers | Yes | Native `WebSocketPair` |
+| Deno | Yes | Native `Deno.upgradeWebSocket` |
+| Vercel | No | No persistent-connection model — build fails if WS routes exist |
+
+See [Compatibility](/docs/compatibility) for the full feature-by-runtime
+matrix, and [`burger-api build --target`](/docs/cli/build) for how each of
+these gets built.
 
 ## Check your code
 
@@ -222,3 +305,6 @@ bun run typecheck
 
 - [TypeScript Types](/docs/advanced/type-safety)
 - [Routing](/docs/routing/file-based-routing)
+- [Compatibility](/docs/compatibility)
+- [Build Command](/docs/cli/build)
+- [Deploy on Node.js](/docs/deployment/node)

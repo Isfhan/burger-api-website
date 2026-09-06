@@ -24,16 +24,16 @@ For each route type, see [Static API Routes](/docs/routing/api/static-routes), [
 
 Nesting does not change the types. Each dynamic segment still needs a `params` schema in `schema.ts` to be typed.
 
-✅ Correct — one schema for all segments:
+✅ Correct — one schema for all segments, wrapped with `defineRoute`:
 
 ```typescript
-import type { BurgerContext } from "burger-api";
-import type { GET as RouteSchema } from "./schema";
+import { defineRoute } from "burger-api";
+import { GET as GetSchema } from "./schema";
 
-export async function GET(ctx: BurgerContext<typeof RouteSchema>) {
+export const GET = defineRoute(GetSchema, (ctx) => {
     const { userId, postId } = ctx.validated.params; // both typed
     return Response.json({ userId, postId });
-}
+});
 ```
 
 ```typescript
@@ -46,12 +46,14 @@ export const GET = {
 };
 ```
 
+The manual generic — `BurgerContext<typeof GetSchema>` — is the same inference, written by hand.
+
 ❌ Wrong — a segment without a schema is `unknown`:
 
 ```typescript
-export async function GET(ctx: BurgerContext<typeof RouteSchema>) {
+export const GET = defineRoute(GetSchema, (ctx) => {
     ctx.validated.params.missing; // ❌ Property 'missing' does not exist
-}
+});
 ```
 
 See the [TypeScript overview](/docs/advanced/type-safety).

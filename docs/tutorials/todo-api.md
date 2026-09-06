@@ -216,7 +216,8 @@ Create the main todos endpoint:
 
 ```typescript title="src/api/todos/route.ts"
 import type { BurgerContext } from "burger-api";
-import type { POST as PostSchema } from "./schema";
+import { defineRoute } from "burger-api";
+import { POST as PostSchema } from "./schema";
 import { todoDatabase } from "../../database";
 
 // GET /api/todos - List all todos
@@ -229,17 +230,17 @@ export async function GET(ctx: BurgerContext) {
 }
 
 // POST /api/todos - Create a new todo
-export async function POST(ctx: BurgerContext<typeof PostSchema>) {
+export const POST = defineRoute(PostSchema, (ctx) => {
   const { title, completed } = ctx.validated.body;
   const newTodo = todoDatabase.create(title, completed);
 
   return Response.json(newTodo, { status: 201 });
-}
+});
 ```
 
 :::tip What's Happening?
 - `GET` returns all todos with a count
-- `POST` reads validated data from `ctx.validated.body`, typed from `schema.ts` via `BurgerContext<typeof POST>`
+- `POST` reads validated data from `ctx.validated.body`, typed from `schema.ts` via `defineRoute(PostSchema, handler)` — no `BurgerContext<typeof POST>` generic needed
 - Validation errors return 422 automatically, so the handler contains no manual checks
 - We return 201 for created resources
 :::
@@ -249,12 +250,12 @@ export async function POST(ctx: BurgerContext<typeof PostSchema>) {
 Create the dynamic route for individual todos:
 
 ```typescript title="src/api/todos/[id]/route.ts"
-import type { BurgerContext } from "burger-api";
-import type { GET as GetSchema, PUT as PutSchema, DELETE as DeleteSchema } from "./schema";
+import { defineRoute } from "burger-api";
+import { GET as GetSchema, PUT as PutSchema, DELETE as DeleteSchema } from "./schema";
 import { todoDatabase } from "../../../database";
 
 // GET /api/todos/[id] - Get a specific todo
-export async function GET(ctx: BurgerContext<typeof GetSchema>) {
+export const GET = defineRoute(GetSchema, (ctx) => {
   const todo = todoDatabase.getById(parseInt(ctx.validated.params.id, 10));
 
   if (!todo) {
@@ -265,10 +266,10 @@ export async function GET(ctx: BurgerContext<typeof GetSchema>) {
   }
 
   return Response.json(todo);
-}
+});
 
 // PUT /api/todos/[id] - Update a todo
-export async function PUT(ctx: BurgerContext<typeof PutSchema>) {
+export const PUT = defineRoute(PutSchema, (ctx) => {
   const updatedTodo = todoDatabase.update(
     parseInt(ctx.validated.params.id, 10),
     ctx.validated.body
@@ -282,10 +283,10 @@ export async function PUT(ctx: BurgerContext<typeof PutSchema>) {
   }
 
   return Response.json(updatedTodo);
-}
+});
 
 // DELETE /api/todos/[id] - Delete a todo
-export async function DELETE(ctx: BurgerContext<typeof DeleteSchema>) {
+export const DELETE = defineRoute(DeleteSchema, (ctx) => {
   const deleted = todoDatabase.delete(parseInt(ctx.validated.params.id, 10));
 
   if (!deleted) {
@@ -296,7 +297,7 @@ export async function DELETE(ctx: BurgerContext<typeof DeleteSchema>) {
   }
 
   return new Response(null, { status: 204 });
-}
+});
 ```
 
 :::tip Understanding Dynamic Routes
@@ -389,6 +390,8 @@ burger-api build src/index.ts
 This generates a bundle at:
 
 - `.build/bundle/app.js`
+
+Pass `--target=node|cloudflare|deno|vercel` to build for a different deployment platform instead of Bun — see [Deployment](../deployment/bun.md).
 
 To create a standalone executable:
 

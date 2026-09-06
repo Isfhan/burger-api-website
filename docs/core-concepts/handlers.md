@@ -26,7 +26,7 @@ Handlers read `ctx.params`, `ctx.query`, `ctx.cookies`, and `ctx.json()` for req
 
 ## Typed validated data
 
-Validation lives in the route's `schema.ts` with per-method named exports. Type the handler with the method's schema to get inferred `ctx.validated`:
+Validation lives in the route's `schema.ts` with per-method named exports. Wrap the handler with `defineRoute(schema, handler)` to get `ctx.validated` inferred from the schema automatically — no generic to write by hand:
 
 ```ts title="api/products/schema.ts"
 import { z } from "zod";
@@ -35,6 +35,19 @@ export const GET = { query: z.object({ limit: z.coerce.number().optional() }) };
 ```
 
 ```ts title="api/products/route.ts"
+import { defineRoute } from "burger-api";
+import { GET as GetSchema } from "./schema";
+
+export const GET = defineRoute(GetSchema, (ctx) => {
+  const { limit } = ctx.validated.query;
+  return Response.json({ limit });
+});
+```
+
+The older, equivalent form — annotate the handler with `BurgerContext<typeof GET>` directly — still works:
+
+```ts
+import type { BurgerContext } from "burger-api";
 import type { GET as RouteSchema } from "./schema";
 
 export async function GET(ctx: BurgerContext<typeof RouteSchema>) {
@@ -43,7 +56,7 @@ export async function GET(ctx: BurgerContext<typeof RouteSchema>) {
 }
 ```
 
-See [Validation](/docs/validation/zod) for the full flow.
+See [Validation](/docs/validation/zod) for the full flow and [Type Safety](/docs/advanced/type-safety) for how `defineRoute` works.
 
 ## Related
 

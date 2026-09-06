@@ -14,7 +14,8 @@ The `body` schema types `ctx.validated.body`.
 
 The types you use (from `burger-api`):
 
-- `BurgerContext<typeof POST>` — the handler type
+- `defineRoute(schema, handler)` — infers the handler type from `schema`; no generic to write
+- `BurgerContext<typeof POST>` — the same inference, written by hand
 - `ctx.validated.body` — the validated body, typed field by field
 
 ✅ Correct — validated body is typed from the schema:
@@ -25,24 +26,24 @@ export const POST = { body: z.object({ name: z.string().min(1), price: z.number(
 ```
 
 ```ts title="api/products/route.ts"
-import type { BurgerContext } from "burger-api";
-import type { POST as RouteSchema } from "./schema";
+import { defineRoute } from "burger-api";
+import { POST as PostSchema } from "./schema";
 
-export async function POST(ctx: BurgerContext<typeof RouteSchema>) {
+export const POST = defineRoute(PostSchema, (ctx) => {
     const { name, price } = ctx.validated.body; // both typed
     return Response.json({ name, price }, { status: 201 });
-}
+});
 ```
 
 ❌ Wrong — a body field that is not in the schema:
 
 ```ts
-export async function POST(ctx: BurgerContext<typeof RouteSchema>) {
+export const POST = defineRoute(PostSchema, (ctx) => {
     ctx.validated.body.missing; // ❌ Property 'missing' does not exist
-}
+});
 ```
 
-For an unannoted handler, `ctx.validated` is possibly `undefined` and its fields are untyped. Add the schema and annotate the handler. See the [TypeScript overview](/docs/advanced/type-safety).
+For an unannoted handler, `ctx.validated` is possibly `undefined` and its fields are untyped. Add the schema and wrap the handler with `defineRoute` (or annotate it by hand). See the [TypeScript overview](/docs/advanced/type-safety).
 
 Check your code: `bun run typecheck`.
 

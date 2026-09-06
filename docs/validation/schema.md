@@ -66,7 +66,7 @@ After validation, the result is available on `ctx.validated`:
 - `ctx.validated.cookies`
 - `ctx.validated.body`
 
-Each is typed from the corresponding schema. Annotate the handler with `BurgerContext<typeof GET>` to get the inferred types. See [Zod Validation](/docs/validation/zod), [Query](/docs/validation/query), and [Body](/docs/validation/body).
+Each is typed from the corresponding schema. Wrap the handler with `defineRoute(schema, handler)` to get the inferred types automatically — or annotate it with `BurgerContext<typeof GET>` by hand. See [Zod Validation](/docs/validation/zod), [Query](/docs/validation/query), and [Body](/docs/validation/body).
 
 ## Types for this feature
 
@@ -74,29 +74,30 @@ The schema is the source of your types. The handler that uses it gets those type
 
 The types you use (from `burger-api`):
 
-- `BurgerContext<typeof GET>` — the handler type. `typeof GET` is the schema export.
+- `defineRoute(schema, handler)` — infers the handler type from `schema`; no generic to write
+- `BurgerContext<typeof GET>` — the same inference, written by hand. `typeof GET` is the schema export.
 - `ctx.validated` — the validated data, typed slot by slot.
 - `RouteSchema` — a route's full schema map (for programmatic routes).
 
-✅ Correct — annotate the handler with the schema type:
+✅ Correct — wrap the handler with `defineRoute`:
 
 ```typescript title="api/products/route.ts"
-import type { BurgerContext } from "burger-api";
-import type { GET as RouteSchema } from "./schema";
+import { defineRoute } from "burger-api";
+import { GET as GetSchema } from "./schema";
 
-export async function GET(ctx: BurgerContext<typeof RouteSchema>) {
+export const GET = defineRoute(GetSchema, (ctx) => {
     const { id } = ctx.validated.params; // typed: string
     const { limit } = ctx.validated.query; // typed: number
     return Response.json({ id, limit });
-}
+});
 ```
 
 ❌ Wrong — reading a slot you did not declare:
 
 ```typescript
-export async function GET(ctx: BurgerContext<typeof RouteSchema>) {
+export const GET = defineRoute(GetSchema, (ctx) => {
     ctx.validated.body; // ❌ Property 'body' does not exist (no body schema on GET)
-}
+});
 ```
 
 A slot without a schema is `unknown`. A schema written as a string reference (model) is also `unknown` — the model is checked at runtime, not by TypeScript. See the [TypeScript overview](/docs/advanced/type-safety).

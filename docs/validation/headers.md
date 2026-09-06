@@ -19,13 +19,13 @@ export const GET = {
 ```
 
 ```typescript title="api/secure/route.ts"
-import type { BurgerContext } from "burger-api";
-import type { GET as RouteSchema } from "./schema";
+import { defineRoute } from "burger-api";
+import { GET as GetSchema } from "./schema";
 
-export async function GET(ctx: BurgerContext<typeof RouteSchema>) {
+export const GET = defineRoute(GetSchema, (ctx) => {
   const key = ctx.validated.headers["x-api-key"];
   return Response.json({ key });
-}
+});
 ```
 
 If the `x-api-key` header is missing or empty, BurgerAPI responds with `422` and a structured error. The validated value is available on `ctx.validated.headers`.

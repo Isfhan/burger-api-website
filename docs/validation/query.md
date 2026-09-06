@@ -14,7 +14,8 @@ The `query` schema types `ctx.validated.query`.
 
 The types you use (from `burger-api`):
 
-- `BurgerContext<typeof GET>` — the handler type
+- `defineRoute(schema, handler)` — infers the handler type from `schema`; no generic to write
+- `BurgerContext<typeof GET>` — the same inference, written by hand
 - `ctx.validated.query` — the validated query, typed key by key
 
 ✅ Correct — validated query is typed from the schema:
@@ -25,21 +26,21 @@ export const GET = { query: z.object({ search: z.string().optional(), limit: z.c
 ```
 
 ```ts title="api/products/route.ts"
-import type { BurgerContext } from "burger-api";
-import type { GET as RouteSchema } from "./schema";
+import { defineRoute } from "burger-api";
+import { GET as GetSchema } from "./schema";
 
-export async function GET(ctx: BurgerContext<typeof RouteSchema>) {
+export const GET = defineRoute(GetSchema, (ctx) => {
     const { search, limit } = ctx.validated.query; // search: string | undefined, limit: number | undefined
     return Response.json({ search, limit });
-}
+});
 ```
 
 ❌ Wrong — a query key that is not in the schema:
 
 ```ts
-export async function GET(ctx: BurgerContext<typeof RouteSchema>) {
+export const GET = defineRoute(GetSchema, (ctx) => {
     ctx.validated.query.missing; // ❌ Property 'missing' does not exist
-}
+});
 ```
 
 See the [TypeScript overview](/docs/advanced/type-safety).

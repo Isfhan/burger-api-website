@@ -245,7 +245,7 @@ export async function GET(ctx) {
 // ❌ Return type must be Response
 ```
 
-For typed request data (query, params, body), use `BurgerContext<typeof GET>` from your schema. See [Validation](/docs/validation/zod) and the [TypeScript overview](/docs/advanced/type-safety).
+For typed request data (query, params, body), add a schema and wrap the handler with `defineRoute(schema, handler)` — or use `BurgerContext<typeof GET>` directly if you'd rather write the generic by hand. See [Validation](/docs/validation/zod) and the [TypeScript overview](/docs/advanced/type-safety).
 
 Check your code: `bun run typecheck`.
 

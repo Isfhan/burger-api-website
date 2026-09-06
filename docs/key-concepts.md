@@ -48,7 +48,12 @@ The single object flowing through the request lifecycle is **`BurgerContext`**
 injected services (`ctx.services`), and more. Handlers always return a
 standard Web **`Response`**.
 
-See [Validation](/docs/validation/zod).
+Wrap a handler with **`defineRoute(schema, handler)`** to get `ctx.validated`
+typed from the schema automatically — no `BurgerContext<typeof Schema>`
+generic to write by hand. `defineHooks(schema, hooks)` does the same for a
+route's `hooks.ts`. Both are optional; the manual generic still works.
+
+See [Validation](/docs/validation/zod) and [Type Safety](/docs/advanced/type-safety).
 
 ## Validation
 
@@ -71,18 +76,25 @@ See [OpenAPI & Swagger](/docs/api/openapi).
 
 The **Burger API CLI** lets you create projects (`create`, with `--lang ts|js`),
 add ecosystem hooks and plugins (`add`, `list`), run the dev server (`dev`),
-and build for production (`build`, `start`). AOT route discovery means
-production builds never scan the filesystem at runtime.
+and build for a deployment target (`build --target=<platform>`, `start`).
+AOT route discovery means production builds never scan the filesystem at
+runtime.
 
 See [CLI Tool](/docs/getting-started/cli) and [Build Command](/docs/cli/build).
 
 ## Deployment
 
-Bun deployments use `burger.serve(port)` with `burger-api build` and
-`burger-api start`. WinterCG targets (Cloudflare Workers, Vercel, Deno Deploy)
-use `toFetchHandler(app)` with AOT routes.
+`burger-api build --target=<platform>` generates the right output per
+target: Bun (default) and Node.js get a self-contained bundle (`app.serve()`
+on Bun, `@burger-api/node-server`'s `serve()` on Node); Cloudflare Workers,
+Deno, and Vercel get a portable `export default { fetch: toFetchHandler(app) }`
+entry plus a scaffolded platform config (`wrangler.toml` / `deno.json` /
+`vercel.json`), bundled by that platform's own tool. WebSocket routes work
+natively on all of these except Vercel, which has no persistent-connection
+model — the build fails at build time rather than shipping a broken route.
 
-See [Deployment](/docs/deployment/bun).
+See [Deployment](/docs/deployment/bun) and [Compatibility](/docs/compatibility)
+for the full per-runtime matrix.
 
 ## Related
 

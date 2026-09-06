@@ -99,12 +99,13 @@ export const GET = { query: z.object({ limit: z.coerce.number().optional() }) };
 ```
 
 ```ts title="api/products/route.ts"
-import type { GET as RouteSchema } from "./schema";
+import { defineRoute } from "burger-api";
+import { GET as GetSchema } from "./schema";
 
-export async function GET(ctx: BurgerContext<typeof RouteSchema>) {
+export const GET = defineRoute(GetSchema, (ctx) => {
   const { limit } = ctx.validated.query; // typed + validated
   return Response.json({ limit });
-}
+});
 ```
 
 **Why:** validated data is typed from your schema, so handlers know exactly what they received without manual casts. See [Validation](/docs/validation/zod).
@@ -148,7 +149,7 @@ export async function GET(ctx) {
 }
 ```
 
-Unannoted `BurgerContext` keeps every request field (query, params, cookies) untyped. For typed request data, add a schema and use `BurgerContext<typeof GET>` — see [Validation](/docs/validation/zod) and the [TypeScript overview](/docs/advanced/type-safety).
+Unannoted `BurgerContext` keeps every request field (query, params, cookies) untyped. For typed request data, add a schema and wrap the handler with `defineRoute(schema, handler)` (or use `BurgerContext<typeof GET>` directly) — see [Validation](/docs/validation/zod) and the [TypeScript overview](/docs/advanced/type-safety).
 
 Check your code: `bun run typecheck`.
 

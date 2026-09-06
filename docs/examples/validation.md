@@ -16,21 +16,21 @@ export const POST = { body: z.object({ name: z.string().min(1), price: z.number(
 
 ```typescript
 // src/api/products/route.ts
-import type { BurgerContext } from "burger-api";
-import type { GET as GETSchema, POST as POSTSchema } from "./schema";
+import { defineRoute } from "burger-api";
+import { GET as GETSchema, POST as POSTSchema } from "./schema";
 
-export async function GET(ctx: BurgerContext<typeof GETSchema>) {
+export const GET = defineRoute(GETSchema, (ctx) => {
   const { limit } = ctx.validated.query;
   return Response.json({ items: [], limit });
-}
+});
 
-export async function POST(ctx: BurgerContext<typeof POSTSchema>) {
+export const POST = defineRoute(POSTSchema, (ctx) => {
   const { name, price } = ctx.validated.body;
   return Response.json({ name, price });
-}
+});
 ```
 
-The `BurgerContext<typeof GET>` generic types `ctx.validated` from the matching schema export, so `limit` is a validated number, not a string.
+`defineRoute(schema, handler)` types `ctx.validated` from the matching schema export, so `limit` is a validated number, not a string — no `BurgerContext<typeof GET>` generic to write by hand (though it still works if you prefer it).
 
 With `z.coerce.number()`, a request like `?limit=10` gives you the number `10` (not the string `"10"`). You can also turn coercion on app-wide: see [Coercion](/docs/validation/coercion).
 

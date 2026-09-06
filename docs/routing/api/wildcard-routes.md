@@ -178,10 +178,10 @@ export const GET = {
 ```
 
 ```typescript title="api/users/[userId]/[...]/route.ts"
-import type { BurgerContext } from "burger-api";
-import type { GET as RouteSchema } from "./schema";
+import { defineRoute } from "burger-api";
+import { GET as GetSchema } from "./schema";
 
-export async function GET(ctx: BurgerContext<typeof RouteSchema>) {
+export const GET = defineRoute(GetSchema, (ctx) => {
   // Access validated userId from params
   const { userId } = ctx.validated.params;
 
@@ -194,7 +194,7 @@ export async function GET(ctx: BurgerContext<typeof RouteSchema>) {
     segments: wildcardParams,
     message: `Accessing user ${userId}'s resource: ${wildcardParams.join("/")}`,
   });
-}
+});
 ```
 
 **Example Requests:**
@@ -282,10 +282,10 @@ export const GET = {
 ```
 
 ```typescript title="api/tenants/[tenantId]/[...]/route.ts"
-import type { BurgerContext } from "burger-api";
-import type { GET as RouteSchema } from "./schema";
+import { defineRoute } from "burger-api";
+import { GET as GetSchema } from "./schema";
 
-export async function GET(ctx: BurgerContext<typeof RouteSchema>) {
+export const GET = defineRoute(GetSchema, (ctx) => {
   const { tenantId } = ctx.validated.params;
   const resourcePath = ctx.wildcardParams || [];
 
@@ -327,7 +327,7 @@ export async function GET(ctx: BurgerContext<typeof RouteSchema>) {
         { status: 404 }
       );
   }
-}
+});
 ```
 
 ### Example 3: Blog/CMS with Nested Categories
@@ -436,10 +436,10 @@ export const GET = {
 ```
 
 ```typescript title="api/[locale]/docs/[...]/route.ts"
-import type { BurgerContext } from "burger-api";
-import type { GET as RouteSchema } from "./schema";
+import { defineRoute } from "burger-api";
+import { GET as GetSchema } from "./schema";
 
-export async function GET(ctx: BurgerContext<typeof RouteSchema>) {
+export const GET = defineRoute(GetSchema, (ctx) => {
   const { locale } = ctx.validated.params;
   const docPath = ctx.wildcardParams || [];
 
@@ -465,7 +465,7 @@ export async function GET(ctx: BurgerContext<typeof RouteSchema>) {
       body: `Localized content for ${fullPath} in ${locale}`,
     },
   });
-}
+});
 ```
 
 ### Example 6: Microservices API Gateway

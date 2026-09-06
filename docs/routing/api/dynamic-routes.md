@@ -155,28 +155,30 @@ export const DELETE = {
 ```
 
 ```typescript title="api/products/[id]/route.ts"
-import type { BurgerContext } from "burger-api";
-import type { GET as GetSchema, DELETE as DeleteSchema } from "./schema";
+import { defineRoute } from "burger-api";
+import { GET as GetSchema, DELETE as DeleteSchema } from "./schema";
 
-export async function GET(ctx: BurgerContext<typeof GetSchema>) {
+export const GET = defineRoute(GetSchema, (ctx) => {
   // Access validated params
   const { id } = ctx.validated.params;
-  
+
   // TypeScript knows 'id' is a valid UUID string
   return Response.json({
     message: "Product found",
     productId: id,
   });
-}
+});
 
-export async function DELETE(ctx: BurgerContext<typeof DeleteSchema>) {
+export const DELETE = defineRoute(DeleteSchema, (ctx) => {
   const { id } = ctx.validated.params;
-  
+
   return Response.json({
     message: `Product ${id} deleted`,
   });
-}
+});
 ```
+
+(The equivalent manual-generic form — `BurgerContext<typeof GetSchema>` — still works if you'd rather write it by hand; see [Type Safety](/docs/advanced/type-safety).)
 
 ### Advanced Validation
 
@@ -254,29 +256,29 @@ export const DELETE = {
 ```
 
 ```typescript title="api/users/[userId]/route.ts"
-import type { BurgerContext } from "burger-api";
-import type { GET as GetSchema, PUT as PutSchema, DELETE as DeleteSchema } from "./schema";
+import { defineRoute } from "burger-api";
+import { GET as GetSchema, PUT as PutSchema, DELETE as DeleteSchema } from "./schema";
 
-export async function GET(ctx: BurgerContext<typeof GetSchema>) {
+export const GET = defineRoute(GetSchema, (ctx) => {
   const { userId } = ctx.validated.params;
   return Response.json({ userId, action: "fetch" });
-}
+});
 
-export async function PUT(ctx: BurgerContext<typeof PutSchema>) {
+export const PUT = defineRoute(PutSchema, (ctx) => {
   const { userId } = ctx.validated.params;
   const { name, email } = ctx.validated.body;
-  
+
   return Response.json({
     userId,
     action: "update",
     data: { name, email },
   });
-}
+});
 
-export async function DELETE(ctx: BurgerContext<typeof DeleteSchema>) {
+export const DELETE = defineRoute(DeleteSchema, (ctx) => {
   const { userId } = ctx.validated.params;
   return Response.json({ userId, action: "delete" });
-}
+});
 ```
 
 ### 2. Nested Resources
@@ -324,18 +326,18 @@ export const GET = {
 ```
 
 ```typescript title="api/blog/[slug]/route.ts"
-import type { BurgerContext } from "burger-api";
-import type { GET as RouteSchema } from "./schema";
+import { defineRoute } from "burger-api";
+import { GET as GetSchema } from "./schema";
 
-export async function GET(ctx: BurgerContext<typeof RouteSchema>) {
+export const GET = defineRoute(GetSchema, (ctx) => {
   const { slug } = ctx.validated.params;
-  
+
   return Response.json({
     slug,
     title: `Blog post: ${slug}`,
     content: "...",
   });
-}
+});
 ```
 
 ### 4. Combining with Route Groups
@@ -415,15 +417,16 @@ export async function GET(ctx: BurgerContext) {
 
 ### 4. Type Safety with TypeScript
 
-Prefer schema-driven typing over manual casts. Passing the schema export as the generic gives `ctx.validated` its exact shape:
+Prefer schema-driven typing over manual casts. `defineRoute(schema, handler)` infers `ctx.validated`'s exact shape from the schema you pass it — no generic to write:
 
 ```typescript
-import type { GET as RouteSchema } from "./schema";
+import { defineRoute } from "burger-api";
+import { GET as GetSchema } from "./schema";
 
-export async function GET(ctx: BurgerContext<typeof RouteSchema>) {
+export const GET = defineRoute(GetSchema, (ctx) => {
   const { userId, postId } = ctx.validated.params; // typed from the schema
   return Response.json({ userId, postId });
-}
+});
 ```
 
 ## Limitations
@@ -468,28 +471,29 @@ TypeScript checks two things here: the handler parameter and the URL parameters.
 
 The types you use (from `burger-api`):
 
-- `BurgerContext<typeof GET>` — the request object, typed from your schema
+- `defineRoute(schema, handler)` — infers the handler's `ctx` from `schema`; no generic to write
+- `BurgerContext<typeof GET>` — the same inference, written by hand
 - `ctx.params` (raw) — always `Record<string, string> | undefined`, not typed by name
 - `ctx.validated.params` — typed from the `params` schema in `schema.ts`
 
 ✅ Correct — use a `params` schema and read `ctx.validated.params`:
 
 ```typescript
-import type { BurgerContext } from "burger-api";
-import type { GET as RouteSchema } from "./schema";
+import { defineRoute } from "burger-api";
+import { GET as GetSchema } from "./schema";
 
-export async function GET(ctx: BurgerContext<typeof RouteSchema>) {
+export const GET = defineRoute(GetSchema, (ctx) => {
     const { id } = ctx.validated.params; // typed: string
     return Response.json({ id });
-}
+});
 ```
 
 ❌ Wrong — reading a parameter name that is not in the schema:
 
 ```typescript
-export async function GET(ctx: BurgerContext<typeof RouteSchema>) {
+export const GET = defineRoute(GetSchema, (ctx) => {
     const { wrongName } = ctx.validated.params; // ❌ Property 'wrongName' does not exist
-}
+});
 ```
 
 `ctx.params` is always the raw string record. For typed parameters, prefer `ctx.validated.params`. See the [TypeScript overview](/docs/advanced/type-safety).

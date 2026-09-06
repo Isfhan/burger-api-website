@@ -317,12 +317,12 @@ Route groups do not change the types of a route. A group folder is removed from 
 
 ```typescript
 // api/(admin)/users/route.ts → /api/users
-import type { BurgerContext } from "burger-api";
-import type { GET as RouteSchema } from "./schema";
+import { defineRoute } from "burger-api";
+import { GET as GetSchema } from "./schema";
 
-export async function GET(ctx: BurgerContext<typeof RouteSchema>) {
+export const GET = defineRoute(GetSchema, (ctx) => {
     return Response.json({ ok: true });
-}
+});
 ```
 
 There is no group type to learn. For the handler and parameter types, see [Static Routes](/docs/routing/api/static-routes) and [Dynamic Routes](/docs/routing/api/dynamic-routes). See the [TypeScript overview](/docs/advanced/type-safety).

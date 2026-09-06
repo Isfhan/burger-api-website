@@ -84,6 +84,8 @@ export const beforeRoute: RouteHooks["beforeRoute"] = [
 
 The full rules for each return value are on the [Hook Return Types](/docs/hooks/return-types) page. See the [TypeScript overview](/docs/advanced/type-safety).
 
+When a route's hooks read `ctx.validated`, `defineHooks(schema, hooks)` types every hook's `ctx` from the route's schema in one step — see [Route Hooks](/docs/hooks/route-specific).
+
 Check your code: `bun run typecheck`.
 
 ## Related

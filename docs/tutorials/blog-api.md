@@ -453,12 +453,12 @@ Bun's native SQLite support offers several advantages:
 Create the main posts endpoints:
 
 ```typescript title="src/api/posts/route.ts"
-import type { BurgerContext } from "burger-api";
-import type { GET as GetSchema, POST as PostSchema } from "./schema";
+import { defineRoute } from "burger-api";
+import { GET as GetSchema, POST as PostSchema } from "./schema";
 import { postDatabase } from "../../database";
 
 // GET /api/posts - List posts with filtering and pagination
-export async function GET(ctx: BurgerContext<typeof GetSchema>) {
+export const GET = defineRoute(GetSchema, (ctx) => {
   const { author, published, search, page, limit } = ctx.validated.query;
 
   const result = postDatabase.getAll({
@@ -473,24 +473,24 @@ export async function GET(ctx: BurgerContext<typeof GetSchema>) {
     ...result,
     totalPages: Math.ceil(result.total / result.limit),
   });
-}
+});
 
 // POST /api/posts - Create a new post (requires authentication)
-export async function POST(ctx: BurgerContext<typeof PostSchema>) {
+export const POST = defineRoute(PostSchema, (ctx) => {
   const { title, content, author, published } = ctx.validated.body;
   const newPost = postDatabase.create(title, content, author, published);
 
   return Response.json(newPost, { status: 201 });
-}
+});
 ```
 
 ```typescript title="src/api/posts/[id]/route.ts"
-import type { BurgerContext } from "burger-api";
-import type { GET as GetSchema, PUT as PutSchema, DELETE as DeleteSchema } from "./schema";
+import { defineRoute } from "burger-api";
+import { GET as GetSchema, PUT as PutSchema, DELETE as DeleteSchema } from "./schema";
 import { postDatabase } from "../../../database";
 
 // GET /api/posts/[id] - Get a specific post
-export async function GET(ctx: BurgerContext<typeof GetSchema>) {
+export const GET = defineRoute(GetSchema, (ctx) => {
   const post = postDatabase.getById(parseInt(ctx.validated.params.id, 10));
 
   if (!post) {
@@ -501,10 +501,10 @@ export async function GET(ctx: BurgerContext<typeof GetSchema>) {
   }
 
   return Response.json(post);
-}
+});
 
 // PUT /api/posts/[id] - Update a post (requires authentication)
-export async function PUT(ctx: BurgerContext<typeof PutSchema>) {
+export const PUT = defineRoute(PutSchema, (ctx) => {
   const updatedPost = postDatabase.update(
     parseInt(ctx.validated.params.id, 10),
     ctx.validated.body
@@ -518,10 +518,10 @@ export async function PUT(ctx: BurgerContext<typeof PutSchema>) {
   }
 
   return Response.json(updatedPost);
-}
+});
 
 // DELETE /api/posts/[id] - Delete a post (requires authentication)
-export async function DELETE(ctx: BurgerContext<typeof DeleteSchema>) {
+export const DELETE = defineRoute(DeleteSchema, (ctx) => {
   const deleted = postDatabase.delete(parseInt(ctx.validated.params.id, 10));
 
   if (!deleted) {
@@ -532,7 +532,7 @@ export async function DELETE(ctx: BurgerContext<typeof DeleteSchema>) {
   }
 
   return new Response(null, { status: 204 });
-}
+});
 ```
 
 ## Step 8: Create Comments Routes
@@ -540,12 +540,12 @@ export async function DELETE(ctx: BurgerContext<typeof DeleteSchema>) {
 Create nested comment routes:
 
 ```typescript title="src/api/posts/[postId]/comments/route.ts"
-import type { BurgerContext } from "burger-api";
-import type { GET as GetSchema, POST as PostSchema } from "./schema";
+import { defineRoute } from "burger-api";
+import { GET as GetSchema, POST as PostSchema } from "./schema";
 import { commentDatabase, postDatabase } from "../../../../database";
 
 // GET /api/posts/[postId]/comments - Get comments for a post
-export async function GET(ctx: BurgerContext<typeof GetSchema>) {
+export const GET = defineRoute(GetSchema, (ctx) => {
   const postId = parseInt(ctx.validated.params.postId, 10);
 
   // Check if post exists
@@ -564,10 +564,10 @@ export async function GET(ctx: BurgerContext<typeof GetSchema>) {
     count: comments.length,
     postId,
   });
-}
+});
 
 // POST /api/posts/[postId]/comments - Create a comment for a post
-export async function POST(ctx: BurgerContext<typeof PostSchema>) {
+export const POST = defineRoute(PostSchema, (ctx) => {
   const postId = parseInt(ctx.validated.params.postId, 10);
 
   // Check if post exists
@@ -583,16 +583,16 @@ export async function POST(ctx: BurgerContext<typeof PostSchema>) {
   const newComment = commentDatabase.create(postId, author, content);
 
   return Response.json(newComment, { status: 201 });
-}
+});
 ```
 
 ```typescript title="src/api/posts/[postId]/comments/[id]/route.ts"
-import type { BurgerContext } from "burger-api";
-import type { GET as GetSchema, PUT as PutSchema, DELETE as DeleteSchema } from "./schema";
+import { defineRoute } from "burger-api";
+import { GET as GetSchema, PUT as PutSchema, DELETE as DeleteSchema } from "./schema";
 import { commentDatabase, postDatabase } from "../../../../../database";
 
 // GET /api/posts/[postId]/comments/[id] - Get a specific comment
-export async function GET(ctx: BurgerContext<typeof GetSchema>) {
+export const GET = defineRoute(GetSchema, (ctx) => {
   const { postId, id } = ctx.validated.params;
 
   // Check if post exists
@@ -614,10 +614,10 @@ export async function GET(ctx: BurgerContext<typeof GetSchema>) {
   }
 
   return Response.json(comment);
-}
+});
 
 // PUT /api/posts/[postId]/comments/[id] - Update a comment
-export async function PUT(ctx: BurgerContext<typeof PutSchema>) {
+export const PUT = defineRoute(PutSchema, (ctx) => {
   const { postId, id } = ctx.validated.params;
 
   // Check if post exists
@@ -641,10 +641,10 @@ export async function PUT(ctx: BurgerContext<typeof PutSchema>) {
   const updatedComment = commentDatabase.update(parseInt(id, 10), ctx.validated.body);
 
   return Response.json(updatedComment);
-}
+});
 
 // DELETE /api/posts/[postId]/comments/[id] - Delete a comment
-export async function DELETE(ctx: BurgerContext<typeof DeleteSchema>) {
+export const DELETE = defineRoute(DeleteSchema, (ctx) => {
   const { postId, id } = ctx.validated.params;
 
   // Check if post exists
@@ -668,7 +668,7 @@ export async function DELETE(ctx: BurgerContext<typeof DeleteSchema>) {
   const deleted = commentDatabase.delete(parseInt(id, 10));
 
   return new Response(null, { status: 204 });
-}
+});
 ```
 
 ## Step 9: Add Authentication with a Plugin
@@ -779,6 +779,8 @@ burger-api build src/index.ts
 This will produce:
 
 - `.build/bundle/app.js`
+
+Pass `--target=node|cloudflare|deno|vercel` to build for a different platform — see [Deployment](../deployment/bun.md) and [Compatibility](../compatibility.md) for what each one supports.
 
 To build a standalone executable:
 

@@ -14,7 +14,8 @@ The `params` schema types `ctx.validated.params`.
 
 The types you use (from `burger-api`):
 
-- `BurgerContext<typeof GET>` — the handler type
+- `defineRoute(schema, handler)` — infers the handler type from `schema`; no generic to write
+- `BurgerContext<typeof GET>` — the same inference, written by hand
 - `ctx.validated.params` — the validated path parameters
 
 ✅ Correct — validated params are typed from the schema:
@@ -25,21 +26,21 @@ export const GET = { params: z.object({ id: z.string().uuid() }) };
 ```
 
 ```ts title="api/products/[id]/route.ts"
-import type { BurgerContext } from "burger-api";
-import type { GET as RouteSchema } from "./schema";
+import { defineRoute } from "burger-api";
+import { GET as GetSchema } from "./schema";
 
-export async function GET(ctx: BurgerContext<typeof RouteSchema>) {
+export const GET = defineRoute(GetSchema, (ctx) => {
     const { id } = ctx.validated.params; // typed: string
     return Response.json({ id });
-}
+});
 ```
 
 ❌ Wrong — a parameter name that is not in the schema:
 
 ```ts
-export async function GET(ctx: BurgerContext<typeof RouteSchema>) {
+export const GET = defineRoute(GetSchema, (ctx) => {
     ctx.validated.params.wrong; // ❌ Property 'wrong' does not exist
-}
+});
 ```
 
 Without a `params` schema, `ctx.params` stays `Record<string, string> | undefined` — every key untyped. For typed parameters, always add the schema. See the [TypeScript overview](/docs/advanced/type-safety).

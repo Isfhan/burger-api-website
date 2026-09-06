@@ -23,13 +23,13 @@ export const GET = {
 ```
 
 ```ts title="api/products/route.ts"
-import type { BurgerContext } from "burger-api";
-import type { GET as RouteSchema } from "./schema";
+import { defineRoute } from "burger-api";
+import { GET as GetSchema } from "./schema";
 
-export async function GET(ctx: BurgerContext<typeof RouteSchema>) {
+export const GET = defineRoute(GetSchema, (ctx) => {
   const { limit } = ctx.validated.query;
   return Response.json({ limit });
-}
+});
 ```
 
 Here `z.coerce.number()` turns the text `"50"` into the number `50` before the checks run. BurgerAPI also offers built-in automatic type conversion you can turn on for a whole app — see [Coercion](/docs/validation/coercion).
@@ -42,19 +42,20 @@ Your Zod schema is both a runtime check and a type. The handler that uses it get
 
 The types you use (from `burger-api`):
 
-- `BurgerContext<typeof GET>` — types `ctx.validated` from your schema
+- `defineRoute(schema, handler)` — infers `ctx.validated` from `schema`; no generic to write
+- `BurgerContext<typeof GET>` — the same inference, written by hand
 - `z.infer<typeof GET.query>` — the type of one slot, for variables or helpers
 
-✅ Correct — annotate with the schema type:
+✅ Correct — `defineRoute` infers the schema type automatically:
 
 ```ts title="api/products/route.ts"
-import type { BurgerContext } from "burger-api";
-import type { GET as RouteSchema } from "./schema";
+import { defineRoute } from "burger-api";
+import { GET as GetSchema } from "./schema";
 
-export async function GET(ctx: BurgerContext<typeof RouteSchema>) {
+export const GET = defineRoute(GetSchema, (ctx) => {
     const { limit } = ctx.validated.query; // typed: number | undefined
     return Response.json({ limit });
-}
+});
 ```
 
 ✅ Correct — reuse a slot's type elsewhere:

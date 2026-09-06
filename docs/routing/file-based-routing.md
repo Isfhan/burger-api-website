@@ -30,18 +30,20 @@ For full API details and examples, see [Static API Routes](/docs/routing/api/sta
 
 ## Types for this feature
 
-Handlers take one argument: `BurgerContext`. When a route has a `schema.ts`, use `BurgerContext<typeof GET>` and `ctx.validated` becomes typed from that schema.
+Handlers take one argument: `BurgerContext`. When a route has a `schema.ts`, wrap the handler with `defineRoute(schema, handler)` and `ctx.validated` becomes typed from that schema automatically:
 
 ```typescript
 // api/products/route.ts
-import type { BurgerContext } from "burger-api";
-import type { GET as RouteSchema } from "./schema";
+import { defineRoute } from "burger-api";
+import { GET as GetSchema } from "./schema";
 
-export async function GET(ctx: BurgerContext<typeof RouteSchema>) {
+export const GET = defineRoute(GetSchema, (ctx) => {
     ctx.validated.query; // typed from schema.ts
     return Response.json({ ok: true });
-}
+});
 ```
+
+The equivalent manual form — `export async function GET(ctx: BurgerContext<typeof GetSchema>)` — still works if you'd rather write the generic by hand.
 
 Each route type has its own type notes: [Static](/docs/routing/api/static-routes), [Dynamic](/docs/routing/api/dynamic-routes), [Wildcard](/docs/routing/api/wildcard-routes), [Nested](/docs/routing/api/nested-routes). The full picture is in the [TypeScript overview](/docs/advanced/type-safety).
 

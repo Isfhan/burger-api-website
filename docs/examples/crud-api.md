@@ -41,26 +41,26 @@ export const POST = {
 ```
 
 ```ts title="src/api/products/route.ts"
-import type { BurgerContext } from "burger-api";
-import type { GET as GETSchema, POST as POSTSchema } from "./schema";
+import { defineRoute } from "burger-api";
+import { GET as GETSchema, POST as POSTSchema } from "./schema";
 import { products } from "./store";
 
-export async function GET(ctx: BurgerContext<typeof GETSchema>) {
+export const GET = defineRoute(GETSchema, (ctx) => {
   const { limit, page } = ctx.validated.query;
   const start = (page - 1) * limit;
   const items = products.slice(start, start + limit);
 
   ctx.set = { headers: { "x-total": String(products.length) } };
   return Response.json({ page, limit, items });
-}
+});
 
-export async function POST(ctx: BurgerContext<typeof POSTSchema>) {
+export const POST = defineRoute(POSTSchema, async (ctx) => {
   const body = await ctx.json();
   const product = { id: crypto.randomUUID(), ...body };
   products.push(product);
   ctx.set = { status: 201 };
   return Response.json(product);
-}
+});
 ```
 
 ## Read one

@@ -32,7 +32,18 @@ After validation, the result is available on `ctx.validated`. Each key exists on
 - `ctx.validated.cookies`
 - `ctx.validated.body`
 
-Typing flows from `schema.ts`: annotate the handler with `BurgerContext<typeof GET>` where `GET` is imported from `./schema`. The inference happens automatically. See [Validation](/docs/validation/zod) and [Type Safety](/docs/advanced/type-safety).
+Typing flows from `schema.ts`. The recommended way to wire it up is `defineRoute(schema, handler)`, imported from `burger-api`, with `schema` the same object you already export from `./schema`:
+
+```ts title="api/products/route.ts"
+import { defineRoute } from "burger-api";
+import { GET as GetSchema } from "./schema";
+
+export const GET = defineRoute(GetSchema, (ctx) => {
+  ctx.validated.query; // inferred, no generic to write
+});
+```
+
+The older, equivalent form still works — annotate the handler with `BurgerContext<typeof GET>` directly. See [Validation](/docs/validation/zod) and [Type Safety](/docs/advanced/type-safety).
 
 ## Errors
 

@@ -41,9 +41,10 @@ bun --version
 In each tutorial you'll:
 
 - **Develop locally** using `bun run dev`, the scaffolded dev server (see [Configuration](../core/configuration.md) for how the `Burger` server is set up).
-- Optionally **build for production** using the `burger-api` CLI:
-  - `burger-api build src/index.ts` to produce a bundle under `.build/bundle/app.js`.
-  - `burger-api build:exec src/index.ts` to create a standalone executable under `.build/executable/<project>`.
+- Optionally **build for a deployment target** using the `burger-api` CLI:
+  - `burger-api build src/index.ts --target=bun` (default) to produce a bundle under `.build/bundle/app.js`.
+  - `burger-api build src/index.ts --target=<node|cloudflare|deno|vercel>` to build for that platform instead — see [Deployment](../deployment/bun.md).
+  - `burger-api build src/index.ts --compile --outfile=my-app` (or `burger-api build:exec`) for a standalone executable, Bun only.
 
 For more on the CLI, see [CLI Tool](../getting-started/cli.md).
 

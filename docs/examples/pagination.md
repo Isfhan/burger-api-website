@@ -18,11 +18,11 @@ export const GET = {
 ```
 
 ```ts title="src/api/posts/route.ts"
-import type { BurgerContext } from "burger-api";
-import type { GET as GETSchema } from "./schema";
+import { defineRoute } from "burger-api";
+import { GET as GETSchema } from "./schema";
 import { posts } from "./store";
 
-export async function GET(ctx: BurgerContext<typeof GETSchema>) {
+export const GET = defineRoute(GETSchema, (ctx) => {
   const { page, limit } = ctx.validated.query;
   const start = (page - 1) * limit;
   const items = posts.slice(start, start + limit);
@@ -35,7 +35,7 @@ export async function GET(ctx: BurgerContext<typeof GETSchema>) {
     },
   };
   return Response.json({ items });
-}
+});
 ```
 
 `ctx.query` parses only when read, and `ctx.set` applies the pagination headers once at the end of the request lifecycle. See also the [CRUD API](./crud-api.md).

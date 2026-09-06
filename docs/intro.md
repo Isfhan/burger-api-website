@@ -19,9 +19,11 @@ Version 1.0.0 is out: `burger-api` and `@burger-api/cli` are stable at `1.0.0`.
 - **Providers:** App services via `src/providers.ts` → `ctx.services`.
 - **Validation:** Standard Schema (Zod default) in `schema.ts` with per-method exports (`GET`, `POST`, …).
 - **Context:** Public type **`BurgerContext`**. Handlers return standard Web **`Response`**.
+- **Type inference:** `defineRoute(schema, handler)` / `defineHooks(schema, hooks)` infer `ctx.validated` from your schema — no generic to write by hand.
 - **OpenAPI:** Spec + docs UI.
 - **Ecosystem:** `ecosystem/hooks/`, `ecosystem/plugins/`, `ecosystem/skills/`.
 - **Build config:** `burger.build.ts` (CLI only). Runtime config lives in `new Burger({...})`, plugins, and route `config.ts`.
+- **Deploy targets:** `burger-api build --target=bun|node|cloudflare|deno|vercel` — one command per platform, no hand-written entry files.
 
 ### Getting started
 
@@ -32,12 +34,14 @@ Version 1.0.0 is out: `burger-api` and `@burger-api/cli` are stable at `1.0.0`.
 - **[Hooks](./hooks/system.md)**
 - **[Validation](./validation/zod.md)**
 - **[OpenAPI](./api/openapi.md)**
-- **[Deployment](./deployment/bun.md)**
+- **[Deployment](./deployment/bun.md)** — Bun, [Node.js](./deployment/node.md), [Cloudflare Workers](./deployment/cloudflare.md), [Deno](./deployment/deno.md), [Vercel](./deployment/vercel.md)
 - **[Ecosystem](./ecosystem/introduction.md)**
 
 ### Core ideas
 
-- **[Performance](./performance/overview.md)**
+- **[Performance](./performance/overview.md)** and **[Benchmarks](./advanced/benchmarks.md)**
+- **[Type Safety](./advanced/type-safety.md)**
+- **[Compatibility](./compatibility.md)** — what works on each runtime
 
 ## Related
 

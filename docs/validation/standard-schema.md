@@ -22,13 +22,13 @@ export const POST = {
 ```
 
 ```typescript title="api/products/route.ts"
-import type { BurgerContext } from "burger-api";
-import type { POST as RouteSchema } from "./schema";
+import { defineRoute } from "burger-api";
+import { POST as PostSchema } from "./schema";
 
-export function POST(ctx: BurgerContext<typeof RouteSchema>) {
+export const POST = defineRoute(PostSchema, (ctx) => {
   const { name, price } = ctx.validated.body;
   return Response.json({ name, price });
-}
+});
 ```
 
 ## How detection works

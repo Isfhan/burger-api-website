@@ -40,8 +40,21 @@ The types you use (from `burger-api`):
 
 - `BurgerContext` — the request object passed to handlers and hooks
 - `BurgerContext<typeof GET>` — the request object with `ctx.validated` typed from your schema
+- `defineRoute(schema, handler)` — infers `ctx` from `schema` automatically; no generic to write
 
-✅ Correct — type the handler parameter:
+✅ Correct — `defineRoute` infers the handler's `ctx` from the schema:
+
+```ts title="api/users/[id]/route.ts"
+import { defineRoute } from "burger-api";
+import { GET as GetSchema } from "./schema";
+
+export const GET = defineRoute(GetSchema, (ctx) => {
+    const { id } = ctx.validated.params; // typed from the schema
+    return Response.json({ id });
+});
+```
+
+Equally correct — the manual generic form does the same thing by hand:
 
 ```ts title="api/users/[id]/route.ts"
 import type { BurgerContext } from "burger-api";
