@@ -21,6 +21,20 @@ and `wrangler` config differ from a Bun deployment.
 - The module graph contains no `bun` imports, so `wrangler` (esbuild) bundles
   the entry as-is for the Workers runtime.
 
+## Quick start: `burger-api build --target=cloudflare`
+
+If you're using file-based routing, the CLI generates the entry file and
+`wrangler.toml` below for you:
+
+```bash
+burger-api build src/index.ts --target=cloudflare
+wrangler dev      # boots .build/cloudflare/index.ts
+wrangler deploy
+```
+
+The rest of this page shows the equivalent by hand, useful if you're
+declaring routes programmatically instead of via the file convention.
+
 ## Entry file
 
 ```ts
@@ -60,6 +74,7 @@ export default { fetch: toFetchHandler(burger) };
 name = "my-api"
 main = "src/index.ts"
 compatibility_date = "2025-01-01"
+compatibility_flags = ["nodejs_compat"]
 ```
 
 ## Run locally
@@ -76,10 +91,13 @@ npx wrangler deploy
 
 ## Notes
 
-- If you compile your routes with `burger-api build`, deploy the AOT bundle
-  and point `main` at it. Either way, never rely on filesystem scanning at
-  runtime: Workers has no filesystem.
-- Pages and WebSockets are Bun-only in 1.0 and are not available on Workers.
+- If you compile your routes with `burger-api build --target=cloudflare`,
+  deploy the generated bundle and point `main` at it (the CLI does this for
+  you when it scaffolds `wrangler.toml`). Either way, never rely on
+  filesystem scanning at runtime: Workers has no filesystem.
+- WebSocket **does** work on Workers — natively, via `WebSocketPair` — see
+  [Compatibility](/docs/compatibility). Pages (`HTMLBundle`) is Bun-only in
+  1.0 and not available on Workers.
 
 ## Related
 

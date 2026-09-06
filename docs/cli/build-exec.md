@@ -19,6 +19,12 @@ sidebar_label: Build Exec Command (build:exec)
 burger-api build:exec src/index.ts --target bun-linux-x64
 ```
 
+`burger-api build --compile` is equivalent sugar on the `build` command
+itself (`--target` there means a deployment platform, not an OS/arch
+triple — `--compile` is only valid combined with `--target=bun` or no
+`--target` at all). Use whichever reads better in your scripts; both reuse
+the same compile path.
+
 See [CLI Tool](/docs/getting-started/cli).
 
 

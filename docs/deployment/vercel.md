@@ -20,6 +20,22 @@ platform config differ.
   filesystem, so there is no runtime route scanning.
 - The module graph contains no `bun` imports.
 
+## Quick start: `burger-api build --target=vercel`
+
+If you're using file-based routing, the CLI generates the `api/index.ts`
+entry and `vercel.json` below for you:
+
+```bash
+burger-api build src/index.ts --target=vercel
+vercel dev
+```
+
+The build fails at this step if your project has any WebSocket routes —
+Vercel Functions have no persistent-connection model to upgrade into (see
+[Compatibility](/docs/compatibility)). The rest of this page shows the
+equivalent by hand, useful if you're declaring routes programmatically
+instead of via the file convention.
+
 ## Entry file
 
 ```ts

@@ -17,9 +17,10 @@ don't hand-write an `IncomingMessage`⇄`Request` bridge yourself.
   target; plain Node has no dev-time filesystem route scanner either.
 - If the app has WebSocket routes configured (`wsRoutes`, `wsDir`, or
   `app.websocket()`), `serve()` wires `createNodeWsBridge()` and the `ws`
-  package automatically — this is the one non-edge WinterCG target where
-  WebSocket genuinely works (Cloudflare Workers, Vercel, and Deno Deploy
-  have no raw socket/`upgrade` access at all).
+  package automatically — Node has no `fetch`-handler upgrade path of its
+  own, unlike Bun, Cloudflare Workers, and Deno, which all support
+  WebSocket natively (see [Compatibility](/docs/compatibility)). Vercel is
+  the one target that genuinely can't do WebSocket at all.
 - An app with no WebSocket routes just gets a plain HTTP server — nothing
   extra happens.
 
@@ -28,6 +29,21 @@ don't hand-write an `IncomingMessage`⇄`Request` bridge yourself.
 ```bash
 npm install @burger-api/node-server
 ```
+
+## Quick start: `burger-api build --target=node`
+
+If you're using file-based routing (`route.ts`/`schema.ts`/`hooks.ts` under
+`apiDir`), the CLI generates the entry shown below for you:
+
+```bash
+burger-api build src/index.ts --target=node --outfile=.build/bundle/app.js
+node .build/bundle/app.js
+```
+
+The generated bundle already imports `serve` from `@burger-api/node-server`
+and calls it with your compiled `apiRoutes`/`wsRoutes` — nothing to hand-write.
+The rest of this page shows the equivalent by hand, useful if you're
+declaring routes programmatically instead of via the file convention.
 
 ## Entry file
 

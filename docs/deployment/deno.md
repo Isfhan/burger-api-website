@@ -17,6 +17,19 @@ Workers, and Vercel; only the entry file and platform config differ.
   so there is no runtime route scanning.
 - The module graph contains no `bun` imports.
 
+## Quick start: `burger-api build --target=deno`
+
+If you're using file-based routing, the CLI generates the entry file and
+`deno.json` below for you:
+
+```bash
+burger-api build src/index.ts --target=deno
+deno serve --port 8000 .build/deno/index.ts
+```
+
+The rest of this page shows the equivalent by hand, useful if you're
+declaring routes programmatically instead of via the file convention.
+
 ## Entry file
 
 ```ts
