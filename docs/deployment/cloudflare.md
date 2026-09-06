@@ -1,5 +1,5 @@
 ---
-sidebar_position: 2
+sidebar_position: 3
 ---
 
 # Deploy on Cloudflare Workers
@@ -84,5 +84,6 @@ npx wrangler deploy
 ## Related
 
 - [Deploy on Bun](/docs/deployment/bun)
+- [Deploy on Node.js](/docs/deployment/node)
 - [Deploy on Vercel](/docs/deployment/vercel)
 - [Deploy on Deno](/docs/deployment/deno)

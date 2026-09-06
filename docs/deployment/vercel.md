@@ -1,5 +1,5 @@
 ---
-sidebar_position: 3
+sidebar_position: 4
 ---
 
 # Deploy on Vercel
@@ -83,5 +83,6 @@ npx vercel --prod
 ## Related
 
 - [Deploy on Bun](/docs/deployment/bun)
+- [Deploy on Node.js](/docs/deployment/node)
 - [Deploy on Cloudflare Workers](/docs/deployment/cloudflare)
 - [Deploy on Deno](/docs/deployment/deno)

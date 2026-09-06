@@ -71,6 +71,7 @@ CMD ["bun", "run", "start"]
 
 - [Quick Start](/docs/quick-start)
 - [Build Command](/docs/cli/build)
+- [Deploy on Node.js](/docs/deployment/node)
 - [Deploy on Cloudflare Workers](/docs/deployment/cloudflare)
 - [Deploy on Vercel](/docs/deployment/vercel)
 - [Deploy on Deno](/docs/deployment/deno)

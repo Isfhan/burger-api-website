@@ -22,15 +22,17 @@ production, and deploys to any WinterCG fetch runtime through
 | `serve()` long-lived server | Yes (`BunAdapter`) | No — use `toFetchHandler` |
 | Native static route map (Bun.serve `routes`) | Yes (optimization) | No — trie dispatch |
 | Pages `HTMLBundle` | Yes | No (not in 1.0) |
-| WebSocket (`src/websocket/`, `burger.websocket()`, `wsDir`) | Yes | No on edge (CF / Vercel / Deno — no raw socket/upgrade access); **Yes on plain Node** via `app.createNodeWsBridge()` |
+| WebSocket (`src/websocket/`, `burger.websocket()`, `wsDir`) | Yes | No on edge (CF / Vercel / Deno — no raw socket/upgrade access); **Yes on plain Node** via `@burger-api/node-server` |
 | Node 24+ | Via Bun-compatible path | Yes (same fetch entry) |
 
 Pages are **Bun-only in 1.0**. WebSocket is Bun-only on true edge runtimes (Cloudflare
 Workers, Vercel, Deno Deploy) — those have no raw socket/`upgrade` access to
-bridge into. On **plain Node**, `app.createNodeWsBridge()` bridges `node:http`'s
-`'upgrade'` event into the framework's WebSocket pipeline using a framing
-library like `ws`; it's a manual wiring step, not automatic parity with Bun's
-native WS support. See [WebSocket → Node.js](/docs/websocket/overview#nodejs).
+bridge into. On **plain Node**, the official
+[`@burger-api/node-server`](/docs/deployment/node) adapter (`serve(app)`)
+wires HTTP and — when the app has WebSocket routes — `createNodeWsBridge()`
+automatically; it's the one non-edge runtime where WebSocket genuinely works,
+just not natively the way Bun's `ServerWebSocket` does.
+See [WebSocket → Node.js](/docs/websocket/overview#nodejs).
 Everything else is portable.
 
 ## What WinterCG deployments need

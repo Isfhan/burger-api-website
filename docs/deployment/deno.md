@@ -1,5 +1,5 @@
 ---
-sidebar_position: 4
+sidebar_position: 5
 ---
 
 # Deploy on Deno
@@ -76,5 +76,6 @@ uses `deno serve` under the hood).
 ## Related
 
 - [Deploy on Bun](/docs/deployment/bun)
+- [Deploy on Node.js](/docs/deployment/node)
 - [Deploy on Cloudflare Workers](/docs/deployment/cloudflare)
 - [Deploy on Vercel](/docs/deployment/vercel)
