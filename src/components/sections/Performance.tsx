@@ -1,5 +1,5 @@
 import React from "react";
-import { Search, Boxes, Workflow, BookOpen, ArrowRight } from "lucide-react";
+import { Search, Boxes, Workflow, BookOpen, BarChart3, ArrowRight } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Section, SectionHeader, Card, ScrollReveal, Button } from "../ui";
 
@@ -31,7 +31,7 @@ export function Performance() {
         <SectionHeader
           eyebrow="Performance"
           title="Designed for the busy path"
-          subtitle="BurgerAPI keeps request handling lean: parse only what you need, share structure across requests, and dispatch on the fastest matching strategy."
+          subtitle="BurgerAPI keeps request handling lean: parse only what you need, share structure across requests, and dispatch on the fastest matching strategy. Not just a claim — within a few percent of Elysia and Hono across routing, JSON, and validation benchmarks."
         />
       </ScrollReveal>
       <div className="grid md:grid-cols-3 gap-6 mb-10">
@@ -50,10 +50,19 @@ export function Performance() {
         ))}
       </div>
       <ScrollReveal>
-        <div className="text-center mt-2">
+        <div className="flex flex-wrap justify-center gap-3 mt-2">
           <Button to="/docs/performance/overview" variant="secondary">
             <BookOpen size={16} aria-hidden />
             Read the performance philosophy
+            <ArrowRight
+              size={16}
+              className="transition-transform duration-150 ease-out group-hover:translate-x-0.5"
+              aria-hidden
+            />
+          </Button>
+          <Button to="/docs/advanced/benchmarks" variant="secondary">
+            <BarChart3 size={16} aria-hidden />
+            See the benchmarks
             <ArrowRight
               size={16}
               className="transition-transform duration-150 ease-out group-hover:translate-x-0.5"

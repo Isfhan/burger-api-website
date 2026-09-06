@@ -20,15 +20,15 @@ export const POST = {
 };`;
 
 const routeCode = `// api/posts/route.ts
-import type { BurgerContext } from "burger-api";
-import type { POST as PostSchema } from "./schema";
+import { defineRoute } from "burger-api";
+import { POST as PostSchema } from "./schema";
 
-export async function POST(ctx: BurgerContext<typeof PostSchema>) {
-  // Fully typed from your Zod schema
+export const POST = defineRoute(PostSchema, (ctx) => {
+  // Fully typed from your Zod schema — no generic to write
   const { title, published } = ctx.validated.body;
 
   return Response.json({ title, published }, { status: 201 });
-}`;
+});`;
 
 const validationTabs = [
   { id: "schema", title: "schema.ts", code: schemaCode },

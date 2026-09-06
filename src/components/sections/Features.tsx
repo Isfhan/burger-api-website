@@ -45,7 +45,7 @@ const features: Feature[] = [
     icon: Radio,
     title: "WebSocket",
     description:
-      "File-based WebSocket routes under src/websocket/, or programmatic burger.websocket(). Typed connections with ws.data and ws.services.",
+      "File-based WebSocket routes under src/websocket/. Native support on Bun, Node.js, Cloudflare Workers, and Deno — typed connections with ws.data and ws.services.",
   },
   {
     icon: Puzzle,
@@ -75,7 +75,7 @@ const features: Feature[] = [
     icon: Braces,
     title: "TypeScript First",
     description:
-      "End-to-end TypeScript with inferred request types. Handlers and hooks know exactly what they receive.",
+      "defineRoute(schema, handler) infers ctx.validated straight from your Zod schema — no generic to write by hand.",
   },
   {
     icon: Zap,
@@ -85,9 +85,9 @@ const features: Feature[] = [
   },
   {
     icon: Globe,
-    title: "Edge-Ready",
+    title: "Deploy Anywhere",
     description:
-      "WinterCG-compatible. Ship the same app to Cloudflare Workers, Vercel, Deno, or Node 24+ with toFetchHandler().",
+      "burger-api build --target=cloudflare|deno|vercel|node generates the entry and platform config for you — WinterCG-compatible, no manual wiring.",
   },
   {
     icon: Gauge,

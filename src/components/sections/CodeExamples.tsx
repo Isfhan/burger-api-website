@@ -65,14 +65,14 @@ export const PUT = {
         id: "route",
         title: "route.ts",
         code: `// api/products/[id]/route.ts
-import type { BurgerContext } from "burger-api";
-import type { PUT as PutSchema } from "./schema";
+import { defineRoute } from "burger-api";
+import { PUT as PutSchema } from "./schema";
 
-export async function PUT(ctx: BurgerContext<typeof PutSchema>) {
+export const PUT = defineRoute(PutSchema, (ctx) => {
   const { id } = ctx.validated.params;
   const { name, price } = ctx.validated.body;
   return Response.json({ id, name, price });
-}`,
+});`,
       },
     ],
   },

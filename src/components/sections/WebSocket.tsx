@@ -27,7 +27,7 @@ export function WebSocket() {
             align="left"
             eyebrow="WebSocket"
             title="Real-time APIs with file-based WebSocket routes"
-            subtitle="Drop a ws.ts file under src/websocket/ and you get a live WebSocket route — open, message, and close handlers with typed ws.data and ws.services. Or register routes programmatically with burger.websocket()."
+            subtitle="Drop a ws.ts file under src/websocket/ and you get a live WebSocket route — open, message, and close handlers with typed ws.data and ws.services. Native support on Bun, Node.js, Cloudflare Workers, and Deno (Vercel has no persistent-connection model, so the build fails early instead of shipping a broken route)."
             className="mb-6 md:mb-8"
           />
           <Button to="/docs/websocket/overview" variant="secondary" className="mt-2">
