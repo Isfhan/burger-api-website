@@ -12,7 +12,7 @@ This page is the starting point for types. Each feature page has a short **"Type
 
 Most typing comes from one idea: **the handler knows its own schema**.
 
-Annotate the handler with `BurgerContext<typeof GET>`. The `GET` inside is the schema export from `schema.ts`. TypeScript then knows exactly what `ctx.validated` contains.
+The recommended way to wire that up is `defineRoute(schema, handler)`. Pass the schema you already import from `schema.ts` as the first argument, and `ctx` is inferred from it — no generic to type by hand:
 
 ```ts
 // schema.ts
@@ -20,15 +20,47 @@ import { z } from "zod";
 export const GET = { query: z.object({ q: z.string().optional() }) };
 
 // route.ts
+import { defineRoute } from "burger-api";
+import { GET as GetSchema } from "./schema";
+
+export const GET = defineRoute(GetSchema, (ctx) => {
+    ctx.validated.query; // { q?: string } | undefined — typed
+    return Response.json(ctx.validated.query);
+});
+```
+
+`defineRoute` does nothing at runtime — it returns your handler exactly as written. What it buys you is that the schema you pass and the schema TypeScript types `ctx` against are always the literal same object, so the two can never quietly drift apart.
+
+The equivalent, older form still works — annotate the handler with `BurgerContext<typeof GET>` directly:
+
+```ts
 import type { BurgerContext } from "burger-api";
 import type { GET } from "./schema";
 
 export async function GET(ctx: BurgerContext<typeof GET>) {
-    ctx.validated.query; // { q?: string } | undefined — typed
+    ctx.validated.query; // same inference, written by hand
 }
 ```
 
-For a route without a schema, keep plain `BurgerContext`. Every slot stays `unknown`.
+Use `defineRoute` for new code; the manual-generic form is documented here because it's what `defineRoute` is built on, and existing code using it keeps working unchanged.
+
+For a route without a schema, keep plain `BurgerContext` (or call `defineRoute` with an empty `{}` schema). Every slot stays `unknown`.
+
+### Typing `hooks.ts` the same way
+
+`hooks.ts` hooks see a plain `BurgerContext` by default — hooks aren't tied to one method's schema the way a handler is. When a route's hooks *do* read `ctx.validated`, wrap them with `defineHooks(schema, hooks)` the same way:
+
+```ts
+// hooks.ts
+import { defineHooks } from "burger-api";
+import { GET as GetSchema } from "./schema";
+
+export const { beforeRoute } = defineHooks(GetSchema, {
+    beforeRoute: (ctx) => {
+        ctx.validated.query; // typed, same as in route.ts
+    },
+});
+```
 
 ## Words we use
 
@@ -56,6 +88,8 @@ No errors means your types are correct. Your editor shows the same problems whil
 |------|--------------|------------------|
 | `BurgerContext` | The request object passed to handlers and hooks | Handler and hook parameters |
 | `BurgerContext<typeof GET>` | The request object, with `ctx.validated` typed from your schema | Route handlers |
+| `defineRoute(schema, handler)` | Infers `ctx` from `schema` — no generic to write by hand | Route handlers (recommended) |
+| `defineHooks(schema, hooks)` | The same inference for a route's `hooks.ts` | Route hooks that read `ctx.validated` |
 | `RequestHandler` | A handler function: takes `BurgerContext`, returns `Response` | Typing handler variables |
 | `HTTPMethod` | The allowed methods: `GET`, `POST`, `PUT`, `DELETE`, `PATCH`, `HEAD`, `OPTIONS` | Typing method keys |
 | `RouteDefinition` | A route with handlers, schema, and openapi metadata | Programmatic `apiRoutes` |
@@ -89,7 +123,7 @@ Every convention file has a consumer type. The scaffolded templates already use 
 | route `openapi.ts` | `OpenAPIMeta` | `export const GET = {...} satisfies OpenAPIMeta;` |
 | route `hooks.ts` | `RouteHooks` | same as `src/hooks.ts` |
 | route `config.ts` | `RouteConfig` | `export default {...} satisfies RouteConfig;` |
-| route `route.ts` | `BurgerContext` | `export async function GET(ctx: BurgerContext<typeof GET>)` |
+| route `route.ts` | `BurgerContext` | `export const GET = defineRoute(GET, (ctx) => ...)` |
 | ws `ws.ts` | `BurgerWS`, `WebSocketHandlers` | typed handler parameters |
 | `src/types.ts` | app type extensions | `declare module 'burger-api' { ... }` |
 
@@ -146,4 +180,5 @@ These stay untyped on purpose:
 ## Related
 
 - [Error Handling Patterns](/docs/advanced/error-handling)
+- [Benchmarks](/docs/advanced/benchmarks)
 - [Deployment](/docs/advanced/deployment)

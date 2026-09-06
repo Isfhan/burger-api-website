@@ -19,3 +19,4 @@ The production flow is `burger-api build` (routes and options are embedded at bu
 
 - [Error Handling Patterns](/docs/advanced/error-handling)
 - [Type Safety](/docs/advanced/type-safety)
+- [Benchmarks](/docs/advanced/benchmarks)

@@ -183,6 +183,7 @@ const sidebars: SidebarsConfig = {
       items: [
         "advanced/error-handling",
         "advanced/type-safety",
+        "advanced/benchmarks",
         "advanced/deployment",
       ],
     },
