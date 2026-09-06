@@ -39,7 +39,7 @@ Every slot is optional. You only describe what you actually use.
 
 ## Reusing a schema across routes
 
-When the same shape appears in several routes, define it once and import it. Plain TypeScript — no registry to learn:
+When the same shape appears in several routes, define it once and import it. Plain TypeScript, no registry to learn:
 
 ```typescript title="src/schemas.ts"
 import { z } from "zod";
@@ -66,7 +66,7 @@ After validation, the result is available on `ctx.validated`:
 - `ctx.validated.cookies`
 - `ctx.validated.body`
 
-Each is typed from the corresponding schema. Wrap the handler with `defineRoute(schema, handler)` to get the inferred types automatically — or annotate it with `BurgerContext<typeof GET>` by hand. See [Zod Validation](/docs/validation/zod), [Query](/docs/validation/query), and [Body](/docs/validation/body).
+Each is typed from the corresponding schema. Wrap the handler with `defineRoute(schema, handler)` to get the inferred types automatically, or annotate it with `BurgerContext<typeof GET>` by hand. See [Zod Validation](/docs/validation/zod), [Query](/docs/validation/query), and [Body](/docs/validation/body).
 
 ## Types for this feature
 
@@ -74,12 +74,12 @@ The schema is the source of your types. The handler that uses it gets those type
 
 The types you use (from `burger-api`):
 
-- `defineRoute(schema, handler)` — infers the handler type from `schema`; no generic to write
-- `BurgerContext<typeof GET>` — the same inference, written by hand. `typeof GET` is the schema export.
-- `ctx.validated` — the validated data, typed slot by slot.
-- `RouteSchema` — a route's full schema map (for programmatic routes).
+- `defineRoute(schema, handler)`: infers the handler type from `schema`; no generic to write
+- `BurgerContext<typeof GET>`: the same inference, written by hand. `typeof GET` is the schema export.
+- `ctx.validated`: the validated data, typed slot by slot.
+- `RouteSchema`: a route's full schema map (for programmatic routes).
 
-✅ Correct — wrap the handler with `defineRoute`:
+✅ Correct. Wrap the handler with `defineRoute`:
 
 ```typescript title="api/products/route.ts"
 import { defineRoute } from "burger-api";
@@ -92,7 +92,7 @@ export const GET = defineRoute(GetSchema, (ctx) => {
 });
 ```
 
-❌ Wrong — reading a slot you did not declare:
+❌ Wrong. Reading a slot you did not declare:
 
 ```typescript
 export const GET = defineRoute(GetSchema, (ctx) => {
@@ -100,7 +100,7 @@ export const GET = defineRoute(GetSchema, (ctx) => {
 });
 ```
 
-A slot without a schema is `unknown`. A schema written as a string reference (model) is also `unknown` — the model is checked at runtime, not by TypeScript. See the [TypeScript overview](/docs/advanced/type-safety).
+A slot without a schema is `unknown`. A schema written as a string reference (model) is also `unknown`, since the model is checked at runtime, not by TypeScript. See the [TypeScript overview](/docs/advanced/type-safety).
 
 Check your code: `bun run typecheck`.
 

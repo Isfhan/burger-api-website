@@ -122,7 +122,7 @@ Response mutations, covered in [Response Mutation](./response-mutation.md).
 
 The type you use: `BurgerContext`, or `BurgerContext<typeof GET>` when the route has a schema.
 
-✅ Correct — type the handler parameter:
+✅ Correct: type the handler parameter:
 
 ```ts
 import type { BurgerContext } from "burger-api";
@@ -132,7 +132,7 @@ export async function GET(ctx: BurgerContext) {
 }
 ```
 
-✅ Correct — give the JSON body a type with `ctx.json<T>()`:
+✅ Correct: give the JSON body a type with `ctx.json<T>()`:
 
 ```ts
 export async function POST(ctx: BurgerContext) {
@@ -141,7 +141,7 @@ export async function POST(ctx: BurgerContext) {
 }
 ```
 
-❌ Wrong — untyped handler parameters:
+❌ Wrong: untyped handler parameters:
 
 ```ts
 export async function GET(ctx) {
@@ -149,7 +149,7 @@ export async function GET(ctx) {
 }
 ```
 
-Unannoted `BurgerContext` keeps every request field (query, params, cookies) untyped. For typed request data, add a schema and wrap the handler with `defineRoute(schema, handler)` (or use `BurgerContext<typeof GET>` directly) — see [Validation](/docs/validation/zod) and the [TypeScript overview](/docs/advanced/type-safety).
+Unannoted `BurgerContext` keeps every request field (query, params, cookies) untyped. For typed request data, add a schema and wrap the handler with `defineRoute(schema, handler)` (or use `BurgerContext<typeof GET>` directly). See [Validation](/docs/validation/zod) and the [TypeScript overview](/docs/advanced/type-safety).
 
 Check your code: `bun run typecheck`.
 

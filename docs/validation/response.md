@@ -4,7 +4,7 @@ sidebar_label: Response Validation
 
 # Response Validation
 
-BurgerAPI can also check what your handler **returns**. Declare a `response` schema and BurgerAPI validates the handler's output after it runs — helping you catch contract drift and bugs early.
+BurgerAPI can also check what your handler **returns**. Declare a `response` schema and BurgerAPI validates the handler's output after it runs, helping you catch contract drift and bugs early.
 
 ## Example
 
@@ -26,9 +26,9 @@ export function GET() {
 
 Response validation has three modes, set in [configuration](/docs/validation/configuration) under `responseValidation`:
 
-- **`dev`** (default) — observe only. In development, a mismatch is logged to the console but the response is returned unchanged. Nothing breaks.
-- **`enforce`** — a mismatch returns a safe `500` error (or `422` if the handler itself returned `422`). No internal details leak.
-- **`off`** — never validate responses.
+- **`dev`** (default): observe only. In development, a mismatch is logged to the console but the response is returned unchanged. Nothing breaks.
+- **`enforce`**: a mismatch returns a safe `500` error (or `422` if the handler itself returned `422`). No internal details leak.
+- **`off`**: never validate responses.
 
 The default `dev` mode means adding a `response` schema is **free and safe**: existing apps that declare none are unaffected, and apps that declare one get helpful feedback without risking a broken response.
 
@@ -50,10 +50,10 @@ The `response` schema describes the shape your handler should return. It is chec
 
 The types you use (from `burger-api`):
 
-- `RouteSchema` — a route's full schema map (for programmatic routes)
-- `z.infer<typeof GET.response["200"]>` — the documented response shape, for reuse
+- `RouteSchema`: a route's full schema map (for programmatic routes)
+- `z.infer<typeof GET.response["200"]>`: the documented response shape, for reuse
 
-✅ Correct — declare the response shape, and reuse its type for helper functions:
+✅ Correct. Declare the response shape, and reuse its type for helper functions:
 
 ```typescript title="api/status/schema.ts"
 import { z } from "zod";
@@ -65,7 +65,7 @@ import type { GET } from "./schema";
 type StatusResponse = z.infer<typeof GET.response["200"]>; // { ok: boolean }
 ```
 
-❌ Wrong — the schema key is not a status code or class:
+❌ Wrong. The schema key is not a status code or class:
 
 ```typescript
 export const GET = {

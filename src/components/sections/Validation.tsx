@@ -24,7 +24,7 @@ import { defineRoute } from "burger-api";
 import { POST as PostSchema } from "./schema";
 
 export const POST = defineRoute(PostSchema, (ctx) => {
-  // Fully typed from your Zod schema — no generic to write
+  // Fully typed from your Zod schema, no generic to write
   const { title, published } = ctx.validated.body;
 
   return Response.json({ title, published }, { status: 201 });
@@ -48,7 +48,7 @@ export function Validation() {
             align="left"
             eyebrow="Validation"
             title="Zod schemas next to your routes"
-            subtitle="Export a schema per method in schema.ts. BurgerAPI validates before your code runs and puts typed data on ctx.validated — for query, params, headers, cookies, and body. Share shapes between routes by importing a common schemas file, and validate responses too."
+            subtitle="Export a schema per method in schema.ts. BurgerAPI validates before your code runs and puts typed data on ctx.validated, covering query, params, headers, cookies, and body. Share shapes between routes by importing a common schemas file, and validate responses too."
             className="mb-6 md:mb-8"
           />
           <Button to="/docs/validation/zod" variant="secondary" className="mt-2">

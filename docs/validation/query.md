@@ -6,7 +6,7 @@ sidebar_label: Query Validation
 
 Validate **query parameters** by defining a `query` schema for the HTTP method in your route's `schema.ts`. Use `z.object()` with optional/required keys; validated data is on `ctx.validated.query`.
 
-Example: `export const GET = { query: z.object({ search: z.string().optional(), limit: z.coerce.number().optional() }) }`. Query values always arrive as text, so `z.coerce.number()` uses automatic type conversion (also called coercion) to turn `"10"` into the number `10`. You can also turn conversion on for the whole app with `validation: { coerce: true }` — see [Coercion](/docs/validation/coercion). See [Validation](/docs/validation/zod) and [Schema Definition](/docs/validation/schema).
+Example: `export const GET = { query: z.object({ search: z.string().optional(), limit: z.coerce.number().optional() }) }`. Query values always arrive as text, so `z.coerce.number()` uses automatic type conversion (also called coercion) to turn `"10"` into the number `10`. You can also turn conversion on for the whole app with `validation: { coerce: true }` (see [Coercion](/docs/validation/coercion)). See [Validation](/docs/validation/zod) and [Schema Definition](/docs/validation/schema).
 
 ## Types for this feature
 
@@ -14,11 +14,11 @@ The `query` schema types `ctx.validated.query`.
 
 The types you use (from `burger-api`):
 
-- `defineRoute(schema, handler)` — infers the handler type from `schema`; no generic to write
-- `BurgerContext<typeof GET>` — the same inference, written by hand
-- `ctx.validated.query` — the validated query, typed key by key
+- `defineRoute(schema, handler)`: infers the handler type from `schema`; no generic to write
+- `BurgerContext<typeof GET>`: the same inference, written by hand
+- `ctx.validated.query`: the validated query, typed key by key
 
-✅ Correct — validated query is typed from the schema:
+✅ Correct. Validated query is typed from the schema:
 
 ```ts title="api/products/schema.ts"
 import { z } from "zod";
@@ -35,7 +35,7 @@ export const GET = defineRoute(GetSchema, (ctx) => {
 });
 ```
 
-❌ Wrong — a query key that is not in the schema:
+❌ Wrong. A query key that is not in the schema:
 
 ```ts
 export const GET = defineRoute(GetSchema, (ctx) => {

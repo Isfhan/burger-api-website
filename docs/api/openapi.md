@@ -53,11 +53,11 @@ The provider is set in the OpenAPI config, along with the spec path, docs path, 
 
 The types you use (from `burger-api`):
 
-- `openapi` — the per-route metadata object, keyed by lowercase method
-- `OpenAPIMeta` — one method's metadata (`summary`, `tags`, `responses`, ...)
-- `OpenAPIConfig` — the docs configuration (dev `openapi.config.ts`, production `openapi` option)
+- `openapi`: the per-route metadata object, keyed by lowercase method
+- `OpenAPIMeta`: one method's metadata (`summary`, `tags`, `responses`, ...)
+- `OpenAPIConfig`: the docs configuration (dev `openapi.config.ts`, production `openapi` option)
 
-✅ Correct — lowercase keys in programmatic metadata:
+✅ Correct: lowercase keys in programmatic metadata:
 
 ```ts
 import type { RouteDefinition } from "burger-api";
@@ -69,7 +69,7 @@ const def: RouteDefinition = {
 };
 ```
 
-❌ Wrong — an uppercase key is a silent no-op at runtime, so it fails at compile time:
+❌ Wrong: an uppercase key is a silent no-op at runtime, so it fails at compile time:
 
 ```ts
 const def: RouteDefinition = {
@@ -79,7 +79,7 @@ const def: RouteDefinition = {
 };
 ```
 
-❌ Wrong — a response value must be an object:
+❌ Wrong: a response value must be an object:
 
 ```ts
 openapi: { get: { responses: { "200": 42 } } }; // ❌ 42 is not an object

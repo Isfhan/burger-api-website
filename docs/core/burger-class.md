@@ -75,7 +75,7 @@ app.websocket("/chat", {
 });
 ```
 
-Programmatic WebSocket routes are a **dev-only** convenience — they are not captured by production AOT builds. Use a file-based route under `wsDir` for anything that needs to survive `burger-api build`. See [WebSocket](/docs/websocket/overview).
+Programmatic WebSocket routes are a **dev-only** convenience. They are not captured by production AOT builds. Use a file-based route under `wsDir` for anything that needs to survive `burger-api build`. See [WebSocket](/docs/websocket/overview).
 
 ### fetchHandler()
 
@@ -101,7 +101,7 @@ WinterCG targets must pass AOT `apiRoutes`: there is no filesystem at runtime. S
 
 ### createNodeWsBridge(options)
 
-Node WebSocket integration: returns a bridge that plugs the framework's WebSocket pipeline into `node:http`'s `'upgrade'` event, using a framing library's `WebSocketServer` (e.g. the `ws` package). Requires WebSocket routes to already be configured (`wsDir`, `wsRoutes`, or `app.websocket()`) — throws otherwise.
+Node WebSocket integration: returns a bridge that plugs the framework's WebSocket pipeline into `node:http`'s `'upgrade'` event, using a framing library's `WebSocketServer` (e.g. the `ws` package). Requires WebSocket routes to already be configured (`wsDir`, `wsRoutes`, or `app.websocket()`) and throws otherwise.
 
 ```ts
 import http from "node:http";
@@ -117,7 +117,7 @@ http
   .listen(3000);
 ```
 
-This is the escape hatch for running BurgerAPI's WebSocket routes on plain Node — see [WebSocket](/docs/websocket/overview#nodejs) and [Compatibility](/docs/compatibility).
+This is the escape hatch for running BurgerAPI's WebSocket routes on plain Node. See [WebSocket](/docs/websocket/overview#nodejs) and [Compatibility](/docs/compatibility).
 
 ### getServer()
 

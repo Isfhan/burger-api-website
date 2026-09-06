@@ -178,7 +178,7 @@ export const DELETE = defineRoute(DeleteSchema, (ctx) => {
 });
 ```
 
-(The equivalent manual-generic form — `BurgerContext<typeof GetSchema>` — still works if you'd rather write it by hand; see [Type Safety](/docs/advanced/type-safety).)
+(The equivalent manual-generic form, `BurgerContext<typeof GetSchema>`, still works if you'd rather write it by hand; see [Type Safety](/docs/advanced/type-safety).)
 
 ### Advanced Validation
 
@@ -417,7 +417,7 @@ export async function GET(ctx: BurgerContext) {
 
 ### 4. Type Safety with TypeScript
 
-Prefer schema-driven typing over manual casts. `defineRoute(schema, handler)` infers `ctx.validated`'s exact shape from the schema you pass it — no generic to write:
+Prefer schema-driven typing over manual casts. `defineRoute(schema, handler)` infers `ctx.validated`'s exact shape from the schema you pass it, with no generic to write:
 
 ```typescript
 import { defineRoute } from "burger-api";
@@ -471,12 +471,12 @@ TypeScript checks two things here: the handler parameter and the URL parameters.
 
 The types you use (from `burger-api`):
 
-- `defineRoute(schema, handler)` — infers the handler's `ctx` from `schema`; no generic to write
-- `BurgerContext<typeof GET>` — the same inference, written by hand
-- `ctx.params` (raw) — always `Record<string, string> | undefined`, not typed by name
-- `ctx.validated.params` — typed from the `params` schema in `schema.ts`
+- `defineRoute(schema, handler)`: infers the handler's `ctx` from `schema`; no generic to write
+- `BurgerContext<typeof GET>`: the same inference, written by hand
+- `ctx.params` (raw): always `Record<string, string> | undefined`, not typed by name
+- `ctx.validated.params`: typed from the `params` schema in `schema.ts`
 
-✅ Correct — use a `params` schema and read `ctx.validated.params`:
+✅ Correct: use a `params` schema and read `ctx.validated.params`:
 
 ```typescript
 import { defineRoute } from "burger-api";
@@ -488,7 +488,7 @@ export const GET = defineRoute(GetSchema, (ctx) => {
 });
 ```
 
-❌ Wrong — reading a parameter name that is not in the schema:
+❌ Wrong: reading a parameter name that is not in the schema:
 
 ```typescript
 export const GET = defineRoute(GetSchema, (ctx) => {

@@ -4,7 +4,7 @@ sidebar_label: Standard Schema Support
 
 # Standard Schema Support
 
-BurgerAPI is not locked to Zod. Any schema library that follows the [Standard Schema](https://standardschema.dev/) contract works through the same `schema.ts` convention — no extra setup, no new dependency.
+BurgerAPI is not locked to Zod. Any schema library that follows the [Standard Schema](https://standardschema.dev/) contract works through the same `schema.ts` convention, with no extra setup and no new dependency.
 
 Libraries that implement Standard Schema include [Valibot](https://valibot.dev/), [ArkType](https://arktype.io/), and Zod v4 itself.
 

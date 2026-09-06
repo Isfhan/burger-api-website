@@ -4,7 +4,7 @@ sidebar_label: Overview
 
 # Performance
 
-BurgerAPI is built to keep the request path fast and predictable. The speed comes from a few clear design choices, not from small low-level tweaks — and it's not just a claim: see [Benchmarks](/docs/advanced/benchmarks) for real, committed numbers against Elysia, Hono, and Express.
+BurgerAPI is built to keep the request path fast and predictable. The speed comes from a few clear design choices, not from small low-level tweaks, and it's not just a claim: see [Benchmarks](/docs/advanced/benchmarks) for real, committed numbers against Elysia, Hono, and Express.
 
 ## Hybrid router
 
@@ -30,7 +30,7 @@ These choices keep response times steady under heavy load.
 
 ## JIT-compiled hook plans
 
-Each route's hooks (`transform`, validation, `beforeRoute`, `afterRoute`, `mapResponse`) are flattened once at boot into a plan, and — on by default, capability-probed per process — that plan is JIT-compiled into a single function instead of being walked with a generic loop on every request. Runtimes that forbid dynamic code generation (Cloudflare Workers) silently keep the interpreter; nothing breaks, it's just not faster there. Measured contribution: see the `optimize/hooks-jit` vs `optimize/hooks-interpreter` numbers on the [Benchmarks](/docs/advanced/benchmarks) page.
+Each route's hooks (`transform`, validation, `beforeRoute`, `afterRoute`, `mapResponse`) are flattened once at boot into a plan, and that plan (on by default, capability-probed per process) is JIT-compiled into a single function instead of being walked with a generic loop on every request. Runtimes that forbid dynamic code generation (Cloudflare Workers) silently keep the interpreter; nothing breaks, it's just not faster there. Measured contribution: see the `optimize/hooks-jit` vs `optimize/hooks-interpreter` numbers on the [Benchmarks](/docs/advanced/benchmarks) page.
 
 ## Related
 

@@ -4,11 +4,11 @@ sidebar_label: Zod Validation
 
 # Zod Validation
 
-BurgerAPI uses [Zod](https://zod.dev/) to check that incoming requests are shaped the way you expect. A **schema** is just a description of the data you want — for example, "the query string must have a `limit` that is a number". You write these schemas for query parameters, path parameters, request headers, cookies, and request bodies. BurgerAPI checks the request *before* your handler runs and puts the clean, typed result on `ctx.validated`.
+BurgerAPI uses [Zod](https://zod.dev/) to check that incoming requests are shaped the way you expect. A **schema** is just a description of the data you want (for example, "the query string must have a `limit` that is a number"). You write these schemas for query parameters, path parameters, request headers, cookies, and request bodies. BurgerAPI checks the request *before* your handler runs and puts the clean, typed result on `ctx.validated`.
 
 BurgerAPI uses Zod 4.x, which gives clear, friendly error messages.
 
-Zod is the default schema provider, but it is not the only one. Any library that follows the [Standard Schema](https://standardschema.dev/) contract (such as Valibot or ArkType) also works — see [Standard Schema Support](/docs/validation/standard-schema).
+Zod is the default schema provider, but it is not the only one. Any library that follows the [Standard Schema](https://standardschema.dev/) contract (such as Valibot or ArkType) also works. See [Standard Schema Support](/docs/validation/standard-schema).
 
 ## A first example
 
@@ -32,7 +32,7 @@ export const GET = defineRoute(GetSchema, (ctx) => {
 });
 ```
 
-Here `z.coerce.number()` turns the text `"50"` into the number `50` before the checks run. BurgerAPI also offers built-in automatic type conversion you can turn on for a whole app — see [Coercion](/docs/validation/coercion).
+Here `z.coerce.number()` turns the text `"50"` into the number `50` before the checks run. BurgerAPI also offers built-in automatic type conversion you can turn on for a whole app. See [Coercion](/docs/validation/coercion).
 
 See [Schema Definition](/docs/validation/schema) for the full shape of a validation schema and [Validation](/docs/core-concepts/validation) for the big picture.
 
@@ -42,11 +42,11 @@ Your Zod schema is both a runtime check and a type. The handler that uses it get
 
 The types you use (from `burger-api`):
 
-- `defineRoute(schema, handler)` — infers `ctx.validated` from `schema`; no generic to write
-- `BurgerContext<typeof GET>` — the same inference, written by hand
-- `z.infer<typeof GET.query>` — the type of one slot, for variables or helpers
+- `defineRoute(schema, handler)`: infers `ctx.validated` from `schema`; no generic to write
+- `BurgerContext<typeof GET>`: the same inference, written by hand
+- `z.infer<typeof GET.query>`: the type of one slot, for variables or helpers
 
-✅ Correct — `defineRoute` infers the schema type automatically:
+✅ Correct. `defineRoute` infers the schema type automatically:
 
 ```ts title="api/products/route.ts"
 import { defineRoute } from "burger-api";
@@ -58,7 +58,7 @@ export const GET = defineRoute(GetSchema, (ctx) => {
 });
 ```
 
-✅ Correct — reuse a slot's type elsewhere:
+✅ Correct. Reuse a slot's type elsewhere:
 
 ```ts
 import type { GET } from "./schema";
@@ -66,7 +66,7 @@ type Query = z.infer<typeof GET.query>; // { limit?: number }
 function usesLimit(limit: Query["limit"]) { /* ... */ }
 ```
 
-❌ Wrong — an unannoted handler has no validated types:
+❌ Wrong. An unannoted handler has no validated types:
 
 ```ts
 export async function GET(ctx: BurgerContext) {

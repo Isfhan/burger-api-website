@@ -12,7 +12,7 @@ This page is the starting point for types. Each feature page has a short **"Type
 
 Most typing comes from one idea: **the handler knows its own schema**.
 
-The recommended way to wire that up is `defineRoute(schema, handler)`. Pass the schema you already import from `schema.ts` as the first argument, and `ctx` is inferred from it — no generic to type by hand:
+The recommended way to wire that up is `defineRoute(schema, handler)`. Pass the schema you already import from `schema.ts` as the first argument, and `ctx` is inferred from it, with no generic to type by hand:
 
 ```ts
 // schema.ts
@@ -24,14 +24,14 @@ import { defineRoute } from "burger-api";
 import { GET as GetSchema } from "./schema";
 
 export const GET = defineRoute(GetSchema, (ctx) => {
-    ctx.validated.query; // { q?: string } | undefined — typed
+    ctx.validated.query; // { q?: string } | undefined, typed
     return Response.json(ctx.validated.query);
 });
 ```
 
-`defineRoute` does nothing at runtime — it returns your handler exactly as written. What it buys you is that the schema you pass and the schema TypeScript types `ctx` against are always the literal same object, so the two can never quietly drift apart.
+`defineRoute` does nothing at runtime; it returns your handler exactly as written. What it buys you is that the schema you pass and the schema TypeScript types `ctx` against are always the literal same object, so the two can never quietly drift apart.
 
-The equivalent, older form still works — annotate the handler with `BurgerContext<typeof GET>` directly:
+The equivalent, older form still works: annotate the handler with `BurgerContext<typeof GET>` directly:
 
 ```ts
 import type { BurgerContext } from "burger-api";
@@ -48,7 +48,7 @@ For a route without a schema, keep plain `BurgerContext` (or call `defineRoute` 
 
 ### Typing `hooks.ts` the same way
 
-`hooks.ts` hooks see a plain `BurgerContext` by default — hooks aren't tied to one method's schema the way a handler is. When a route's hooks *do* read `ctx.validated`, wrap them with `defineHooks(schema, hooks)` the same way:
+`hooks.ts` hooks see a plain `BurgerContext` by default, since hooks aren't tied to one method's schema the way a handler is. When a route's hooks *do* read `ctx.validated`, wrap them with `defineHooks(schema, hooks)` the same way:
 
 ```ts
 // hooks.ts
@@ -64,13 +64,13 @@ export const { beforeRoute } = defineHooks(GetSchema, {
 
 ## Words we use
 
-- **Type** — the shape of a value. Example: `string` is the type of text.
-- **Compile time** — when TypeScript checks your code, before it runs.
-- **Runtime** — when your code actually runs.
-- **Inference** — TypeScript figures out a type by itself, without you writing it.
-- **Generic** — a type that takes another type as input. Example: `BurgerContext<typeof GET>` uses the schema type `typeof GET`.
-- **Augmentation** — you add your own types to a BurgerAPI type. See below.
-- **Compile error** — TypeScript says your code is wrong. The server does not start.
+- **Type**: the shape of a value. Example: `string` is the type of text.
+- **Compile time**: when TypeScript checks your code, before it runs.
+- **Runtime**: when your code actually runs.
+- **Inference**: TypeScript figures out a type by itself, without you writing it.
+- **Generic**: a type that takes another type as input. Example: `BurgerContext<typeof GET>` uses the schema type `typeof GET`.
+- **Augmentation**: you add your own types to a BurgerAPI type. See below.
+- **Compile error**: TypeScript says your code is wrong. The server does not start.
 
 ## How to check your code
 
@@ -88,7 +88,7 @@ No errors means your types are correct. Your editor shows the same problems whil
 |------|--------------|------------------|
 | `BurgerContext` | The request object passed to handlers and hooks | Handler and hook parameters |
 | `BurgerContext<typeof GET>` | The request object, with `ctx.validated` typed from your schema | Route handlers |
-| `defineRoute(schema, handler)` | Infers `ctx` from `schema` — no generic to write by hand | Route handlers (recommended) |
+| `defineRoute(schema, handler)` | Infers `ctx` from `schema`, no generic to write by hand | Route handlers (recommended) |
 | `defineHooks(schema, hooks)` | The same inference for a route's `hooks.ts` | Route hooks that read `ctx.validated` |
 | `RequestHandler` | A handler function: takes `BurgerContext`, returns `Response` | Typing handler variables |
 | `HTTPMethod` | The allowed methods: `GET`, `POST`, `PUT`, `DELETE`, `PATCH`, `HEAD`, `OPTIONS` | Typing method keys |
@@ -104,8 +104,8 @@ No errors means your types are correct. Your editor shows the same problems whil
 | `ErrorHook` | An error hook: takes `(error, ctx)`, returns `Response` or `undefined` | `onError` |
 | `RouteHooks` | All hook points of a route in one object | `hooks.ts` files |
 | `Plugin` | A plugin: name plus optional hooks | `usePlugin()` |
-| `BurgerServices` | The services on `ctx.services` — you extend it | Providers, `ctx.services` |
-| `WebSocketData` | The data on `ws.data` — you extend it | WebSocket handlers |
+| `BurgerServices` | The services on `ctx.services`, which you extend | Providers, `ctx.services` |
+| `WebSocketData` | The data on `ws.data`, which you extend | WebSocket handlers |
 | `BurgerWS` | The WebSocket object passed to WS handlers | WS handlers |
 | `openapi` | OpenAPI metadata, keyed by lowercase method | Programmatic `openapi` |
 
@@ -162,20 +162,20 @@ After this block, `ctx.services.db`, `ctx.user`, and `ws.data.userId` are all ty
 
 These stay untyped on purpose:
 
-- **`ctx.params`** — the raw URL parameters, always `Record<string, string> | undefined`. For typed parameters, add a `params` schema and use `ctx.validated.params`. See [Dynamic Routes](/docs/routing/api/dynamic-routes).
-- **`ctx.wildcardParams`** — always `string[] | undefined`. There is no schema for wildcard segments.
-- **`ctx.json()`** — the default is `any` (the same as the browser `Request`). Use `ctx.json<T>()` to give it a type: `await ctx.json<{ id: number }>()`.
+- **`ctx.params`**: the raw URL parameters, always `Record<string, string> | undefined`. For typed parameters, add a `params` schema and use `ctx.validated.params`. See [Dynamic Routes](/docs/routing/api/dynamic-routes).
+- **`ctx.wildcardParams`**: always `string[] | undefined`. There is no schema for wildcard segments.
+- **`ctx.json()`**: the default is `any` (the same as the browser `Request`). Use `ctx.json<T>()` to give it a type: `await ctx.json<{ id: number }>()`.
 
 ## Where types live in each feature
 
-- [Routing](/docs/routing/file-based-routing) — typed handlers and parameters
-- [Hooks](/docs/hooks/system) — typed hook contracts
-- [Request handling](/docs/core/request-handling) — `BurgerContext` and body reading
-- [Validation](/docs/validation/zod) — typed `ctx.validated`
-- [Configuration](/docs/core/configuration) — `ServerOptions` and route definitions
-- [Plugins](/docs/ecosystem/hooks-plugins) — `Plugin` and services
-- [OpenAPI](/docs/api/openapi) — typed metadata
-- [WebSocket](/docs/websocket/overview) — `BurgerWS` and `ws.data`
+- [Routing](/docs/routing/file-based-routing): typed handlers and parameters
+- [Hooks](/docs/hooks/system): typed hook contracts
+- [Request handling](/docs/core/request-handling): `BurgerContext` and body reading
+- [Validation](/docs/validation/zod): typed `ctx.validated`
+- [Configuration](/docs/core/configuration): `ServerOptions` and route definitions
+- [Plugins](/docs/ecosystem/hooks-plugins): `Plugin` and services
+- [OpenAPI](/docs/api/openapi): typed metadata
+- [WebSocket](/docs/websocket/overview): `BurgerWS` and `ws.data`
 
 ## Related
 

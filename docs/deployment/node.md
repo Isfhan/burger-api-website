@@ -4,7 +4,7 @@ sidebar_position: 2
 
 # Deploy on Node.js
 
-Run BurgerAPI on plain Node.js — a real long-lived `node:http` server, not
+Run BurgerAPI on plain Node.js: a real long-lived `node:http` server, not
 just the WinterCG fetch entry other targets use. The official
 `@burger-api/node-server` adapter bridges `node:http` to burger-api's
 Fetch-standard handler and wires WebSocket routes automatically, so you
@@ -13,15 +13,15 @@ don't hand-write an `IncomingMessage`⇄`Request` bridge yourself.
 ## How it works
 
 - `serve(app, options?)` starts a real `node:http` server and returns it.
-- Routes are declared via `apiRoutes` (AOT) — same as every other WinterCG
+- Routes are declared via `apiRoutes` (AOT), the same as every other WinterCG
   target; plain Node has no dev-time filesystem route scanner either.
 - If the app has WebSocket routes configured (`wsRoutes`, `wsDir`, or
   `app.websocket()`), `serve()` wires `createNodeWsBridge()` and the `ws`
-  package automatically — Node has no `fetch`-handler upgrade path of its
+  package automatically, since Node has no `fetch`-handler upgrade path of its
   own, unlike Bun, Cloudflare Workers, and Deno, which all support
   WebSocket natively (see [Compatibility](/docs/compatibility)). Vercel is
   the one target that genuinely can't do WebSocket at all.
-- An app with no WebSocket routes just gets a plain HTTP server — nothing
+- An app with no WebSocket routes just gets a plain HTTP server. Nothing
   extra happens.
 
 ## Install
@@ -41,7 +41,7 @@ node .build/bundle/app.js
 ```
 
 The generated bundle already imports `serve` from `@burger-api/node-server`
-and calls it with your compiled `apiRoutes`/`wsRoutes` — nothing to hand-write.
+and calls it with your compiled `apiRoutes`/`wsRoutes`. Nothing to hand-write.
 The rest of this page shows the equivalent by hand, useful if you're
 declaring routes programmatically instead of via the file convention.
 
@@ -81,7 +81,7 @@ server.on("listening", () => {
 ## WebSocket
 
 Add `wsRoutes` (or `wsDir` / `app.websocket()`) to the same `Burger`
-instance — no separate wiring needed:
+instance: no separate wiring needed:
 
 ```ts
 const burger = new Burger({
@@ -94,7 +94,7 @@ const burger = new Burger({
           ws.sendText("connected");
         },
         message(ws, message) {
-          // fan out manually — ws.subscribe()/publish() are Bun-only
+          // fan out manually: ws.subscribe()/publish() are Bun-only
           // native pub/sub and throw on every other runtime, Node included
         },
       },

@@ -19,27 +19,27 @@ Identical route shapes implemented in each framework (`bun run battle --profile 
 | json/echo | 113,864 req/s | 111,175 req/s | 109,254 req/s | 110,667 req/s | 63,431 req/s |
 | validation/body | 97,779 req/s | 99,105 req/s | 102,498 req/s | 94,726 req/s | 45,201 req/s |
 
-<sup>†</sup> Elysia 2 (`elysia@experimental`) is included for evaluation only — it is not yet Elysia's default release.
+<sup>†</sup> Elysia 2 (`elysia@experimental`) is included for evaluation only: it is not yet Elysia's default release.
 <sup>‡</sup> Express is Node-based and ran under Bun's Node compatibility layer, not native Node; treat its column as "Express-on-Bun."
 
-BurgerAPI lands within a few percent of Elysia, Elysia 2, and Hono on every scenario — none of them are the outlier here, Express is. That's the honest takeaway: **not fastest on every row, competitive on all of them**, at a considerably higher level of built-in structure (file-based routing, lifecycle hooks, schema validation, OpenAPI generation) than a raw router benchmark implies.
+BurgerAPI lands within a few percent of Elysia, Elysia 2, and Hono on every scenario. None of them are the outlier here, Express is. That's the honest takeaway: **not fastest on every row, competitive on all of them**, at a considerably higher level of built-in structure (file-based routing, lifecycle hooks, schema validation, OpenAPI generation) than a raw router benchmark implies.
 
 Reproduce it yourself: `bun run battle --profile ci` in `burger-api-benchmarks`, or `--profile full` for a longer, higher-concurrency run.
 
 ## What the JIT hook compiler actually buys you
 
-`optimize/hooks-jit` vs `optimize/hooks-interpreter` runs the identical route — 2 `beforeRoute` hooks + 1 `afterRoute` hook — once through the standard interpreter loop (`jit: false`) and once through the JIT-compiled `HookPlan` (`jit: true`, the default):
+`optimize/hooks-jit` vs `optimize/hooks-interpreter` runs the identical route (2 `beforeRoute` hooks + 1 `afterRoute` hook) once through the standard interpreter loop (`jit: false`) and once through the JIT-compiled `HookPlan` (`jit: true`, the default):
 
 | Scenario | req/s | p99 |
 | --- | --- | --- |
 | optimize/hooks-interpreter (`jit: false`) | 112,615 req/s | 3.37 ms |
 | optimize/hooks-jit (`jit: true`, default) | 115,309 req/s | 3.30 ms |
 
-A measured, modest gain on this hook shape — the JIT compiler is capability-probed per process and enabled by default; there is no reason to turn it off outside of debugging the compiler itself.
+A measured, modest gain on this hook shape. The JIT compiler is capability-probed per process and enabled by default; there is no reason to turn it off outside of debugging the compiler itself.
 
 ## Solo scenario suite
 
-`bun run bench` runs 25 scenarios covering routing (static/dynamic/wildcard/nested), validation (query/params/body/coercion/response), request parsing, error paths, and the dispatch-engine comparisons above — request rate stays in the ~90k–115k req/s band across the board on Bun 1.4.0, with the notable exception of `errors/validation` (a POST with an intentionally invalid body, exercising the full Zod validation-error-formatting path) at ~43k req/s. See the repo's `reports/` directory for the complete, dated JSON output this table is generated from.
+`bun run bench` runs 25 scenarios covering routing (static/dynamic/wildcard/nested), validation (query/params/body/coercion/response), request parsing, error paths, and the dispatch-engine comparisons above. Request rate stays in the ~90k–115k req/s band across the board on Bun 1.4.0, with the notable exception of `errors/validation` (a POST with an intentionally invalid body, exercising the full Zod validation-error-formatting path) at ~43k req/s. See the repo's `reports/` directory for the complete, dated JSON output this table is generated from.
 
 ## Related
 

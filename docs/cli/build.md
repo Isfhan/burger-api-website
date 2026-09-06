@@ -8,17 +8,17 @@ sidebar_label: Build Command
 
 **Options:**
 
-- `--target <platform>` — `bun` (default), `node`, `cloudflare`, `deno`, `vercel` (or `browser`, a legacy raw `Bun.build` passthrough for bundling client-side code)
-- `--outfile <path>` — Output path; defaults depend on `--target` (see table below)
-- `--compile` — Compile to a standalone executable instead of bundling (`--target=bun` only — see [Build Exec](/docs/cli/build-exec))
-- `--minify` — Minify output (`bun`/`node` targets only)
-- `--sourcemap <type>` — `inline`, `linked`, or `none` (`bun`/`node` targets only)
+- `--target <platform>`: `bun` (default), `node`, `cloudflare`, `deno`, `vercel` (or `browser`, a legacy raw `Bun.build` passthrough for bundling client-side code)
+- `--outfile <path>`: Output path; defaults depend on `--target` (see table below)
+- `--compile`: Compile to a standalone executable instead of bundling (`--target=bun` only, see [Build Exec](/docs/cli/build-exec))
+- `--minify`: Minify output (`bun`/`node` targets only)
+- `--sourcemap <type>`: `inline`, `linked`, or `none` (`bun`/`node` targets only)
 
 **Default `--outfile` per target:**
 
 | Target | Default output | What builds it |
 |---|---|---|
-| `bun` | `.build/bundle/app.js` | `Bun.build()` — a self-contained single file |
+| `bun` | `.build/bundle/app.js` | `Bun.build()`, a self-contained single file |
 | `node` | `.build/bundle/app.js` | `Bun.build({ target: 'node' })` |
 | `cloudflare` | `.build/cloudflare/index.ts` | `wrangler` (not this CLI) |
 | `deno` | `.build/deno/index.ts` | `deno` (not this CLI) |
@@ -27,22 +27,22 @@ sidebar_label: Build Command
 ## Examples
 
 ```bash
-# Bun (default) — self-contained bundle
+# Bun (default), self-contained bundle
 burger-api build src/index.ts
 
-# Node.js — uses @burger-api/node-server's serve() instead of app.serve()
+# Node.js, uses @burger-api/node-server's serve() instead of app.serve()
 burger-api build src/index.ts --target=node
 
-# Cloudflare Workers — generates .build/cloudflare/index.ts + wrangler.toml
+# Cloudflare Workers, generates .build/cloudflare/index.ts + wrangler.toml
 # (only if wrangler.toml doesn't already exist), then hand off to wrangler
 burger-api build src/index.ts --target=cloudflare
 wrangler dev
 
-# Deno — generates .build/deno/index.ts + deno.json
+# Deno, generates .build/deno/index.ts + deno.json
 burger-api build src/index.ts --target=deno
 deno serve --port 8000 .build/deno/index.ts
 
-# Vercel — generates api/index.ts + vercel.json
+# Vercel, generates api/index.ts + vercel.json
 burger-api build src/index.ts --target=vercel
 vercel dev
 
@@ -54,7 +54,7 @@ burger-api build src/index.ts --compile --outfile=my-app
 
 For `bun` and `node`, this command runs `Bun.build()` and produces a single
 bundled file. For `cloudflare`, `deno`, and `vercel`, there's no long-running
-process to bundle for — the generated entry (a plain `.ts` file exporting
+process to bundle for. The generated entry (a plain `.ts` file exporting
 `{ fetch: toFetchHandler(app) }`) is handed to the platform's own tool to
 bundle and deploy, the same way a hand-written project on that platform
 already works. `burger-api build` never re-implements `wrangler`/`deno`/
@@ -62,11 +62,11 @@ already works. `burger-api build` never re-implements `wrangler`/`deno`/
 
 A project's declared target is baked into the build as
 `ServerOptions.runtimeTarget`, and a WebSocket route on a target that can't
-support it (`vercel`) fails the build immediately with a clear error — see
+support it (`vercel`) fails the build immediately with a clear error. See
 [Compatibility](/docs/compatibility) for what each target supports.
 
 Platform config files (`wrangler.toml`, `deno.json`, `vercel.json`) are
-scaffolded automatically **only when one doesn't already exist** — an
+scaffolded automatically **only when one doesn't already exist**; an
 existing config is never overwritten.
 
 Production flow on Bun/Node: run `burger-api build`, then start the server

@@ -43,7 +43,7 @@ export const GET = defineRoute(GetSchema, (ctx) => {
 });
 ```
 
-The older, equivalent form still works — annotate the handler with `BurgerContext<typeof GET>` directly. See [Validation](/docs/validation/zod) and [Type Safety](/docs/advanced/type-safety).
+The older, equivalent form still works: annotate the handler with `BurgerContext<typeof GET>` directly. See [Validation](/docs/validation/zod) and [Type Safety](/docs/advanced/type-safety).
 
 ## Errors
 

@@ -39,7 +39,7 @@ const app = new Burger({
 | `coerce` | `boolean` | `false` | Enable automatic type conversion for query/params/headers/cookies. |
 | `responseValidation` | `"off"` \| `"dev"` \| `"enforce"` | `"dev"` | Observe-only in `dev`; `enforce` returns a safe error on mismatch. |
 | `errorFormat` | `"plain"` \| `"problem+json"` | `"problem+json"` | The shape of the error body. |
-| `errorRenderer` | `(result, { slot, status }) => Response` | — | Override the error body completely. |
+| `errorRenderer` | `(result, { slot, status }) => Response` | None | Override the error body completely. |
 
 ## Reusing schemas across routes
 

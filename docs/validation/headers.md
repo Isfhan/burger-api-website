@@ -34,7 +34,7 @@ If the `x-api-key` header is missing or empty, BurgerAPI responds with `422` and
 
 - Header names are matched case-insensitively.
 - Headers are text, so enable [coercion](/docs/validation/coercion) if you expect typed header values.
-- Cookie values are validated separately — see [Cookie Validation](/docs/validation/cookie).
+- Cookie values are validated separately. See [Cookie Validation](/docs/validation/cookie).
 
 
 ## Related

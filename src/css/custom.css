@@ -12,11 +12,11 @@
 @import "@fontsource/jetbrains-mono/600.css";
 
 /* ========================================================================
-   BurgerAPI Design System — DESIGN.md tokens
+   BurgerAPI Design System: DESIGN.md tokens
    ======================================================================== */
 
 :root {
-  /* Brand — warm orange-yellow is an accent only */
+  /* Brand: warm orange-yellow is an accent only */
   --ba-primary: #ffa62b;
   --ba-secondary: #ffb84d;
   --ba-accent: #ffc861;
@@ -24,7 +24,7 @@
   --ba-danger: #ef4444;
   --ba-info: #3b82f6;
 
-  /* Light theme surfaces — warm neutrals */
+  /* Light theme surfaces: warm neutrals */
   --ba-bg: #f7f7f5;
   --ba-bg-secondary: #f2f2ef;
   --ba-card: #ffffff;
@@ -45,7 +45,7 @@
     rgba(255, 255, 255, 0) 100%
   );
 
-  /* Shadows — light (layered) */
+  /* Shadows: light (layered) */
   --ba-shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.04);
   --ba-shadow-md: 0 16px 40px rgba(0, 0, 0, 0.08);
   --ba-shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.12);
@@ -206,7 +206,7 @@ body {
 }
 
 /* ========================================================================
-   Navbar — glass
+   Navbar: glass
    ======================================================================== */
 
 .navbar {
@@ -339,7 +339,7 @@ body {
 }
 
 /* ========================================================================
-   Docs polish — typography, tables, admonitions, code
+   Docs polish: typography, tables, admonitions, code
    ======================================================================== */
 
 .theme-doc-markdown {
@@ -477,7 +477,7 @@ article {
 
 
 
-/* Admonitions — glass panels */
+/* Admonitions: glass panels */
 .theme-admonition {
   border-radius: 16px !important;
   border-left-width: 4px !important;
@@ -664,7 +664,7 @@ article {
   }
 }
 
-/* Footer — premium ending */
+/* Footer: premium ending */
 .footer.ba-footer {
   position: relative;
   border-top: 1px solid var(--ba-border);

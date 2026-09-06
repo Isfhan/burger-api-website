@@ -36,7 +36,7 @@ Route hooks run after global hooks and validation, and before the route handler.
 
 Use route hooks for admin checks, loading route-specific data, or any logic that applies to a single endpoint. See [Hook System](/docs/hooks/system).
 
-When a route hook reads `ctx.validated` (the route has a `schema.ts`), wrap the hooks with `defineHooks(schema, hooks)` to get it typed — the `defineRoute` counterpart for hooks files:
+When a route hook reads `ctx.validated` (the route has a `schema.ts`), wrap the hooks with `defineHooks(schema, hooks)` (the `defineRoute` counterpart for hooks files) to get it typed:
 
 ```ts
 // src/api/users/hooks.ts

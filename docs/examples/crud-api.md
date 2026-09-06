@@ -4,7 +4,7 @@ sidebar_label: CRUD API
 
 # CRUD API Example
 
-A complete products API with list, read, create, update, and delete — using file-based routing, Zod validation, lazy query access, and `ctx.set`.
+A complete products API with list, read, create, update, and delete, using file-based routing, Zod validation, lazy query access, and `ctx.set`.
 
 Each route directory is self-contained: `route.ts` holds the handlers, `schema.ts` holds the per-method validation schemas.
 

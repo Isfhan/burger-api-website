@@ -42,12 +42,12 @@ Each hook point has a precise type. TypeScript checks your hook's return value a
 
 The types you use (all from `burger-api`):
 
-- `ForwardHook` — `onRequest`, `beforeRoute`. Returns `Response` or `undefined`.
-- `ResponseHook` — `afterRoute`, `mapResponse`. Returns `Response`, a transform function, or `undefined`.
-- `ErrorHook` — `onError`. Returns `Response` or `undefined`.
-- `RouteHooks` — the full hook object, for `hooks.ts` files.
+- `ForwardHook`: `onRequest`, `beforeRoute`. Returns `Response` or `undefined`.
+- `ResponseHook`: `afterRoute`, `mapResponse`. Returns `Response`, a transform function, or `undefined`.
+- `ErrorHook`: `onError`. Returns `Response` or `undefined`.
+- `RouteHooks`: the full hook object, for `hooks.ts` files.
 
-✅ Correct — a transform function on a response hook:
+✅ Correct: a transform function on a response hook:
 
 ```ts
 import type { RouteHooks } from "burger-api";
@@ -61,7 +61,7 @@ export const afterRoute: RouteHooks["afterRoute"] = [
 ];
 ```
 
-❌ Wrong — a transform function on a forward hook. This does not compile:
+❌ Wrong: a transform function on a forward hook. This does not compile:
 
 ```ts
 export const beforeRoute: RouteHooks["beforeRoute"] = [
@@ -69,7 +69,7 @@ export const beforeRoute: RouteHooks["beforeRoute"] = [
 ];
 ```
 
-❌ Wrong — a hook returns an invalid value:
+❌ Wrong: a hook returns an invalid value:
 
 ```ts
 export const beforeRoute: RouteHooks["beforeRoute"] = [

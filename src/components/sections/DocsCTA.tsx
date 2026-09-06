@@ -16,7 +16,7 @@ export function DocsCTA() {
               Ready to dig into the docs?
             </h2>
             <p className="text-body text-ink-secondary m-0 mb-8 max-w-xl mx-auto">
-              Guides, API reference, examples, and tutorials — everything you
+              Guides, API reference, examples, and tutorials: everything you
               need to build production APIs with BurgerAPI.
             </p>
             <Button to="/docs/" size="lg" variant="primary">

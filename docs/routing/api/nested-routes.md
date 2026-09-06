@@ -24,7 +24,7 @@ For each route type, see [Static API Routes](/docs/routing/api/static-routes), [
 
 Nesting does not change the types. Each dynamic segment still needs a `params` schema in `schema.ts` to be typed.
 
-✅ Correct — one schema for all segments, wrapped with `defineRoute`:
+✅ Correct: one schema for all segments, wrapped with `defineRoute`:
 
 ```typescript
 import { defineRoute } from "burger-api";
@@ -46,9 +46,9 @@ export const GET = {
 };
 ```
 
-The manual generic — `BurgerContext<typeof GetSchema>` — is the same inference, written by hand.
+The manual generic, `BurgerContext<typeof GetSchema>`, is the same inference, written by hand.
 
-❌ Wrong — a segment without a schema is `unknown`:
+❌ Wrong: a segment without a schema is `unknown`:
 
 ```typescript
 export const GET = defineRoute(GetSchema, (ctx) => {

@@ -15,7 +15,7 @@ const items: { icon: LucideIcon; title: string; description: string }[] = [
     icon: Type,
     title: "Inferred Types",
     description:
-      "Validated data flows into your handlers with full TypeScript inference — no manual typing for params, query, or body.",
+      "Validated data flows into your handlers with full TypeScript inference, so there's no manual typing for params, query, or body.",
   },
   {
     icon: RefreshCw,

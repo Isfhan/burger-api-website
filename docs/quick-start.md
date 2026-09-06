@@ -11,7 +11,7 @@ Full install options (standalone executable, manual setup): [Installation](/docs
 
 ## Prerequisites
 
-- **[Bun](https://bun.sh/)** — BurgerAPI is built for Bun. Install it from [bun.sh](https://bun.sh). Bun runs the CLI and local dev server regardless of where you deploy — see [Deploy anywhere](#deploy-anywhere) below.
+- **[Bun](https://bun.sh/)**: BurgerAPI is built for Bun. Install it from [bun.sh](https://bun.sh). Bun runs the CLI and local dev server regardless of where you deploy. See [Deploy anywhere](#deploy-anywhere) below.
 
 ## Steps
 
@@ -49,7 +49,7 @@ See [JavaScript](/docs/javascript) for details.
 
 ## Deploy anywhere
 
-`bun run dev` above is local development. When you're ready to ship, `burger-api build --target=<platform>` builds for the platform you're deploying to — Bun (default), Node.js, Cloudflare Workers, Deno, or Vercel:
+`bun run dev` above is local development. When you're ready to ship, `burger-api build --target=<platform>` builds for the platform you're deploying to: Bun (default), Node.js, Cloudflare Workers, Deno, or Vercel:
 
 ```bash
 burger-api build src/index.ts --target=cloudflare
@@ -60,8 +60,8 @@ See [Deployment](/docs/deployment/bun) for each target and [Compatibility](/docs
 
 ## Next steps
 
-- [Installation](/docs/getting-started/installation) — Full install options (standalone executable, manual setup).
-- [CLI Tool](/docs/getting-started/cli) — All CLI commands (create, add, list, dev, build, start).
-- [Key Concepts](/docs/key-concepts) — Routing, hooks, plugins, validation.
-- [JavaScript](/docs/javascript) — JavaScript with JSDoc types.
-- [Deployment](/docs/deployment/bun) — Bun, Node.js, Cloudflare Workers, Deno, Vercel.
+- [Installation](/docs/getting-started/installation): Full install options (standalone executable, manual setup).
+- [CLI Tool](/docs/getting-started/cli): All CLI commands (create, add, list, dev, build, start).
+- [Key Concepts](/docs/key-concepts): Routing, hooks, plugins, validation.
+- [JavaScript](/docs/javascript): JavaScript with JSDoc types.
+- [Deployment](/docs/deployment/bun): Bun, Node.js, Cloudflare Workers, Deno, Vercel.

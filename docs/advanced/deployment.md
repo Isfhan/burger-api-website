@@ -6,8 +6,8 @@ sidebar_label: Deployment
 
 Deployment depends on your runtime. BurgerAPI's deployment guides cover each target:
 
-- [Deploy on Bun](/docs/deployment/bun) — `burger.serve(port)` with `burger-api build` and `burger-api start`.
-- [Deploy on Node.js](/docs/deployment/node) — `@burger-api/node-server`'s `serve(app)`, WebSocket included.
+- [Deploy on Bun](/docs/deployment/bun): `burger.serve(port)` with `burger-api build` and `burger-api start`.
+- [Deploy on Node.js](/docs/deployment/node): `@burger-api/node-server`'s `serve(app)`, WebSocket included.
 - [Deploy on Cloudflare Workers](/docs/deployment/cloudflare)
 - [Deploy on Vercel](/docs/deployment/vercel)
 - [Deploy on Deno](/docs/deployment/deno)

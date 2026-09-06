@@ -97,7 +97,7 @@ export function CodeExamples() {
         <SectionHeader
           eyebrow="Code"
           title="From file to endpoint in minutes"
-          subtitle="Three patterns you will use every day — start the server, define a route, and validate with Zod."
+          subtitle="Three patterns you will use every day: start the server, define a route, and validate with Zod."
         />
       </ScrollReveal>
 

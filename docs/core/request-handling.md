@@ -38,11 +38,11 @@ See [Request API](/docs/api/request-api) for every property with examples. For r
 
 The types you use (from `burger-api`):
 
-- `BurgerContext` — the request object passed to handlers and hooks
-- `BurgerContext<typeof GET>` — the request object with `ctx.validated` typed from your schema
-- `defineRoute(schema, handler)` — infers `ctx` from `schema` automatically; no generic to write
+- `BurgerContext`: the request object passed to handlers and hooks
+- `BurgerContext<typeof GET>`: the request object with `ctx.validated` typed from your schema
+- `defineRoute(schema, handler)`: infers `ctx` from `schema` automatically; no generic to write
 
-✅ Correct — `defineRoute` infers the handler's `ctx` from the schema:
+✅ Correct, `defineRoute` infers the handler's `ctx` from the schema:
 
 ```ts title="api/users/[id]/route.ts"
 import { defineRoute } from "burger-api";
@@ -54,7 +54,7 @@ export const GET = defineRoute(GetSchema, (ctx) => {
 });
 ```
 
-Equally correct — the manual generic form does the same thing by hand:
+Equally correct, the manual generic form does the same thing by hand:
 
 ```ts title="api/users/[id]/route.ts"
 import type { BurgerContext } from "burger-api";
@@ -66,7 +66,7 @@ export async function GET(ctx: BurgerContext<typeof RouteSchema>) {
 }
 ```
 
-❌ Wrong — reading a body field that was not validated:
+❌ Wrong, reading a body field that was not validated:
 
 ```ts
 export async function POST(ctx: BurgerContext) {

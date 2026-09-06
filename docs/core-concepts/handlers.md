@@ -26,7 +26,7 @@ Handlers read `ctx.params`, `ctx.query`, `ctx.cookies`, and `ctx.json()` for req
 
 ## Typed validated data
 
-Validation lives in the route's `schema.ts` with per-method named exports. Wrap the handler with `defineRoute(schema, handler)` to get `ctx.validated` inferred from the schema automatically — no generic to write by hand:
+Validation lives in the route's `schema.ts` with per-method named exports. Wrap the handler with `defineRoute(schema, handler)` to get `ctx.validated` inferred from the schema automatically, with no generic to write by hand:
 
 ```ts title="api/products/schema.ts"
 import { z } from "zod";
@@ -44,7 +44,7 @@ export const GET = defineRoute(GetSchema, (ctx) => {
 });
 ```
 
-The older, equivalent form — annotate the handler with `BurgerContext<typeof GET>` directly — still works:
+The older, equivalent form (annotate the handler with `BurgerContext<typeof GET>` directly) still works:
 
 ```ts
 import type { BurgerContext } from "burger-api";

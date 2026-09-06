@@ -98,13 +98,13 @@ burger-api build src/index.ts --target=node --outfile=dist/server.js
 burger-api build src/index.ts --compile --outfile=my-app
 ```
 
-Bun and Node targets produce a single self-contained bundle; Cloudflare, Deno, and Vercel produce a portable entry file plus a scaffolded platform config (`wrangler.toml` / `deno.json` / `vercel.json`, only if one doesn't already exist) — the platform's own tool (`wrangler`/`deno`/`vercel`) does the actual bundling from there.
+Bun and Node targets produce a single self-contained bundle; Cloudflare, Deno, and Vercel produce a portable entry file plus a scaffolded platform config (`wrangler.toml` / `deno.json` / `vercel.json`, only if one doesn't already exist), and the platform's own tool (`wrangler`/`deno`/`vercel`) does the actual bundling from there.
 
 See [Build Command](/docs/cli/build) and [Compatibility](/docs/compatibility) for what each target supports.
 
 ### `burger-api start`
 
-Runs the production server (no hot reload) for a **Bun** build. Run `burger-api build` first. For other targets, run the build's own output directly: `node dist/server.js` (Node), `wrangler dev`/`deploy` (Cloudflare), `deno serve` (Deno), `vercel dev`/`--prod` (Vercel) — see [Deployment](/docs/deployment/bun).
+Runs the production server (no hot reload) for a **Bun** build. Run `burger-api build` first. For other targets, run the build's own output directly: `node dist/server.js` (Node), `wrangler dev`/`deploy` (Cloudflare), `deno serve` (Deno), `vercel dev`/`--prod` (Vercel). See [Deployment](/docs/deployment/bun).
 
 - Options: `-p, --port <port>` (default `4000`), `-f, --file <file>`.
 
@@ -180,8 +180,8 @@ my-api/
 
 ### Build for production
 
-1. `burger-api build src/index.ts --target=<platform>` — `bun` (default), `node`, `cloudflare`, `deno`, or `vercel`.
-2. Run it: `burger-api start` (Bun), `node dist/server.js` (Node), or hand off to the platform's own tool — `wrangler dev`/`deploy`, `deno serve`, `vercel dev`/`--prod`.
+1. `burger-api build src/index.ts --target=<platform>`: `bun` (default), `node`, `cloudflare`, `deno`, or `vercel`.
+2. Run it: `burger-api start` (Bun), `node dist/server.js` (Node), or hand off to the platform's own tool: `wrangler dev`/`deploy`, `deno serve`, `vercel dev`/`--prod`.
 3. `burger-api build src/index.ts --compile --outfile=my-app` for a standalone Bun binary (or `burger-api build:exec src/index.ts --target bun-linux-x64` for a specific OS/arch).
 
 ## Troubleshooting

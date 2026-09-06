@@ -313,7 +313,7 @@ Don't use route groups when:
 
 Route groups do not change the types of a route. A group folder is removed from the URL, and the handlers inside are typed exactly like any other route.
 
-✅ Correct — the handler type is the same as without the group:
+✅ Correct: the handler type is the same as without the group:
 
 ```typescript
 // api/(admin)/users/route.ts → /api/users

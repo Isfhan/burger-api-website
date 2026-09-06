@@ -50,11 +50,11 @@ Hooks control the request lifecycle. Plugins extend the application. They are se
 
 The types you use (all from `burger-api`):
 
-- `Plugin` — a plugin: `{ name, hooks? }`
-- `RouteHooks` — the hook object (for typing `hooks.ts` files)
-- `BurgerServices` — the services on `ctx.services` — you extend it
+- `Plugin` is a plugin: `{ name, hooks? }`
+- `RouteHooks` is the hook object (for typing `hooks.ts` files)
+- `BurgerServices` is the services on `ctx.services`, which you extend
 
-✅ Correct — type the plugin when you write one:
+✅ Correct: type the plugin when you write one:
 
 ```ts title="src/plugins.ts"
 import type { Plugin, PluginRegistrar } from "burger-api";
@@ -71,7 +71,7 @@ export default (burger: PluginRegistrar) => {
 };
 ```
 
-✅ Correct — type the services your plugin provides (augmentation, in any app file):
+✅ Correct: type the services your plugin provides (augmentation, in any app file):
 
 ```ts
 declare module "burger-api" {
@@ -80,10 +80,10 @@ declare module "burger-api" {
     }
 }
 
-// In a handler: ctx.services.db — typed
+// In a handler: ctx.services.db (typed)
 ```
 
-❌ Wrong — an unknown hook point on a plugin:
+❌ Wrong: an unknown hook point on a plugin:
 
 ```ts
 const bad: Plugin = {

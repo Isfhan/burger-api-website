@@ -121,13 +121,13 @@ Every configuration layer has a type.
 
 The types you use (all from `burger-api`):
 
-- `ServerOptions` — the `new Burger({...})` options
-- `RouteDefinition` — a route with handlers, schema, and openapi metadata
-- `RouteSchema` — a route's full schema map
-- `HTTPMethod` — the allowed method names
-- `BurgerContext` — the request object (for typing handlers and hooks)
+- `ServerOptions`: the `new Burger({...})` options
+- `RouteDefinition`: a route with handlers, schema, and openapi metadata
+- `RouteSchema`: a route's full schema map
+- `HTTPMethod`: the allowed method names
+- `BurgerContext`: the request object (for typing handlers and hooks)
 
-✅ Correct — typed configuration:
+✅ Correct, typed configuration:
 
 ```typescript title="src/index.ts"
 import { Burger } from "burger-api";
@@ -146,7 +146,7 @@ const burger = new Burger({
 });
 ```
 
-❌ Wrong — a typo in an option name or a method key:
+❌ Wrong, a typo in an option name or a method key:
 
 ```typescript
 new Burger({ apiDri: "./src/api" }); // ❌ Property 'apiDri' does not exist
@@ -157,7 +157,7 @@ const bad: RouteDefinition = {
 };
 ```
 
-For typed `ctx.services` and custom context values, use the augmentation pattern — see the [TypeScript overview](/docs/advanced/type-safety).
+For typed `ctx.services` and custom context values, use the augmentation pattern. See the [TypeScript overview](/docs/advanced/type-safety).
 
 Check your code: `bun run typecheck`.
 

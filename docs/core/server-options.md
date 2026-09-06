@@ -34,12 +34,12 @@ The options object is typed as `ServerOptions`. TypeScript checks every option y
 
 The types you use (all from `burger-api`):
 
-- `ServerOptions` — the options of `new Burger({...})`
-- `RouteDefinition` — a route for `apiRoutes`
-- `RouteSchema` — a route's full schema map
-- `HTTPMethod` — the allowed method names
+- `ServerOptions`: the options of `new Burger({...})`
+- `RouteDefinition`: a route for `apiRoutes`
+- `RouteSchema`: a route's full schema map
+- `HTTPMethod`: the allowed method names
 
-✅ Correct — typed options and a typed route definition:
+✅ Correct, typed options and a typed route definition:
 
 ```typescript
 import { Burger } from "burger-api";
@@ -59,7 +59,7 @@ const app = new Burger({
 });
 ```
 
-❌ Wrong — an unknown option or a bad method key:
+❌ Wrong, an unknown option or a bad method key:
 
 ```typescript
 new Burger({

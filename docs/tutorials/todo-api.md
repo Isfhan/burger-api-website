@@ -240,7 +240,7 @@ export const POST = defineRoute(PostSchema, (ctx) => {
 
 :::tip What's Happening?
 - `GET` returns all todos with a count
-- `POST` reads validated data from `ctx.validated.body`, typed from `schema.ts` via `defineRoute(PostSchema, handler)` — no `BurgerContext<typeof POST>` generic needed
+- `POST` reads validated data from `ctx.validated.body`, typed from `schema.ts` via `defineRoute(PostSchema, handler)`, so no `BurgerContext<typeof POST>` generic is needed
 - Validation errors return 422 automatically, so the handler contains no manual checks
 - We return 201 for created resources
 :::
@@ -391,7 +391,7 @@ This generates a bundle at:
 
 - `.build/bundle/app.js`
 
-Pass `--target=node|cloudflare|deno|vercel` to build for a different deployment platform instead of Bun — see [Deployment](../deployment/bun.md).
+Pass `--target=node|cloudflare|deno|vercel` to build for a different deployment platform instead of Bun. See [Deployment](../deployment/bun.md).
 
 To create a standalone executable:
 

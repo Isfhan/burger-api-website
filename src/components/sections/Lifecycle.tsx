@@ -3,7 +3,7 @@ import { ShieldCheck, ArrowRight, Zap, Filter, Workflow, Code2, Network } from "
 import type { LucideIcon } from "lucide-react";
 import { Section, SectionHeader, CodeBlock, ScrollReveal, Button } from "../ui";
 
-const code = `// src/hooks.ts — global lifecycle hooks
+const code = `// src/hooks.ts: global lifecycle hooks
 import type { BurgerContext } from "burger-api";
 
 export const onRequest = [

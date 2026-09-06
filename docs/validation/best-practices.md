@@ -24,11 +24,11 @@ Query strings, params, headers, and cookies are always text. If you expect numbe
 
 ## Share shapes across routes
 
-When the same shape appears in more than one route, define it once in a schemas file and import it — see [Schema Definition](/docs/validation/schema). One source of truth, still fully typed.
+When the same shape appears in more than one route, define it once in a schemas file and import it. See [Schema Definition](/docs/validation/schema). One source of truth, still fully typed.
 
 ## Keep handlers thin
 
-Validation runs before your handler, so the handler can trust `ctx.validated`. Do not re-check types inside the handler — just use the data.
+Validation runs before your handler, so the handler can trust `ctx.validated`. Do not re-check types inside the handler; just use the data.
 
 ## Add response validation where it matters
 
@@ -36,7 +36,7 @@ Use `response` schemas in `dev` mode to get free feedback that a handler returns
 
 ## Choose the right error format
 
-The default error body follows RFC 9457. If your clients expect the simpler grouped body, set `errorFormat: "plain"` — see [Problem Details](/docs/validation/problem-details). For full control, supply an `errorRenderer`.
+The default error body follows RFC 9457. If your clients expect the simpler grouped body, set `errorFormat: "plain"`. See [Problem Details](/docs/validation/problem-details). For full control, supply an `errorRenderer`.
 
 ## Don't over-validate
 

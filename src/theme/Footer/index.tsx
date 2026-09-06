@@ -83,7 +83,7 @@ export default function Footer(): React.ReactElement {
   return (
     <footer className="footer ba-footer">
       <div className="relative mx-auto max-w-content px-4 sm:px-6 lg:px-8 py-16 md:py-20">
-        {/* Level 1 — brand */}
+        {/* Level 1: brand */}
         <div className="flex flex-col md:flex-row md:items-start gap-12 mb-14">
           <div className="md:max-w-sm">
             <div className="flex gap-0 mb-4 items-end">
@@ -107,7 +107,7 @@ export default function Footer(): React.ReactElement {
             </div>
           </div>
 
-          {/* Level 2 — navigation */}
+          {/* Level 2: navigation */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-10 flex-1">
             <FooterColumn title="Documentation" links={docLinks} />
             <FooterColumn title="Resources" links={resourceLinks} />
@@ -116,7 +116,7 @@ export default function Footer(): React.ReactElement {
           </div>
         </div>
 
-        {/* Level 3 — bottom bar */}
+        {/* Level 3: bottom bar */}
         <div className="footer__bottom pt-8">
           <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-small text-ink-muted">
             <span>© {new Date().getFullYear()} BurgerAPI</span>

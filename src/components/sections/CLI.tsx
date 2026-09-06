@@ -15,7 +15,7 @@ bunx burger-api add cors
 # Start the server
 bun run dev
 
-# Ship it — bun, node, cloudflare, deno, or vercel
+# Ship it: bun, node, cloudflare, deno, or vercel
 burger-api build src/index.ts --target=cloudflare`;
 
 export function CLI() {
@@ -27,7 +27,7 @@ export function CLI() {
             align="left"
             eyebrow="CLI"
             title="Scaffold and ship from the terminal"
-            subtitle="Create projects, add routes, run your API, and build it for any target — Bun, Node.js, Cloudflare Workers, Deno, or Vercel — with one flag."
+            subtitle="Create projects, add routes, run your API, and build it for any target: Bun, Node.js, Cloudflare Workers, Deno, or Vercel, all with one flag."
             className="mb-6"
           />
           <div className="mt-4">

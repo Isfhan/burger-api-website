@@ -31,7 +31,7 @@ export function Performance() {
         <SectionHeader
           eyebrow="Performance"
           title="Designed for the busy path"
-          subtitle="BurgerAPI keeps request handling lean: parse only what you need, share structure across requests, and dispatch on the fastest matching strategy. Not just a claim — within a few percent of Elysia and Hono across routing, JSON, and validation benchmarks."
+          subtitle="BurgerAPI keeps request handling lean: parse only what you need, share structure across requests, and dispatch on the fastest matching strategy. Not just a claim: it lands within a few percent of Elysia and Hono across routing, JSON, and validation benchmarks."
         />
       </ScrollReveal>
       <div className="grid md:grid-cols-3 gap-6 mb-10">

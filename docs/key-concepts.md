@@ -49,7 +49,7 @@ injected services (`ctx.services`), and more. Handlers always return a
 standard Web **`Response`**.
 
 Wrap a handler with **`defineRoute(schema, handler)`** to get `ctx.validated`
-typed from the schema automatically — no `BurgerContext<typeof Schema>`
+typed from the schema automatically, with no `BurgerContext<typeof Schema>`
 generic to write by hand. `defineHooks(schema, hooks)` does the same for a
 route's `hooks.ts`. Both are optional; the manual generic still works.
 
@@ -91,7 +91,7 @@ Deno, and Vercel get a portable `export default { fetch: toFetchHandler(app) }`
 entry plus a scaffolded platform config (`wrangler.toml` / `deno.json` /
 `vercel.json`), bundled by that platform's own tool. WebSocket routes work
 natively on all of these except Vercel, which has no persistent-connection
-model — the build fails at build time rather than shipping a broken route.
+model, so the build fails at build time rather than shipping a broken route.
 
 See [Deployment](/docs/deployment/bun) and [Compatibility](/docs/compatibility)
 for the full per-runtime matrix.

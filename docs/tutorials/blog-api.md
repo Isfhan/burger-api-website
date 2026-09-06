@@ -780,7 +780,7 @@ This will produce:
 
 - `.build/bundle/app.js`
 
-Pass `--target=node|cloudflare|deno|vercel` to build for a different platform — see [Deployment](../deployment/bun.md) and [Compatibility](../compatibility.md) for what each one supports.
+Pass `--target=node|cloudflare|deno|vercel` to build for a different platform. See [Deployment](../deployment/bun.md) and [Compatibility](../compatibility.md) for what each one supports.
 
 To build a standalone executable:
 

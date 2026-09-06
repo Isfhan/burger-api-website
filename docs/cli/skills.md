@@ -61,14 +61,14 @@ When you install the `burger-api` skill, you get:
 
 Skills in `.agents/skills/` are automatically discovered by:
 
-- **Cursor** — reads from `.agents/skills/`
-- **Claude Code** — reads from `.agents/skills/`
-- **OpenCode** — reads from `.agents/skills/`
-- **OpenAI Codex** — reads from `.agents/skills/`
-- **GitHub Copilot** — reads from `.agents/skills/`
+- **Cursor**: reads from `.agents/skills/`
+- **Claude Code**: reads from `.agents/skills/`
+- **OpenCode**: reads from `.agents/skills/`
+- **OpenAI Codex**: reads from `.agents/skills/`
+- **GitHub Copilot**: reads from `.agents/skills/`
 - Any tool supporting the [agentskills.io](https://agentskills.io) open standard
 
-No configuration needed — agents detect skills automatically.
+No configuration needed; agents detect skills automatically.
 
 
 ## Related

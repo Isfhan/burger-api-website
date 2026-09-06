@@ -223,10 +223,10 @@ TypeScript checks your handlers before they run.
 
 The types you use (all from `burger-api`):
 
-- `BurgerContext` — the request object passed to a handler
-- `RequestHandler` — the type of a handler function
+- `BurgerContext`: the request object passed to a handler
+- `RequestHandler`: the type of a handler function
 
-✅ Correct — type the handler parameter with `BurgerContext`:
+✅ Correct: type the handler parameter with `BurgerContext`:
 
 ```typescript
 import type { BurgerContext } from "burger-api";
@@ -236,7 +236,7 @@ export async function GET(ctx: BurgerContext) {
 }
 ```
 
-❌ Wrong — no parameter type and a non-`Response` return:
+❌ Wrong: no parameter type and a non-`Response` return:
 
 ```typescript
 export async function GET(ctx) {
@@ -245,7 +245,7 @@ export async function GET(ctx) {
 // ❌ Return type must be Response
 ```
 
-For typed request data (query, params, body), add a schema and wrap the handler with `defineRoute(schema, handler)` — or use `BurgerContext<typeof GET>` directly if you'd rather write the generic by hand. See [Validation](/docs/validation/zod) and the [TypeScript overview](/docs/advanced/type-safety).
+For typed request data (query, params, body), add a schema and wrap the handler with `defineRoute(schema, handler)`, or use `BurgerContext<typeof GET>` directly if you'd rather write the generic by hand. See [Validation](/docs/validation/zod) and the [TypeScript overview](/docs/advanced/type-safety).
 
 Check your code: `bun run typecheck`.
 

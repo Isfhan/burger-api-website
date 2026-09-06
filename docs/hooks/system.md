@@ -53,12 +53,12 @@ Each hook point has its own type. TypeScript checks the return value of your hoo
 
 The types you use (all from `burger-api`):
 
-- `ForwardHook` — for `onRequest` and `beforeRoute`: returns `Response` (stop) or `undefined` (continue)
-- `ResponseHook` — for `afterRoute` and `mapResponse`: can also return a function to change the response
-- `ErrorHook` — for `onError`: takes `(error, ctx)`, returns `Response` or `undefined`
-- `RouteHooks` — the object with all hook points, for typing `hooks.ts` files
+- `ForwardHook`: for `onRequest` and `beforeRoute`: returns `Response` (stop) or `undefined` (continue)
+- `ResponseHook`: for `afterRoute` and `mapResponse`: can also return a function to change the response
+- `ErrorHook`: for `onError`: takes `(error, ctx)`, returns `Response` or `undefined`
+- `RouteHooks`: the object with all hook points, for typing `hooks.ts` files
 
-✅ Correct — each hook returns something from its contract:
+✅ Correct: each hook returns something from its contract:
 
 ```typescript
 // hooks.ts
@@ -74,7 +74,7 @@ export const afterRoute: RouteHooks["afterRoute"] = [
 ];
 ```
 
-❌ Wrong — a hook returns a value that is not in the contract:
+❌ Wrong: a hook returns a value that is not in the contract:
 
 ```typescript
 export const beforeRoute: RouteHooks["beforeRoute"] = [
@@ -84,7 +84,7 @@ export const beforeRoute: RouteHooks["beforeRoute"] = [
 
 The full rules for each return value are on the [Hook Return Types](/docs/hooks/return-types) page. See the [TypeScript overview](/docs/advanced/type-safety).
 
-When a route's hooks read `ctx.validated`, `defineHooks(schema, hooks)` types every hook's `ctx` from the route's schema in one step — see [Route Hooks](/docs/hooks/route-specific).
+When a route's hooks read `ctx.validated`, `defineHooks(schema, hooks)` types every hook's `ctx` from the route's schema in one step. See [Route Hooks](/docs/hooks/route-specific).
 
 Check your code: `bun run typecheck`.
 

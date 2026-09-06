@@ -34,7 +34,7 @@ If the `session` cookie is missing, BurgerAPI responds with `422`. The validated
 
 - Only the cookie *values* are validated. Setting, signing, or writing cookies is handled elsewhere and is not part of validation.
 - Cookie values are text, so enable [coercion](/docs/validation/coercion) if you expect typed cookie values.
-- Header inputs are validated separately — see [Headers Validation](/docs/validation/headers).
+- Header inputs are validated separately. See [Headers Validation](/docs/validation/headers).
 
 
 ## Related

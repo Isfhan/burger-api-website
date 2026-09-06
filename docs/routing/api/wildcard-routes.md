@@ -598,10 +598,10 @@ TypeScript checks the handler parameter. The wildcard segments themselves have n
 
 The types you use (from `burger-api`):
 
-- `BurgerContext` — the request object
-- `ctx.wildcardParams` — always `string[] | undefined` (there is no schema for wildcard segments)
+- `BurgerContext`: the request object
+- `ctx.wildcardParams`: always `string[] | undefined` (there is no schema for wildcard segments)
 
-✅ Correct — type the handler and handle the optional array:
+✅ Correct: type the handler and handle the optional array:
 
 ```typescript
 import type { BurgerContext } from "burger-api";
@@ -612,7 +612,7 @@ export async function GET(ctx: BurgerContext) {
 }
 ```
 
-❌ Wrong — wildcard segments are not typed by name:
+❌ Wrong: wildcard segments are not typed by name:
 
 ```typescript
 export async function GET(ctx: BurgerContext) {

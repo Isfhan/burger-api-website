@@ -95,8 +95,8 @@ npx wrangler deploy
   deploy the generated bundle and point `main` at it (the CLI does this for
   you when it scaffolds `wrangler.toml`). Either way, never rely on
   filesystem scanning at runtime: Workers has no filesystem.
-- WebSocket **does** work on Workers — natively, via `WebSocketPair` — see
-  [Compatibility](/docs/compatibility). Pages (`HTMLBundle`) is Bun-only in
+- WebSocket **does** work on Workers, natively, via `WebSocketPair` (see
+  [Compatibility](/docs/compatibility)). Pages (`HTMLBundle`) is Bun-only in
   1.0 and not available on Workers.
 
 ## Related

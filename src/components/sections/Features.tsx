@@ -27,7 +27,7 @@ const features: Feature[] = [
     icon: FolderTree,
     title: "File-Based Routing",
     description:
-      "Define routes with route.ts files. Dynamic segments use [param] and wildcards use [...] — declarative and convention-driven.",
+      "Define routes with route.ts files. Dynamic segments use [param] and wildcards use [...], all declarative and convention-driven.",
   },
   {
     icon: Route,
@@ -45,7 +45,7 @@ const features: Feature[] = [
     icon: Radio,
     title: "WebSocket",
     description:
-      "File-based WebSocket routes under src/websocket/. Native support on Bun, Node.js, Cloudflare Workers, and Deno — typed connections with ws.data and ws.services.",
+      "File-based WebSocket routes under src/websocket/. Native support on Bun, Node.js, Cloudflare Workers, and Deno, with typed connections through ws.data and ws.services.",
   },
   {
     icon: Puzzle,
@@ -75,7 +75,7 @@ const features: Feature[] = [
     icon: Braces,
     title: "TypeScript First",
     description:
-      "defineRoute(schema, handler) infers ctx.validated straight from your Zod schema — no generic to write by hand.",
+      "defineRoute(schema, handler) infers ctx.validated straight from your Zod schema, so there's no generic to write by hand.",
   },
   {
     icon: Zap,
@@ -87,7 +87,7 @@ const features: Feature[] = [
     icon: Globe,
     title: "Deploy Anywhere",
     description:
-      "burger-api build --target=cloudflare|deno|vercel|node generates the entry and platform config for you — WinterCG-compatible, no manual wiring.",
+      "burger-api build --target=cloudflare|deno|vercel|node generates the entry and platform config for you: WinterCG-compatible, no manual wiring.",
   },
   {
     icon: Gauge,
@@ -103,7 +103,7 @@ export function Features() {
       <SectionHeader
         eyebrow="Why BurgerAPI"
         title="Everything you need to ship APIs"
-        subtitle="A focused toolkit for Bun backends — routing, validation, WebSocket, OpenAPI, and lifecycle hooks that work together out of the box."
+        subtitle="A focused toolkit for Bun backends: routing, validation, WebSocket, OpenAPI, and lifecycle hooks that work together out of the box."
       />
       <StaggerChildren className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {features.map((f) => (

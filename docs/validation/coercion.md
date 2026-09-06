@@ -6,7 +6,7 @@ sidebar_label: Coercion
 
 Query strings, path parameters, headers, and cookies always arrive as **text**. A query string like `?n=42` gives you the string `"42"`, not the number `42`. That means a strict Zod schema such as `z.object({ n: z.number() })` would reject it.
 
-**Coercion** (automatic type conversion) fixes this: BurgerAPI turns text into the right type for you — `"42"` becomes `42`, `"true"` becomes `true`, and `"2026-01-01"` becomes a `Date`.
+**Coercion** (automatic type conversion) fixes this: BurgerAPI turns text into the right type for you, so `"42"` becomes `42`, `"true"` becomes `true`, and `"2026-01-01"` becomes a `Date`.
 
 ## Turn it on
 
@@ -42,11 +42,11 @@ Now `?n=42&b=true` validates cleanly and `ctx.validated.query` holds `{ n: 42, b
 | `z.boolean()` | boolean (`"true"` → `true`, `"false"` → `false`) |
 | `z.date()` | `Date` |
 
-Coercion applies to `query`, `params`, `headers`, and `cookies` — not to the request `body` (JSON bodies are already typed).
+Coercion applies to `query`, `params`, `headers`, and `cookies`, but not to the request `body` (JSON bodies are already typed).
 
 ## Safe by design
 
-- A value that cannot be converted fails the validation normally — it never becomes `NaN` or silently corrupts your data.
+- A value that cannot be converted fails the validation normally. It never becomes `NaN` or silently corrupts your data.
 - When coercion is off, nothing changes: `"42"` stays `"42"` and strict schemas behave exactly as before.
 - You can still use Zod's own `z.coerce.number()` if you prefer per-field control; the framework `coerce: true` is a simpler, app-wide switch.
 

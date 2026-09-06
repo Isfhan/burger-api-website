@@ -6,7 +6,7 @@ sidebar: tutorialsSidebar
 
 # Tutorial 1: Hello World API
 
-In this tutorial, you'll create your first BurgerAPI application - a simple "Hello World" API that demonstrates the core concepts of file-based routing and automatic documentation generation.
+In this tutorial, you'll create your first BurgerAPI application: a simple "Hello World" API that demonstrates the core concepts of file-based routing and automatic documentation generation.
 
 ## What You'll Build
 
@@ -215,7 +215,7 @@ This produces a bundle under:
 
 - `.build/bundle/app.js`
 
-Pass `--target=<platform>` to build for somewhere other than Bun — `node`, `cloudflare`, `deno`, or `vercel` — see [Deployment](../deployment/bun.md).
+Pass `--target=<platform>` to build for somewhere other than Bun (`node`, `cloudflare`, `deno`, or `vercel`); see [Deployment](../deployment/bun.md).
 
 If you prefer a standalone executable (great for simple deployments), run:
 

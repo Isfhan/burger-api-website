@@ -14,11 +14,11 @@ The `body` schema types `ctx.validated.body`.
 
 The types you use (from `burger-api`):
 
-- `defineRoute(schema, handler)` — infers the handler type from `schema`; no generic to write
-- `BurgerContext<typeof POST>` — the same inference, written by hand
-- `ctx.validated.body` — the validated body, typed field by field
+- `defineRoute(schema, handler)`: infers the handler type from `schema`; no generic to write
+- `BurgerContext<typeof POST>`: the same inference, written by hand
+- `ctx.validated.body`: the validated body, typed field by field
 
-✅ Correct — validated body is typed from the schema:
+✅ Correct: validated body is typed from the schema:
 
 ```ts title="api/products/schema.ts"
 import { z } from "zod";
@@ -35,7 +35,7 @@ export const POST = defineRoute(PostSchema, (ctx) => {
 });
 ```
 
-❌ Wrong — a body field that is not in the schema:
+❌ Wrong: a body field that is not in the schema:
 
 ```ts
 export const POST = defineRoute(PostSchema, (ctx) => {

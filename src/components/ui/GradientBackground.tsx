@@ -31,7 +31,7 @@ export function GradientBackground({
         }}
       />
 
-      {/* Orange orb — top right */}
+      {/* Orange orb: top right */}
       <div
         className={clsx(
           "absolute rounded-full blur-3xl",
@@ -45,7 +45,7 @@ export function GradientBackground({
         }}
       />
 
-      {/* Secondary orange orb — left */}
+      {/* Secondary orange orb: left */}
       <div
         className={clsx(
           "absolute rounded-full blur-3xl",

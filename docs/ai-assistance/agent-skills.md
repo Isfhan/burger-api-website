@@ -11,15 +11,15 @@ Agent Skills provide structured, AI-readable documentation for your BurgerAPI pr
 
 ## What Are Agent Skills?
 
-Agent Skills follow the [agentskills.io](https://agentskills.io) open standard — a `SKILL.md` file with YAML frontmatter and progressive disclosure through reference documents.
+Agent Skills follow the [agentskills.io](https://agentskills.io) open standard: a `SKILL.md` file with YAML frontmatter and progressive disclosure through reference documents.
 
 Instead of attaching files manually, you install a skill once and your AI assistant finds it automatically.
 
 ## How They Work
 
-1. **Install** — `burger-api skills install` downloads the burger-api skill to `.agents/skills/burger-api/`
-2. **Discover** — Agentic IDEs scan `.agents/skills/` at project root and load relevant skills
-3. **Activate** — When you ask about routing, hooks, or CLI tasks, the agent uses the skill as context
+1. **Install**: `burger-api skills install` downloads the burger-api skill to `.agents/skills/burger-api/`
+2. **Discover**: Agentic IDEs scan `.agents/skills/` at project root and load relevant skills
+3. **Activate**: When you ask about routing, hooks, or CLI tasks, the agent uses the skill as context
 
 ## Installation
 
@@ -66,13 +66,13 @@ When skills are installed, your project includes:
 
 ## Compatible Agents
 
-No configuration needed — these tools discover `.agents/skills/` automatically:
+No configuration needed: these tools discover `.agents/skills/` automatically:
 
-- **Cursor** — loads skills as project context
-- **Claude Code** — reads from `.agents/skills/`
-- **OpenCode** — reads from `.agents/skills/`
-- **OpenAI Codex** — reads from `.agents/skills/`
-- **GitHub Copilot** — reads from `.agents/skills/`
+- **Cursor**: loads skills as project context
+- **Claude Code**: reads from `.agents/skills/`
+- **OpenCode**: reads from `.agents/skills/`
+- **OpenAI Codex**: reads from `.agents/skills/`
+- **GitHub Copilot**: reads from `.agents/skills/`
 - Any tool supporting the agentskills.io standard
 
 ## Next Steps

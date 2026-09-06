@@ -74,7 +74,7 @@ export function Hero() {
               </div>
 
               <p className="text-body text-ink-secondary m-0 mb-6  max-w-xl leading-relaxed">
-               BurgerAPI is a Bun-first TypeScript framework for building modern APIs — with file-based routing, inferred type safety, validation, WebSocket, plugins, and automatic OpenAPI. Build the same app for Bun, Node.js, Cloudflare Workers, Deno, or Vercel with one CLI flag.
+               BurgerAPI is a Bun-first TypeScript framework for building modern APIs, with file-based routing, inferred type safety, validation, WebSocket, plugins, and automatic OpenAPI. Build the same app for Bun, Node.js, Cloudflare Workers, Deno, or Vercel with one CLI flag.
               </p>
 
               <div className="flex flex-wrap items-center gap-3 mb-6">

@@ -43,7 +43,7 @@ Each issue has a `path` (where the problem is) and a `message` (what went wrong)
 
 ## Safe in production
 
-Production error bodies never include stack traces, source paths, or schema internals — only the `path` and `message` of each issue. Development mode may include a little more detail to help you debug, but it never leaks internals in production.
+Production error bodies never include stack traces, source paths, or schema internals. They include only the `path` and `message` of each issue. Development mode may include a little more detail to help you debug, but it never leaks internals in production.
 
 ## Fully custom errors
 

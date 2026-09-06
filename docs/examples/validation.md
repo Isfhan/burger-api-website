@@ -30,7 +30,7 @@ export const POST = defineRoute(POSTSchema, (ctx) => {
 });
 ```
 
-`defineRoute(schema, handler)` types `ctx.validated` from the matching schema export, so `limit` is a validated number, not a string — no `BurgerContext<typeof GET>` generic to write by hand (though it still works if you prefer it).
+`defineRoute(schema, handler)` types `ctx.validated` from the matching schema export, so `limit` is a validated number, not a string, and there is no `BurgerContext<typeof GET>` generic to write by hand (though it still works if you prefer it).
 
 With `z.coerce.number()`, a request like `?limit=10` gives you the number `10` (not the string `"10"`). You can also turn coercion on app-wide: see [Coercion](/docs/validation/coercion).
 
