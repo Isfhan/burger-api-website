@@ -20,6 +20,8 @@ burger-api add jwt api-key
 
 List available hooks and plugins with `burger-api list`. See [CLI Tool](/docs/getting-started/cli) and [Ecosystem](/docs/ecosystem/introduction).
 
+`burger-api generate hook <name>` / `generate plugin <name>` scaffold a blank local stub instead — if the name you pick already matches a real, working implementation in the ecosystem catalog, `generate` warns and suggests `burger-api add <name>` instead, though it still creates the stub either way (the check is a hint, not a block).
+
 
 ## Related
 

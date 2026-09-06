@@ -8,6 +8,7 @@ sidebar_label: List Command
 
 - Fetches the latest list and displays names and descriptions in a table.
 - Use with `burger-api add <name>` to install hooks or plugins.
+- The catalog is cached locally (`~/.burger-api/cache/`, a few hours) so repeat runs don't hit GitHub every time. If GitHub is unreachable, `list` falls back to the cached catalog with a warning instead of failing outright — as long as a cache already exists from a prior successful run.
 
 **Example:**
 
