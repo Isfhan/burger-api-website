@@ -36,6 +36,13 @@ Vercel Functions have no persistent-connection model to upgrade into (see
 equivalent by hand, useful if you're declaring routes programmatically
 instead of via the file convention.
 
+Unlike the `cloudflare`/`deno` targets (whose output lands under
+`.build/`, which `tsc`'s default file discovery skips), Vercel's
+zero-config detection requires the generated entry at `api/index.ts` —
+inside your normal source tree. If you run `tsc --noEmit` across the whole
+project, add `"exclude": ["api"]` to `tsconfig.json` so it doesn't
+typecheck the generated (unannotated) output.
+
 ## Entry file
 
 ```ts
