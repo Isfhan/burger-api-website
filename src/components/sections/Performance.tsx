@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import { BookOpen, BarChart3, ArrowRight, Cpu, MemoryStick, Layers, Gauge } from "lucide-react";
 import { Section, SectionHeader, Button, Badge, BenchmarkBar } from "../ui";
 
-// Real numbers from a committed run of burger-api-benchmarks' battle suite
-// (bun run battle --profile full), not synthetic or illustrative figures.
-// Regenerate with the same command to reproduce.
+// Mean of 3 consecutive `bun run battle --profile ci` runs in burger-api-benchmarks
+// (128 connections, 8s duration, 2s warm-up each), averaged to smooth single-run
+// scheduler noise on a shared desktop. Not synthetic or illustrative figures —
+// see reports/battle/2026-09-07-avg3/ in that repo for the raw per-run data.
 const SCENARIOS: {
   id: string;
   label: string;
@@ -16,10 +17,10 @@ const SCENARIOS: {
     label: "Average",
     description: "Mean requests/sec across all 4 scenarios below.",
     rows: [
-      { name: "Elysia", reqPerSec: 110160.99 },
-      { name: "Hono", reqPerSec: 108323.05 },
-      { name: "BurgerAPI", reqPerSec: 107769.72, highlight: true },
-      { name: "Express", reqPerSec: 59749.72 },
+      { name: "Elysia", reqPerSec: 104103.35 },
+      { name: "BurgerAPI", reqPerSec: 99572.17, highlight: true },
+      { name: "Hono", reqPerSec: 98054.07 },
+      { name: "Express", reqPerSec: 55815.14 },
     ],
   },
   {
@@ -27,10 +28,10 @@ const SCENARIOS: {
     label: "Static routing",
     description: "GET /posts — no params, no validation, no I/O.",
     rows: [
-      { name: "Elysia", reqPerSec: 113944.17 },
-      { name: "Hono", reqPerSec: 113206.39 },
-      { name: "BurgerAPI", reqPerSec: 108050.09, highlight: true },
-      { name: "Express", reqPerSec: 65897.07 },
+      { name: "Elysia", reqPerSec: 111868.82 },
+      { name: "BurgerAPI", reqPerSec: 104233.9, highlight: true },
+      { name: "Hono", reqPerSec: 103928.46 },
+      { name: "Express", reqPerSec: 62239.94 },
     ],
   },
   {
@@ -38,10 +39,10 @@ const SCENARIOS: {
     label: "Dynamic routing",
     description: "GET /posts/:id — one path param to parse and match.",
     rows: [
-      { name: "Elysia", reqPerSec: 112650.56 },
-      { name: "Hono", reqPerSec: 112582.76 },
-      { name: "BurgerAPI", reqPerSec: 105875.94, highlight: true },
-      { name: "Express", reqPerSec: 63508.69 },
+      { name: "Elysia", reqPerSec: 110834.05 },
+      { name: "Hono", reqPerSec: 104397.69 },
+      { name: "BurgerAPI", reqPerSec: 98269.25, highlight: true },
+      { name: "Express", reqPerSec: 59826.9 },
     ],
   },
   {
@@ -49,10 +50,10 @@ const SCENARIOS: {
     label: "JSON serialization",
     description: "GET returning a JSON object — pure response overhead.",
     rows: [
-      { name: "BurgerAPI", reqPerSec: 115188.5, highlight: true },
-      { name: "Hono", reqPerSec: 114198.86 },
-      { name: "Elysia", reqPerSec: 113137.99 },
-      { name: "Express", reqPerSec: 64042.26 },
+      { name: "BurgerAPI", reqPerSec: 107109.39, highlight: true },
+      { name: "Elysia", reqPerSec: 105568.64 },
+      { name: "Hono", reqPerSec: 100512.62 },
+      { name: "Express", reqPerSec: 57199.56 },
     ],
   },
   {
@@ -60,10 +61,10 @@ const SCENARIOS: {
     label: "Zod validation",
     description: "POST with JSON body parsing + Zod validation, echoed back.",
     rows: [
-      { name: "BurgerAPI", reqPerSec: 101964.36, highlight: true },
-      { name: "Elysia", reqPerSec: 100911.28 },
-      { name: "Hono", reqPerSec: 93304.2 },
-      { name: "Express", reqPerSec: 45550.85 },
+      { name: "BurgerAPI", reqPerSec: 88676.15, highlight: true },
+      { name: "Elysia", reqPerSec: 88141.89 },
+      { name: "Hono", reqPerSec: 83377.51 },
+      { name: "Express", reqPerSec: 43994.17 },
     ],
   },
 ];
@@ -82,8 +83,9 @@ export function Performance() {
   return (
     <Section id="performance">
       <SectionHeader
+        eyebrow="Performance"
         title="Designed for the busy path"
-        subtitle="Parse only what you need, share structure across requests, and dispatch on the fastest matching strategy. BurgerAPI leads on JSON serialization and Zod validation, trails Elysia and Hono by a few percent on raw routing, and is roughly 1.7-2x faster than Express everywhere."
+        subtitle="Parse only what you need, share structure across requests, and dispatch on the fastest matching strategy. BurgerAPI beats Hono in 3 of 4 scenarios below, trails Elysia mostly on raw routing dispatch, and comes out fastest of the four once Zod validation is in the request path — all while running roughly 1.8x faster than Express throughout."
       />
 
       <div className="flex flex-wrap justify-center gap-2 mb-8">
@@ -118,7 +120,7 @@ export function Performance() {
         <BenchmarkBar rows={active.rows} />
 
         <p className="text-small text-ink-muted mt-6 text-center min-h-[2.5em]">
-          {active.description} · burger-api-benchmarks, 2026-09-06
+          {active.description} · mean of 3 runs · burger-api-benchmarks, 2026-09-07
         </p>
       </div>
 

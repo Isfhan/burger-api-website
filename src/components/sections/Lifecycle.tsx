@@ -1,5 +1,18 @@
 import React from "react";
-import { ShieldCheck, ArrowRight, Zap, Filter, Workflow, Code2, Network } from "lucide-react";
+import clsx from "clsx";
+import {
+  ShieldCheck,
+  ArrowRight,
+  Zap,
+  Filter,
+  Workflow,
+  Code2,
+  Network,
+  Redo2,
+  SendHorizontal,
+  CheckCircle2,
+  AlertTriangle,
+} from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Section, SectionHeader, CodeBlock, Button } from "../ui";
 
@@ -22,50 +35,94 @@ export const beforeRoute = [
       );
     }
   },
+];
+
+export const afterRoute = [
+  () => (response: Response) => {
+    console.log(response.status, response.headers.get("x-request-id"));
+    return response;
+  },
 ];`;
 
-const pipeline: { label: string; icon: LucideIcon }[] = [
-  { label: "Request", icon: Zap },
-  { label: "onRequest", icon: Network },
-  { label: "transform", icon: Workflow },
-  { label: "Validation", icon: ShieldCheck },
-  { label: "beforeRoute", icon: Filter },
-  { label: "Handler", icon: Code2 },
+type Stage = { id: string; label: string; icon: LucideIcon; kind: "process" | "hook" | "peak" };
+
+const STAGES: Stage[] = [
+  { id: "request", label: "Request", icon: Zap, kind: "process" },
+  { id: "onRequest", label: "onRequest", icon: Network, kind: "hook" },
+  { id: "transform", label: "transform", icon: Workflow, kind: "hook" },
+  { id: "validation", label: "Validation", icon: ShieldCheck, kind: "process" },
+  { id: "beforeRoute", label: "beforeRoute", icon: Filter, kind: "hook" },
+  { id: "handler", label: "Handler", icon: Code2, kind: "peak" },
+  { id: "afterRoute", label: "afterRoute", icon: Redo2, kind: "hook" },
+  { id: "mapResponse", label: "mapResponse", icon: SendHorizontal, kind: "hook" },
+  { id: "response", label: "Response", icon: CheckCircle2, kind: "process" },
 ];
 
 export function Lifecycle() {
   return (
-    <Section id="lifecycle">
+    <Section id="lifecycle" secondary>
       <SectionHeader
         eyebrow="Lifecycle hooks"
         title="Compose auth, logging, and CORS"
         subtitle="Six named hooks control every request: onRequest, transform, beforeRoute, afterRoute, mapResponse, and onError. Return a Response to short-circuit, or continue down the pipeline."
       />
 
-      <div className="grid lg:grid-cols-2 gap-10 items-center">
-        <div className="ba-pipeline">
-          {pipeline.map((step, i) => (
-            <div key={step.label} className="ba-pipeline__step">
-              <div className="ba-pipeline__node">
-                <step.icon size={18} strokeWidth={1.75} aria-hidden />
-              </div>
-              <div className="ba-pipeline__body">
-                <span className="ba-pipeline__index">0{i + 1}</span>
-                <span className="text-card-title text-ink font-semibold">
-                  {step.label}
-                </span>
-              </div>
-              {i < pipeline.length - 1 && (
-                <span className="ba-pipeline__connector" aria-hidden />
-              )}
+      {/* Mobile: stacked list */}
+      <div className="ba-pipeline md:hidden max-w-sm mx-auto">
+        {STAGES.map((stage, i) => (
+          <div key={stage.id} className="ba-pipeline__step">
+            <div className="ba-pipeline__node">
+              <stage.icon size={18} strokeWidth={1.75} aria-hidden />
             </div>
-          ))}
-        </div>
+            <div className="ba-pipeline__body">
+              <span className="ba-pipeline__index">0{i + 1}</span>
+              <span
+                className={clsx(
+                  "text-card-title text-ink font-semibold",
+                  stage.kind === "hook" && "font-mono text-[1.05rem]"
+                )}
+              >
+                {stage.label}
+              </span>
+            </div>
+            {i < STAGES.length - 1 && (
+              <span className="ba-pipeline__connector" aria-hidden />
+            )}
+          </div>
+        ))}
+      </div>
 
+      {/* Desktop: horizontal rail — the request climbs to your Handler, then flows back out */}
+      <div className="ba-rail hidden md:flex" role="list" aria-label="Request lifecycle">
+        <span className="ba-rail__line" aria-hidden />
+        {STAGES.map((stage) => (
+          <div
+            key={stage.id}
+            className={clsx("ba-rail__stage", `ba-rail__stage--${stage.kind}`)}
+            role="listitem"
+          >
+            <span className="ba-rail__node">
+              <stage.icon
+                size={stage.kind === "peak" ? 22 : 18}
+                strokeWidth={1.75}
+                aria-hidden
+              />
+            </span>
+            <span className="ba-rail__label">{stage.label}</span>
+          </div>
+        ))}
+      </div>
+
+      <p className="ba-rail__error">
+        <AlertTriangle size={14} strokeWidth={2} aria-hidden />
+        onError steps in if any stage above throws
+      </p>
+
+      <div className="max-w-2xl mx-auto mt-10">
         <CodeBlock code={code} filename="src/hooks.ts" />
       </div>
 
-      <div className="mt-10 flex justify-center">
+      <div className="mt-8 flex justify-center">
         <Button to="/docs/hooks/system" variant="secondary">
           <ShieldCheck size={16} aria-hidden />
           Hooks docs

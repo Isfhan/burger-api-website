@@ -21,7 +21,7 @@ export async function GET(ctx: BurgerContext) {
 
 export function FileRouting() {
   return (
-    <Section id="routing">
+    <Section id="routing" secondary>
       <SectionHeader
         eyebrow="File Routing"
         title="Routes that match your folders"

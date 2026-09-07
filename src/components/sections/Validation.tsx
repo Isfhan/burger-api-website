@@ -48,7 +48,7 @@ export function Validation() {
     validationTabs.find((t) => t.id === activeTab) ?? validationTabs[0];
 
   return (
-    <Section id="validation" secondary>
+    <Section id="validation">
       <div className="grid lg:grid-cols-2 gap-12 items-center">
         <div>
           <SectionHeader

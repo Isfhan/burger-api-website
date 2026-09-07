@@ -51,7 +51,7 @@ const items: { icon: LucideIcon; title: string; description: string }[] = [
 
 export function DeveloperExperience() {
   return (
-    <Section id="dx" secondary>
+    <Section id="dx">
       <SectionHeader
         eyebrow="Developer Experience"
         title="Built for how you actually work"

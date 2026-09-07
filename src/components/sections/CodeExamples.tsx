@@ -88,7 +88,7 @@ export function CodeExamples() {
   };
 
   return (
-    <Section id="examples">
+    <Section id="examples" secondary>
       <SectionHeader
         eyebrow="Code"
         title="From file to endpoint in minutes"
@@ -97,7 +97,7 @@ export function CodeExamples() {
 
       <div className="max-w-3xl mx-auto">
         <div
-          className="flex gap-1 p-1 mb-4 rounded-button bg-surface-secondary border border-surface-border w-fit mx-auto"
+          className="flex gap-1 p-1 mb-4 rounded-button bg-surface-card border border-surface-border w-fit mx-auto"
           role="tablist"
           aria-label="Code examples"
         >
@@ -111,7 +111,7 @@ export function CodeExamples() {
               className={clsx(
                 "px-4 py-2 rounded-[10px] text-small font-medium border-0 cursor-pointer transition-all duration-150",
                 active === ex.id
-                  ? "bg-surface-card text-ink shadow-ba-sm"
+                  ? "bg-surface-secondary text-ink shadow-ba-sm"
                   : "bg-transparent text-ink-muted hover:text-ink"
               )}
             >
