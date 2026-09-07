@@ -2,7 +2,7 @@ import React from "react";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import { MessageCircle, GitPullRequest, Newspaper, Heart } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { Section, SectionHeader, Card, StaggerChildren } from "../ui";
+import { Section, SectionHeader, Card } from "../ui";
 
 interface CommunityLink {
   icon: LucideIcon;
@@ -56,7 +56,7 @@ export function Community() {
         title="Build with the Bun community"
         subtitle="Join discussions, contribute code, and stay up to date with releases."
       />
-      <StaggerChildren className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {links.map((link) => (
           <Card
             key={link.title}
@@ -73,7 +73,7 @@ export function Community() {
             </p>
           </Card>
         ))}
-      </StaggerChildren>
+      </div>
     </Section>
   );
 }

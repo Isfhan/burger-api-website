@@ -2,6 +2,7 @@ export { Button } from "./Button";
 export { TextLink } from "./TextLink";
 export { Badge } from "./Badge";
 export { Card } from "./Card";
+export { BenchmarkBar } from "./BenchmarkBar";
 export { Section } from "./Section";
 export { SectionHeader } from "./SectionHeader";
 export { CodeBlock } from "./CodeBlock";

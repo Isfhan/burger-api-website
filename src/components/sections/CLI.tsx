@@ -1,6 +1,6 @@
 import React from "react";
 import { Terminal, ArrowRight } from "lucide-react";
-import { Section, SectionHeader, CodeBlock, ScrollReveal, Button } from "../ui";
+import { Section, SectionHeader, CodeBlock, Button } from "../ui";
 
 const createExample = `# Create a new project
 bunx burger-api create my-api
@@ -22,7 +22,7 @@ export function CLI() {
   return (
     <Section id="cli">
       <div className="grid lg:grid-cols-2 gap-12 items-start">
-        <ScrollReveal>
+        <div>
           <SectionHeader
             align="left"
             eyebrow="CLI"
@@ -41,10 +41,8 @@ export function CLI() {
               />
             </Button>
           </div>
-        </ScrollReveal>
-        <ScrollReveal delay={0.05}>
-          <CodeBlock code={createExample} filename="terminal" language="bash" className="mt-1" />
-        </ScrollReveal>
+        </div>
+        <CodeBlock code={createExample} filename="terminal" language="bash" className="mt-1" />
       </div>
     </Section>
   );

@@ -570,6 +570,81 @@ article {
   overflow-x: clip;
 }
 
+/* Code panel: thin themed scrollbar for the rare long line, instead of a
+   default OS scrollbar cutting across the rounded panel. */
+.ba-code-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+}
+
+.ba-code-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+
+.ba-code-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.ba-code-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+}
+
+.ba-code-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+/* Menu-row list: hairline-divided rows replacing a card grid for flat
+   catalogs (Features, DeveloperExperience). No card background, no icon tile. */
+.ba-menu-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+  padding: 1rem 0.75rem;
+  margin: 0 -0.75rem;
+  border-top: 1px solid var(--ba-divider);
+  border-radius: 12px;
+  transition: background-color 150ms ease-out;
+}
+
+.ba-menu-row:hover {
+  background: var(--ba-card-soft);
+}
+
+.ba-menu-row__icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(255, 166, 43, 0.1);
+  color: var(--ba-primary);
+}
+
+/* Benchmark bar chart: req/s comparison, sourced from a committed run. */
+.ba-benchmark-bar {
+  position: relative;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--ba-divider);
+  overflow: hidden;
+}
+
+.ba-benchmark-bar__fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--ba-secondary);
+  opacity: 0.55;
+  transition: width 600ms ease-out;
+}
+
+.ba-benchmark-bar__fill--highlight {
+  background: var(--ba-primary);
+  opacity: 1;
+}
+
 /* Lifecycle pipeline timeline */
 .ba-pipeline {
   display: flex;

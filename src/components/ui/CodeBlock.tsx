@@ -7,10 +7,11 @@ import { useColorMode } from "@docusaurus/theme-common";
 interface CodeBlockTab {
   id: string;
   title: string;
+  code: string;
 }
 
 interface CodeBlockProps {
-  code: string;
+  code?: string;
   language?: string;
   filename?: string;
   className?: string;
@@ -34,20 +35,61 @@ export function CodeBlock({
   const { colorMode } = useColorMode();
   const theme = colorMode === "dark" ? themes.vsDark : themes.vsDark;
 
+  const currentCode =
+    (tabs
+      ? tabs.find((t) => t.id === activeTab)?.code ?? tabs[0]?.code
+      : code) ?? "";
+
   const onCopy = useCallback(async () => {
     try {
-      await navigator.clipboard.writeText(code);
+      await navigator.clipboard.writeText(currentCode);
       setCopied(true);
       setTimeout(() => setCopied(false), 1800);
     } catch {
       /* clipboard unavailable */
     }
-  }, [code]);
+  }, [currentCode]);
+
+  const renderPre = (source: string) => (
+    <Highlight theme={theme} code={source.trim()} language={language}>
+      {({ className: hlClass, style, tokens, getLineProps, getTokenProps }) => (
+        <pre
+          className={clsx(hlClass, "ba-code-scroll m-0 p-6 overflow-x-auto text-[13px] leading-relaxed font-mono")}
+          style={{ ...style, background: "transparent" }}
+        >
+          {tokens.map((line, i) => (
+            <div
+              key={i}
+              {...getLineProps({ line })}
+              className={showLineNumbers ? "table-row" : undefined}
+            >
+              {showLineNumbers && (
+                <span className="table-cell pr-4 text-zinc-600 select-none text-right w-8">
+                  {i + 1}
+                </span>
+              )}
+              {showLineNumbers ? (
+                <span className="table-cell">
+                  {line.map((token, key) => (
+                    <span key={key} {...getTokenProps({ token })} />
+                  ))}
+                </span>
+              ) : (
+                line.map((token, key) => (
+                  <span key={key} {...getTokenProps({ token })} />
+                ))
+              )}
+            </div>
+          ))}
+        </pre>
+      )}
+    </Highlight>
+  );
 
   return (
     <div
       className={clsx(
-        "rounded-code overflow-hidden border border-white/10 shadow-ba-md bg-[#0d0d0f]",
+        "rounded-code overflow-hidden border border-white/10 shadow-ba-md bg-[#0d0d0f] min-w-0",
         className
       )}
     >
@@ -94,29 +136,26 @@ export function CodeBlock({
           {copied ? "Copied" : "Copy"}
         </button>
       </div>
-      <Highlight theme={theme} code={code.trim()} language={language}>
-        {({ className: hlClass, style, tokens, getLineProps, getTokenProps }) => (
-          <pre
-            className={clsx(hlClass, "m-0 p-6 overflow-x-auto text-[13px] leading-relaxed font-mono")}
-            style={{ ...style, background: "transparent" }}
-          >
-            {tokens.map((line, i) => (
-              <div key={i} {...getLineProps({ line })} className="table-row">
-                {showLineNumbers && (
-                  <span className="table-cell pr-4 text-zinc-600 select-none text-right w-8">
-                    {i + 1}
-                  </span>
-                )}
-                <span className="table-cell">
-                  {line.map((token, key) => (
-                    <span key={key} {...getTokenProps({ token })} />
-                  ))}
-                </span>
-              </div>
-            ))}
-          </pre>
-        )}
-      </Highlight>
+      {tabs ? (
+        <div className="grid min-w-0">
+          {tabs.map((tab) => (
+            <div
+              key={tab.id}
+              className={clsx(
+                "col-start-1 row-start-1 min-w-0",
+                tab.id === activeTab
+                  ? "opacity-100"
+                  : "opacity-0 pointer-events-none"
+              )}
+              aria-hidden={tab.id !== activeTab}
+            >
+              {renderPre(tab.code)}
+            </div>
+          ))}
+        </div>
+      ) : (
+        renderPre(currentCode)
+      )}
     </div>
   );
 }

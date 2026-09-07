@@ -1,6 +1,6 @@
 import React from "react";
 import { Radio, ArrowRight } from "lucide-react";
-import { Section, SectionHeader, CodeBlock, ScrollReveal, Button } from "../ui";
+import { Section, SectionHeader, CodeBlock, Button } from "../ui";
 
 const code = `// src/websocket/chat/ws.ts
 import type { BurgerWS } from "burger-api";
@@ -9,12 +9,19 @@ export function open(ws: BurgerWS) {
   ws.send(JSON.stringify({ type: "connected" }));
 }
 
-export function message(ws: BurgerWS, message: string | Buffer) {
+export function message(
+  ws: BurgerWS,
+  message: string | Buffer
+) {
   // Echo the message back
   ws.send(message);
 }
 
-export function close(ws: BurgerWS, code: number, reason: string) {
+export function close(
+  ws: BurgerWS,
+  code: number,
+  reason: string
+) {
   // Connection closed
 }`;
 
@@ -22,7 +29,7 @@ export function WebSocket() {
   return (
     <Section id="websocket">
       <div className="grid lg:grid-cols-2 gap-12 items-center">
-        <ScrollReveal>
+        <div>
           <SectionHeader
             align="left"
             eyebrow="WebSocket"
@@ -39,14 +46,12 @@ export function WebSocket() {
               aria-hidden
             />
           </Button>
-        </ScrollReveal>
-        <ScrollReveal delay={0.05}>
-          <CodeBlock
-            code={code}
-            filename="src/websocket/chat/ws.ts"
-            className="mt-1"
-          />
-        </ScrollReveal>
+        </div>
+        <CodeBlock
+          code={code}
+          filename="src/websocket/chat/ws.ts"
+          className="mt-1"
+        />
       </div>
     </Section>
   );

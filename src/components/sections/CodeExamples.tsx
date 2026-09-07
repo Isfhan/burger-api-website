@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import clsx from "clsx";
-import { Section, SectionHeader, CodeBlock, ScrollReveal } from "../ui";
+import { Section, SectionHeader, CodeBlock } from "../ui";
 
 interface Example {
   id: string;
@@ -81,68 +81,72 @@ export const PUT = defineRoute(PutSchema, (ctx) => {
 export function CodeExamples() {
   const [active, setActive] = useState(examples[0].id);
   const [innerTab, setInnerTab] = useState<string>("schema");
-  const current = examples.find((e) => e.id === active) ?? examples[0];
 
   const selectExample = (id: string) => {
     setActive(id);
     setInnerTab(examples.find((e) => e.id === id)?.tabs?.[0]?.id ?? "schema");
   };
 
-  const inner =
-    current.tabs?.find((t) => t.id === innerTab) ?? current.tabs?.[0];
-
   return (
     <Section id="examples">
-      <ScrollReveal>
-        <SectionHeader
-          eyebrow="Code"
-          title="From file to endpoint in minutes"
-          subtitle="Three patterns you will use every day: start the server, define a route, and validate with Zod."
-        />
-      </ScrollReveal>
+      <SectionHeader
+        eyebrow="Code"
+        title="From file to endpoint in minutes"
+        subtitle="Three patterns you will use every day: start the server, define a route, and validate with Zod."
+      />
 
-      <ScrollReveal delay={0.05}>
-        <div className="max-w-3xl mx-auto">
-          <div
-            className="flex gap-1 p-1 mb-4 rounded-button bg-surface-secondary border border-surface-border w-fit mx-auto"
-            role="tablist"
-            aria-label="Code examples"
-          >
-            {examples.map((ex) => (
-              <button
-                key={ex.id}
-                type="button"
-                role="tab"
-                aria-selected={active === ex.id}
-                onClick={() => selectExample(ex.id)}
-                className={clsx(
-                  "px-4 py-2 rounded-[10px] text-small font-medium border-0 cursor-pointer transition-all duration-150",
-                  active === ex.id
-                    ? "bg-surface-card text-ink shadow-ba-sm"
-                    : "bg-transparent text-ink-muted hover:text-ink"
-                )}
-              >
-                {ex.label}
-              </button>
-            ))}
-          </div>
-          {current.tabs && inner ? (
-            <CodeBlock
-              code={inner.code}
-              language="tsx"
-              tabs={current.tabs}
-              activeTab={innerTab}
-              onTabChange={setInnerTab}
-            />
-          ) : (
-            <CodeBlock
-              code={current.code ?? ""}
-              filename={current.filename}
-              language="tsx"
-            />
-          )}
+      <div className="max-w-3xl mx-auto">
+        <div
+          className="flex gap-1 p-1 mb-4 rounded-button bg-surface-secondary border border-surface-border w-fit mx-auto"
+          role="tablist"
+          aria-label="Code examples"
+        >
+          {examples.map((ex) => (
+            <button
+              key={ex.id}
+              type="button"
+              role="tab"
+              aria-selected={active === ex.id}
+              onClick={() => selectExample(ex.id)}
+              className={clsx(
+                "px-4 py-2 rounded-[10px] text-small font-medium border-0 cursor-pointer transition-all duration-150",
+                active === ex.id
+                  ? "bg-surface-card text-ink shadow-ba-sm"
+                  : "bg-transparent text-ink-muted hover:text-ink"
+              )}
+            >
+              {ex.label}
+            </button>
+          ))}
         </div>
-      </ScrollReveal>
+        <div className="grid min-w-0">
+          {examples.map((ex) => (
+            <div
+              key={ex.id}
+              className={clsx(
+                "col-start-1 row-start-1 min-w-0",
+                ex.id === active ? "opacity-100" : "opacity-0 pointer-events-none"
+              )}
+              aria-hidden={ex.id !== active}
+            >
+              {ex.tabs ? (
+                <CodeBlock
+                  language="tsx"
+                  tabs={ex.tabs}
+                  activeTab={ex.id === active ? innerTab : ex.tabs[0].id}
+                  onTabChange={setInnerTab}
+                />
+              ) : (
+                <CodeBlock
+                  code={ex.code ?? ""}
+                  filename={ex.filename}
+                  language="tsx"
+                />
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
     </Section>
   );
 }

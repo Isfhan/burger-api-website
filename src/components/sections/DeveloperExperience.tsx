@@ -8,7 +8,7 @@ import {
   BookOpen,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { Section, SectionHeader, Card, StaggerChildren } from "../ui";
+import { Section, SectionHeader } from "../ui";
 
 const items: { icon: LucideIcon; title: string; description: string }[] = [
   {
@@ -57,19 +57,19 @@ export function DeveloperExperience() {
         title="Built for how you actually work"
         subtitle="Fewer config files. Stronger types. Tools that stay out of your way until you need them."
       />
-      <StaggerChildren className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div className="sm:grid sm:grid-cols-2 sm:gap-x-10 border-b border-surface-divider">
         {items.map((item) => (
-          <Card key={item.title} className="h-full">
-            <div className="mb-3 inline-flex text-brand-primary">
-              <item.icon size={24} strokeWidth={1.75} aria-hidden />
+          <div key={item.title} className="ba-menu-row">
+            <item.icon size={20} strokeWidth={1.75} className="ba-menu-row__icon" aria-hidden />
+            <div>
+              <h3 className="text-card-title text-ink m-0 mb-1">{item.title}</h3>
+              <p className="text-small text-ink-secondary m-0 leading-relaxed">
+                {item.description}
+              </p>
             </div>
-            <h3 className="text-card-title text-ink m-0 mb-2">{item.title}</h3>
-            <p className="text-small text-ink-secondary m-0 leading-relaxed">
-              {item.description}
-            </p>
-          </Card>
+          </div>
         ))}
-      </StaggerChildren>
+      </div>
     </Section>
   );
 }

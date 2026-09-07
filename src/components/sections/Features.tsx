@@ -14,7 +14,7 @@ import {
   Globe,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { Section, SectionHeader, Card, StaggerChildren } from "../ui";
+import { Section, SectionHeader } from "../ui";
 
 interface Feature {
   icon: LucideIcon;
@@ -105,19 +105,19 @@ export function Features() {
         title="Everything you need to ship APIs"
         subtitle="A focused toolkit for Bun backends: routing, validation, WebSocket, OpenAPI, and lifecycle hooks that work together out of the box."
       />
-      <StaggerChildren className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div className="sm:grid sm:grid-cols-2 lg:grid-cols-3 sm:gap-x-10 border-b border-surface-divider">
         {features.map((f) => (
-          <Card key={f.title} className="h-full">
-            <div className="mb-4 inline-flex items-center justify-center w-11 h-11 rounded-button bg-brand-primary/10 text-brand-primary">
-              <f.icon size={22} strokeWidth={1.75} aria-hidden />
+          <div key={f.title} className="ba-menu-row">
+            <f.icon size={20} strokeWidth={1.75} className="ba-menu-row__icon" aria-hidden />
+            <div>
+              <h3 className="text-card-title text-ink m-0 mb-1">{f.title}</h3>
+              <p className="text-small text-ink-secondary m-0 leading-relaxed">
+                {f.description}
+              </p>
             </div>
-            <h3 className="text-card-title text-ink m-0 mb-2">{f.title}</h3>
-            <p className="text-small text-ink-secondary m-0 leading-relaxed">
-              {f.description}
-            </p>
-          </Card>
+          </div>
         ))}
-      </StaggerChildren>
+      </div>
     </Section>
   );
 }

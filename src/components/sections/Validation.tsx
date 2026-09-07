@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { BookOpen, ArrowRight } from "lucide-react";
-import { Section, SectionHeader, CodeBlock, ScrollReveal, Button } from "../ui";
+import { Section, SectionHeader, CodeBlock, Button } from "../ui";
 
 const schemaCode = `// api/posts/schema.ts
 import { z } from "zod";
@@ -8,7 +8,11 @@ import { z } from "zod";
 export const GET = {
   query: z.object({
     tag: z.string().optional(),
-    limit: z.coerce.number().min(1).max(100).default(10),
+    limit: z.coerce
+      .number()
+      .min(1)
+      .max(100)
+      .default(10),
   }),
 };
 
@@ -24,10 +28,13 @@ import { defineRoute } from "burger-api";
 import { POST as PostSchema } from "./schema";
 
 export const POST = defineRoute(PostSchema, (ctx) => {
-  // Fully typed from your Zod schema, no generic to write
+  // Fully typed from the Zod schema above
   const { title, published } = ctx.validated.body;
 
-  return Response.json({ title, published }, { status: 201 });
+  return Response.json(
+    { title, published },
+    { status: 201 }
+  );
 });`;
 
 const validationTabs = [
@@ -43,7 +50,7 @@ export function Validation() {
   return (
     <Section id="validation" secondary>
       <div className="grid lg:grid-cols-2 gap-12 items-center">
-        <ScrollReveal>
+        <div>
           <SectionHeader
             align="left"
             eyebrow="Validation"
@@ -60,17 +67,15 @@ export function Validation() {
               aria-hidden
             />
           </Button>
-        </ScrollReveal>
-        <ScrollReveal delay={0.05}>
-          <CodeBlock
-            code={active.code}
-            language="tsx"
-            tabs={validationTabs}
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
-            className="mt-1"
-          />
-        </ScrollReveal>
+        </div>
+        <CodeBlock
+          code={active.code}
+          language="tsx"
+          tabs={validationTabs}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          className="mt-1"
+        />
       </div>
     </Section>
   );
