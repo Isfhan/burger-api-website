@@ -69,7 +69,7 @@ Installs hooks and plugins from the ecosystem into your project.
 ```bash
 burger-api add cors
 burger-api add cors logger rate-limiter
-burger-api add jwt api-key
+burger-api add jwt-auth api-key
 ```
 
 See [Add Command](/docs/cli/add) and [Ecosystem](/docs/ecosystem/introduction).

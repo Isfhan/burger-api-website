@@ -15,7 +15,7 @@ sidebar_label: Add Command
 ```bash
 burger-api add cors
 burger-api add cors logger rate-limiter
-burger-api add jwt api-key
+burger-api add jwt-auth api-key
 ```
 
 List available hooks and plugins with `burger-api list`. See [CLI Tool](/docs/getting-started/cli) and [Ecosystem](/docs/ecosystem/introduction).

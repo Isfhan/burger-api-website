@@ -3,14 +3,14 @@ import { Terminal, ArrowRight } from "lucide-react";
 import { Section, SectionHeader, CodeBlock, Button } from "../ui";
 
 const createExample = `# Create a new project
-bunx burger-api create my-api
+bunx @burger-api/cli create my-api
 
 # Scaffold a route
 cd my-api
-bunx burger-api generate route users
+bunx @burger-api/cli generate route users
 
 # Add an ecosystem hook (CORS)
-bunx burger-api add cors
+bunx @burger-api/cli add cors
 
 # Start the server
 bun run dev
