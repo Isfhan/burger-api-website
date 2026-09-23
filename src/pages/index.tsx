@@ -48,11 +48,6 @@ const OpenAPI = lazy(() =>
 const CLI = lazy(() =>
   import("../components/sections/CLI").then((m) => ({ default: m.CLI }))
 );
-const DocsCTA = lazy(() =>
-  import("../components/sections/DocsCTA").then((m) => ({
-    default: m.DocsCTA,
-  }))
-);
 const GitHubCTA = lazy(() =>
   import("../components/sections/GitHubCTA").then((m) => ({
     default: m.GitHubCTA,
@@ -96,7 +91,6 @@ export default function Home(): ReactNode {
             <CLI />
             <GitHubCTA />
             <Community />
-            {/* <DocsCTA /> */}
           </Suspense>
         </main>
       </LazyMotion>

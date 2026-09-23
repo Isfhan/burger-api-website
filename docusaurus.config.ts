@@ -58,8 +58,6 @@ const config: Config = {
       {
         docs: {
           sidebarPath: "./sidebars.ts",
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
           editUrl: "https://github.com/isfhan/burger-api-website/tree/main/",
         },
         blog: {
@@ -68,8 +66,6 @@ const config: Config = {
             type: ["rss", "atom"],
             xslt: true,
           },
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
           editUrl: "https://github.com/isfhan/burger-api-website/tree/main/",
           // Useful options to enforce blogging best practices
           onInlineTags: "warn",
@@ -155,13 +151,6 @@ const config: Config = {
           position: "right",
           label: "Docs",
         },
-        // {
-        //   type: "docSidebar",
-        //   sidebarId: "tutorialsSidebar",
-        //   to: "/docs/tutorials/intro",
-        //   label: "Tutorials",
-        //   position: "right",
-        // },
         {
           to: "/blog",
           label: "Blog",
@@ -173,36 +162,6 @@ const config: Config = {
           position: "right",
         },
       ],
-    },
-    footer: {
-      style: "dark",
-      links: [
-        {
-          title: "Documentation",
-          items: [
-            {
-              label: "Getting Started",
-              to: "/docs/",
-            },
-
-
-          ],
-        },
-        {
-          title: "Community",
-          items: [
-            {
-              label: "Blog",
-              to: "/blog",
-            },
-            {
-              label: "GitHub",
-              href: "https://github.com/isfhan/burger-api",
-            },
-          ],
-        },
-      ],
-      copyright: `Built with ❤️ for the Bun.js community.`,
     },
     prism: {
       theme: prismThemes.vsLight,
