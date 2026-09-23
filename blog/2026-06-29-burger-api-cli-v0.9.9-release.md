@@ -5,7 +5,11 @@ authors: [isfhan]
 tags: [release, cli, ai, skills]
 ---
 
-**BurgerAPI CLI v0.9.9 introduces Agent Skills — structured, AI-readable documentation that replaces the legacy `.llm-context` files. Skills follow the [agentskills.io](https://agentskills.io) open standard and are automatically discovered by Cursor, Claude Code, OpenCode, Copilot, and Codex.**
+**BurgerAPI CLI v0.9.9 introduces Agent Skills: structured, AI-readable documentation that replaces the legacy `.llm-context` files. Skills follow the [agentskills.io](https://agentskills.io) open standard and are automatically discovered by Cursor, Claude Code, OpenCode, Copilot, and Codex.**
+
+:::caution Pre-1.0 release notes
+This post describes the pre-1.0 CLI line. The [BurgerAPI v1.0.0-beta rewrite](/blog/burger-api-v1.0.0-beta-release) changed the CLI surface again (for example, `serve` became `dev`). Kept as accurate release history, not a current guide on 1.0.0-beta.
+:::
 
 {/* truncate */}
 

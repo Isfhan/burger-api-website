@@ -12,7 +12,7 @@ Do not invent or redesign architecture. If unclear, stop and ask.
 
 The site teaches the **locked public API**. Write as if BurgerAPI has always
 worked this way: file-based routing, `BurgerContext`, six lifecycle hooks,
-plugins, providers, macros, OpenAPI generation, and WebSocket under `src/ws/`.
+plugins, providers, OpenAPI generation, and WebSocket under `src/websocket/`.
 
 ---
 

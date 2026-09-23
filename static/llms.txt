@@ -1,83 +1,147 @@
-# Burger API - Modern API Framework for Bun
+# BurgerAPI - Bun-native API Framework
 
-> A modern, high-performance API framework built on Bun.js with file-based routing, built-in hooks, Zod validation, and automatic OpenAPI generation.
+> BurgerAPI is a Bun-first, WinterCG-compatible API framework with file-based routing, six lifecycle hooks, plugins, providers, Standard Schema (Zod) validation, automatic OpenAPI generation, and WebSocket support.
+
+**Current release:** `burger-api` and `@burger-api/cli` ship `1.0.0-beta` (public beta, not yet recommended for production). The previous stable line is `0.9.x`: pin `burger-api@0.9.7` and `@burger-api/cli@0.9.9`. Full notes: https://burger-api.com/blog/burger-api-v1.0.0-beta-release
 
 ## Table of Contents
 
 ### Getting Started
 
-- [Quick Start - Burger API](https://burger-api.com/docs/quick-start)
-- [Installation - Burger API](https://burger-api.com/docs/installation)
-- [Key Concepts - Burger API](https://burger-api.com/docs/key-concepts)
+- [Introduction - BurgerAPI](https://burger-api.com/docs/)
+- [Quick Start - BurgerAPI](https://burger-api.com/docs/quick-start)
+- [Installation - BurgerAPI](https://burger-api.com/docs/getting-started/installation)
+- [CLI - BurgerAPI](https://burger-api.com/docs/getting-started/cli)
+- [Key Concepts - BurgerAPI](https://burger-api.com/docs/key-concepts)
+- [JavaScript Projects - BurgerAPI](https://burger-api.com/docs/javascript)
 
-### Framework Core
+### Core Concepts
 
-- [Burger Class - Burger API](https://burger-api.com/docs/core/burger-class)
-- [Server Options - Burger API](https://burger-api.com/docs/core/server-options)
-- [Request Handling - Burger API](https://burger-api.com/docs/core/request-handling)
-- [Response Types - Burger API](https://burger-api.com/docs/core/response-types)
+- [Applications - BurgerAPI](https://burger-api.com/docs/core-concepts/applications)
+- [Routing - BurgerAPI](https://burger-api.com/docs/core-concepts/routing)
+- [Handlers - BurgerAPI](https://burger-api.com/docs/core-concepts/handlers)
+- [Request Handling - BurgerAPI](https://burger-api.com/docs/core/request-handling)
+- [Hooks - BurgerAPI](https://burger-api.com/docs/core-concepts/hooks)
+- [Validation - BurgerAPI](https://burger-api.com/docs/core-concepts/validation)
+- [Configuration - BurgerAPI](https://burger-api.com/docs/core/configuration)
+- [Response Types - BurgerAPI](https://burger-api.com/docs/core/response-types)
 
 ### Routing
 
-- [File-Based Routing - Burger API](https://burger-api.com/docs/routing/file-based-routing)
-- [Static Routes - Burger API](https://burger-api.com/docs/routing/static-routes)
-- [Dynamic Routes - Burger API](https://burger-api.com/docs/routing/dynamic-routes)
-- [Wildcard Routes - Burger API](https://burger-api.com/docs/routing/wildcard-routes)
-- [Route Groups - Burger API](https://burger-api.com/docs/routing/route-groups)
-- [Nested Routes - Burger API](https://burger-api.com/docs/routing/nested-routes)
+- [File-Based Routing - BurgerAPI](https://burger-api.com/docs/routing/file-based-routing)
+- [Static Routes - BurgerAPI](https://burger-api.com/docs/routing/api/static-routes)
+- [Route Groups - BurgerAPI](https://burger-api.com/docs/routing/api/route-groups)
+- [Dynamic Routes - BurgerAPI](https://burger-api.com/docs/routing/api/dynamic-routes)
+- [Wildcard Routes - BurgerAPI](https://burger-api.com/docs/routing/api/wildcard-routes)
+- [Nested Routes - BurgerAPI](https://burger-api.com/docs/routing/api/nested-routes)
+- [Static Pages - BurgerAPI](https://burger-api.com/docs/routing/pages/static-pages)
 
 ### Hooks
 
-- [Hook System - Burger API](https://burger-api.com/docs/hooks/system)
-- [Global Hooks - Burger API](https://burger-api.com/docs/hooks/global)
-- [Route-Specific Hooks - Burger API](https://burger-api.com/docs/hooks/route-specific)
-- [Hook Return Types - Burger API](https://burger-api.com/docs/hooks/return-types)
-- [After Hooks - Burger API](https://burger-api.com/docs/hooks/after)
+- [Hook System - BurgerAPI](https://burger-api.com/docs/hooks/system)
+- [Global Hooks - BurgerAPI](https://burger-api.com/docs/hooks/global)
+- [Route-Specific Hooks - BurgerAPI](https://burger-api.com/docs/hooks/route-specific)
+- [Hook Return Types - BurgerAPI](https://burger-api.com/docs/hooks/return-types)
+- [After Hooks - BurgerAPI](https://burger-api.com/docs/hooks/after)
 
 ### Validation
 
-- [Zod Validation - Burger API](https://burger-api.com/docs/validation/zod)
-- [Schema Definition - Burger API](https://burger-api.com/docs/validation/schema)
-- [Params Validation - Burger API](https://burger-api.com/docs/validation/params)
-- [Query Validation - Burger API](https://burger-api.com/docs/validation/query)
-- [Body Validation - Burger API](https://burger-api.com/docs/validation/body)
-- [Error Handling - Burger API](https://burger-api.com/docs/validation/errors)
+- [Zod Validation - BurgerAPI](https://burger-api.com/docs/validation/zod)
+- [Schema Definition - BurgerAPI](https://burger-api.com/docs/validation/schema)
+- [Params Validation - BurgerAPI](https://burger-api.com/docs/validation/params)
+- [Query Validation - BurgerAPI](https://burger-api.com/docs/validation/query)
+- [Body Validation - BurgerAPI](https://burger-api.com/docs/validation/body)
+- [Headers Validation - BurgerAPI](https://burger-api.com/docs/validation/headers)
+- [Cookie Validation - BurgerAPI](https://burger-api.com/docs/validation/cookie)
+- [Coercion - BurgerAPI](https://burger-api.com/docs/validation/coercion)
+- [Response Validation - BurgerAPI](https://burger-api.com/docs/validation/response)
+- [Standard Schema - BurgerAPI](https://burger-api.com/docs/validation/standard-schema)
+- [Validation Errors - BurgerAPI](https://burger-api.com/docs/validation/errors)
+- [Problem Details - BurgerAPI](https://burger-api.com/docs/validation/problem-details)
+- [Validation Configuration - BurgerAPI](https://burger-api.com/docs/validation/configuration)
+- [Validation Best Practices - BurgerAPI](https://burger-api.com/docs/validation/best-practices)
+
+### WebSocket
+
+- [WebSocket Overview - BurgerAPI](https://burger-api.com/docs/websocket/overview)
 
 ### OpenAPI & Documentation
 
-- [OpenAPI Generation - Burger API](https://burger-api.com/docs/openapi/generation)
-- [Swagger UI - Burger API](https://burger-api.com/docs/openapi/swagger-ui)
-- [OpenAPI Metadata - Burger API](https://burger-api.com/docs/openapi/metadata)
-
-### CLI Tool
-
-- [CLI Installation - Burger API](https://burger-api.com/docs/cli/installation)
-- [Create Command - Burger API](https://burger-api.com/docs/cli/create)
-- [Add Command - Burger API](https://burger-api.com/docs/cli/add)
-- [List Command - Burger API](https://burger-api.com/docs/cli/list)
-- [Dev Command - Burger API](https://burger-api.com/docs/cli/dev)
-- [Build Command - Burger API](https://burger-api.com/docs/cli/build)
-- [Build Exec Command (build:exec) - Burger API](https://burger-api.com/docs/cli/build-exec)
+- [OpenAPI / Swagger - BurgerAPI](https://burger-api.com/docs/api/openapi)
 
 ### Examples
 
-- [Basic Route Example - Burger API](https://burger-api.com/docs/examples/basic-route)
-- [Hooks Example - Burger API](https://burger-api.com/docs/examples/hooks)
-- [Validation Example - Burger API](https://burger-api.com/docs/examples/validation)
-- [Complete Project Example - Burger API](https://burger-api.com/docs/examples/complete-project)
+- [Basic Route - BurgerAPI](https://burger-api.com/docs/examples/basic-route)
+- [Hello World Tutorial - BurgerAPI](https://burger-api.com/docs/tutorials/hello-world)
+- [Todo API Tutorial - BurgerAPI](https://burger-api.com/docs/tutorials/todo-api)
+- [CRUD API Example - BurgerAPI](https://burger-api.com/docs/examples/crud-api)
+- [Blog API Tutorial - BurgerAPI](https://burger-api.com/docs/tutorials/blog-api)
+- [Authentication Example - BurgerAPI](https://burger-api.com/docs/examples/authentication)
+- [Pagination Example - BurgerAPI](https://burger-api.com/docs/examples/pagination)
+- [Validation Example - BurgerAPI](https://burger-api.com/docs/examples/validation)
+- [Hooks Example - BurgerAPI](https://burger-api.com/docs/examples/hooks)
+- [Complete Project Example - BurgerAPI](https://burger-api.com/docs/examples/complete-project)
 
 ### Ecosystem
 
-- [Available Hooks - Burger API](https://burger-api.com/docs/ecosystem/hooks)
-- [CORS Hook - Burger API](https://burger-api.com/docs/ecosystem/cors)
-- [Logger Hook - Burger API](https://burger-api.com/docs/ecosystem/logger)
-- [Rate Limiter - Burger API](https://burger-api.com/docs/ecosystem/rate-limiter)
-- [JWT Auth - Burger API](https://burger-api.com/docs/ecosystem/jwt-auth)
-- [API Key Auth - Burger API](https://burger-api.com/docs/ecosystem/api-key-auth)
+- [Ecosystem Introduction - BurgerAPI](https://burger-api.com/docs/ecosystem/introduction)
+- [Hooks and Plugins - BurgerAPI](https://burger-api.com/docs/ecosystem/hooks-plugins)
+- [CORS - BurgerAPI](https://burger-api.com/docs/ecosystem/cors)
+- [Logger - BurgerAPI](https://burger-api.com/docs/ecosystem/logger)
+- [Rate Limiter - BurgerAPI](https://burger-api.com/docs/ecosystem/rate-limiter)
+- [JWT Auth - BurgerAPI](https://burger-api.com/docs/ecosystem/jwt-auth)
+- [API Key Auth - BurgerAPI](https://burger-api.com/docs/ecosystem/api-key-auth)
+
+### AI Assistance
+
+- [Agent Skills - BurgerAPI](https://burger-api.com/docs/ai-assistance/agent-skills)
+
+### CLI Tool
+
+- [CLI Installation - BurgerAPI](https://burger-api.com/docs/cli/installation)
+- [Create Command - BurgerAPI](https://burger-api.com/docs/cli/create)
+- [Add Command - BurgerAPI](https://burger-api.com/docs/cli/add)
+- [List Command - BurgerAPI](https://burger-api.com/docs/cli/list)
+- [Skills Command - BurgerAPI](https://burger-api.com/docs/cli/skills)
+- [Dev Command - BurgerAPI](https://burger-api.com/docs/cli/dev)
+- [Build Command - BurgerAPI](https://burger-api.com/docs/cli/build)
+- [Build Exec Command (build:exec) - BurgerAPI](https://burger-api.com/docs/cli/build-exec)
+- [Inspect Command - BurgerAPI](https://burger-api.com/docs/cli/inspect)
+- [Doctor Command - BurgerAPI](https://burger-api.com/docs/cli/doctor)
+
+### Deployment
+
+- [Compatibility - BurgerAPI](https://burger-api.com/docs/compatibility)
+- [Deploy on Bun - BurgerAPI](https://burger-api.com/docs/deployment/bun)
+- [Deploy on Node.js - BurgerAPI](https://burger-api.com/docs/deployment/node)
+- [Deploy on Cloudflare Workers - BurgerAPI](https://burger-api.com/docs/deployment/cloudflare)
+- [Deploy on Vercel - BurgerAPI](https://burger-api.com/docs/deployment/vercel)
+- [Deploy on Deno - BurgerAPI](https://burger-api.com/docs/deployment/deno)
+
+### Performance
+
+- [Performance Overview - BurgerAPI](https://burger-api.com/docs/performance/overview)
+
+### API Reference
+
+- [Burger Class - BurgerAPI](https://burger-api.com/docs/core/burger-class)
+- [Server Options - BurgerAPI](https://burger-api.com/docs/core/server-options)
+- [Context Set - BurgerAPI](https://burger-api.com/docs/api/context-set)
+- [Validation Types - BurgerAPI](https://burger-api.com/docs/api/validation-types)
+- [Hook Types - BurgerAPI](https://burger-api.com/docs/api/hook-types)
+- [Request API - BurgerAPI](https://burger-api.com/docs/api/request-api)
+- [Response Mutation - BurgerAPI](https://burger-api.com/docs/api/response-mutation)
+- [Route Metadata - BurgerAPI](https://burger-api.com/docs/api/route-metadata)
+- [Query Parsing - BurgerAPI](https://burger-api.com/docs/api/query-parsing)
 
 ### Advanced
 
-- [Performance Optimization - Burger API](https://burger-api.com/docs/advanced/performance)
-- [Error Handling Patterns - Burger API](https://burger-api.com/docs/advanced/error-handling)
-- [Type Safety - Burger API](https://burger-api.com/docs/advanced/type-safety)
-- [Deployment - Burger API](https://burger-api.com/docs/advanced/deployment)
+- [Error Handling - BurgerAPI](https://burger-api.com/docs/advanced/error-handling)
+- [Type Safety - BurgerAPI](https://burger-api.com/docs/advanced/type-safety)
+- [Benchmarks - BurgerAPI](https://burger-api.com/docs/advanced/benchmarks)
+- [Deployment - BurgerAPI](https://burger-api.com/docs/advanced/deployment)
+
+## Optional
+
+- [Full documentation for LLMs](https://burger-api.com/llms-full.txt)
+- [Essential reference for LLMs](https://burger-api.com/llms-small.txt)

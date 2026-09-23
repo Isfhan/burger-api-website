@@ -5,7 +5,11 @@ authors: [isfhan]
 tags: [release, production, cli, config]
 ---
 
-**v0.9.3** focuses on production readiness and consistency. Builds use **build-time route discovery**: the CLI discovers routes at build time and embeds them so your app't depend on the filesystem in production. New projects get a **`burger.config.ts`** for API/page dirs and prefixes, and the Burger constructor supports **`apiRoutes`** and **`pageRoutes`** for pre-built route lists. The CLI command for standalone executables is now **`burger-api build:exec`**, with default outputs under `.build/bundle/` and `.build/executable/`. Your middleware and options are preserved in the generated build entry.
+**v0.9.3** focuses on production readiness and consistency. Builds use **build-time route discovery**: the CLI discovers routes at build time and embeds them so your app doesn't depend on the filesystem in production. New projects get a **`burger.config.ts`** for API/page dirs and prefixes, and the Burger constructor supports **`apiRoutes`** and **`pageRoutes`** for pre-built route lists. The CLI command for standalone executables is now **`burger-api build:exec`**, with default outputs under `.build/bundle/` and `.build/executable/`. Your middleware and options are preserved in the generated build entry.
+
+:::caution Pre-1.0 release notes
+This post describes a pre-1.0 release, built on the earlier `globalMiddleware`/`burger.config.ts` API. The [BurgerAPI v1.0.0-beta rewrite](/blog/burger-api-v1.0.0-beta-release) replaced those with hooks, plugins, and `burger.build.ts`. Code samples below won't run as-is on 1.0.0-beta. Kept as accurate release history, not a current guide.
+:::
 
 {/* truncate */}
 

@@ -1,259 +1,198 @@
-# Burger API - Essential Reference
+# BurgerAPI - Essential Reference
 
-A modern, high-performance API framework built on Bun.js with file-based routing, lifecycle hooks, Zod validation, and automatic OpenAPI generation.
+BurgerAPI is a Bun-first, WinterCG-compatible API framework with file-based routing, six lifecycle hooks, plugins, providers, Standard Schema (Zod) validation, automatic OpenAPI generation, and WebSocket support.
 
-## Framework Basics
+**Current release:** `burger-api` and `@burger-api/cli` are at `1.0.0-beta` (public beta, not yet recommended for production). The previous stable line is `0.9.x`: `burger-api@0.9.7` / `@burger-api/cli@0.9.9`. Beta notes: https://burger-api.com/blog/burger-api-v1.0.0-beta-release
 
-### Burger Class
+Full documentation: https://burger-api.com/llms-full.txt
 
-```typescript
-import { Burger } from 'burger-api';
+## Install and Run
 
-const app = new Burger({
-    apiDir: './src/api',       // Directory for API routes
-    apiPrefix: 'api',          // URL prefix for API routes (default: 'api')
-    title: 'My API',           // OpenAPI title
-    description: 'API description',
-    version: '1.0.0',          // API version
-    debug: false,              // Enable debug mode
-});
+```bash
+bun add burger-api
+bun add -g @burger-api/cli
 
-// Start the server
-await app.serve(4000);
-```
-
-### Core Types
-
-```typescript
-// The shared request context your handlers receive as `ctx`
-interface BurgerContext {
-    params?: Record<string, string>;      // URL parameters (e.g., /users/:id)
-    validated?: {                          // Validated data from Zod schemas
-        params?: Record<string, unknown>;
-        query?: Record<string, unknown>;
-        headers?: Record<string, unknown>;
-        cookies?: Record<string, unknown>;
-        body?: Record<string, unknown>;
-    };
-    wildcardParams?: string[];             // Wildcard route segments
-    set?: ContextSet;                      // Response mutations (status, headers)
-    // Delegated request surface: ctx.request, ctx.headers, ctx.json(),
-    // ctx.text(), ctx.query, ctx.params, ctx.route, ctx.config, ctx.services
-}
-
-// Hook return types
-type Hook = (ctx: BurgerContext) => unknown;
-type ErrorHook = (error: Error, ctx: BurgerContext) => Response | void | undefined;
-type BurgerNext = Response | ((response: Response) => Promise<Response>) | undefined;
-
-// Transform factories: keyed by context field name to inject
-type TransformMap = Record<string, (ctx: BurgerContext) => unknown>;
-
-// Request handler
-type RequestHandler = (ctx: BurgerContext) => Promise<Response> | Response;
+# scaffold and run (works without a global install)
+bunx @burger-api/cli create my-app
+cd my-app
+bun run dev
 ```
 
 ## Project Layout
 
 ```
 src/
-├── index.ts            # Burger instance + serve() only
-├── hooks.ts            # Global lifecycle hooks (all six points)
+├── index.ts            # new Burger(...) + serve()
+├── hooks.ts            # global lifecycle hooks
 ├── plugins.ts          # burger.usePlugin(...)
-├── providers.ts        # burger.provide(name, service) → ctx.services
-├── openapi.config.ts   # OpenAPI metadata and docs UI
-└── api/                # File-based API routes
-burger.build.ts         # Build-time only (CLI): apiDir, pageDir, prefixes
+├── providers.ts        # burger.provide(name, service) -> ctx.services
+├── openapi.config.ts   # OpenAPI metadata and docs UI (dev auto-discovery)
+├── api/                # API routes (apiDir)
+├── pages/              # page routes (Bun-only)
+└── websocket/          # WebSocket routes (wsDir, default src/websocket/)
+burger.build.ts          # build-time config for the CLI (never shipped at runtime)
+```
+
+## Burger Class
+
+```typescript
+import { Burger } from 'burger-api';
+
+const app = new Burger({
+    apiDir: './src/api',
+    apiPrefix: 'api',        // default 'api'
+    pageDir: './src/pages',
+    wsDir: './src/websocket',
+    title: 'My API',         // OpenAPI document metadata
+    version: '1.0.0',
+    description: 'API description',
+    debug: false,
+    validation: { status: 422 }, // ValidatorConfig; default status is 422
+});
+
+await app.serve(4000);
+```
+
+Other options include `apiRoutes`, `pageRoutes`, `wsRoutes`, `assetRoutes`, `globalHooks`, `providersModule`, `openapi`, and `runtimeTarget`. In production builds the CLI passes pre-resolved modules and route lists so no filesystem scanning happens at runtime.
+
+## BurgerContext
+
+Every handler and hook receives one context object, `ctx`:
+
+- `ctx.request`: the incoming standard `Request`
+- `ctx.params`: dynamic route params (`/users/:id` -> `{ id }`)
+- `ctx.wildcardParams`: array of wildcard segments
+- `ctx.query`: lazily parsed query object
+- `ctx.headers`: request headers
+- `ctx.validated`: validated data from `schema.ts` (`params`, `query`, `body`, `headers`, `cookies`)
+- `ctx.services`: services registered via `src/providers.ts` / `burger.provide()`
+- `ctx.route`, `ctx.config`: route metadata and `config.ts` options (typed via module augmentation)
+- `ctx.set`: response mutations (`status`, `headers`) applied in one step
+- Request helpers: `ctx.json()`, `ctx.text()`, `ctx.formData()`
+
+Handlers return a standard Web `Response`:
+
+```typescript
+export async function GET(ctx: BurgerContext) {
+    return Response.json({ hello: 'world' });
+}
 ```
 
 ## File-Based Routing
 
-### Route Convention Files
+A route is a directory of sibling convention files:
 
-Each route directory is self-contained (no group inheritance):
-
-| File         | Role                                              |
-|--------------|---------------------------------------------------|
-| `route.ts`   | `export async function GET(ctx: BurgerContext)`   |
-| `schema.ts`  | Per-method named exports: `export const GET = { body, query, ... }` |
-| `hooks.ts`   | Route hooks for that route only                   |
-| `openapi.ts` | Per-method OpenAPI metadata                       |
-| `config.ts`  | Route options (auth, cache, timeout, ...)         |
-
-### Route File Exports
+| File         | Role                                                                 |
+|--------------|----------------------------------------------------------------------|
+| `route.ts`   | `export async function GET(ctx: BurgerContext)` (one export per method) |
+| `schema.ts`  | Per-method validation: `export const GET = { params, query, body, headers, cookies }` |
+| `hooks.ts`   | Route-scoped hooks                                                     |
+| `openapi.ts` | Per-method OpenAPI metadata                                           |
+| `config.ts`  | Route options (auth, cache, timeout, ...), typed via `RouteConfig` augmentation |
 
 ```typescript
-import { z } from 'zod';
+// api/users/[id]/route.ts
 import type { BurgerContext } from 'burger-api';
 
-// OpenAPI metadata (optional, per-method named exports)
-export const GET = {
-    summary: 'Get users',
-    description: 'Returns a list of users',
-    tags: ['Users'],
-    operationId: 'getUsers',
-    responses: {
-        '200': { description: 'Success' },
-    },
-};
-
-// Zod validation schema (optional, per-method named exports)
-export const POST = {
-    body: z.object({
-        name: z.string().min(1),
-        email: z.string().email(),
-    }),
-};
-
-// HTTP method handlers (named exports)
 export async function GET(ctx: BurgerContext) {
-    const { page, limit } = ctx.validated?.query || {};
-    return Response.json({ page, limit, users: [] });
-}
-
-export async function POST(ctx: BurgerContext) {
-    const { name, email } = ctx.validated?.body || {};
-    return Response.json({ name, email }, { status: 201 });
+    return Response.json({ id: ctx.params.id });
 }
 ```
 
-### Routing Patterns
+Routing patterns:
 
-**Static Routes:**
 ```
-api/users/route.ts → /api/users
-```
-
-**Dynamic Routes:**
-```
-api/users/[id]/route.ts → /api/users/:id
-// Access via ctx.params.id
+api/users/route.ts        -> /api/users
+api/users/[id]/route.ts   -> /api/users/:id      (ctx.params.id)
+api/files/[...]/route.ts  -> /api/files/*        (ctx.wildcardParams)
+api/(admin)/users/route.ts -> /api/users         (groups are URL-only)
 ```
 
-**Wildcard Routes:**
-```
-api/files/[...]/route.ts → /api/files/*
-// Access via ctx.wildcardParams (array of path segments)
-```
+- Route directories are self-contained: no folder or group inheritance.
+- Do not mix wildcard (`[...]`) and dynamic (`[id]`) folders at the same level.
+- Do not add two dynamic folders (`[id]` and `[slug]`) at the same level.
+- `.ts`, `.js`, and `.mjs` route files all work; JavaScript projects get full JSDoc type-checking.
 
-**Route Groups (URL-only, no inheritance):**
-```
-api/(admin)/users/route.ts → /api/users
-// (admin) is ignored in the URL path
-```
+## defineRoute / defineHooks
 
-Build-time route scanner rules:
-- Do not mix wildcard (`[...]`) and dynamic (`[id]`) folders in the same API directory level.
-- Do not create multiple dynamic folders (e.g., `[id]` and `[slug]`) in the same directory level.
-
-## Hook System
-
-Six hook points: `onRequest`, `transform`, `beforeRoute`, `afterRoute`, `mapResponse`, `onError`.
-
-Forward order: `onRequest → Routing → transform → Validation → beforeRoute → Handler → afterRoute → mapResponse`.
-
-### Hook Return Types
-
-Hooks can return three things:
-
-1. **`undefined`** - Continue to next hook/handler
-2. **`Response`** - Stop and send this response immediately
-3. **`Function`** - Transform the final response after handler runs (`afterRoute`, `mapResponse`)
+`defineRoute(schema, handler)` and `defineHooks(schema, hooks)` infer `ctx.validated` from the schema per method, so no generic has to be written by hand:
 
 ```typescript
-// Example: Continue
-const logger: Hook = async (ctx) => {
-    console.log(`${ctx.request.method} ${ctx.request.url}`);
-    return undefined; // Continue
-};
+// api/users/[id]/schema.ts
+import { z } from 'zod';
+export const GET = { params: z.object({ id: z.string() }) };
 
-// Example: Stop early
-const auth: Hook = async (ctx) => {
-    const token = ctx.headers.get('Authorization');
-    if (!token) {
-        return Response.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-    return undefined; // Continue if authorized
-};
+// api/users/[id]/route.ts
+import { defineRoute } from 'burger-api';
+import { GET as GETSchema } from './schema';
 
-// Example: Transform response
-const cors: Hook = async (ctx) => {
-    return (response: Response) => {
-        const headers = new Headers(response.headers);
-        headers.set('Access-Control-Allow-Origin', '*');
-        return new Response(response.body, { status: response.status, headers });
-    };
-};
+export const GET = defineRoute(GETSchema, async (ctx) => {
+    return Response.json({ id: ctx.validated.params.id });
+});
 ```
 
-### Global Hooks
+## Hooks
+
+Six lifecycle stages:
+
+| Hook | When |
+|------|------|
+| `onRequest` | Request enters the app (global/plugin only) |
+| `transform` | After routing, before validation; context decoration factory map |
+| `beforeRoute` | After validation, before the handler |
+| `afterRoute` | After the handler returns |
+| `mapResponse` | Before the response is sent (final headers) |
+| `onError` | Any error in the lifecycle |
+
+Pipeline: `onRequest -> Routing -> transform -> Validation -> beforeRoute -> Handler -> afterRoute -> mapResponse`. Errors jump to `onError`.
+
+Scopes and order:
+
+- Forward hooks (`onRequest`, `beforeRoute`): Framework -> Plugin -> Global -> Route
+- Response hooks (`afterRoute`, `mapResponse`) and error hooks (`onError`): Route -> Global -> Plugin -> Framework
+
+Route `hooks.ts` can export `transform`, `beforeRoute`, `afterRoute`, `mapResponse`, and `onError`. `onRequest` is app-level only: global `src/hooks.ts` or plugins (`RouteHooks` excludes it; `GlobalHooks` adds it).
+
+Return values: a hook can return a `Response` to stop the chain, a function to transform the final response, or `undefined` to continue.
 
 ```typescript
 // src/hooks.ts
-import { cors } from './ecosystem/hooks/cors/cors';
-import { logger } from './ecosystem/hooks/logger/logger';
+export const onRequest = [
+    async (ctx) => {
+        console.log(`${ctx.request.method} ${ctx.request.url}`);
+    },
+];
 
-export const onRequest = [logger()];
-export const beforeRoute = [cors({ origin: '*' })];
-```
-
-### Route Hooks
-
-```typescript
-// api/users/hooks.ts
+// api/protected/hooks.ts
 export const beforeRoute = [
     async (ctx) => {
-        if (ctx.query.admin !== 'true') {
-            return Response.json({ error: 'Forbidden' }, { status: 403 });
+        if (!ctx.headers.get('Authorization')) {
+            return Response.json({ error: 'Unauthorized' }, { status: 401 });
         }
     },
 ];
 ```
 
-A route's `hooks.ts` can export `transform`, `beforeRoute`, `afterRoute`, `mapResponse`, `onError`. `onRequest` is app-level only (global `src/hooks.ts` or plugins).
+## Validation
 
-### Hook Scopes
-
-- Request hooks: Framework → Plugin → Global → Route
-- Response hooks (`afterRoute`, `mapResponse`): Global → Route → Plugin → Framework
-- Error hooks (`onError`): nearest-first, Route → Global
-
-## Zod Validation
-
-### Schema Structure (per-method named exports)
+Validation runs after `transform` and before `beforeRoute`. Schemas are written in `schema.ts` with Zod (or any Standard Schema library), per method:
 
 ```typescript
-// api/users/[id]/schema.ts
+// api/users/schema.ts
 import { z } from 'zod';
 
 export const GET = {
-    params: z.object({ id: z.string() }),           // URL params
-    query: z.object({ page: z.coerce.number() }),   // Query string
+    query: z.object({ page: z.coerce.number().int().min(1).default(1) }),
 };
 
 export const POST = {
-    body: z.object({                                 // Request body
-        name: z.string().min(1),
-        email: z.string().email(),
-    }),
+    body: z.object({ name: z.string().min(1), email: z.email() }),
 };
 ```
 
-### Accessing Validated Data
+Read validated data from `ctx.validated`; with `defineRoute`/`defineHooks` it is fully typed. In plain handlers it is optional and typed `unknown`.
 
-```typescript
-export async function GET(ctx: BurgerContext) {
-    // Validated data is available in ctx.validated
-    const { id } = ctx.validated?.params || {};
-    const { page } = ctx.validated?.query || {};
-
-    return Response.json({ id, page });
-}
-```
-
-### Validation Errors
-
-If validation fails, Burger API returns a `422` with an RFC 9457 problem+json body:
+On failure, the framework throws `ValidationError` and `onError` produces a 422 response with an RFC 9457 `application/problem+json` body by default:
 
 ```json
 {
@@ -261,166 +200,102 @@ If validation fails, Burger API returns a `422` with an RFC 9457 problem+json bo
     "title": "Validation Error",
     "status": 422,
     "errors": {
-        "body": [{ "path": ["email"], "message": "Invalid email" }],
-        "query": [{ "path": ["page"], "message": "Page must be >= 1" }]
+        "body": [{ "path": ["email"], "message": "Invalid email" }]
     }
 }
 ```
 
-## CLI Commands
-
-### Installation
-
-```bash
-bun add -g @burger-api/cli
-# or, without installing:
-bunx @burger-api/cli create my-app
-```
-
-### Create Project
-
-```bash
-burger-api create my-api
-# JavaScript scaffold:
-burger-api create my-api --lang js
-```
-
-Generates `src/index.ts`, `src/hooks.ts`, `src/plugins.ts`, `src/providers.ts`, `src/openapi.config.ts`, `src/api/`, and `burger.build.ts`.
-
-### Add Hooks and Plugins
-
-```bash
-# List available hooks and plugins
-burger-api list
-
-# Add hooks/plugins
-burger-api add cors logger rate-limiter
-```
-
-### Development Server
-
-```bash
-burger-api dev
-burger-api dev --port 4000
-burger-api dev --file src/index.ts
-```
-
-### Build
-
-```bash
-# Bundle app (default output: .build/bundle/app.js)
-burger-api build
-
-# Compile standalone executable (default output: .build/executable/<project>)
-burger-api build:exec
-```
-
-Production build notes:
-- `build` and `build:exec` use build-time route discovery (AOT).
-- Runtime scanning is skipped in production by passing pre-built `apiRoutes` and `pageRoutes`.
+`new Burger({ validation: { ... } })` adjusts the default error status and the error format.
 
 ## Plugins and Providers
 
-### Plugins
+Hooks and plugins are separate: hooks control the request lifecycle, plugins extend the application.
 
 ```typescript
 // src/plugins.ts
-import type { PluginRegistrar } from "burger-api";
-import { apiKey } from "./ecosystem/plugins/api-key/api-key";
+import type { PluginRegistrar } from 'burger-api';
+import { apiKey } from './ecosystem/plugins/api-key/api-key';
 
 export default (burger: PluginRegistrar) => {
-    burger.usePlugin(apiKey({ keys: ["demo-api-key-123"] }));
+    burger.usePlugin(apiKey({ keys: ['demo-api-key-123'] }));
 };
 ```
-
-### Providers
 
 ```typescript
 // src/providers.ts
-import type { ProviderRegistrar } from "burger-api";
+import type { ProviderRegistrar } from 'burger-api';
 
 export default (burger: ProviderRegistrar) => {
-    burger.provide("db", createDatabase());
+    burger.provide('db', createDatabase());
 };
-// Access via ctx.services.db in any handler
+// Usage: ctx.services.db
 ```
 
-## Quick Examples
+Official ecosystem plugins live under `ecosystem/plugins/`: `jwt-auth`, `api-key`, `basic-auth`, `session`, `oidc`, `env`. Official hooks live under `ecosystem/hooks/`: `cors`, `logger`, `rate-limiter`, `cache`, `compression`, `security-headers`, `body-size-limiter`, `timeout`.
 
-### Basic Route
+## WebSocket
+
+File-based routes live under `wsDir` (default `src/websocket/`); the folder name becomes the URL:
 
 ```typescript
-// api/hello/route.ts
-export async function GET() {
-    return Response.json({ message: 'Hello, Burger API!' });
+// src/websocket/chat/ws.ts
+import type { BurgerWS } from 'burger-api';
+
+export function open(ws: BurgerWS) {
+    ws.send('connected');
 }
-```
 
-### Route with Validation
-
-```typescript
-// api/users/[id]/schema.ts
-import { z } from 'zod';
-
-export const GET = {
-    params: z.object({
-        id: z.string().uuid(),
-    }),
-};
-```
-
-```typescript
-// api/users/[id]/route.ts
-import type { BurgerContext } from 'burger-api';
-
-export async function GET(ctx: BurgerContext) {
-    const { id } = ctx.validated?.params || {};
-    return Response.json({ userId: id });
+export function message(ws: BurgerWS, message: string | Buffer) {
+    ws.send(message);
 }
+
+export function close(ws: BurgerWS, code: number, reason: string) {}
 ```
 
-### Route with Hooks
+Programmatic routes work too:
 
 ```typescript
-// api/protected/hooks.ts
-export const beforeRoute = [
-    async (ctx) => {
-        const token = ctx.headers.get('Authorization');
-        if (!token) {
-            return Response.json({ error: 'Unauthorized' }, { status: 401 });
-        }
-        return undefined;
-    },
-];
-```
-
-```typescript
-// api/protected/route.ts
-export async function GET() {
-    return Response.json({ message: 'Protected route' });
-}
-```
-
-### Complete Example
-
-```typescript
-// src/index.ts
-import { Burger } from 'burger-api';
-
 const app = new Burger({
-    apiDir: './src/api',
-    title: 'My API',
-    version: '1.0.0',
+    wsRoutes: [{ path: '/chat', handlers: { open(ws) { ws.send('hi'); } } }],
 });
-
-await app.serve(4000);
 ```
+
+Route params are available as `ws.data.route.params`. Pub/sub is available through `ws.subscribe`/`ws.unsubscribe`/`ws.publish`. WebSocket routes work on Bun, Node (via `@burger-api/node-server` or `createNodeWsBridge()`), Cloudflare, and Deno. Vercel does not support WebSocket. Pages (`src/pages/`) are Bun-only.
+
+## OpenAPI
+
+The spec is generated from routes and schemas; the raw spec is served at `/openapi.json` and interactive docs at `/docs` (Swagger UI by default, with `scalarDocs()` and `redocDocs()` alternatives). Document metadata is set on `new Burger({ title, version, description })`; per-route metadata is exported per method from `openapi.ts` (`summary`, `description`, `tags`, `operationId`, `deprecated`, `responses`, `externalDocs`).
+
+## CLI
+
+Real commands: `create`, `add`, `list` (alias `ls`), `skills install|list|available`, `dev`, `start`, `build`, `build:exec`, `generate` (`route|hook|plugin|ws`), `inspect`, `doctor`.
+
+```bash
+burger-api create my-api --lang ts      # -y/--yes for defaults
+burger-api list                         # ecosystem catalog
+burger-api add cors logger rate-limiter
+burger-api generate route users         # also: hook, plugin, ws
+burger-api dev                          # -p/--port, -f/--file
+burger-api start                        # run the built bundle
+burger-api build src/index.ts --target=cloudflare
+burger-api build:exec src/index.ts
+burger-api inspect --json               # resolved project shape
+burger-api doctor --json                # project health checks
+```
+
+`add`, `list`, and `skills` fetch their catalog from GitHub (`isfhan/burger-api`). Until the ecosystem content lands on `main`, set `BURGER_API_BRANCH=feat/burger-api-v1` for those commands.
+
+## Deploy Targets
+
+`burger-api build --target=bun|node|cloudflare|deno|vercel` generates the entry file and platform config for each target. API routes are portable to all five; pages are Bun-only; Vercel does not support WebSocket. For WinterCG runtimes, `toFetchHandler()` adapts the app to a `fetch` handler. `@burger-api/node-server` is the official Node adapter, and standalone executables come from `burger-api build:exec`.
 
 ## Key Features
 
-- ⚡ **Bun-Native Performance** - Leverages Bun's high-performance HTTP server
-- 📁 **File-Based Routing** - Automatic route registration from file structure
-- 🔄 **Hook System** - Global and route-specific hooks
-- ✅ **Type-Safe Validation** - Zod schemas with automatic type inference
-- 📚 **Automatic OpenAPI** - Generates OpenAPI 3.0 specs from routes
-- 🚀 **CLI Tool** - Project scaffolding and hook/plugin management
+- Bun-native performance with a hybrid router (native dispatch first, radix trie fallback)
+- File-based routing with per-route convention files
+- Six lifecycle hooks plus plugins and providers
+- Zod / Standard Schema validation with typed `ctx.validated`
+- Automatic OpenAPI 3.0 generation with Swagger, Scalar, and Redoc UIs
+- WebSocket routes with pub/sub
+- Full TypeScript and JavaScript support
+- One-flag builds for Bun, Node, Cloudflare, Deno, and Vercel

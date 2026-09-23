@@ -8,7 +8,7 @@ tags: [release, performance, middleware, monorepo]
 We're excited to announce the release of **BurgerAPI v0.6.2**! This update focuses on performance optimization, architectural simplification, and improved project structure while maintaining 100% backward compatibility.
 
 :::caution Pre-1.0 release notes
-This post describes a pre-1.0 release, built on the earlier `BurgerRequest`/middleware-based API. [BurgerAPI v1.0.0](/blog/burger-api-v1.0.0-release) replaced that API with `BurgerContext` and hooks — code samples below won't run as-is on 1.0.0. Kept as accurate release history, not a current guide.
+This post describes a pre-1.0 release, built on the earlier `BurgerRequest`/middleware-based API. The [BurgerAPI v1.0.0-beta rewrite](/blog/burger-api-v1.0.0-beta-release) replaced that API with `BurgerContext` and hooks. Code samples below won't run as-is on 1.0.0-beta. Kept as accurate release history, not a current guide.
 :::
 
 {/* truncate */}
