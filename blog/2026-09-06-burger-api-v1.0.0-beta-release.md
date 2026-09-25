@@ -5,7 +5,7 @@ authors: [isfhan]
 tags: [release, beta, 1.0, typescript, javascript, wintercg, cli, benchmarks]
 ---
 
-**`burger-api` and `@burger-api/cli` both ship `1.0.0-beta` today. `bun add burger-api` and `bun add -g @burger-api/cli` install it by default. It's a vision-locked rewrite of the framework, not an incremental update — and it's a beta, so we're not calling it production-ready yet. If you're running something in production today, stay on the `0.9.x` line (`bun add burger-api@0.9.7`, `bun add -g @burger-api/cli@0.9.9`) until we cut a stable 1.0.0.**
+**`burger-api` and `@burger-api/cli` both ship `1.0.0-beta` today. `bun add burger-api` and `bun add -g @burger-api/cli` install it by default. It's a vision-locked rewrite of the framework, not an incremental update, and it's a beta, so we're not calling it production-ready yet. If you're running something in production today, stay on the `0.9.x` line (`bun add burger-api@0.9.7`, `bun add -g @burger-api/cli@0.9.9`) until we cut a stable 1.0.0.**
 
 {/* truncate */}
 
@@ -16,7 +16,7 @@ This is a breaking rewrite, not a patch. The highlights:
 - **`BurgerContext` replaces `BurgerRequest`.** Every hook and handler takes
   one context object.
 - **Hooks replace middleware.** `onRequest`, `transform`, `beforeRoute`,
-  `afterRoute`, `mapResponse`, `onError` — six named lifecycle points instead
+  `afterRoute`, `mapResponse`, `onError`: six named lifecycle points instead
   of a middleware chain. Plugins (`burger.usePlugin()`) are a separate
   concept for extending the app, not a middleware alternative.
 - **`defineRoute` / `defineHooks`.** New helpers that infer `ctx.validated`
@@ -31,7 +31,7 @@ This is a breaking rewrite, not a patch. The highlights:
   agents that need a project's shape programmatically.
 - **Auth moved out of core.** Auth factories now live under
   `ecosystem/plugins/` (`jwt-auth`, `session`, `oidc`, `api-key`,
-  `basic-auth`, `env`) — core stays auth-agnostic.
+  `basic-auth`, `env`): core stays auth-agnostic.
 
 See `CHANGELOG.md` in the [burger-api repo](https://github.com/isfhan/burger-api)
 for the complete list, including several real bugs found and fixed during
@@ -65,7 +65,7 @@ compiled it:
 - Typecheck and production builds are clean.
 - `@burger-api/node-server`'s adapter is verified against a real
   `node:http` server and a real two-client WebSocket broadcast, running
-  under plain Node — not simulated.
+  under plain Node, not simulated.
 - `bun audit`: no known vulnerabilities in the dependency tree.
 
 ## Benchmarks

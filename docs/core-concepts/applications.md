@@ -11,11 +11,20 @@ import { Burger } from "burger-api";
 
 const burger = new Burger({
   apiDir: "./src/api",
-  title: "My API",
-  version: "1.0.0",
 });
 
 burger.serve(4000);
+```
+
+OpenAPI metadata such as the title and version lives in `src/openapi.config.ts`, not in `new Burger({...})`:
+
+```ts title="src/openapi.config.ts"
+import type { OpenAPIConfig } from "burger-api";
+
+export default {
+  title: "My API",
+  version: "1.0.0",
+} satisfies OpenAPIConfig;
 ```
 
 The application brings together:
@@ -34,12 +43,13 @@ Scaffolded projects split configuration across convention files:
 | Concern | Where |
 |---------|-------|
 | Runtime options | `new Burger({...})` in `src/index.ts` |
+| OpenAPI metadata | `src/openapi.config.ts` |
 | Global hooks | `src/hooks.ts` |
 | Plugins | `src/plugins.ts` |
 | Providers | `src/providers.ts` |
 | Build-time settings | `burger.build.ts` (CLI only) |
 
-Runtime options such as `apiDir`, `apiPrefix`, and `version` are described in [Server Options](../core/server-options.md) and [Configuration](../core/configuration.md).
+Runtime options such as `apiDir`, `apiPrefix`, and `validation` are described in [Server Options](../core/server-options.md) and [Configuration](../core/configuration.md). OpenAPI metadata is described in [OpenAPI & Swagger](/docs/api/openapi).
 
 ## Related
 

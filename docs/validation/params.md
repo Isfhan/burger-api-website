@@ -43,7 +43,7 @@ export const GET = defineRoute(GetSchema, (ctx) => {
 });
 ```
 
-Without a `params` schema, `ctx.params` stays `Record<string, string> | undefined`, with every key untyped. For typed parameters, always add the schema. See the [TypeScript overview](/docs/advanced/type-safety).
+Without a `params` schema, `ctx.params` is still always `Record<string, string>` (empty when the route has no `[param]` segments), but every key is untyped. For typed parameters, always add the schema. See the [TypeScript overview](/docs/advanced/type-safety).
 
 Check your code: `bun run typecheck`.
 

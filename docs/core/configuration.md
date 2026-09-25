@@ -8,12 +8,13 @@ BurgerAPI uses four clear configuration layers.
 
 | Layer | Where | Purpose |
 |-------|--------|---------|
-| Build | `burger.build.ts` | Dirs, prefixes, debug (CLI only) |
-| App | `new Burger({...})` | Title, version, OpenAPI metadata, runtime app options |
+| Build | `burger.build.ts` | Dirs, prefixes, debug. Read by `burger-api build`, `inspect`, and `doctor` (CLI only) |
+| App | `new Burger({...})` | Runtime options: dirs, prefixes, validation, prebuilt routes |
+| App docs | `src/openapi.config.ts` | OpenAPI metadata, docs UI, docs auth |
 | Plugins | `src/plugins.ts` | Register plugins |
-| Route | `api/**/config.ts` | Auth overrides, cache, timeout, … |
+| Route | `api/**/config.ts` | Plain data exposed as `ctx.config`; core only reads `responseValidation` |
 
-`burger.build.ts` is **not** runtime configuration.
+`burger.build.ts` is **not** runtime configuration. `burger-api dev` and `burger-api start` load the options in `src/index.ts` (`new Burger({...})`); `burger-api build`, `inspect`, and `doctor` read `burger.build.ts` to find route directories. The scaffold keeps the two in sync (`apiDir: "./src/api"`, `apiPrefix: "/api"` in both), and the convention defaults below agree out of the box, so a default project works without touching either file. If you change one, change the other: `burger-api doctor` warns when they disagree.
 
 ## Application entry
 
@@ -23,14 +24,25 @@ import { Burger } from "burger-api";
 const burger = new Burger({
   apiDir: "./src/api",
   apiPrefix: "/api",
-  title: "My Burger API",
-  version: "1.0.0",
-  description: "An API built with BurgerAPI",
-  // servers, contact, license, ... for OpenAPI
 });
 
 burger.serve(4000);
 ```
+
+OpenAPI metadata belongs in `src/openapi.config.ts`, which `burger-api create` scaffolds. It takes `title`, `description`, `version`, `servers`, `contact`, `license`, `docsAuth`, `provider`, `path`, and more. See [OpenAPI](/docs/api/openapi) for the full field list.
+
+```typescript title="src/openapi.config.ts"
+import type { OpenAPIConfig } from "burger-api";
+
+export default {
+  title: "My Burger API",
+  version: "1.0.0",
+  description: "An API built with BurgerAPI",
+  servers: [{ url: "https://api.example.com", description: "Production" }],
+} satisfies OpenAPIConfig;
+```
+
+`new Burger({ title, version, description })` still works as a fallback for apps that do not use an `openapi.config.ts` file.
 
 ## How directories resolve
 
@@ -91,24 +103,48 @@ export default (burger: ProviderRegistrar) => {
 
 ## Route config
 
-```typescript title="api/public/health/config.ts"
+A route's `config.ts` default export is plain data, available to hooks and plugins as `ctx.config`. Core itself reads exactly one key: `responseValidation` (`"off" | "dev" | "enforce"`), which overrides the app-wide mode for that route. Keys such as `auth`, `cache`, and `timeout` do nothing unless a plugin or hook reads them. See [Validation Configuration](/docs/validation/configuration) for the response mode.
+
+```typescript title="src/api/public/health/config.ts"
 export default {
   auth: false,
 };
 ```
 
-```typescript title="api/admin/config.ts"
+```typescript title="src/api/admin/config.ts"
 export default {
   auth: { required: true, roles: ["admin"] },
   timeout: 5000,
+  responseValidation: "enforce",
 };
 ```
 
+Type your keys by augmenting `RouteConfig`, so `ctx.config` is typed wherever a hook or plugin reads it:
+
+```typescript title="src/types.ts"
+declare module "burger-api" {
+  interface RouteConfig {
+    auth?: boolean | { required?: boolean; roles?: string[] };
+    cache?: { maxAge: number };
+    timeout?: number;
+  }
+}
+```
+
+`config.ts` applies per route directory: there is no inheritance between folders.
+
 ## Global hooks
 
+Annotate global hooks with `GlobalHooks` so TypeScript checks the hook signature and infers `ctx`:
+
 ```typescript title="src/hooks.ts"
-export const onRequest = [/* ... */];
-export const onError = (error, ctx) => { /* ... */ };
+import type { GlobalHooks } from "burger-api";
+
+export const onRequest: GlobalHooks["onRequest"] = [/* ... */];
+
+export const onError: GlobalHooks["onError"] = (error, ctx) => {
+  console.error(error);
+};
 ```
 
 ## Environment variables
@@ -141,10 +177,11 @@ const routes: RouteDefinition[] = [
 ];
 
 const burger = new Burger({
-    apiDir: "./src/api",
     apiRoutes: routes,
 });
 ```
+
+When `apiRoutes` is provided, it replaces filesystem discovery: `apiDir` is ignored and no route files are scanned at runtime. This is how `burger-api build` produces portable bundles.
 
 ❌ Wrong, a typo in an option name or a method key:
 

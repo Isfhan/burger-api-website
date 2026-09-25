@@ -23,7 +23,7 @@ This post describes a pre-1.0 release, built on the earlier `globalMiddleware`/`
 
 ## Pre-built Routes for Production
 
-In production (bundled or executable), you don't want to depend on the filesystem. The CLI's build pipeline discovers routes at build time and injects them into your entry file. Your app then starts without scanning—faster startup and no path issues in single-file or binary deploys.
+In production (bundled or executable), you don't want to depend on the filesystem. The CLI's build pipeline discovers routes at build time and injects them into your entry file. Your app then starts without scanning: faster startup and no path issues in single-file or binary deploys.
 
 You can pass route lists into the `Burger` constructor instead of relying on runtime file scanning. When **either** `apiRoutes` or `pageRoutes` is provided, the corresponding `apiDir` / `pageDir` is ignored for that type.
 

@@ -107,21 +107,33 @@ api/
 
 ### 3. Organizing by Version
 
-Prepare for API versioning without changing URLs:
+Two route groups must never resolve to the same URL. A route group is ignored in the path, so copying a route into a second group silently creates a duplicate:
 
 ```
 api/
   (v1)/
     users/
       route.ts         → /api/users
-    products/
-      route.ts         → /api/products
   (v2-draft)/
     users/
-      route.ts         → /api/users (new version in development)
+      route.ts         → /api/users  ❌ duplicate: startup fails
 ```
 
-Later, you can switch versions by moving files or changing your apiDir configuration.
+Keep the version in the URL when it matters, using regular folders instead of groups:
+
+```
+api/
+  v1/
+    users/
+      route.ts         → /api/v1/users
+    products/
+      route.ts         → /api/v1/products
+  v2/
+    users/
+      route.ts         → /api/v2/users
+```
+
+Alternatively, serve one version at a time by pointing `apiDir` at a different directory.
 
 ### 4. Organizing by Team
 

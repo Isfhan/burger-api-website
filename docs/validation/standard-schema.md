@@ -44,6 +44,7 @@ Both Zod and a Standard Schema library can be used in the same app, even on diff
 ## Rules
 
 - The Standard Schema validator must be **synchronous** for request validation. An async validator causes an error at startup.
+- A declared `body` schema requires a JSON request: other content types get `415 Unsupported Media Type` before validation runs. `ctx.validated.body` is non-optional when the schema declares `body`.
 - Zod remains the recommended default because it is what BurgerAPI documents and the examples use.
 
 

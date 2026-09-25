@@ -19,24 +19,39 @@ import type { PluginRegistrar } from "burger-api";
 import { jwtAuth } from "../ecosystem/plugins/jwt-auth/jwt-auth";
 
 export default (burger: PluginRegistrar) => {
+  // HMAC secrets must be at least 32 bytes; the plugin throws at startup
+  // with the byte count otherwise.
   burger.usePlugin(jwtAuth({ secret: process.env.JWT_SECRET }));
 };
 ```
 
 ## Options
 
-- `secret`: secret key for HMAC algorithms (HS256, HS384, HS512).
+- `secret`: secret key for HMAC algorithms (HS256, HS384, HS512). A string secret must be at least 32 bytes; generate one with `openssl rand -base64 32`.
 - `publicKey`: public key for asymmetric algorithms (RS256, RS384, RS512, ES256, ...).
 - `algorithm`: signing algorithm. Default `"HS256"`.
 - `header` / `prefix`: where to read the token. Defaults to the `Authorization` header with the `Bearer` prefix.
 - `issuer`, `audience`: required claims.
-- `clockTolerance`: clock skew allowance in seconds.
+- `clockTolerance`: clock skew allowance in seconds. Default `0`.
+- `requireExpiration`: require an `exp` claim. Default `true`, so tokens without an expiry are rejected.
 
-After a successful login flow the plugin attaches the decoded payload as `ctx.user`:
+After a successful login flow the plugin attaches the decoded payload as `ctx.user`. The plugin augments `BurgerContext` with `user?: BurgerAuthUser & Record<string, unknown>`, so importing it in `src/plugins.ts` is enough for TypeScript to type `ctx.user` in your routes (no local cast needed):
 
 ```ts title="api/me/route.ts"
+import type { BurgerContext } from "burger-api";
+
 export async function GET(ctx: BurgerContext) {
-  return Response.json({ userId: ctx.user.sub });
+  return Response.json({ userId: ctx.user?.sub });
+}
+```
+
+Route `config.ts` keys such as `auth` are typed too once you augment `RouteConfig` in `src/types.ts`:
+
+```ts
+declare module "burger-api" {
+  interface RouteConfig {
+    auth?: boolean | { required?: boolean; roles?: string[] };
+  }
 }
 ```
 

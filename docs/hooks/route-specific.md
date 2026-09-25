@@ -30,7 +30,7 @@ export async function GET(ctx: BurgerContext) {
 }
 ```
 
-A route's `hooks.ts` can export any of: `transform`, `beforeRoute`, `afterRoute`, `mapResponse`, `onError`. `onRequest` is app-level only: define it in `src/hooks.ts` or a plugin, never in a route's `hooks.ts` (a route-level `onRequest` is ignored).
+A route's `hooks.ts` can export any of: `transform`, `beforeRoute`, `afterRoute`, `mapResponse`, `onError`. `onRequest` is app-level only: define it in `src/hooks.ts` or a plugin, never in a route's `hooks.ts` (declaring `onRequest` there is a compile error, since it runs before a route is matched).
 
 Route hooks run after global hooks and validation, and before the route handler. There is no folder or group inheritance: hooks apply only to their own route directory.
 

@@ -42,10 +42,11 @@ Each hook point has a precise type. TypeScript checks your hook's return value a
 
 The types you use (all from `burger-api`):
 
-- `ForwardHook`: `onRequest`, `beforeRoute`. Returns `Response` or `undefined`.
+- `ForwardHook`: `onRequest`, `beforeRoute`. Returns `Response`, a transform function, or `undefined`.
 - `ResponseHook`: `afterRoute`, `mapResponse`. Returns `Response`, a transform function, or `undefined`.
 - `ErrorHook`: `onError`. Returns `Response` or `undefined`.
-- `RouteHooks`: the full hook object, for `hooks.ts` files.
+- `RouteHooks`: the per-route hook object, for `hooks.ts` files (no `onRequest`).
+- `GlobalHooks`: extends `RouteHooks` with `onRequest`, for `src/hooks.ts` and plugin hooks.
 
 ✅ Correct: a transform function on a response hook:
 
@@ -61,11 +62,17 @@ export const afterRoute: RouteHooks["afterRoute"] = [
 ];
 ```
 
-❌ Wrong: a transform function on a forward hook. This does not compile:
+✅ Correct: a transform function on a forward hook. The mapper is queued and runs on the final response after the handler:
 
 ```ts
+import type { RouteHooks } from "burger-api";
+
 export const beforeRoute: RouteHooks["beforeRoute"] = [
-    (ctx) => (res) => res, // ❌ ForwardHook cannot return a function
+    () => (response) => {
+        const headers = new Headers(response.headers);
+        headers.set("X-Custom", "value");
+        return new Response(response.body, { status: response.status, headers });
+    },
 ];
 ```
 
@@ -73,7 +80,7 @@ export const beforeRoute: RouteHooks["beforeRoute"] = [
 
 ```ts
 export const beforeRoute: RouteHooks["beforeRoute"] = [
-    () => "yes", // ❌ Type 'string' is not assignable to 'Response | undefined'
+    () => "yes", // ❌ Type 'string' is not assignable
 ];
 ```
 

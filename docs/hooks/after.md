@@ -8,7 +8,9 @@ sidebar_label: After Hooks
 
 ```ts
 // src/hooks.ts
-export const afterRoute = [
+import type { GlobalHooks } from "burger-api";
+
+export const afterRoute: GlobalHooks["afterRoute"] = [
   () => (response) => {
     const headers = new Headers(response.headers);
     headers.set("X-Powered-By", "BurgerAPI");

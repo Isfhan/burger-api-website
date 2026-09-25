@@ -8,6 +8,8 @@ The `ctx` object your handlers receive exposes request data through a small, con
 
 `ctx` is a `BurgerContext`. It is not a `Request` subclass: the original request is available as `ctx.request`, and the standard request surface is delegated.
 
+The examples on this page assume `import type { BurgerContext } from "burger-api";`.
+
 ## ctx.request
 
 The raw `Request`. Use it when you need the full request object:
@@ -64,6 +66,8 @@ export async function POST(ctx: BurgerContext) {
 }
 ```
 
+When the route declares a `body` schema, read the validated body from `ctx.validated.body` instead. It is typed from the schema and non-optional after validation. Calling `ctx.json()` still works (the parsed body is cached), but the validated value is the one to use. A declared body schema also means non-JSON requests are rejected with `415 Unsupported Media Type` before the handler runs.
+
 ## ctx.headers, ctx.method, ctx.url
 
 The request headers, HTTP method, and full URL. All delegate to the underlying request and never allocate anything extra:
@@ -81,7 +85,7 @@ The matched route's identity:
 
 ```ts
 export async function GET(ctx: BurgerContext) {
-  // ctx.route.pattern === "/users/:id"
+  // ctx.route.pattern === "/api/users/:id" (includes apiPrefix)
   return Response.json({ pattern: ctx.route.pattern });
 }
 ```

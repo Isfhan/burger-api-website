@@ -77,11 +77,49 @@ If you prefer not to use the CLI, you can set up a project manually using standa
    ```
    Follow the prompts to create a basic Bun project.
 
-2. **Install BurgerAPI:**
-   Add the framework to your dependencies:
+2. **Install BurgerAPI and Zod:**
    ```bash
-   bun add burger-api
+   bun add burger-api zod
    ```
+
+3. **Create your entry file** (`src/index.ts`):
+   ```typescript title="src/index.ts"
+   import { Burger } from "burger-api";
+
+   const app = new Burger({
+     apiDir: "./src/api",
+   });
+
+   const port = Number(process.env.PORT) || 4000;
+   app.serve(port, () => {
+     console.log(`Server running on http://localhost:${port}`);
+   });
+   ```
+
+4. **Create your first route.** The runtime reads validation from a route's `schema.ts`, so declare the schema there and import it into `route.ts`:
+   ```typescript title="src/api/schema.ts"
+   import { z } from "zod";
+   import type { MethodSchema } from "burger-api";
+
+   export const GET = {
+     query: z.object({ name: z.string().default("world") }),
+   } satisfies MethodSchema;
+   ```
+   ```typescript title="src/api/route.ts"
+   import { defineRoute } from "burger-api";
+   import { GET as GetSchema } from "./schema";
+
+   export const GET = defineRoute(GetSchema, (ctx) => {
+     return Response.json({ message: `Hello, ${ctx.validated.query.name}!` });
+   });
+   ```
+
+5. **Run it:**
+   ```bash
+   bun run src/index.ts
+   ```
+
+   Open `http://localhost:4000/api` (try `?name=Burger`) and `http://localhost:4000/docs`.
 
 ---
 

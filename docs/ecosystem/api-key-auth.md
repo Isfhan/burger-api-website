@@ -31,9 +31,11 @@ export default (burger: PluginRegistrar) => {
 - `extract`: custom extraction function, for example from the query string.
 - `attachToContext`: attach the key to the context. Default `true`.
 
-After successful validation the key is available as `ctx.apiKey`:
+After successful validation the key is available as `ctx.apiKey`. The plugin augments `BurgerContext` with `apiKey?: string`, so importing it in `src/plugins.ts` is enough for TypeScript to type it in your routes:
 
 ```ts title="api/private/route.ts"
+import type { BurgerContext } from "burger-api";
+
 export async function GET(ctx: BurgerContext) {
   return Response.json({ apiKey: ctx.apiKey });
 }

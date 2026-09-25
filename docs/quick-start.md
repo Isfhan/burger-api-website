@@ -33,7 +33,7 @@ This is the short version. For every install method, see [Installation](/docs/ge
     bun run dev
     ```
 
-3. **Open** [http://localhost:4000](http://localhost:4000) in your browser.
+3. **Open** [http://localhost:4000/api](http://localhost:4000/api) for the starter route and [http://localhost:4000/docs](http://localhost:4000/docs) for the API docs.
 
 ## Language choice
 

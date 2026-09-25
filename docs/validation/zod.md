@@ -61,6 +61,7 @@ export const GET = defineRoute(GetSchema, (ctx) => {
 ✅ Correct. Reuse a slot's type elsewhere:
 
 ```ts
+import { z } from "zod";
 import type { GET } from "./schema";
 type Query = z.infer<typeof GET.query>; // { limit?: number }
 function usesLimit(limit: Query["limit"]) { /* ... */ }

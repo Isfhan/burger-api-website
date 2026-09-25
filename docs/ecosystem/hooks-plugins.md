@@ -23,7 +23,7 @@ export const onRequest = [cors({ origin: ["https://app.example.com"] })];
 
 ## Plugins
 
-Plugins are application extensions. They can register hooks, register providers, and extend `BurgerContext`.
+Plugins are application extensions. They package hooks and inject request-scoped values onto `BurgerContext` through `transform` (for example `ctx.user` or `ctx.apiKey`). They cannot register providers: services are registered in `src/providers.ts` with `burger.provide()`.
 
 - **What they do:** integrate with the application, often combining hooks with route `config.ts` (for example, auth).
 - **Where they live:** `ecosystem/plugins/` after install.
@@ -39,6 +39,14 @@ export default (burger: PluginRegistrar) => {
 };
 ```
 
+`usePlugin()` accepts a plugin object or a factory function, plus two optional arguments:
+
+```ts
+usePlugin(plugin: Plugin | PluginFactory, scope?: Scope, seed?: string): this
+```
+
+`scope` overrides where the plugin's hooks sit in the chain (default `"plugin"`). `seed` disambiguates two registrations of the same plugin, for example two JWT plugins with different secrets.
+
 ## Which one to use?
 
 - Need code to run around requests, like adding headers or logging? Use a **hook**.
@@ -51,8 +59,10 @@ Hooks control the request lifecycle. Plugins extend the application. They are se
 The types you use (all from `burger-api`):
 
 - `Plugin` is a plugin: `{ name, hooks? }`
+- `PluginFactory` is a function returning a plugin (or a promise of one)
+- `GlobalHooks` is the hook object a plugin uses
 - `RouteHooks` is the hook object (for typing `hooks.ts` files)
-- `BurgerServices` is the services on `ctx.services`, which you extend
+- `BurgerContext` is augmented to type values injected by `transform`
 
 ✅ Correct: type the plugin when you write one:
 
@@ -71,16 +81,27 @@ export default (burger: PluginRegistrar) => {
 };
 ```
 
-✅ Correct: type the services your plugin provides (augmentation, in any app file):
+✅ Correct: inject a typed value with `transform` (augment `BurgerContext` in any app file):
 
 ```ts
+import type { Plugin } from "burger-api";
+
 declare module "burger-api" {
-    interface BurgerServices {
-        db: Database;
+    interface BurgerContext {
+        tenant: string;
     }
 }
 
-// In a handler: ctx.services.db (typed)
+const tenant: Plugin = {
+    name: "tenant",
+    hooks: {
+        transform: {
+            tenant: (ctx) => ctx.headers.get("x-tenant") ?? "public",
+        },
+    },
+};
+
+// In a handler: ctx.tenant (typed)
 ```
 
 ❌ Wrong: an unknown hook point on a plugin:

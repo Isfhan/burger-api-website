@@ -8,22 +8,27 @@ When validation fails, BurgerAPI throws a `ValidationError`, which is rendered a
 
 ## Default: Problem Details
 
-By default a failed request gets a `422` with an RFC 9457 Problem Details body. Issues are grouped by the validation slot that failed (query, params, headers, cookies, or body):
+By default a failed request gets a `422` with an RFC 9457 Problem Details body. Issues are grouped by the validation slot that failed (query, params, headers, cookies, or body). This is the actual response for `GET /api/items?limit=abc` against a `query: z.object({ limit: z.number() })` schema:
 
 ```json
 {
   "type": "about:blank",
   "title": "Validation Error",
   "status": 422,
+  "detail": "query: Invalid input: expected number, received string",
   "errors": {
     "query": [
-      { "path": ["limit"], "message": "Expected number, received string" }
+      {
+        "path": ["limit"],
+        "message": "Invalid input: expected number, received string",
+        "code": "invalid_type"
+      }
     ]
   }
 }
 ```
 
-See [Problem Details](/docs/validation/problem-details) for the full shape.
+`detail` is `"<slot>: <first issue message>"` for one issue, or `"<slot>: N validation errors"` for several. See [Problem Details](/docs/validation/problem-details) for the full shape.
 
 ## Plain format
 
@@ -33,13 +38,17 @@ Set `errorFormat: "plain"` in [configuration](/docs/validation/configuration) to
 {
   "errors": {
     "query": [
-      { "path": ["limit"], "message": "Expected number, received string" }
+      {
+        "path": ["limit"],
+        "message": "Invalid input: expected number, received string",
+        "code": "invalid_type"
+      }
     ]
   }
 }
 ```
 
-Each issue has a `path` (where the problem is) and a `message` (what went wrong).
+Each issue has a `path` (where the problem is) and a `message` (what went wrong); Zod issues also carry a `code`. In development the plain body adds `"dev": true`; production omits it.
 
 ## Safe in production
 

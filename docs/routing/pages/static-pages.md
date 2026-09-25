@@ -47,8 +47,7 @@ Good old `.html` files require no special handling. BurgerAPI serves them direct
   <head>
     <meta charset="UTF-8" />
     <title>About Us</title>
-    <link rel="stylesheet" href="/assets/style.css" />
-    {/* Example asset link */}
+    <link rel="stylesheet" href="/assets/css/style.css" />
   </head>
   <body>
     <h1>About BurgerAPI</h1>
@@ -68,7 +67,7 @@ a service, or anything else that a static `.html` file can't express.
 import type { BurgerContext } from "burger-api";
 
 export default async function GET(ctx: BurgerContext): Promise<Response> {
-  const slug = (ctx.params as Record<string, string>)?.slug ?? "unknown";
+  const slug = ctx.params.slug ?? "unknown";
   return new Response(
     `<!doctype html><html><body><h1>Post: ${slug}</h1></body></html>`,
     { headers: { "Content-Type": "text/html" } }

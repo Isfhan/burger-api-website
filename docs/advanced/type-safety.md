@@ -24,20 +24,20 @@ import { defineRoute } from "burger-api";
 import { GET as GetSchema } from "./schema";
 
 export const GET = defineRoute(GetSchema, (ctx) => {
-    ctx.validated.query; // { q?: string } | undefined, typed
+    ctx.validated.query; // { q?: string }, typed and non-optional
     return Response.json(ctx.validated.query);
 });
 ```
 
-`defineRoute` does nothing at runtime; it returns your handler exactly as written. What it buys you is that the schema you pass and the schema TypeScript types `ctx` against are always the literal same object, so the two can never quietly drift apart.
+`defineRoute` does nothing at runtime; it returns your handler exactly as written. What it buys you is that the schema you pass and the schema TypeScript types `ctx` against are always the literal same object, so the two can never quietly drift apart. Runtime validation still comes from the route's `schema.ts` convention file, so always pass that same export rather than an inline schema object.
 
 The equivalent, older form still works: annotate the handler with `BurgerContext<typeof GET>` directly:
 
 ```ts
 import type { BurgerContext } from "burger-api";
-import type { GET } from "./schema";
+import type { GET as RouteSchema } from "./schema";
 
-export async function GET(ctx: BurgerContext<typeof GET>) {
+export async function GET(ctx: BurgerContext<typeof RouteSchema>) {
     ctx.validated.query; // same inference, written by hand
 }
 ```
@@ -96,13 +96,14 @@ No errors means your types are correct. Your editor shows the same problems whil
 | `RouteSchema` | The shape of a route's full schema map | Programmatic `schema` |
 | `MethodSchema` | The shape of one `schema.ts` method export | `satisfies MethodSchema` in `schema.ts` |
 | `OpenAPIMeta` | The shape of one `openapi.ts` method export | `satisfies OpenAPIMeta` in `openapi.ts` |
-| `RouteConfig` | The route `config.ts` options; you extend it | `satisfies RouteConfig` in `config.ts`, `ctx.config` |
-| `BuildConfig` | The shape of `burger.build.ts` | `satisfies BuildConfig` in `burger.build.ts` |
+| `RouteConfig` | The route `config.ts` options; you augment it to type `ctx.config` | `declare module "burger-api"` |
+| `BuildConfig` | The shape of `burger.build.ts` | `satisfies Partial<BuildConfig>` in `burger.build.ts` |
 | `OpenAPIConfig` | The shape of `openapi.config.ts` | `satisfies OpenAPIConfig` |
-| `ForwardHook` | A before-handler hook: returns `Response` or `undefined` | `onRequest`, `beforeRoute` |
-| `ResponseHook` | An after-handler hook: can also return a transform function | `afterRoute`, `mapResponse` |
+| `ForwardHook` | A before-handler hook: returns `Response`, a mapper, or `undefined` | `onRequest`, `beforeRoute` |
+| `ResponseHook` | An after-handler hook: returns `Response`, a mapper, or `undefined` | `afterRoute`, `mapResponse` |
 | `ErrorHook` | An error hook: takes `(error, ctx)`, returns `Response` or `undefined` | `onError` |
-| `RouteHooks` | All hook points of a route in one object | `hooks.ts` files |
+| `RouteHooks` | All hook points of a route in one object (no `onRequest`) | `hooks.ts` files |
+| `GlobalHooks` | `RouteHooks` plus `onRequest` | `src/hooks.ts`, plugin hooks |
 | `Plugin` | A plugin: name plus optional hooks | `usePlugin()` |
 | `BurgerServices` | The services on `ctx.services`, which you extend | Providers, `ctx.services` |
 | `WebSocketData` | The data on `ws.data`, which you extend | WebSocket handlers |
@@ -115,15 +116,15 @@ Every convention file has a consumer type. The scaffolded templates already use 
 
 | File | Type | Example |
 |------|------|---------|
-| `burger.build.ts` | `BuildConfig` | `export default {...} satisfies BuildConfig;` |
-| `src/hooks.ts` | `RouteHooks` | `export const beforeRoute: RouteHooks["beforeRoute"] = [];` |
+| `burger.build.ts` | `BuildConfig` | `export default {...} satisfies Partial<BuildConfig>;` |
+| `src/hooks.ts` | `GlobalHooks` | `export const beforeRoute: GlobalHooks["beforeRoute"] = [];` |
 | `src/index.ts` | `ServerOptions` | typed by `new Burger({...})` |
 | `openapi.config.ts` | `OpenAPIConfig` | `export default {...} satisfies OpenAPIConfig;` |
 | route `schema.ts` | `MethodSchema` | `export const GET = {...} satisfies MethodSchema;` |
 | route `openapi.ts` | `OpenAPIMeta` | `export const GET = {...} satisfies OpenAPIMeta;` |
-| route `hooks.ts` | `RouteHooks` | same as `src/hooks.ts` |
-| route `config.ts` | `RouteConfig` | `export default {...} satisfies RouteConfig;` |
-| route `route.ts` | `BurgerContext` | `export const GET = defineRoute(GET, (ctx) => ...)` |
+| route `hooks.ts` | `RouteHooks` | `export const beforeRoute: RouteHooks["beforeRoute"] = [];` |
+| route `config.ts` | `RouteConfig` | augment `RouteConfig`, then `export default {...}` |
+| route `route.ts` | `defineRoute(schema, handler)` | `import { GET as GetSchema } from "./schema"; export const GET = defineRoute(GetSchema, (ctx) => ...)` |
 | ws `ws.ts` | `BurgerWS`, `WebSocketHandlers` | typed handler parameters |
 | `src/types.ts` | app type extensions | `declare module 'burger-api' { ... }` |
 
@@ -162,8 +163,8 @@ After this block, `ctx.services.db`, `ctx.user`, and `ws.data.userId` are all ty
 
 These stay untyped on purpose:
 
-- **`ctx.params`**: the raw URL parameters, always `Record<string, string> | undefined`. For typed parameters, add a `params` schema and use `ctx.validated.params`. See [Dynamic Routes](/docs/routing/api/dynamic-routes).
-- **`ctx.wildcardParams`**: always `string[] | undefined`. There is no schema for wildcard segments.
+- **`ctx.params`**: the raw URL parameters, always `Record<string, string>` (empty when the route has none). For typed parameters, add a `params` schema and use `ctx.validated.params`. See [Dynamic Routes](/docs/routing/api/dynamic-routes).
+- **`ctx.wildcardParams`**: always `string[]` (empty for non-wildcard routes). There is no schema for wildcard segments.
 - **`ctx.json()`**: the default is `any` (the same as the browser `Request`). Use `ctx.json<T>()` to give it a type: `await ctx.json<{ id: number }>()`.
 
 ## Where types live in each feature

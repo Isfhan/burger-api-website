@@ -31,16 +31,18 @@ import { defineRoute } from "burger-api";
 import { GET as GetSchema } from "./schema";
 
 export const GET = defineRoute(GetSchema, (ctx) => {
-    const { userId, postId } = ctx.validated.params; // both typed
-    return Response.json({ userId, postId });
+    const { id, postId } = ctx.validated.params; // both typed
+    return Response.json({ id, postId });
 });
 ```
 
 ```typescript
 // schema.ts
+import { z } from "zod";
+
 export const GET = {
     params: z.object({
-        userId: z.string(),
+        id: z.string(),
         postId: z.string(),
     }),
 };

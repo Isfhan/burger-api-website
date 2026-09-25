@@ -82,7 +82,8 @@ A complete route directory, in JavaScript with JSDoc types:
 
 ```js
 // src/api/products/route.js
-import { NotFoundError } from "burger-api";
+import { NotFoundError, defineRoute } from "burger-api";
+import { POST as PostSchema } from "./schema";
 
 /**
  * List products.
@@ -93,15 +94,11 @@ export async function GET(ctx) {
   return Response.json({ products: [] });
 }
 
-/**
- * Create a product.
- * @param {import('burger-api').BurgerContext} ctx
- * @returns {Promise<Response>}
- */
-export async function POST(ctx) {
-  const body = await ctx.json();
-  return Response.json({ created: body }, { status: 201 });
-}
+// With a body schema, read the validated body instead of calling ctx.json().
+export const POST = defineRoute(PostSchema, (ctx) => {
+  const { name } = ctx.validated.body;
+  return Response.json({ created: { name } }, { status: 201 });
+});
 
 /**
  * Get one product.
@@ -117,7 +114,9 @@ export async function PATCH(ctx) {
 // src/api/products/schema.js
 import { z } from "zod";
 
-/** @type {{ body: import('zod').ZodObject<{ name: import('zod').ZodString }> }} */
+// @satisfies (not @type) keeps the literal type, so defineRoute can infer
+// ctx.validated from it.
+/** @satisfies {import('burger-api').MethodSchema} */
 export const POST = {
   body: z.object({ name: z.string() }),
 };
@@ -140,7 +139,7 @@ export const beforeRoute = [
 
 ```js
 // src/api/products/openapi.js
-/** @type {import('burger-api').openapi} */
+/** @type {import('burger-api').OpenAPIMeta} */
 export const GET = { summary: "List products", tags: ["products"] };
 ```
 

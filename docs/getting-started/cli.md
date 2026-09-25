@@ -25,7 +25,7 @@ cd my-api
 # 3. Start the development server
 bun run dev
 
-# 4. Open http://localhost:4000 in your browser
+# 4. Open http://localhost:4000/api and http://localhost:4000/docs
 ```
 
 See [Quick Start](/docs/quick-start) for the full walkthrough.
@@ -39,11 +39,12 @@ Scaffolds a new project with interactive prompts.
 - Creates the project structure and installs dependencies.
 - Writes `burger.build.ts` at the project root (apiDir, pageDir, apiPrefix, pagePrefix, debug). This file is build-time only.
 - Generates the `dev`, `build`, and `start` scripts.
-- Options: `--lang ts|js` (default `ts`), `--yes` / `--defaults` (skip prompts).
+- Options: `--lang ts|js` (default `ts`), `--yes` / `--defaults` (skip prompts), `--pages` (include `src/pages`), `--ws` (include file-based WebSocket routes), `--no-api` (skip API routes), `--api-dir <dir>`, `--api-prefix <prefix>`, `--no-skills`.
 
 ```bash
 burger-api create my-api
 burger-api create my-api --lang js
+burger-api create my-app --pages --ws
 ```
 
 Next steps: run `bun run dev`, then add hooks and plugins with `burger-api add`. See [Create Command](/docs/cli/create).
@@ -90,7 +91,7 @@ burger-api dev
 
 Builds your project for a deployment target. Routes are discovered at build time (via `burger.build.ts` or conventions) and compiled ahead of time (AOT), so production never depends on the filesystem.
 
-- Options: `--target <platform>` (`bun` default, `node`, `cloudflare`, `deno`, `vercel`, or `browser` as a legacy raw passthrough), `--outfile <path>` (default depends on `--target`), `--compile` (standalone executable, `bun` target only), `--minify`, `--sourcemap <type>`.
+- Options: `--target <platform>` (`bun` default, `node`, `cloudflare`, `deno`, `vercel`), `--outfile <path>` (default depends on `--target`), `--compile` (standalone executable, `bun` target only), `--minify`, `--sourcemap <type>`.
 
 ```bash
 burger-api build src/index.ts --target=cloudflare
@@ -98,7 +99,7 @@ burger-api build src/index.ts --target=node --outfile=dist/server.js
 burger-api build src/index.ts --compile --outfile=my-app
 ```
 
-Bun and Node targets produce a single self-contained bundle; Cloudflare, Deno, and Vercel produce a portable entry file plus a scaffolded platform config (`wrangler.toml` / `deno.json` / `vercel.json`, only if one doesn't already exist), and the platform's own tool (`wrangler`/`deno`/`vercel`) does the actual bundling from there.
+Bun and Node targets produce a single self-contained bundle. Cloudflare, Deno, and Vercel produce a portable entry (`index.ts`, with relative imports and no machine-absolute paths) plus a generated options module (`__burger_build_options__.ts`), and a scaffolded platform config (`wrangler.toml` / `deno.json` / `vercel.json`, only if one doesn't already exist). The platform's own tool (`wrangler`/`deno`/`vercel`) does the actual bundling from there.
 
 See [Build Command](/docs/cli/build) and [Compatibility](/docs/compatibility) for what each target supports.
 
@@ -125,6 +126,41 @@ burger-api build:exec src/index.ts --target bun-linux-x64
 ```
 
 See [Build Exec Command](/docs/cli/build-exec).
+
+### `burger-api generate <type> <name>` (alias: `g`)
+
+Scaffolds a route directory, a WebSocket route directory, or a local hook/plugin stub:
+
+```bash
+burger-api generate route products/[id]
+burger-api generate ws chat
+burger-api generate hook rate-limit
+burger-api generate plugin audit-log
+```
+
+See [Generate Command](/docs/cli/generate).
+
+### `burger-api inspect`
+
+Prints everything the CLI discovers in your project: config, API/page/WebSocket routes, hooks, plugins, and convention-file coverage.
+
+```bash
+burger-api inspect
+burger-api inspect --json
+```
+
+See [Inspect Command](/docs/cli/inspect).
+
+### `burger-api doctor`
+
+Validates your project structure and exits non-zero when a check fails. Useful in CI alongside `bun run typecheck`.
+
+```bash
+burger-api doctor
+burger-api doctor --json
+```
+
+See [Doctor Command](/docs/cli/doctor).
 
 ### `burger-api skills`
 
@@ -184,9 +220,15 @@ my-api/
 2. Run it: `burger-api start` (Bun), `node dist/server.js` (Node), or hand off to the platform's own tool: `wrangler dev`/`deploy`, `deno serve`, `vercel dev`/`--prod`.
 3. `burger-api build src/index.ts --compile --outfile=my-app` for a standalone Bun binary (or `burger-api build:exec src/index.ts --target bun-linux-x64` for a specific OS/arch).
 
+## Environment variables
+
+- `GITHUB_TOKEN`: token sent to the GitHub API when fetching the ecosystem catalog for `add`, `list`, and `skills`. Setting it raises the unauthenticated rate limit; the CLI prints a hint when GitHub answers `403`.
+- `BURGER_API_BRANCH`: overrides the GitHub branch the CLI reads ecosystem content from. Defaults to `main` on stable CLI releases, and to the matching prerelease branch (for example `feat/burger-api-v1`) on beta/RC builds.
+- `BURGER_API_CACHE_DIR`: overrides the ecosystem catalog cache directory. Defaults to `~/.burger-api/cache/`, with a four-hour TTL. A stale cache is used with a warning when a live refresh fails.
+
 ## Troubleshooting
 
-- **`burger-api: command not found`**: Ensure the installation directory (usually `~/.burger-api/bin`) is in your system's `PATH`. Restart your terminal or run `source ~/.bashrc` (or equivalent).
+- **`burger-api: command not found`**: Ensure the directory holding the `burger-api` executable is in your system's `PATH` and restart your terminal. The standalone installer uses `~/.burger-api/bin`; a package-manager install (`bun add -g @burger-api/cli` or `npm i -g @burger-api/cli`) uses the package manager's global bin directory instead.
 - **`Directory already exists`**: The `create` command requires a target directory that does not exist yet. Choose a new name or remove the existing folder.
 - **Could not fetch the hooks and plugins list**: Check your internet connection. The CLI needs to reach GitHub to fetch the list.
 - **Entry file not found**: Ensure you are running the command from the root of your project or specify the correct path with `-f`.

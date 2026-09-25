@@ -9,7 +9,7 @@ sidebar_label: Error Handling Patterns
 - **Framework errors:** Throw an `HTTPError` subclass (`ValidationError`, `NotFoundError`, `UnauthorizedError`, `ForbiddenError`, `MethodNotAllowedError`) and let `onError` render it.
 - **Hooks:** Return a `Response` (e.g. 401, 403) from a hook to short-circuit the pipeline and send that error directly.
 - **Handlers:** Return `Response.json({ error: "..." }, { status: 404 })` or use try/catch and return 500.
-- **Debug:** Set `debug: true` in the Burger constructor for stack traces in error responses. See [Configuration](/docs/core/configuration).
+- **Debug:** Error responses include diagnostics (stack, cause) whenever `NODE_ENV` is not `production`, or when you set `debug: true` in the Burger constructor. Production responses never include them. See [Configuration](/docs/core/configuration).
 
 
 ## Related

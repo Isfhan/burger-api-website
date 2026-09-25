@@ -45,7 +45,7 @@ You can also reuse a shared shape across routes (see [Schema Definition](/docs/v
 
 ## Errors
 
-Failed validation throws a `ValidationError` (status 422) with structured issues. It enters the `onError` pipeline; if no hook handles it, the framework renders an RFC 9457 Problem Details response. See [Validation Errors](/docs/validation/errors).
+Failed validation throws a `ValidationError` (status 422) with structured issues. It enters the `onError` pipeline; if no hook handles it, the framework renders an RFC 9457 Problem Details response. A declared `body` schema also gates the media type: non-JSON requests are rejected with `415 Unsupported Media Type` before validation. See [Validation Errors](/docs/validation/errors) and [Body Validation](/docs/validation/body).
 
 ## Why it helps
 

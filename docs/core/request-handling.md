@@ -26,6 +26,8 @@ Request data is read lazily. For example, `ctx.query` is parsed only when you us
 Handlers are per-method exports that receive the context and return a standard Web `Response`:
 
 ```ts title="api/users/[id]/route.ts"
+import type { BurgerContext } from "burger-api";
+
 export async function GET(ctx: BurgerContext) {
   const { id } = ctx.params;
   return Response.json({ id });

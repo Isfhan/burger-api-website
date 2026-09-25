@@ -54,9 +54,8 @@ export const GET = defineRoute(GETSchema, (ctx) => {
   return Response.json({ page, limit, items });
 });
 
-export const POST = defineRoute(POSTSchema, async (ctx) => {
-  const body = await ctx.json();
-  const product = { id: crypto.randomUUID(), ...body };
+export const POST = defineRoute(POSTSchema, (ctx) => {
+  const product = { id: crypto.randomUUID(), ...ctx.validated.body };
   products.push(product);
   ctx.set = { status: 201 };
   return Response.json(product);
@@ -65,15 +64,24 @@ export const POST = defineRoute(POSTSchema, async (ctx) => {
 
 ## Read one
 
+```ts title="src/api/products/[id]/schema.ts"
+import { z } from "zod";
+
+export const GET = {
+  params: z.object({ id: z.string() }),
+};
+```
+
 ```ts title="src/api/products/[id]/route.ts"
-import type { BurgerContext } from "burger-api";
+import { defineRoute } from "burger-api";
+import { GET as GetSchema } from "./schema";
 import { products } from "../store";
 
-export async function GET(ctx: BurgerContext) {
-  const product = products.find((p) => p.id === ctx.params.id);
+export const GET = defineRoute(GetSchema, (ctx) => {
+  const product = products.find((p) => p.id === ctx.validated.params.id);
   if (!product) return Response.json({ error: "Not found" }, { status: 404 });
   return Response.json(product);
-}
+});
 ```
 
 `ctx.query` and `ctx.params` are lazy: they parse only when read. `ctx.set` collects status and header changes, applied once when the response leaves the app. See [Response Mutation](/docs/api/response-mutation).

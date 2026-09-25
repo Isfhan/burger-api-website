@@ -42,7 +42,7 @@ The plugin enforces route `config.ts`. Protected routes require auth; open route
 
 ```ts
 // src/api/admin/config.ts
-export default { auth: true };
+export default { auth: { required: true } };
 ```
 
 ```ts
@@ -63,9 +63,11 @@ export async function GET(ctx: BurgerContext) {
 
 ## Read the authenticated identity
 
-The plugin attaches the authenticated identity to the context. With the API key plugin it is `ctx.apiKey`; with the JWT plugin it is the decoded payload as `ctx.user`:
+The plugin attaches the authenticated identity to the context. With the API key plugin it is `ctx.apiKey`; with the JWT plugin it is the decoded payload as `ctx.user`. Both are declared by the plugin through module augmentation of `BurgerContext`, so they are typed as soon as the plugin is imported in `src/plugins.ts`:
 
 ```ts
+import type { BurgerContext } from "burger-api";
+
 export async function GET(ctx: BurgerContext) {
   return Response.json({ apiKey: ctx.apiKey });
 }

@@ -25,7 +25,7 @@ onRequest → Routing → transform → Validation → beforeRoute
   → Handler → afterRoute → mapResponse
 ```
 
-Errors jump to `onError`.
+Errors thrown after routing (validation, `beforeRoute`, handler, `afterRoute`, `mapResponse`) jump to `onError`. Errors thrown in `onRequest`, and requests that match no route, are rendered directly without running `onError`.
 
 ## Scopes
 
@@ -34,7 +34,7 @@ Errors jump to `onError`.
 3. Global (`src/hooks.ts`)  
 4. Route (`api/**/hooks.ts`)
 
-Request hooks run Framework → Plugin → Global → Route. Response hooks (`afterRoute`, `mapResponse`) run Route → Global → Plugin → Framework. Error hooks (`onError`) run nearest-first, Route → Global.
+Request hooks run Framework → Plugin → Global → Route. Response hooks (`afterRoute`, `mapResponse`) and error hooks (`onError`) run nearest-first: Route → Global → Plugin → Framework.
 
 There is **no** folder or group inheritance of hooks. Each route directory is self-contained.
 
@@ -53,8 +53,8 @@ Each hook point has its own type. TypeScript checks the return value of your hoo
 
 The types you use (all from `burger-api`):
 
-- `ForwardHook`: for `onRequest` and `beforeRoute`: returns `Response` (stop) or `undefined` (continue)
-- `ResponseHook`: for `afterRoute` and `mapResponse`: can also return a function to change the response
+- `ForwardHook`: for `onRequest` and `beforeRoute`: returns `Response` (stop), `(response) => Response` (transform the eventual response), or `undefined` (continue)
+- `ResponseHook`: for `afterRoute` and `mapResponse`: returns `Response`, `(response) => Response`, or `undefined`
 - `ErrorHook`: for `onError`: takes `(error, ctx)`, returns `Response` or `undefined`
 - `RouteHooks`: the object with all hook points, for typing `hooks.ts` files
 
@@ -66,6 +66,7 @@ import type { RouteHooks } from "burger-api";
 
 export const beforeRoute: RouteHooks["beforeRoute"] = [
     (ctx) => new Response("blocked", { status: 401 }), // stop
+    () => (res) => res, // continue, but transform the final response
     () => undefined, // continue
 ];
 
@@ -78,7 +79,7 @@ export const afterRoute: RouteHooks["afterRoute"] = [
 
 ```typescript
 export const beforeRoute: RouteHooks["beforeRoute"] = [
-    () => 42, // ❌ Type 'number' is not assignable to 'Response | undefined'
+    () => 42, // ❌ Type 'number' is not assignable
 ];
 ```
 

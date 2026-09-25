@@ -28,7 +28,7 @@ otherwise does.
 | `burger-api build --target` | `bun` (default) | `node` | `cloudflare` | `deno` | `vercel` |
 | Long-running process | Yes | Yes | No (per-request) | Usually (Deploy: no) | No (per-invocation) |
 | Filesystem at request time | Yes | Yes | No | Yes (Deploy: no) | No |
-| Static assets | Disk (dev) / embedded (prod) | Disk (dev) / embedded (prod) | Platform-native recommended (Assets binding) | Disk (dev) / embedded (prod) | Platform-native recommended (`public/` + CDN) |
+| Static assets | Disk (dev, `serve()`) / embedded (prod) | Embedded (AOT) | Platform-native recommended (Assets binding) | Embedded (AOT) | Platform-native recommended (`public/` + CDN) |
 | WebSocket | Yes (native `ServerWebSocket`) | Yes (via `@burger-api/node-server`'s bridge) | Yes (native `WebSocketPair`) | Yes (native `Deno.upgradeWebSocket`) | **No** |
 | `--compile` (standalone binary) | Yes | N/A | N/A | N/A | N/A |
 
@@ -60,7 +60,7 @@ See [WebSocket → Node.js](/docs/websocket/overview#nodejs) for the Node bridge
 
 Two portable modes exist inside burger-api itself:
 
-- **Dev** (`pageDir` set, Bun/Node/Deno): files under `<pageDir>/assets/` are read from disk per request.
+- **Dev** (`pageDir` set, Bun only): files under `<pageDir>/assets/` are read from disk per request by `serve()`. Disk-backed serving requires Bun; other runtimes throw a clear error pointing at the embedded-assets mode.
 - **Production AOT** (`burger-api build`): file contents are base64-embedded into the build output, so the artifact never touches the filesystem at request time. This works on every target, including Cloudflare and Vercel.
 
 For Cloudflare Workers and Vercel specifically, prefer the platform's own

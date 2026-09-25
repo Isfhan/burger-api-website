@@ -10,7 +10,7 @@ Workers, and Vercel; only the entry file and platform config differ.
 
 ## How it works
 
-- `deno.json` maps `burger-api` to the npm package (`npm:burger-api`).
+- `deno.json` maps `burger-api` to the npm package, pinned to the beta range (`npm:burger-api@^1.0.0-beta`).
 - `src/index.ts` exports the `deno serve` shape:
   `export default { fetch: toFetchHandler(burger) }`.
 - Routes are declared via `apiRoutes` (AOT). Deno Deploy has no filesystem,
@@ -53,7 +53,7 @@ const burger = new Burger({
     {
       path: "/api/users/:id",
       handlers: {
-        GET: (ctx: BurgerContext) => Response.json({ id: ctx.params?.id }),
+        GET: (ctx: BurgerContext) => Response.json({ id: ctx.params.id }),
       },
       openapi: { get: { summary: "Get user by id", tags: ["users"] } },
     },
@@ -70,7 +70,7 @@ export default { fetch: toFetchHandler(burger) } satisfies {
 ```json
 {
   "imports": {
-    "burger-api": "npm:burger-api"
+    "burger-api": "npm:burger-api@^1.0.0-beta"
   }
 }
 ```

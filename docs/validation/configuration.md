@@ -49,8 +49,8 @@ To share a shape between routes, define it once in its own file and import it:
 import { z } from "zod";
 
 export const Pagination = z.object({
-  page: z.number().min(1).default(1),
-  limit: z.number().min(1).max(100).default(20),
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(20),
 });
 ```
 

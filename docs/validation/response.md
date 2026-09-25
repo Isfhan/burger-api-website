@@ -24,11 +24,19 @@ export function GET() {
 
 ## Modes
 
-Response validation has three modes, set in [configuration](/docs/validation/configuration) under `responseValidation`:
+Response validation has three modes, set app-wide in [configuration](/docs/validation/configuration) under `responseValidation`, or per route in that route's `config.ts`:
 
 - **`dev`** (default): observe only. In development, a mismatch is logged to the console but the response is returned unchanged. Nothing breaks.
-- **`enforce`**: a mismatch returns a safe `500` error (or `422` if the handler itself returned `422`). No internal details leak.
+- **`enforce`**: a mismatch is a server bug. In production the client gets a generic `application/problem+json` `500` (`detail: "Internal Server Error"`, no issues or stack); in development the body includes the issues. If the handler itself returned `422`, that status is kept. `afterRoute` and `mapResponse` still run on the error response, so response headers such as CORS are preserved.
 - **`off`**: never validate responses.
+
+The app-wide mode is the `validation.responseValidation` server option. A route's `config.ts` can override it:
+
+```typescript title="src/api/reports/config.ts"
+export default {
+  responseValidation: "enforce",
+};
+```
 
 The default `dev` mode means adding a `response` schema is **free and safe**: existing apps that declare none are unaffected, and apps that declare one get helpful feedback without risking a broken response.
 
@@ -61,6 +69,7 @@ export const GET = { response: { 200: z.object({ ok: z.boolean() }) } };
 ```
 
 ```typescript
+import { z } from "zod";
 import type { GET } from "./schema";
 type StatusResponse = z.infer<typeof GET.response["200"]>; // { ok: boolean }
 ```

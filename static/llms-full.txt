@@ -6,7 +6,7 @@ url: 'https://burger-api.com/docs/'
 
 BurgerAPI is a Bun-first, WinterCG-compatible framework for building modern APIs with file-based routing, end-to-end type safety, and a clear project structure. TypeScript and JavaScript are both first-class: the same conventions work with `.ts`, `.js`, and `.mjs` route files, and JavaScript projects get full JSDoc type-checking.
 
-`burger-api` and `@burger-api/cli` ship `1.0.0-beta` by default — a vision-locked rewrite of the framework, currently in public beta and not yet recommended for production. If you need the previous stable line, pin `burger-api@0.9.7` / `@burger-api/cli@0.9.9`. See the [beta release notes](https://burger-api.com/blog/burger-api-v1.0.0-beta-release) for details.
+`burger-api` and `@burger-api/cli` ship `1.0.0-beta` by default: a vision-locked rewrite of the framework, currently in public beta and not yet recommended for production. If you need the previous stable line, pin `burger-api@0.9.7` / `@burger-api/cli@0.9.9`. See the [beta release notes](https://burger-api.com/blog/burger-api-v1.0.0-beta-release) for details.
 
 ### What BurgerAPI is built around
 

@@ -20,7 +20,7 @@ export const POST = {
 };
 ```
 
-The available slots are `params`, `query`, `headers`, `cookies`, and `body`. A slot accepts either a schema or a **string** that references a registered model. Per-status-code `response` schemas are validated after the handler. See [Schema Definition](/docs/validation/schema) for every slot.
+The available slots are `params`, `query`, `headers`, `cookies`, and `body`. A slot accepts a schema (Zod or any Standard Schema library). Per-status-code `response` schemas are validated after the handler. See [Schema Definition](/docs/validation/schema) for every slot.
 
 ## Validated data
 

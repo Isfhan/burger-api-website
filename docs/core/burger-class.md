@@ -13,14 +13,12 @@ import { Burger } from "burger-api";
 
 const app = new Burger({
   apiDir: "./src/api",
-  title: "My API",
-  version: "1.0.0",
 });
 
 await app.serve(4000);
 ```
 
-The constructor accepts a `ServerOptions` object that defines where routes live, URL prefixes, validation settings, and OpenAPI metadata. In dev, `src/hooks.ts`, `src/plugins.ts`, and `src/providers.ts` are auto-discovered; production builds pass pre-resolved modules and `apiRoutes` instead. See [Server Options](/docs/core/server-options) and [Configuration](/docs/core/configuration).
+The constructor accepts a `ServerOptions` object that defines where routes live, URL prefixes, and validation settings. In dev, `src/hooks.ts`, `src/plugins.ts`, and `src/providers.ts` are auto-discovered; production builds pass pre-resolved modules and `apiRoutes` instead. OpenAPI metadata lives in `src/openapi.config.ts`, not here. See [Server Options](/docs/core/server-options) and [Configuration](/docs/core/configuration).
 
 ## Methods
 
@@ -79,7 +77,7 @@ Programmatic WebSocket routes are a **dev-only** convenience. They are not captu
 
 ### fetchHandler()
 
-Builds a Web-Standard fetch handler for the app. Usable with `Bun.serve`, `Deno.serve`, Vercel, Cloudflare Workers, and Node 24+. Pages and WebSocket are Bun-only and are not served by this handler.
+Builds a Web-Standard fetch handler for the app. Usable with `Bun.serve`, `Deno.serve`, Vercel, Cloudflare Workers, and Node 24+. It serves static function page routes and embedded assets, and handles WebSocket upgrades where the runtime supports them (Bun, Deno, Cloudflare Workers). Bun-only page features (HTML-import bundles and dynamic `[param]` pages) and disk-backed dev assets are only served by `serve()` on Bun; see [Compatibility](/docs/compatibility).
 
 ### toFetchHandler(burger)
 
@@ -101,31 +99,28 @@ WinterCG targets must pass AOT `apiRoutes`: there is no filesystem at runtime. S
 
 ### createNodeWsBridge(options)
 
-Node WebSocket integration: returns a bridge that plugs the framework's WebSocket pipeline into `node:http`'s `'upgrade'` event, using a framing library's `WebSocketServer` (e.g. the `ws` package). Requires WebSocket routes to already be configured (`wsDir`, `wsRoutes`, or `app.websocket()`) and throws otherwise.
+Lower-level Node WebSocket integration. On Node, use `serve(app)` from [`@burger-api/node-server`](/docs/deployment/node) instead: it starts the HTTP server and wires the WebSocket bridge for you.
+
+`createNodeWsBridge()` returns a bridge that plugs the framework's WebSocket pipeline into `node:http`'s `'upgrade'` event, using a framing library's `WebSocketServer` (the `ws` package). It requires WebSocket routes to already be configured (`wsDir`, `wsRoutes`, or `app.websocket()`) and to have been processed by `await app.fetchHandler()` (or `await app.serve()`) first; it throws otherwise. This is the escape hatch for wiring things by hand.
 
 ```ts
-import http from "node:http";
-import { WebSocketServer } from "ws";
-import { Burger, toFetchHandler } from "burger-api";
+import { serve } from "@burger-api/node-server";
+import { Burger } from "burger-api";
 
 const app = new Burger({ apiRoutes, wsRoutes });
-const bridge = app.createNodeWsBridge({ WebSocketServer });
 
-http
-  .createServer((req, res) => toFetchHandler(app)(req, undefined))
-  .on("upgrade", (req, socket, head) => bridge.handleUpgrade(req, socket, head))
-  .listen(3000);
+serve(app, { port: 3000 }); // HTTP + WebSocket bridge, including createNodeWsBridge()
 ```
 
-This is the escape hatch for running BurgerAPI's WebSocket routes on plain Node. See [WebSocket](/docs/websocket/overview#nodejs) and [Compatibility](/docs/compatibility).
+See [WebSocket](/docs/websocket/overview#nodejs) and [Compatibility](/docs/compatibility).
 
 ### getServer()
 
-Returns the underlying `Server` instance, or `undefined` if `serve()` hasn't started one yet (e.g. no routes were configured). Mainly useful for test harnesses and benchmark scripts that need to stop the server cleanly.
+Returns the underlying `Server` wrapper (created in the constructor, so it is always present). Mainly useful for test harnesses and benchmark scripts that need to stop the server cleanly; `isRunning()` reports whether `serve()` has actually started it.
 
 ```ts
 const server = app.getServer();
-server?.stop();
+if (server?.isRunning()) server.stop();
 ```
 
 ## App files

@@ -34,6 +34,8 @@ export const POST = defineRoute(POSTSchema, (ctx) => {
 
 With `z.coerce.number()`, a request like `?limit=10` gives you the number `10` (not the string `"10"`). You can also turn coercion on app-wide: see [Coercion](/docs/validation/coercion).
 
+Because `POST` declares a `body` schema, the request must be JSON (`application/json` or `application/*+json`). Other content types get `415 Unsupported Media Type` before the handler runs, and `ctx.validated.body` is non-optional in the type.
+
 See [Schema Definition](/docs/validation/schema) for the full schema shape, [Validation Errors](/docs/validation/errors) for how failures are reported (default `422` with RFC 9457 problem details), and the [CRUD API](/docs/examples/crud-api) example for a complete route directory.
 
 

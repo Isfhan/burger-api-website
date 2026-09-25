@@ -6,7 +6,7 @@ sidebar_label: Body Validation
 
 Validate **request body** (e.g. for POST/PUT) by defining a `body` schema for the method in your route's `schema.ts`. Validated body is on `ctx.validated.body`.
 
-Example: `export const POST = { body: z.object({ name: z.string().min(1), price: z.number().positive() }) }`. The body is only validated when the request is JSON (`content-type: application/json`); other content types are skipped. See [Validation](/docs/validation/zod) and [Schema Definition](/docs/validation/schema).
+Example: `export const POST = { body: z.object({ name: z.string().min(1), price: z.number().positive() }) }`. When a `body` schema is declared, the request must be JSON (`application/json` or `application/*+json`). Any other content type is rejected with `415 Unsupported Media Type`, and a missing `Content-Type` is rejected with `422`, so unvalidated data never reaches the handler. When a declared body schema is present, `ctx.validated.body` is non-optional in the type: `ctx.validated.body.name` compiles without `?.`. See [Validation](/docs/validation/zod) and [Schema Definition](/docs/validation/schema).
 
 ## Types for this feature
 

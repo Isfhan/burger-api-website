@@ -15,18 +15,18 @@ This post describes the pre-1.0 CLI line. The [BurgerAPI v1.0.0-beta rewrite](/b
 
 ## What's New in CLI v0.9.9
 
-- **`burger-api skills`** — New command family with `install [name]`, `list`, and `available` subcommands
-- **Skills prompt** — New "Add AI agent skills?" question during `burger-api create` (default: yes)
-- **Structured context** — Skills install to `.agents/skills/burger-api/` with `SKILL.md` and reference files
-- **Compatible out of the box** — Works with Cursor, Claude Code, OpenCode, GitHub Copilot, OpenAI Codex, and any tool supporting the agentskills.io standard
-- **`.llm-context` no longer auto-installed** — The CLI no longer copies `ecosystem/.llm-context/` into new projects
+- **`burger-api skills`**: New command family with `install [name]`, `list`, and `available` subcommands
+- **Skills prompt**: New "Add AI agent skills?" question during `burger-api create` (default: yes)
+- **Structured context**: Skills install to `.agents/skills/burger-api/` with `SKILL.md` and reference files
+- **Compatible out of the box**: Works with Cursor, Claude Code, OpenCode, GitHub Copilot, OpenAI Codex, and any tool supporting the agentskills.io standard
+- **`.llm-context` no longer auto-installed**: The CLI no longer copies `ecosystem/.llm-context/` into new projects
 
 ## Agent Skills: Smarter AI Context
 
 Agent Skills replace the flat `.llm-context` text files with a structured format that AI assistants understand natively. Each skill consists of:
 
-- **`SKILL.md`** — Main file with YAML frontmatter (name, description, version) and progressive overview
-- **`references/`** — Detailed reference docs for routing, validation, middleware, CLI, and OpenAPI
+- **`SKILL.md`**: Main file with YAML frontmatter (name, description, version) and progressive overview
+- **`references/`**: Detailed reference docs for routing, validation, middleware, CLI, and OpenAPI
 
 The key difference: instead of manually attaching files to your prompts, you install a skill once and your agent discovers it automatically from `.agents/skills/`.
 

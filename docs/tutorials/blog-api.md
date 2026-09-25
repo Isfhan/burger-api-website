@@ -41,9 +41,6 @@ For this advanced tutorial, start from a clean project using the CLI:
 ```bash
 burger-api create blog-api
 cd blog-api
-
-# Install Zod for validation if it's not already present
-bun add zod
 ```
 
 The `burger-api create` command scaffolds an entry file and a `burger.build.ts` that define your `apiDir`, `pageDir`, and route prefixes. We'll hook our blog API into that setup.
@@ -59,22 +56,32 @@ import { Burger } from "burger-api";
 
 const burger = new Burger({
   apiDir: "./src/api",
+});
+
+const port = Number(process.env.PORT) || 4000;
+burger.serve(port, () => {
+  console.log(`Blog API running at http://localhost:${port}`);
+  console.log(`API docs at http://localhost:${port}/docs`);
+});
+```
+
+OpenAPI metadata lives in the `openapi.config.ts` convention file, not in `new Burger({...})`:
+
+```typescript title="src/openapi.config.ts"
+import type { OpenAPIConfig } from "burger-api";
+
+export default {
   title: "Blog API",
   version: "1.0.0",
   description: "A blog API with posts and comments",
-});
-
-burger.serve(4000, () => {
-  console.log("Blog API running at http://localhost:4000");
-  console.log("API docs at http://localhost:4000/docs");
-});
+} satisfies OpenAPIConfig;
 ```
 
 ## Step 3: Create Types and Interfaces
 
 Define your data models:
 
-```typescript title="types.ts"
+```typescript title="src/types.ts"
 export interface Post {
   id: number;
   title: string;
@@ -196,15 +203,17 @@ export const DELETE = { params: z.object({ id }) };
 
 The comment routes validate both path parameters and bodies:
 
-```typescript title="src/api/posts/[postId]/comments/schema.ts"
+```typescript title="src/api/posts/[id]/comments/schema.ts"
 import { z } from "zod";
 
+const id = z.string().regex(/^\d+$/);
+
 export const GET = {
-  params: z.object({ postId: z.string().regex(/^\d+$/) }),
+  params: z.object({ id }),
 };
 
 export const POST = {
-  params: z.object({ postId: z.string().regex(/^\d+$/) }),
+  params: z.object({ id }),
   body: z.object({
     author: z.string().min(1, "Author is required").max(100, "Author name too long"),
     content: z.string().min(1, "Content is required").max(1000, "Content too long"),
@@ -212,16 +221,16 @@ export const POST = {
 };
 ```
 
-```typescript title="src/api/posts/[postId]/comments/[id]/schema.ts"
+```typescript title="src/api/posts/[id]/comments/[commentId]/schema.ts"
 import { z } from "zod";
 
-const postId = z.string().regex(/^\d+$/);
 const id = z.string().regex(/^\d+$/);
+const commentId = z.string().regex(/^\d+$/);
 
-export const GET = { params: z.object({ postId, id }) };
+export const GET = { params: z.object({ id, commentId }) };
 
 export const PUT = {
-  params: z.object({ postId, id }),
+  params: z.object({ id, commentId }),
   body: z
     .object({
       author: z.string().min(1, "Author is required").max(100, "Author name too long").optional(),
@@ -230,7 +239,7 @@ export const PUT = {
     .refine((data) => Object.keys(data).length > 0, "At least one field must be provided"),
 };
 
-export const DELETE = { params: z.object({ postId, id }) };
+export const DELETE = { params: z.object({ id, commentId }) };
 ```
 
 BurgerAPI validates each request against these schemas before the handler runs. Invalid input returns `422 Unprocessable Content` (RFC 9457), so handlers only receive validated data. See [Zod Validation](../validation/zod.md).
@@ -539,14 +548,14 @@ export const DELETE = defineRoute(DeleteSchema, (ctx) => {
 
 Create nested comment routes:
 
-```typescript title="src/api/posts/[postId]/comments/route.ts"
+```typescript title="src/api/posts/[id]/comments/route.ts"
 import { defineRoute } from "burger-api";
 import { GET as GetSchema, POST as PostSchema } from "./schema";
 import { commentDatabase, postDatabase } from "../../../../database";
 
-// GET /api/posts/[postId]/comments - Get comments for a post
+// GET /api/posts/[id]/comments - Get comments for a post
 export const GET = defineRoute(GetSchema, (ctx) => {
-  const postId = parseInt(ctx.validated.params.postId, 10);
+  const postId = parseInt(ctx.validated.params.id, 10);
 
   // Check if post exists
   const post = postDatabase.getById(postId);
@@ -566,9 +575,9 @@ export const GET = defineRoute(GetSchema, (ctx) => {
   });
 });
 
-// POST /api/posts/[postId]/comments - Create a comment for a post
+// POST /api/posts/[id]/comments - Create a comment for a post
 export const POST = defineRoute(PostSchema, (ctx) => {
-  const postId = parseInt(ctx.validated.params.postId, 10);
+  const postId = parseInt(ctx.validated.params.id, 10);
 
   // Check if post exists
   const post = postDatabase.getById(postId);
@@ -586,17 +595,17 @@ export const POST = defineRoute(PostSchema, (ctx) => {
 });
 ```
 
-```typescript title="src/api/posts/[postId]/comments/[id]/route.ts"
+```typescript title="src/api/posts/[id]/comments/[commentId]/route.ts"
 import { defineRoute } from "burger-api";
 import { GET as GetSchema, PUT as PutSchema, DELETE as DeleteSchema } from "./schema";
 import { commentDatabase, postDatabase } from "../../../../../database";
 
-// GET /api/posts/[postId]/comments/[id] - Get a specific comment
+// GET /api/posts/[id]/comments/[commentId] - Get a specific comment
 export const GET = defineRoute(GetSchema, (ctx) => {
-  const { postId, id } = ctx.validated.params;
+  const { id, commentId } = ctx.validated.params;
 
   // Check if post exists
-  const post = postDatabase.getById(parseInt(postId, 10));
+  const post = postDatabase.getById(parseInt(id, 10));
   if (!post) {
     return Response.json(
       { error: "Post not found" },
@@ -604,9 +613,9 @@ export const GET = defineRoute(GetSchema, (ctx) => {
     );
   }
 
-  const comment = commentDatabase.getById(parseInt(id, 10));
+  const comment = commentDatabase.getById(parseInt(commentId, 10));
 
-  if (!comment || comment.post_id !== parseInt(postId, 10)) {
+  if (!comment || comment.post_id !== parseInt(id, 10)) {
     return Response.json(
       { error: "Comment not found" },
       { status: 404 }
@@ -616,12 +625,12 @@ export const GET = defineRoute(GetSchema, (ctx) => {
   return Response.json(comment);
 });
 
-// PUT /api/posts/[postId]/comments/[id] - Update a comment
+// PUT /api/posts/[id]/comments/[commentId] - Update a comment
 export const PUT = defineRoute(PutSchema, (ctx) => {
-  const { postId, id } = ctx.validated.params;
+  const { id, commentId } = ctx.validated.params;
 
   // Check if post exists
-  const post = postDatabase.getById(parseInt(postId, 10));
+  const post = postDatabase.getById(parseInt(id, 10));
   if (!post) {
     return Response.json(
       { error: "Post not found" },
@@ -629,26 +638,26 @@ export const PUT = defineRoute(PutSchema, (ctx) => {
     );
   }
 
-  const comment = commentDatabase.getById(parseInt(id, 10));
+  const comment = commentDatabase.getById(parseInt(commentId, 10));
 
-  if (!comment || comment.post_id !== parseInt(postId, 10)) {
+  if (!comment || comment.post_id !== parseInt(id, 10)) {
     return Response.json(
       { error: "Comment not found" },
       { status: 404 }
     );
   }
 
-  const updatedComment = commentDatabase.update(parseInt(id, 10), ctx.validated.body);
+  const updatedComment = commentDatabase.update(parseInt(commentId, 10), ctx.validated.body);
 
   return Response.json(updatedComment);
 });
 
-// DELETE /api/posts/[postId]/comments/[id] - Delete a comment
+// DELETE /api/posts/[id]/comments/[commentId] - Delete a comment
 export const DELETE = defineRoute(DeleteSchema, (ctx) => {
-  const { postId, id } = ctx.validated.params;
+  const { id, commentId } = ctx.validated.params;
 
   // Check if post exists
-  const post = postDatabase.getById(parseInt(postId, 10));
+  const post = postDatabase.getById(parseInt(id, 10));
   if (!post) {
     return Response.json(
       { error: "Post not found" },
@@ -656,16 +665,16 @@ export const DELETE = defineRoute(DeleteSchema, (ctx) => {
     );
   }
 
-  const comment = commentDatabase.getById(parseInt(id, 10));
+  const comment = commentDatabase.getById(parseInt(commentId, 10));
 
-  if (!comment || comment.post_id !== parseInt(postId, 10)) {
+  if (!comment || comment.post_id !== parseInt(id, 10)) {
     return Response.json(
       { error: "Comment not found" },
       { status: 404 }
     );
   }
 
-  const deleted = commentDatabase.delete(parseInt(id, 10));
+  commentDatabase.delete(parseInt(commentId, 10));
 
   return new Response(null, { status: 204 });
 });
@@ -704,15 +713,15 @@ export default { auth: { required: true } };
 
 The comment routes stay public:
 
-```typescript title="src/api/posts/[postId]/comments/config.ts"
+```typescript title="src/api/posts/[id]/comments/config.ts"
 export default { auth: false };
 ```
 
-```typescript title="src/api/posts/[postId]/comments/[id]/config.ts"
+```typescript title="src/api/posts/[id]/comments/[commentId]/config.ts"
 export default { auth: false };
 ```
 
-A request without a key (or with an invalid one) gets `401 Unauthorized` before the handler runs. The validated key is available to handlers as `ctx.apiKey`. Note that `config.ts` applies per route directory: there is no inheritance between folders, so each route directory declares its own options. See [Configuration](/docs/core/configuration).
+A request without a key (or with an invalid one) gets `401 Unauthorized` before the handler runs. The validated key is available to handlers as `ctx.apiKey`. The plugin declares `apiKey?: string` on `BurgerContext` (module augmentation), so importing it in `src/plugins.ts` is enough for TypeScript to type `ctx.apiKey` in your routes. Note that `config.ts` applies per route directory: there is no inheritance between folders, so each route directory declares its own options. See [Configuration](/docs/core/configuration).
 
 ## Step 10: Test Your Complete API
 
@@ -806,6 +815,7 @@ Your complete project structure:
 blog-api/
 ├── src/
 │   ├── index.ts                        # Server configuration
+│   ├── openapi.config.ts               # OpenAPI metadata
 │   ├── hooks.ts                        # Global hooks (logging)
 │   ├── plugins.ts                      # Auth plugin registration
 │   ├── database.ts                     # SQLite database layer
@@ -815,17 +825,16 @@ blog-api/
 │           ├── route.ts                # GET, POST /api/posts
 │           ├── schema.ts               # Validation for /api/posts
 │           ├── config.ts               # Auth: required
-│           ├── [id]/
-│           │   ├── route.ts            # GET, PUT, DELETE /api/posts/[id]
-│           │   ├── schema.ts           # Validation for /api/posts/[id]
-│           │   └── config.ts           # Auth: required
-│           └── [postId]/
+│           └── [id]/
+│               ├── route.ts            # GET, PUT, DELETE /api/posts/[id]
+│               ├── schema.ts           # Validation for /api/posts/[id]
+│               ├── config.ts           # Auth: required
 │               └── comments/
-│                   ├── route.ts        # GET, POST /api/posts/[postId]/comments
+│                   ├── route.ts        # GET, POST /api/posts/[id]/comments
 │                   ├── schema.ts       # Validation for comments
 │                   ├── config.ts       # Auth: false
-│                   └── [id]/
-│                       ├── route.ts    # GET, PUT, DELETE /api/posts/[postId]/comments/[id]
+│                   └── [commentId]/
+│                       ├── route.ts    # GET, PUT, DELETE /api/posts/[id]/comments/[commentId]
 │                       ├── schema.ts   # Validation for a specific comment
 │                       └── config.ts   # Auth: false
 ├── ecosystem/
@@ -840,7 +849,8 @@ blog-api/
 
 ### Nested Routing
 - Use nested folder structures for related resources
-- `/api/posts/[postId]/comments` creates nested routes
+- `/api/posts/[id]/comments` creates nested routes
+- Two sibling folders with different param names (`[id]` next to `[postId]`) resolve to the same URL and crash startup; keep one param name per path position
 - Validate parent resources exist before operating on children
 
 ### Hooks and Plugins

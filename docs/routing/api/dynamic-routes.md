@@ -131,7 +131,7 @@ export async function GET(ctx: BurgerContext) {
 ```
 
 :::tip Trailing Slash and Unsupported Methods
-A trailing slash on a dynamic route is treated as an **empty parameter value**: `GET /api/users/` sets `ctx.params.id === ""` (your Zod schema can then reject it). Requesting a route with an unsupported method returns `405` with an `Allow` header listing the methods the route does support.
+The exact path is matched first. If nothing matches and the path ends in a slash, the router retries without it: `GET /api/products/1/` matches `/api/products/:id`. A `:param` never binds an empty segment, so `GET /api/products/` does not set `id` to `""`; it retries as `/api/products` and matches only if that route exists. Requesting a route with an unsupported method returns `405` with an `Allow` header listing the methods the route does support.
 :::
 
 ## Validation with Zod
@@ -281,6 +281,8 @@ export const DELETE = defineRoute(DeleteSchema, (ctx) => {
 });
 ```
 
+Because `PUT` declares a `body` schema, non-JSON requests are rejected with `415 Unsupported Media Type` before the handler runs, and `ctx.validated.body` is non-optional in the type.
+
 ### 2. Nested Resources
 
 ```
@@ -389,6 +391,13 @@ export async function GET(ctx: BurgerContext) {
 ```typescript
 import type { BurgerContext } from "burger-api";
 
+// Stand-in for your data layer.
+interface User {
+  id: number;
+  name: string;
+}
+const users: User[] = [];
+
 export async function GET(ctx: BurgerContext) {
   const { userId } = ctx.params;
   
@@ -403,7 +412,7 @@ export async function GET(ctx: BurgerContext) {
   const numericId = parseInt(userId, 10);
   
   // Check if resource exists
-  const user = await findUser(numericId);
+  const user = users.find((u) => u.id === numericId);
   if (!user) {
     return Response.json(
       { error: "User not found" },
@@ -473,7 +482,7 @@ The types you use (from `burger-api`):
 
 - `defineRoute(schema, handler)`: infers the handler's `ctx` from `schema`; no generic to write
 - `BurgerContext<typeof GET>`: the same inference, written by hand
-- `ctx.params` (raw): always `Record<string, string> | undefined`, not typed by name
+- `ctx.params` (raw): always `Record<string, string>` (empty for routes without params), never `undefined`, but not typed by name
 - `ctx.validated.params`: typed from the `params` schema in `schema.ts`
 
 ✅ Correct: use a `params` schema and read `ctx.validated.params`:

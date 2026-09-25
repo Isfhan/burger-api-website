@@ -44,9 +44,6 @@ You can either continue from the [Hello World API](./hello-world.md) tutorial or
 # Option B: Create a new project
 burger-api create todo-api
 cd todo-api
-
-# Install Zod for validation if it's not already present
-bun add zod
 ```
 
 If you used `burger-api create`, it already wired up a basic `Burger` instance and a `burger.build.ts`. We will customize the server entry a bit for this tutorial.
@@ -62,22 +59,32 @@ import { Burger } from "burger-api";
 
 const burger = new Burger({
   apiDir: "./src/api",
+});
+
+const port = Number(process.env.PORT) || 4000;
+burger.serve(port, () => {
+  console.log(`Todo API running at http://localhost:${port}`);
+  console.log(`API docs at http://localhost:${port}/docs`);
+});
+```
+
+The scaffold already creates `src/openapi.config.ts`. Put your API metadata there, not in `new Burger({...})`:
+
+```typescript title="src/openapi.config.ts"
+import type { OpenAPIConfig } from "burger-api";
+
+export default {
   title: "Todo List API",
   version: "1.0.0",
   description: "A CRUD API for managing todos",
-});
-
-burger.serve(4000, () => {
-  console.log("Todo API running at http://localhost:4000");
-  console.log("API docs at http://localhost:4000/docs");
-});
+} satisfies OpenAPIConfig;
 ```
 
 ## Step 3: Create the Todo Model
 
 First, let's define what a todo looks like. Create a `src/types.ts` file:
 
-```typescript title="types.ts"
+```typescript title="src/types.ts"
 export interface Todo {
   id: number;
   title: string;
@@ -208,7 +215,7 @@ export const PUT = {
 export const DELETE = { params: z.object({ id }) };
 ```
 
-BurgerAPI validates before your handler runs. Invalid input returns `422 Unprocessable Content` in the RFC 9457 Problem Details format, so handlers only ever receive validated data. See [Zod Validation](../validation/zod.md).
+BurgerAPI validates before your handler runs. Invalid input returns `422 Unprocessable Content` in the RFC 9457 Problem Details format, so handlers only ever receive validated data. When a `body` schema is declared, the request must be JSON: other content types get `415 Unsupported Media Type`, and `ctx.validated.body` is non-optional in the type. See [Zod Validation](../validation/zod.md).
 
 ## Step 6: Create the Todos Collection Route
 

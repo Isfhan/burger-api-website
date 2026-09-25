@@ -141,11 +141,15 @@ DELETE /api/products   → 405  Allow: GET, POST
 
 ### Automatic HEAD
 
-You do not need to write a separate `HEAD` handler. A `HEAD` request to any route that defines `GET` runs the `GET` handler and returns the same response with the body removed. The route's validation also applies to `HEAD` requests, so `ctx.validated` is fully populated inside the handler.
+You do not need to write a separate `HEAD` handler. A `HEAD` request to any route that defines `GET` runs the `GET` handler and returns the same response with the body removed and the `Content-Length` of the GET response reported. The route's validation also applies to `HEAD` requests, so `ctx.validated` is fully populated inside the handler.
+
+### Automatic OPTIONS
+
+Every route answers `OPTIONS` with `204 No Content` and an `Allow` header, even when you do not export an `OPTIONS` handler. The automatic handler skips `beforeRoute` (so auth hooks do not reject CORS preflights), but `onRequest` hooks still run. A user-defined `OPTIONS` handler takes over and runs the full pipeline. The automatic handler is not listed in the generated OpenAPI document.
 
 ### Trailing Slash
 
-Trailing slashes are matched loosely: `/api/products` and `/api/products/` resolve to the same route. On a dynamic route, a trailing slash is treated as an empty parameter value (e.g. `/api/users/` → `ctx.params.id === ""`), which your Zod schema can then reject.
+The exact path is matched first. If nothing matches and the path ends in a slash, the router retries without it: `/api/products/` resolves to `/api/products`. A `:param` never binds an empty segment, so `/api/users/` does not set `ctx.params.id` to `""`; it retries as `/api/users` and only matches when that route exists.
 
 ### Priority Example
 

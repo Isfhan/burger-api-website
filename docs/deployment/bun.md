@@ -21,11 +21,15 @@ feature set (native static route map, WebSockets, pages).
 // src/index.ts
 import { Burger } from "burger-api";
 
-const burger = new Burger({
+const app = new Burger({
   apiDir: "./src/api",
 });
 
-burger.serve(3000);
+// Read PORT so the host platform can assign one; fall back to 4000 locally.
+const port = Number(process.env.PORT) || 4000;
+app.serve(port, () => {
+  console.log(`Server running on http://localhost:${port}`);
+});
 ```
 
 The generated `package.json` maps the CLI commands to Bun scripts:
@@ -34,7 +38,7 @@ The generated `package.json` maps the CLI commands to Bun scripts:
 {
   "scripts": {
     "dev": "burger-api dev",
-    "build": "burger-api build",
+    "build": "burger-api build src/index.ts",
     "start": "burger-api start"
   }
 }
@@ -63,9 +67,11 @@ WORKDIR /app
 COPY . .
 RUN bun install
 RUN bun run build
-EXPOSE 3000
+EXPOSE 4000
 CMD ["bun", "run", "start"]
 ```
+
+`@burger-api/cli` is a devDependency, so run a plain `bun install` (not a production-only install) before `bun run build` and `bun run start`; both scripts invoke the CLI. Alternatively, skip the CLI at runtime by starting the bundle directly with `CMD ["bun", ".build/bundle/app.js"]`, which works from a production-only install.
 
 ## Related
 

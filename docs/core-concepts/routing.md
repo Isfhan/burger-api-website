@@ -4,7 +4,7 @@ sidebar_label: Routing
 
 # Routing
 
-BurgerAPI uses file-based routing: the files and folders under your API directory become HTTP routes. A folder named `[id]` becomes a dynamic segment, and `[...slug]` becomes a catch-all.
+BurgerAPI uses file-based routing: the files and folders under your API directory become HTTP routes. A folder named `[id]` becomes a dynamic segment, and an anonymous `[...]` folder becomes a catch-all (its captured segments are available as `ctx.wildcardParams`; only the anonymous form is supported).
 
 Under the hood, a **hybrid router** matches each request on the fastest strategy:
 

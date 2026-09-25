@@ -535,14 +535,14 @@ export async function GET(ctx: BurgerContext) {
 
 ### `ctx.wildcardParams` Property
 
-**Type:** `string[] | undefined`
+**Type:** `string[]`
 
-**Description:** An array containing all path segments captured by the wildcard route. Each segment is a string representing one part of the URL path after the wildcard point. The property is `undefined` for non-wildcard routes, so guard reads with `|| []`.
+**Description:** An array containing all path segments captured by the wildcard route. Each segment is a string representing one part of the URL path after the wildcard point. The property is always an array, empty for non-wildcard routes.
 
 **Usage:**
 
 ```typescript
-const wildcardParams = ctx.wildcardParams || [];
+const wildcardParams = ctx.wildcardParams;
 ```
 
 **Example:**
@@ -568,7 +568,7 @@ When working with wildcard routes, keep these limitations in mind:
 
 :::tip Best Practices
 
-- **Always check for empty arrays:** Use `ctx.wildcardParams || []` to handle cases where no segments are provided
+- **Handle empty arrays:** `ctx.wildcardParams` is always an array, but it is empty when no segments were captured
 - **Validate segments manually:** Wildcard parameters are not validated by Zod schemas. Add your own validation logic to ensure the captured segments are what you expect
 - **Use meaningful responses:** Return clear error messages when paths don't match expected patterns
 - **Document your paths:** If building a complex API, document which paths are valid for your wildcard routes
@@ -599,15 +599,15 @@ TypeScript checks the handler parameter. The wildcard segments themselves have n
 The types you use (from `burger-api`):
 
 - `BurgerContext`: the request object
-- `ctx.wildcardParams`: always `string[] | undefined` (there is no schema for wildcard segments)
+- `ctx.wildcardParams`: always `string[]` (empty for non-wildcard routes; there is no schema for wildcard segments)
 
-✅ Correct: type the handler and handle the optional array:
+✅ Correct: type the handler and read the array:
 
 ```typescript
 import type { BurgerContext } from "burger-api";
 
 export async function GET(ctx: BurgerContext) {
-    const segments = ctx.wildcardParams ?? [];
+    const segments = ctx.wildcardParams;
     return Response.json({ segments });
 }
 ```

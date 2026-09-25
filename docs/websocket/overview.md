@@ -10,7 +10,9 @@ BurgerAPI supports WebSocket routes. A route has three parts: the connection, th
 
 **1. File-based (dev, auto-discovered)**
 
-Create a folder under your `wsDir` (default `src/websocket/`). The folder name becomes the URL. Inside, add `ws.ts`:
+Create a folder under your `wsDir` (default `src/websocket/`). The folder name becomes the URL. Inside, add `ws.ts`.
+
+In dev, an unset `wsDir` defaults to `./src/websocket` when that directory exists, so WS routes work without configuration. `burger-api build` reads `wsDir` from `burger.build.ts` (same default), and `dev`/`start` read `new Burger({...})` in `src/index.ts`. Keep the two in sync if you customize; the defaults agree out of the box.
 
 ```ts
 // src/websocket/chat/ws.ts
@@ -32,31 +34,35 @@ export function close(ws: BurgerWS, code: number, reason: string) {
 Sibling convention files work the same as API routes:
 
 - `hooks.ts`: `onOpen`, `onMessage`, `onClose` lifecycle hooks
-- `config.ts`: route options (`maxPayloadLength`, `idleTimeout`, `auth`)
+- `config.ts`: route options. Only `auth` is honored per route (`auth: false` still requires a valid handshake if the app-level `wsConfig({ auth })` requires one); transport options such as `maxPayloadLength` and `idleTimeout` are connection-level and are ignored with a warning when set per route. Set them globally with `burger.wsConfig({...})`.
 
 **2. Programmatic (production builds)**
+
+Register routes and connection options directly on the app:
 
 ```ts
 import { Burger } from "burger-api";
 
-const app = new Burger({
-    wsRoutes: [
-        {
-            path: "/chat",
-            handlers: {
-                open(ws) {
-                    ws.send("connected");
-                },
-                message(ws, message) {
-                    ws.send(message);
-                },
-            },
-        },
-    ],
+const app = new Burger();
+
+app.websocket("/chat", {
+    open(ws) {
+        ws.send("connected");
+    },
+    message(ws, message) {
+        ws.send(message);
+    },
+});
+
+app.wsConfig({
+    maxPayloadLength: 1024 * 1024, // 1 MB
+    idleTimeout: 30, // seconds
 });
 
 app.serve(4000);
 ```
+
+`wsRoutes` in `new Burger({ wsRoutes: [...] })` is the prebuilt equivalent used by `burger-api build` output. `wsConfig()` applies to the whole server and is only forwarded by the Bun adapter; on other runtimes the platform's own limits apply.
 
 ## Types for this feature
 
@@ -64,11 +70,11 @@ TypeScript checks your WebSocket handlers before they run.
 
 The types you use (all from `burger-api`):
 
-- `BurgerWS`, the WebSocket object: `send`, `sendText`, `sendBinary`, `data`, `services`, `user`, `subscribe`/`unsubscribe`/`publish` (pub/sub, see below), `close`, `terminate`, `cork`, `remoteAddress`, `readyState`, `raw`
+- `BurgerWS`, the WebSocket object: `send`, `sendText`, `sendBinary`, `params`, `data`, `services`, `user`, `subscribe`/`unsubscribe`/`publish` (pub/sub, see below), `close`, `terminate`, `cork`, `remoteAddress`, `readyState`, `raw`
 - `WebSocketData`: the data on `ws.data`. You extend it (see below).
 - `WebSocketHandlers`: the shape of `open`, `message`, `close`, `drain`, `ping`, `pong`
 - `WebSocketHooks`: the shape of `onOpen`, `onMessage`, `onClose`
-- `WebSocketConfig`: the route options
+- `WebSocketConfig`: connection-level options for `burger.wsConfig()`
 
 ✅ Correct. Annotate handlers with `BurgerWS`:
 
@@ -134,13 +140,12 @@ declare module "burger-api" {
 
 ### Route parameters
 
-Dynamic segments (`/room/[id]`) appear in `ws.data` at runtime. There is no schema for them yet, so read them through a cast:
+Dynamic segments (`/room/[roomId]`) are available URL-decoded on `ws.params`, always a `Record<string, string>` (empty when the route has none):
 
 ```ts
 export function message(ws: BurgerWS, message: string | Buffer) {
-    const roomId = (ws.data as Record<string, unknown>).roomId as
-        | string
-        | undefined;
+    const { roomId } = ws.params;
+    ws.send(`room ${roomId}: ${message}`);
 }
 ```
 
@@ -199,7 +204,7 @@ export function close(ws: BurgerWS) {
 }
 ```
 
-This is the one part of a WebSocket route that isn't automatically portable across targets. Everything else (`open`/`message`/`close`, `ws.data`, `ws.services`) works unchanged on Bun, Node, Cloudflare Workers, and Deno.
+This is the one part of a WebSocket route that isn't automatically portable across targets. Everything else (`open`/`message`/`close`, `ws.params`, `ws.data`, `ws.services`) works unchanged on Bun, Node, Cloudflare Workers, and Deno.
 
 ## Node.js
 

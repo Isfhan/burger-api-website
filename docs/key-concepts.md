@@ -35,8 +35,10 @@ See [Burger Class](/docs/core/burger-class), [Server Options](/docs/core/server-
 `src/hooks.ts`; route hooks in `api/**/hooks.ts`.
 
 **Plugins** extend the application. They are registered in `src/plugins.ts`
-and may register hooks, register providers, and
-extend `BurgerContext`. Hooks and plugins are separate concepts.
+with `burger.usePlugin(plugin | factory, scope?, seed?)`, may package hooks,
+and inject context values through `transform` (for example `ctx.user` or
+`ctx.apiKey`). Providers are registered separately in `src/providers.ts`:
+plugins cannot call `provide()`. Hooks and plugins are separate concepts.
 
 See [Hooks](/docs/hooks/system) and [Ecosystem](/docs/ecosystem/introduction).
 

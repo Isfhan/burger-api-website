@@ -21,24 +21,31 @@ const app = new Burger({
 
 ## The response shape
 
+This is the actual response for `GET /api/items?limit=abc` against a `query: z.object({ limit: z.number() })` schema:
+
 ```json
 {
   "type": "about:blank",
   "title": "Validation Error",
   "status": 422,
+  "detail": "query: Invalid input: expected number, received string",
   "errors": {
     "query": [
-      { "path": ["limit"], "message": "Expected number, received string" }
+      {
+        "path": ["limit"],
+        "message": "Invalid input: expected number, received string",
+        "code": "invalid_type"
+      }
     ]
   }
 }
 ```
 
-`errors` groups issues by the validation slot that failed (query, params, headers, cookies, or body). Each entry carries the `path` (where the problem is) and a `message` (what went wrong). The `Content-Type` is `application/problem+json`.
+`title` is always `"Validation Error"` for request validation failures; for other framework errors it is the HTTP status phrase (`"Not Found"`, `"Unsupported Media Type"`, `"Internal Server Error"`, and so on). `errors` groups issues by the validation slot that failed (query, params, headers, cookies, or body). Each entry carries the `path` (where the problem is), a `message` (what went wrong), and (for Zod) a `code`. The `Content-Type` is `application/problem+json`.
 
 ## Safe in production
 
-Whether you use the default format or the plain alternative, production error bodies never include stack traces, source paths, or schema internals. Only the `path` and `message` of each issue are returned.
+Whether you use the default format or the plain alternative, production error bodies never include stack traces, source paths, or schema internals. Only the `path`, `message`, and `code` of each issue are returned. Development responses add diagnostics such as `stack` and `cause`, and 500 details are replaced with `"Internal Server Error"` in production.
 
 ## Custom errors
 

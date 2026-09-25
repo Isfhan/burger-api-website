@@ -8,8 +8,8 @@ sidebar_label: Route Metadata
 
 ```ts
 interface RouteMeta {
-  path: string;    // the requested pathname, e.g. "/users/123"
-  pattern: string; // the route pattern, e.g. "/users/:id"
+  path: string;    // the requested pathname, e.g. "/api/users/123"
+  pattern: string; // the route pattern, e.g. "/api/users/:id" (includes apiPrefix)
 }
 ```
 
@@ -24,7 +24,10 @@ interface RouteMeta {
 - Instrumentation and analytics keyed by route pattern.
 
 ```ts title="api/products/route.ts"
+import type { BurgerContext } from "burger-api";
+
 export async function GET(ctx: BurgerContext) {
+  // pattern includes the API prefix, e.g. "/api/products"
   console.log(`served by ${ctx.route.pattern}`);
   return Response.json({ ok: true });
 }

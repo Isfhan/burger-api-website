@@ -32,7 +32,7 @@ Validation runs before your handler, so the handler can trust `ctx.validated`. D
 
 ## Add response validation where it matters
 
-Use `response` schemas in `dev` mode to get free feedback that a handler returns the wrong shape. Switch specific routes to `enforce` only when you want production to reject mismatches.
+Use `response` schemas in `dev` mode to get free feedback that a handler returns the wrong shape. Switch specific routes to `enforce` only when you want production to reject mismatches; an enforced mismatch answers a generic `application/problem+json` `500` in production, while `afterRoute` and `mapResponse` still run. Set the app-wide mode with `validation.responseValidation`, and override it per route in that route's `config.ts`.
 
 ## Choose the right error format
 

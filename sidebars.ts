@@ -136,6 +136,7 @@ const sidebars: SidebarsConfig = {
       items: [
         "cli/installation",
         "cli/create",
+        "cli/generate",
         "cli/add",
         "cli/list",
         "cli/skills",
@@ -152,6 +153,7 @@ const sidebars: SidebarsConfig = {
       items: [
         "compatibility",
         "deployment/bun",
+        "deployment/node",
         "deployment/cloudflare",
         "deployment/vercel",
         "deployment/deno",

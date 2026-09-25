@@ -16,8 +16,8 @@ import { z } from "zod";
 export const GET = {
   // path parameters, e.g. /users/:id
   params: z.object({ id: z.string() }),
-  // query string, e.g. ?limit=10
-  query: z.object({ limit: z.number() }),
+  // query string, e.g. ?limit=10 (query values arrive as strings)
+  query: z.object({ limit: z.coerce.number() }),
   // request headers
   headers: z.object({ "x-api-key": z.string() }),
   // cookies
@@ -45,8 +45,8 @@ When the same shape appears in several routes, define it once and import it. Pla
 import { z } from "zod";
 
 export const Pagination = z.object({
-  page: z.number().min(1).default(1),
-  limit: z.number().min(1).max(100).default(20),
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(20),
 });
 ```
 
@@ -100,7 +100,7 @@ export const GET = defineRoute(GetSchema, (ctx) => {
 });
 ```
 
-A slot without a schema is `unknown`. A schema written as a string reference (model) is also `unknown`, since the model is checked at runtime, not by TypeScript. See the [TypeScript overview](/docs/advanced/type-safety).
+A slot without a schema is `unknown`. See the [TypeScript overview](/docs/advanced/type-safety).
 
 Check your code: `bun run typecheck`.
 

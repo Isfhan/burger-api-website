@@ -26,6 +26,8 @@ BurgerAPI supports a few route shapes, all built from the same folder rules:
 
 These shapes nest freely by folder depth. See [Nested Routes](/docs/routing/api/nested-routes) for how paths grow with folders.
 
+Every route also gets automatic method handling: `HEAD` is derived from `GET`, and `OPTIONS` answers `204` with an `Allow` header, without extra handlers. See [Automatic HEAD](/docs/routing/api/static-routes#automatic-head) and [Automatic OPTIONS](/docs/routing/api/static-routes#automatic-options).
+
 For full API details and examples, see [Static API Routes](/docs/routing/api/static-routes) (API) and [Static Pages](/docs/routing/pages/static-pages) (pages).
 
 ## Types for this feature

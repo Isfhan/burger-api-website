@@ -20,7 +20,7 @@ burger-api skills install
 burger-api skills install burger-api
 ```
 
-Installs to `.agents/skills/<name>/`. The name defaults to `burger-api`.
+Installs to `.agents/skills/<name>/` under the current working directory. The name defaults to `burger-api`, and the files are downloaded from the framework's `ecosystem/skills/<name>/` directory on GitHub.
 
 ### `burger-api skills list`
 

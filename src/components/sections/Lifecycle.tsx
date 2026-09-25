@@ -17,17 +17,27 @@ import type { LucideIcon } from "lucide-react";
 import { Section, SectionHeader, CodeBlock, Button } from "../ui";
 
 const code = `// src/hooks.ts: global lifecycle hooks
-import type { BurgerContext } from "burger-api";
+import type { GlobalHooks } from "burger-api";
 
-export const onRequest = [
-  (ctx: BurgerContext) => {
+export const onRequest: GlobalHooks["onRequest"] = [
+  () => {
     const id = crypto.randomUUID();
-    ctx.headers.set("x-request-id", id);
+    // Forward hooks may return a response mapper. It wraps the final
+    // response, so the header is set even when a later hook short-circuits.
+    return (response: Response) => {
+      const headers = new Headers(response.headers);
+      headers.set("x-request-id", id);
+      return new Response(response.body, {
+        status: response.status,
+        statusText: response.statusText,
+        headers,
+      });
+    };
   },
 ];
 
-export const beforeRoute = [
-  (ctx: BurgerContext) => {
+export const beforeRoute: GlobalHooks["beforeRoute"] = [
+  (ctx) => {
     if (!ctx.headers.get("authorization")) {
       return Response.json(
         { error: "Unauthorized" },
@@ -37,7 +47,7 @@ export const beforeRoute = [
   },
 ];
 
-export const afterRoute = [
+export const afterRoute: GlobalHooks["afterRoute"] = [
   () => (response: Response) => {
     console.log(response.status, response.headers.get("x-request-id"));
     return response;
@@ -92,7 +102,7 @@ export function Lifecycle() {
         ))}
       </div>
 
-      {/* Desktop: horizontal rail — the request climbs to your Handler, then flows back out */}
+      {/* Desktop: horizontal rail: the request climbs to your Handler, then flows back out */}
       <div className="ba-rail hidden md:flex" role="list" aria-label="Request lifecycle">
         <span className="ba-rail__line" aria-hidden />
         {STAGES.map((stage) => (

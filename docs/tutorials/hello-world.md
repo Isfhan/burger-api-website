@@ -57,22 +57,32 @@ If you used `burger-api create`, you should already have an entry file similar t
 import { Burger } from "burger-api";
 
 const burger = new Burger({
-  apiDir: "./src/api",       // Directory where API routes live
-  title: "Hello World API",  // Title for OpenAPI docs
-  version: "1.0.0",          // Version for OpenAPI docs
-  description: "My first BurgerAPI application",
+  apiDir: "./src/api", // Directory where API routes live
 });
 
-// Start the server on port 4000
-burger.serve(4000, () => {
-  console.log("Server running at http://localhost:4000");
-  console.log("API docs available at http://localhost:4000/docs");
+// Read PORT so the host platform can assign one; fall back to 4000 locally.
+const port = Number(process.env.PORT) || 4000;
+burger.serve(port, () => {
+  console.log(`Server running at http://localhost:${port}`);
+  console.log(`API docs available at http://localhost:${port}/docs`);
 });
+```
+
+OpenAPI metadata lives in the `openapi.config.ts` convention file, which `burger-api create` already scaffolds as `src/openapi.config.ts`:
+
+```typescript title="src/openapi.config.ts"
+import type { OpenAPIConfig } from "burger-api";
+
+export default {
+  title: "Hello World API", // Title for OpenAPI docs
+  version: "1.0.0", // Version for OpenAPI docs
+  description: "My first BurgerAPI application",
+} satisfies OpenAPIConfig;
 ```
 
 :::tip What's Happening?
 - `apiDir: "./src/api"` tells BurgerAPI to look for route files in the `src/api` directory
-- `title`, `version`, and `description` feed the generated OpenAPI docs
+- `title`, `version`, and `description` in `openapi.config.ts` feed the generated OpenAPI docs. `new Burger({ title, version, description })` is a fallback and only used when no `openapi.config.ts` exists
 - The callback function runs after the server starts successfully
 :::
 
@@ -162,11 +172,11 @@ Let's break down what we just built:
 ### Server Configuration (`src/index.ts`)
 ```typescript
 const burger = new Burger({
-  apiDir: "./src/api",      // Look for routes in ./src/api/
-  title: "Hello World API", // Used in OpenAPI docs
-  version: "1.0.0",         // API version
+  apiDir: "./src/api", // Look for routes in ./src/api/
 });
 ```
+
+OpenAPI metadata is declared separately in `src/openapi.config.ts` (shown above), which keeps runtime options and documentation settings apart.
 
 ### Route Handler (`src/api/hello/route.ts`)
 ```typescript
@@ -194,12 +204,13 @@ Your project should now look like this:
 my-burger-api/
 ├── src/
 │   ├── index.ts
+│   ├── openapi.config.ts
 │   └── api/
 │       └── hello/
 │           └── route.ts
 ├── burger.build.ts
 ├── package.json
-└── bun.lockb
+└── bun.lock
 ```
 
 ## Build for Production (Optional)

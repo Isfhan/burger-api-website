@@ -23,7 +23,7 @@ export async function GET(ctx: BurgerContext) {
 
 ## mapResponse
 
-For response shaping that needs the actual response, use `mapResponse` hooks. They run global to route, after `afterRoute`:
+For response shaping that needs the actual response, use `mapResponse` hooks. They run nearest-first (Route → Global → Plugin → Framework), after `afterRoute`:
 
 ```ts title="src/hooks.ts"
 export const mapResponse = [

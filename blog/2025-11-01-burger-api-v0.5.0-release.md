@@ -248,10 +248,10 @@ Visit:
 ## 💬 What Developers Are Saying
 
 > "Finally! The TypeScript support actually works. This makes BurgerAPI a joy to use."  
-> — *Early adopter feedback*
+> *Early adopter feedback*
 
 > "Auto OPTIONS handlers saved me so much boilerplate code. This is how it should be."  
-> — *Community feedback*
+> *Community feedback*
 
 
 

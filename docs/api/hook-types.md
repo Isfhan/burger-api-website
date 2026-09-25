@@ -9,39 +9,59 @@ Hooks are the request lifecycle functions. This page is the type reference. For 
 ## Hook
 
 ```ts
-type Hook = (ctx: BurgerContext) => unknown;
+type ForwardHook = (
+  ctx: BurgerContext
+) => Response | ((response: Response) => Response | Promise<Response>) | void | undefined;
+
+type ResponseHook = (
+  ctx: BurgerContext
+) => Response | ((response: Response) => Response | Promise<Response>) | void | undefined;
+
+type Hook = ForwardHook | ResponseHook;
 ```
 
-`Hook` is the type of every lifecycle hook function. It receives the `BurgerContext`. Where multiple hooks run in sequence, the type is `Hook[]` (a single `Hook` is also accepted).
+`Hook` is the union of the two stage contracts: `ForwardHook` (`onRequest`, `beforeRoute`) and `ResponseHook` (`afterRoute`, `mapResponse`). Where multiple hooks run in sequence, the type is `Hook[]` (a single `Hook` is also accepted).
 
 A hook returns one of three things:
 
 - A `Response` stops the pipeline. That response is sent and the rest of the pipeline is skipped.
 - `undefined` continues to the next hook or to the handler.
-- In the response phases (`afterRoute`, `mapResponse`), a function receives the current response and returns the transformed response.
+- A function `(response) => Response` registers a mapper. Forward hooks queue it to run on the final response after the handler; response hooks apply it immediately.
 
 ## ErrorHook
 
 ```ts
-type ErrorHook = (error: Error, ctx: BurgerContext) => Response | void | undefined;
+type ErrorHook = (
+  error: Error,
+  ctx: BurgerContext
+) => Response | void | undefined | Promise<Response | void | undefined>;
 ```
 
-`onError` hooks handle errors thrown in the pipeline. They run nearest-first, from route to global. Return a `Response` to handle the error, or `undefined`/`void` to let the next `onError` hook try. If none handles it, the framework renders the default error response.
+`onError` hooks handle errors thrown after routing (validation, `beforeRoute`, the handler, `afterRoute`, `mapResponse`). They run nearest-first, Route → Global → Plugin → Framework. Return a `Response` to handle the error, or `undefined`/`void` to let the next `onError` hook try. If none handles it, the framework renders the default error response and logs 5xx errors. May be async.
 
 ## RouteHooks
 
 ```ts
 interface RouteHooks {
-  onRequest?: Hook | Hook[];
-  beforeRoute?: Hook | Hook[];
-  afterRoute?: Hook | Hook[];
-  mapResponse?: Hook | Hook[];
+  beforeRoute?: ForwardHook | ForwardHook[];
+  afterRoute?: ResponseHook | ResponseHook[];
+  mapResponse?: ResponseHook | ResponseHook[];
   onError?: ErrorHook | ErrorHook[];
   transform?: TransformMap;
 }
 ```
 
-`RouteHooks` is the shape of the hooks object carried by `hooks.ts` (route) or `src/hooks.ts` (global). `onRequest` is app-level only: it runs before routing. `transform` runs before validation.
+`RouteHooks` is the shape of a route's `hooks.ts`. There is no `onRequest` here: `onRequest` runs before a route is matched, so it cannot be scoped to one route. `transform` runs before validation.
+
+## GlobalHooks
+
+```ts
+interface GlobalHooks extends RouteHooks {
+  onRequest?: ForwardHook | ForwardHook[];
+}
+```
+
+`GlobalHooks` is the shape of the app's `src/hooks.ts` and of a plugin's `hooks` object. It adds `onRequest` on top of `RouteHooks`.
 
 ## TransformMap
 

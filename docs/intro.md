@@ -8,7 +8,7 @@ slug: /
 
 BurgerAPI is a Bun-first, WinterCG-compatible framework for building modern APIs with file-based routing, end-to-end type safety, and a clear project structure. TypeScript and JavaScript are both first-class: the same conventions work with `.ts`, `.js`, and `.mjs` route files, and JavaScript projects get full JSDoc type-checking.
 
-`burger-api` and `@burger-api/cli` ship `1.0.0-beta` by default — a vision-locked rewrite of the framework, currently in public beta and not yet recommended for production. If you need the previous stable line, pin `burger-api@0.9.7` / `@burger-api/cli@0.9.9`. See the [beta release notes](/blog/burger-api-v1.0.0-beta-release) for details.
+`burger-api` and `@burger-api/cli` ship `1.0.0-beta` by default: a vision-locked rewrite of the framework, currently in public beta and not yet recommended for production. If you need the previous stable line, pin `burger-api@0.9.7` / `@burger-api/cli@0.9.9`. See the [beta release notes](/blog/burger-api-v1.0.0-beta-release) for details.
 
 ### What BurgerAPI is built around
 
@@ -22,7 +22,7 @@ BurgerAPI is a Bun-first, WinterCG-compatible framework for building modern APIs
 - **Type inference:** `defineRoute(schema, handler)` / `defineHooks(schema, hooks)` infer `ctx.validated` from your schema, so there is no generic to write by hand.
 - **OpenAPI:** Spec + docs UI.
 - **Ecosystem:** `ecosystem/hooks/`, `ecosystem/plugins/`, `ecosystem/skills/`.
-- **Build config:** `burger.build.ts` (CLI only). Runtime config lives in `new Burger({...})`, plugins, and route `config.ts`.
+- **Build config:** `burger.build.ts` is read by `burger-api build`, `inspect`, and `doctor`; `burger-api dev`/`start` read `new Burger({...})` in `src/index.ts`. The scaffold keeps both in sync and the defaults agree out of the box. Runtime config lives in `new Burger({...})`, `openapi.config.ts`, plugins, and route `config.ts`.
 - **Deploy targets:** `burger-api build --target=bun|node|cloudflare|deno|vercel`: one command per platform, no hand-written entry files.
 
 ### Getting started

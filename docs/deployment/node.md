@@ -70,7 +70,8 @@ export const burger = new Burger({
 ```ts
 // src/server.ts
 import { serve } from "@burger-api/node-server";
-import { burger } from "./index";
+// Explicit .ts extension: Node's ESM resolver does not add extensions.
+import { burger } from "./index.ts";
 
 const server = serve(burger, { port: 3000 });
 server.on("listening", () => {
@@ -108,9 +109,16 @@ const burger = new Burger({
 ## Run
 
 ```bash
-node src/server.ts   # Node 22.6+ can run TypeScript directly
+# Node 22.18+ / 24+ run TypeScript directly (type stripping is on by default)
+node src/server.ts
+
+# Node 22.6 to 22.17 need the flag
+node --experimental-strip-types src/server.ts
+
 # or build first with your own toolchain (tsc, esbuild, bun build --target node)
 ```
+
+When Node runs TypeScript directly, it strips types without transforming them, so relative imports must include the explicit `.ts` extension (`./index.ts`). The scaffolded `tsconfig.json` enables `allowImportingTsExtensions` for this.
 
 ## Related
 

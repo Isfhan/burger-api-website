@@ -25,13 +25,28 @@ Hook factories from `ecosystem/hooks/` compose here too:
 
 ```ts
 // src/hooks.ts
-import { cors } from "./ecosystem/hooks/cors/cors";
-import { logger } from "./ecosystem/hooks/logger/logger";
+import { cors } from "../ecosystem/hooks/cors/cors";
+import { logger } from "../ecosystem/hooks/logger/logger";
 
 export const onRequest = [logger(), cors({ origin: ["https://app.example.com"] })];
 ```
 
-Scope order: Framework → Plugin → Global → Route for request hooks. Response hooks (`afterRoute`, `mapResponse`) run Route → Global → Plugin → Framework. Error hooks (`onError`) run nearest-first, Route → Global.
+Scope order: Framework → Plugin → Global → Route for request hooks. Response hooks (`afterRoute`, `mapResponse`) and error hooks (`onError`) run nearest-first: Route → Global → Plugin → Framework.
+
+## transform
+
+`transform` is not a function: it is a map of field names to factory functions. Each factory receives `ctx` and its result is shallow-assigned onto the context before validation runs, so handlers and later hooks can read it.
+
+```ts
+// src/hooks.ts
+import type { GlobalHooks } from "burger-api";
+
+export const transform: GlobalHooks["transform"] = {
+  tenant: (ctx) => ctx.headers.get("x-tenant"),
+};
+```
+
+Built-in fields are reserved and cannot be replaced: `params`, `wildcardParams`, `query`, `cookies`, `headers`, `method`, `url`, `signal`, `body`, `bodyUsed`, `validated`, `set`, `route`, `request`, `services`, `config`, `env`, `executionCtx`, and internal `_`-prefixed keys. A transform entry with a reserved name is dropped (with a warning in debug mode). Global transform entries apply before route-level entries, so a route can override a global value.
 
 Use global hooks for logging, CORS, auth checks, or any logic that should run for all routes. See [Hook System](/docs/hooks/system) and [Ecosystem](/docs/ecosystem/introduction).
 
