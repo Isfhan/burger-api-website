@@ -38,6 +38,7 @@ Scaffolds a new project with interactive prompts.
 
 - Creates the project structure and installs dependencies.
 - Writes `burger.build.ts` at the project root (apiDir, pageDir, apiPrefix, pagePrefix, debug). This file is build-time only.
+- Always writes `AGENTS.md` (project rules for AI agents) and `CLAUDE.md` (`@AGENTS.md`).
 - Generates the `dev`, `build`, and `start` scripts.
 - Options: `--lang ts|js` (default `ts`), `--yes` / `--defaults` (skip prompts), `--pages` (include `src/pages`), `--ws` (include file-based WebSocket routes), `--no-api` (skip API routes), `--api-dir <dir>`, `--api-prefix <prefix>`, `--no-skills`.
 
@@ -166,8 +167,8 @@ See [Doctor Command](/docs/cli/doctor).
 
 Manages AI agent skills for agentic IDEs.
 
-- `skills install [name]`: Install a skill (defaults to `burger-api`) to `.agents/skills/<name>/`.
-- `skills list`: Show locally installed skills.
+- `skills install [name]`: Install a skill (defaults to `burger-api`) to `.agents/skills/<name>/` and `.claude/skills/<name>/`.
+- `skills list`: Show locally installed skills, once each, with their folders.
 - `skills available`: Browse the remote catalog.
 
 ```bash
@@ -195,6 +196,10 @@ my-api/
 │   └── hooks/             # Installed hooks (plugins dir is created by `burger-api add`)
 ├── .agents/
 │   └── skills/            # AI agent skills (optional)
+├── .claude/
+│   └── skills/            # AI agent skills for Claude Code (optional)
+├── AGENTS.md              # Project rules for AI agents
+├── CLAUDE.md              # Imports AGENTS.md for Claude Code
 ├── burger.build.ts        # Build-time config: apiDir, pageDir, apiPrefix, pagePrefix, debug
 ├── package.json
 └── tsconfig.json

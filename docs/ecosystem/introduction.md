@@ -44,3 +44,8 @@ burger-api skills install
 burger-api skills list
 burger-api skills available
 ```
+
+Skills install to `.agents/skills/<name>/` and `.claude/skills/<name>/`.
+Claude Code reads `.claude/skills/`; agents that support the Agent Skills
+standard (OpenCode, Codex, and others) read `.agents/skills/`. See
+[AI Agent Skills](/docs/ai-assistance/agent-skills).

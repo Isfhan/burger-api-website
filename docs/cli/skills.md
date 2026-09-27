@@ -20,7 +20,10 @@ burger-api skills install
 burger-api skills install burger-api
 ```
 
-Installs to `.agents/skills/<name>/` under the current working directory. The name defaults to `burger-api`, and the files are downloaded from the framework's `ecosystem/skills/<name>/` directory on GitHub.
+Downloads once into `.agents/skills/<name>/` under the current working
+directory, then copies the folder to `.claude/skills/<name>/`. The name
+defaults to `burger-api`, and the files are downloaded from the framework's
+`ecosystem/skills/<name>/` directory on GitHub.
 
 ### `burger-api skills list`
 
@@ -30,7 +33,8 @@ List locally installed skills:
 burger-api skills list
 ```
 
-Reads descriptions from each skill's `SKILL.md` frontmatter.
+Reads descriptions from each skill's `SKILL.md` frontmatter. A skill found in
+both folders is listed once, with both locations.
 
 ### `burger-api skills available`
 
@@ -44,10 +48,11 @@ Fetches the remote catalog from GitHub and shows descriptions parsed from each s
 
 ## Output Structure
 
-When you install the `burger-api` skill, you get:
+When you install the `burger-api` skill, you get the same files in both
+folders:
 
 ```text
-.agents/skills/burger-api/
+.agents/skills/burger-api/     # Agent Skills standard
 ├── SKILL.md              # Main skill definition
 └── references/           # Reference documentation
     ├── routing.md
@@ -55,20 +60,19 @@ When you install the `burger-api` skill, you get:
     ├── hooks.md
     ├── cli.md
     └── openapi.md
+
+.claude/skills/burger-api/     # same files, copied for Claude Code
 ```
 
 ## Compatible Agents
 
-Skills in `.agents/skills/` are automatically discovered by:
+No configuration needed; agents detect skills automatically:
 
-- **Cursor**: reads from `.agents/skills/`
-- **Claude Code**: reads from `.agents/skills/`
-- **OpenCode**: reads from `.agents/skills/`
-- **OpenAI Codex**: reads from `.agents/skills/`
-- **GitHub Copilot**: reads from `.agents/skills/`
-- Any tool supporting the [agentskills.io](https://agentskills.io) open standard
+- **Claude Code**: reads from `.claude/skills/`
+- **OpenCode**, **Codex**, and other tools that support the [agentskills.io](https://agentskills.io) open standard: read from `.agents/skills/`
 
-No configuration needed; agents detect skills automatically.
+If a tool looks in a different folder, copy the skill there yourself. The
+files are plain markdown.
 
 
 ## Related

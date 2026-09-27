@@ -290,6 +290,7 @@ Scaffolds a new project with interactive prompts.
 
 - Creates the project structure and installs dependencies.
 - Writes `burger.build.ts` at the project root (apiDir, pageDir, apiPrefix, pagePrefix, debug). This file is build-time only.
+- Always writes `AGENTS.md` (project rules for AI agents) and `CLAUDE.md` (`@AGENTS.md`).
 - Generates the `dev`, `build`, and `start` scripts.
 - Options: `--lang ts|js` (default `ts`), `--yes` / `--defaults` (skip prompts), `--pages` (include `src/pages`), `--ws` (include file-based WebSocket routes), `--no-api` (skip API routes), `--api-dir <dir>`, `--api-prefix <prefix>`, `--no-skills`.
 
@@ -418,8 +419,8 @@ See [Doctor Command](https://burger-api.com/docs/cli/doctor).
 
 Manages AI agent skills for agentic IDEs.
 
-- `skills install [name]`: Install a skill (defaults to `burger-api`) to `.agents/skills/<name>/`.
-- `skills list`: Show locally installed skills.
+- `skills install [name]`: Install a skill (defaults to `burger-api`) to `.agents/skills/<name>/` and `.claude/skills/<name>/`.
+- `skills list`: Show locally installed skills, once each, with their folders.
 - `skills available`: Browse the remote catalog.
 
 ```bash
@@ -447,6 +448,10 @@ my-api/
 │   └── hooks/             # Installed hooks (plugins dir is created by `burger-api add`)
 ├── .agents/
 │   └── skills/            # AI agent skills (optional)
+├── .claude/
+│   └── skills/            # AI agent skills for Claude Code (optional)
+├── AGENTS.md              # Project rules for AI agents
+├── CLAUDE.md              # Imports AGENTS.md for Claude Code
 ├── burger.build.ts        # Build-time config: apiDir, pageDir, apiPrefix, pagePrefix, debug
 ├── package.json
 └── tsconfig.json
@@ -7590,6 +7595,11 @@ burger-api skills list
 burger-api skills available
 ```
 
+Skills install to `.agents/skills/<name>/` and `.claude/skills/<name>/`.
+Claude Code reads `.claude/skills/`; agents that support the Agent Skills
+standard (OpenCode, Codex, and others) read `.agents/skills/`. See
+[AI Agent Skills](https://burger-api.com/docs/ai-assistance/agent-skills).
+
 ---
 url: 'https://burger-api.com/docs/ecosystem/hooks-plugins'
 ---
@@ -8019,8 +8029,8 @@ Instead of attaching files manually, you install a skill once and your AI assist
 
 ## How They Work
 
-1. **Install**: `burger-api skills install` downloads the burger-api skill to `.agents/skills/burger-api/`
-2. **Discover**: Agentic IDEs scan `.agents/skills/` at project root and load relevant skills
+1. **Install**: `burger-api skills install` downloads the burger-api skill once, then writes it to both `.agents/skills/burger-api/` and `.claude/skills/burger-api/`
+2. **Discover**: Each agent scans its own skills folder at the project root and loads relevant skills
 3. **Activate**: When you ask about routing, hooks, or CLI tasks, the agent uses the skill as context
 
 ## Installation
@@ -8034,7 +8044,9 @@ When you run `burger-api create`, you'll be asked:
 │  Yes / No
 ```
 
-Answer Yes (default) and the skill is installed automatically.
+Answer Yes (default) and the skill is installed automatically. The new project
+also gets `AGENTS.md` (project rules for AI agents) and `CLAUDE.md`
+(`@AGENTS.md`), even if you skip skills.
 
 ### In an Existing Project
 
@@ -8049,33 +8061,34 @@ burger-api skills available
 burger-api skills list
 ```
 
+`skills list` shows each installed skill once and names every folder it is in.
+
 ## Project Layout
 
-When skills are installed, your project includes:
+When skills are installed, your project includes both copies:
 
 ```text
-.agents/
-└── skills/
-    └── burger-api/
-        ├── SKILL.md
-        └── references/
-            ├── routing.md
-            ├── validation.md
-            ├── hooks.md
-            ├── cli.md
-            └── openapi.md
+.agents/skills/burger-api/     # Agent Skills standard
+├── SKILL.md
+└── references/
+    ├── routing.md
+    ├── validation.md
+    ├── hooks.md
+    ├── cli.md
+    └── openapi.md
+
+.claude/skills/burger-api/     # same files, copied for Claude Code
 ```
 
 ## Compatible Agents
 
-No configuration needed: these tools discover `.agents/skills/` automatically:
+No configuration needed. Each tool reads its own folder:
 
-- **Cursor**: loads skills as project context
-- **Claude Code**: reads from `.agents/skills/`
-- **OpenCode**: reads from `.agents/skills/`
-- **OpenAI Codex**: reads from `.agents/skills/`
-- **GitHub Copilot**: reads from `.agents/skills/`
-- Any tool supporting the agentskills.io standard
+- **Claude Code**: reads from `.claude/skills/`
+- **OpenCode**, **Codex**, and other tools that support the agentskills.io standard: read from `.agents/skills/`
+
+If a tool looks for a different folder, copy the skill there yourself. The
+files are plain markdown.
 
 ## Next Steps
 
@@ -8118,6 +8131,7 @@ url: 'https://burger-api.com/docs/cli/create'
 
 - Creates directory structure, config, and installs dependencies.
 - New projects get **`burger.build.ts`** at the root (apiDir, pageDir, apiPrefix, pagePrefix). Build-time only: runtime options go in `new Burger({...})`, `src/plugins.ts`, and route `config.ts`.
+- Always writes **`AGENTS.md`** (commands, layout, and framework rules for AI agents) and **`CLAUDE.md`** (`@AGENTS.md`), even with `--no-skills`.
 - Prompts: API routes, API directory, API prefix, debug mode, Page routes, Page directory, Page prefix, AI agent skills.
 
 **Example:**
@@ -8126,7 +8140,7 @@ url: 'https://burger-api.com/docs/cli/create'
 burger-api create my-api
 ```
 
-**Next steps:** Edit `burger.build.ts` if needed, run `bun run dev`, add hooks and plugins with `burger-api add`. AI agent skills are installed at `.agents/skills/burger-api/` when opted in. See [CLI Tool](https://burger-api.com/docs/getting-started/cli).
+**Next steps:** Edit `burger.build.ts` if needed, run `bun run dev`, add hooks and plugins with `burger-api add`. When skills are opted in they are installed to both `.agents/skills/burger-api/` and `.claude/skills/burger-api/`. See [CLI Tool](https://burger-api.com/docs/getting-started/cli).
 
 ## Related
 
@@ -8295,7 +8309,10 @@ burger-api skills install
 burger-api skills install burger-api
 ```
 
-Installs to `.agents/skills/<name>/` under the current working directory. The name defaults to `burger-api`, and the files are downloaded from the framework's `ecosystem/skills/<name>/` directory on GitHub.
+Downloads once into `.agents/skills/<name>/` under the current working
+directory, then copies the folder to `.claude/skills/<name>/`. The name
+defaults to `burger-api`, and the files are downloaded from the framework's
+`ecosystem/skills/<name>/` directory on GitHub.
 
 ### `burger-api skills list`
 
@@ -8305,7 +8322,8 @@ List locally installed skills:
 burger-api skills list
 ```
 
-Reads descriptions from each skill's `SKILL.md` frontmatter.
+Reads descriptions from each skill's `SKILL.md` frontmatter. A skill found in
+both folders is listed once, with both locations.
 
 ### `burger-api skills available`
 
@@ -8319,10 +8337,11 @@ Fetches the remote catalog from GitHub and shows descriptions parsed from each s
 
 ## Output Structure
 
-When you install the `burger-api` skill, you get:
+When you install the `burger-api` skill, you get the same files in both
+folders:
 
 ```text
-.agents/skills/burger-api/
+.agents/skills/burger-api/     # Agent Skills standard
 ├── SKILL.md              # Main skill definition
 └── references/           # Reference documentation
     ├── routing.md
@@ -8330,20 +8349,19 @@ When you install the `burger-api` skill, you get:
     ├── hooks.md
     ├── cli.md
     └── openapi.md
+
+.claude/skills/burger-api/     # same files, copied for Claude Code
 ```
 
 ## Compatible Agents
 
-Skills in `.agents/skills/` are automatically discovered by:
+No configuration needed; agents detect skills automatically:
 
-- **Cursor**: reads from `.agents/skills/`
-- **Claude Code**: reads from `.agents/skills/`
-- **OpenCode**: reads from `.agents/skills/`
-- **OpenAI Codex**: reads from `.agents/skills/`
-- **GitHub Copilot**: reads from `.agents/skills/`
-- Any tool supporting the [agentskills.io](https://agentskills.io) open standard
+- **Claude Code**: reads from `.claude/skills/`
+- **OpenCode**, **Codex**, and other tools that support the [agentskills.io](https://agentskills.io) open standard: read from `.agents/skills/`
 
-No configuration needed; agents detect skills automatically.
+If a tool looks in a different folder, copy the skill there yourself. The
+files are plain markdown.
 
 ## Related
 
