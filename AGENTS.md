@@ -113,6 +113,9 @@ Official ecosystem **plugins** under `ecosystem/plugins/` integrating with hooks
 
 - `bun run build` must pass (`onBrokenLinks: "throw"`)
 - `bun run typecheck` must pass
+- `static/llms.txt`, `static/llms-full.txt`, and `static/llms-small.txt` are
+  generated from `docs/` by `scripts/generate-llms.ts` (`bun run generate:llms`,
+  also run by `bun run build`). Never edit those files by hand.
 
 ## 5. Style notes
 
