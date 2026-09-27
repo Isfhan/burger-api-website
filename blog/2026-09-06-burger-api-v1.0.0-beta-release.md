@@ -140,7 +140,7 @@ The performance work is architectural, not a hand-tuned hot loop:
 - Query strings parse in one pass. `ctx.set` tracks what changed, so untouched responses are returned as they are.
 - The fetch path used by Node, Cloudflare, Deno, and Vercel matches hard cases with a radix matcher instead of walking every segment.
 
-Measured numbers, the harness, and dated reports live in [burger-api-benchmarks](https://github.com/isfhan/buger-api-benchmarks), the single home for BurgerAPI performance data. The architectural summary is on the [benchmarks page](/docs/advanced/benchmarks). We keep numbers out of this post on purpose: run `bun run battle --profile ci` in that repository and see for yourself.
+Measured numbers, the harness, and dated reports live in [burger-api-benchmarks](https://github.com/isfhan/burger-api-benchmarks), the single home for BurgerAPI performance data. The architectural summary is on the [benchmarks page](/docs/advanced/benchmarks). We keep numbers out of this post on purpose: run `bun run battle --profile ci` in that repository and see for yourself.
 
 ## Verification
 

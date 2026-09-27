@@ -6,7 +6,7 @@ sidebar_label: Benchmarks
 
 BurgerAPI's performance work is architectural, not a hand-tuned hot loop: routes resolve through Bun's native route map first, fall back to a precompiled radix trie otherwise, each route's hook chain is flattened once at boot into a frozen `HookPlan`, validators are compiled once and cached by structural identity, and a JIT compiler collapses a route's whole hook chain into one function (on by default). None of that work happens per request.
 
-All measured numbers live in [burger-api-benchmarks](https://github.com/isfhan/buger-api-benchmarks), a dedicated sibling repository and the single home for BurgerAPI performance data. It contains the harness, the methodology, the raw JSON, and dated reports, so results can be reproduced and audited instead of copied out of date.
+All measured numbers live in [burger-api-benchmarks](https://github.com/isfhan/burger-api-benchmarks), a dedicated sibling repository and the single home for BurgerAPI performance data. It contains the harness, the methodology, the raw JSON, and dated reports, so results can be reproduced and audited instead of copied out of date.
 
 ## Reproduce it yourself
 

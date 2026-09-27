@@ -810,10 +810,6 @@ bun add @burger-api/node-server
 | OpenAPI metadata `openapi` export in `route.ts`, title in `new Burger({...})` | `openapi.ts` per-method exports, document metadata in `src/openapi.config.ts` | Move metadata into its own file; `new Burger({ title })` still works as a fallback. See [OpenAPI](https://burger-api.com/docs/api/openapi). |
 | A handler could return a non-`Response` | Non-`Response` returns fail loud with a 500 | Always return `Response.json(...)` or `new Response(...)`. |
 
-:::note Tried a development build from GitHub?
-Some names only existed in unreleased builds between `0.9.7` and `1.0.0-beta` and are gone now: `beforeHandle` / `afterHandle` / `onResponse` / `provide` hooks (use `beforeRoute` / `afterRoute` / `mapResponse` / `transform`), `Burger.use` (use `burger.usePlugin()`), and `burger.macro()` (use a plugin). Apps on the npm `0.9.x` releases never had them.
-:::
-
 ## Step by step
 
 ### 1. A route handler
@@ -9211,7 +9207,7 @@ url: 'https://burger-api.com/docs/performance/overview'
 
 # Performance
 
-BurgerAPI is built to keep the request path fast and predictable. The speed comes from a few clear design choices, not from small low-level tweaks. Measured results and raw reports live in [burger-api-benchmarks](https://github.com/isfhan/buger-api-benchmarks); an architectural summary is on the [Benchmarks](https://burger-api.com/docs/advanced/benchmarks) page.
+BurgerAPI is built to keep the request path fast and predictable. The speed comes from a few clear design choices, not from small low-level tweaks. Measured results and raw reports live in [burger-api-benchmarks](https://github.com/isfhan/burger-api-benchmarks); an architectural summary is on the [Benchmarks](https://burger-api.com/docs/advanced/benchmarks) page.
 
 ## Hybrid router
 
@@ -10206,7 +10202,7 @@ url: 'https://burger-api.com/docs/advanced/benchmarks'
 
 BurgerAPI's performance work is architectural, not a hand-tuned hot loop: routes resolve through Bun's native route map first, fall back to a precompiled radix trie otherwise, each route's hook chain is flattened once at boot into a frozen `HookPlan`, validators are compiled once and cached by structural identity, and a JIT compiler collapses a route's whole hook chain into one function (on by default). None of that work happens per request.
 
-All measured numbers live in [burger-api-benchmarks](https://github.com/isfhan/buger-api-benchmarks), a dedicated sibling repository and the single home for BurgerAPI performance data. It contains the harness, the methodology, the raw JSON, and dated reports, so results can be reproduced and audited instead of copied out of date.
+All measured numbers live in [burger-api-benchmarks](https://github.com/isfhan/burger-api-benchmarks), a dedicated sibling repository and the single home for BurgerAPI performance data. It contains the harness, the methodology, the raw JSON, and dated reports, so results can be reproduced and audited instead of copied out of date.
 
 ## Reproduce it yourself
 

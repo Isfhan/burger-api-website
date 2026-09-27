@@ -50,10 +50,6 @@ bun add @burger-api/node-server
 | OpenAPI metadata `openapi` export in `route.ts`, title in `new Burger({...})` | `openapi.ts` per-method exports, document metadata in `src/openapi.config.ts` | Move metadata into its own file; `new Burger({ title })` still works as a fallback. See [OpenAPI](/docs/api/openapi). |
 | A handler could return a non-`Response` | Non-`Response` returns fail loud with a 500 | Always return `Response.json(...)` or `new Response(...)`. |
 
-:::note Tried a development build from GitHub?
-Some names only existed in unreleased builds between `0.9.7` and `1.0.0-beta` and are gone now: `beforeHandle` / `afterHandle` / `onResponse` / `provide` hooks (use `beforeRoute` / `afterRoute` / `mapResponse` / `transform`), `Burger.use` (use `burger.usePlugin()`), and `burger.macro()` (use a plugin). Apps on the npm `0.9.x` releases never had them.
-:::
-
 ## Step by step
 
 ### 1. A route handler

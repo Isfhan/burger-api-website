@@ -30,7 +30,7 @@ const communityLinks = [
 const projectLinks = [
   { label: "License", href: "https://github.com/isfhan/burger-api/blob/main/LICENSE" },
   { label: "Contributing", href: "https://github.com/isfhan/burger-api/blob/main/CONTRIBUTING.md" },
-  { label: "Benchmarks", href: "https://github.com/isfhan/buger-api-benchmarks" },
+  { label: "Benchmarks", href: "https://github.com/isfhan/burger-api-benchmarks" },
 ];
 
 function FooterColumn({
