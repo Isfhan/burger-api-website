@@ -5,7 +5,7 @@ authors: [isfhan]
 tags: [release, beta, 1.0, typescript, javascript, wintercg, cli, benchmarks]
 ---
 
-**`burger-api` and `@burger-api/cli` both ship `1.0.0-beta` today. `bun add burger-api` and `bun add -g @burger-api/cli` install it by default. It's a vision-locked rewrite of the framework, not an incremental update, and it's a beta, so we're not calling it production-ready yet. If you're running something in production today, stay on the `0.9.x` line (`bun add burger-api@0.9.7`, `bun add -g @burger-api/cli@0.9.9`) until we cut a stable 1.0.0.**
+**`burger-api` and `@burger-api/cli` both ship `1.0.0-beta` today: our biggest release yet, and the first since `0.9.7` / `0.9.9` on npm. `bun add burger-api` and `bun add -g @burger-api/cli` install it by default. It's a full rewrite of the framework, not an incremental update, so please try it and [open an issue](https://github.com/isfhan/burger-api/issues) if anything breaks or feels wrong. Coming from `0.9.x`? See the `CHANGELOG` for breaking changes; the `0.9.x` line is still on npm (`burger-api@0.9.7`, `@burger-api/cli@0.9.9`).**
 
 {/* truncate */}
 
