@@ -15,7 +15,7 @@ interface RouteMeta {
 
 ## Available on every matched route
 
-`ctx.route` is set for static routes served through Bun's native router as well as for dynamic and wildcard routes resolved by the trie. For a static route, `path` and `pattern` are the same value.
+`ctx.route` is set for every matched route. On Bun, `serve()` registers every route (static, `:param`, wildcard) as a per-method native Bun route; the fetch handler path (Cloudflare, Deno, Vercel, Node) uses a fast radix matcher. For a static route, `path` and `pattern` are the same value.
 
 ## Uses
 

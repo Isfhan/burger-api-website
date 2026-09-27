@@ -118,7 +118,7 @@ export async function GET(ctx: BurgerContext) {
 ## Route Matching Priority
 
 :::tip Static Routes Have Highest Priority
-BurgerAPI uses a hybrid router (static paths via Bun's native router, dynamic and wildcard via a trie).
+BurgerAPI uses a hybrid router. On Bun, `serve()` registers every route (static, `:param`, wildcard) as a per-method native Bun route. The fetch handler path (Cloudflare, Deno, Vercel, Node) uses a fast radix matcher.
 
 - Static routes (e.g., `/products/featured`) are matched _before_ dynamic routes (`/products/[id]`).
 - Routes with more static segments are generally matched before routes with fewer.

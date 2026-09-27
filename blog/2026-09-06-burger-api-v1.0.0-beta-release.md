@@ -45,14 +45,10 @@ a real two-client WebSocket round-trip test).
 
 We'd rather list these than have you discover them:
 
-- **Pages (`src/pages/`) are Bun-only.** No page routing on Cloudflare
-  Workers, Vercel, Deno Deploy, or Node in this release. API routes are
-  fully portable across all of them; pages are not, yet.
-- **`burger-api add` / `list` / `skills install` need
-  `BURGER_API_BRANCH=feat/burger-api-v1`** set in your environment for now.
-  The default (`main`) still serves the pre-1.0 ecosystem catalog until it's
-  updated to match this release. `burger-api create` prints this as a note
-  on scaffold.
+- **Pages (`src/pages/`) are mostly Bun-only.** `serve()` on Bun covers
+  every page feature. On other runtimes, `toFetchHandler` serves function
+  pages and embedded assets; HTML-import pages stay Bun-only. API routes are
+  fully portable across all targets.
 
 ## Verification
 

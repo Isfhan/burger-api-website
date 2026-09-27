@@ -116,7 +116,11 @@ export const GET = defineRoute(GetSchema, (ctx) => {
 
 ## ctx.services
 
-Application services registered in `src/providers.ts`, typed via module augmentation. See [Configuration](/docs/core/configuration).
+Application services registered in `src/providers.ts`, typed via module augmentation. The services object is app-scoped, shared by every request, and frozen. Read from it, never assign to it; per-request data belongs in a [transform](/docs/hooks/global#transform) hook instead. See [Configuration](/docs/core/configuration).
+
+## ctx.ip
+
+The client socket address, resolved lazily on first read. It is never read from forwarded headers such as `X-Forwarded-For`: those are client-controlled. On Bun, `serve()` reads it from the server socket; [`@burger-api/node-server`](/docs/deployment/node) sets it from the Node socket; on plain `toFetchHandler` runtimes it is `undefined`. The [Rate Limiter](/docs/ecosystem/rate-limiter) hook uses it as the default client key.
 
 ## ctx.set
 

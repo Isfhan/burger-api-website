@@ -31,7 +31,7 @@ export const onRequest = [rateLimit()]; // 100 requests per minute per client
 - `handler`: custom response when the limit is exceeded. Defaults to `429 Too Many Requests`.
 - `skipFailedRequests`, `skipSuccessfulRequests`: which requests count against the limit.
 
-If no client identity is available (`ctx.ip` is `undefined` on WinterCG fetch entries), all such requests share one bucket and the hook warns once.
+If no client identity is available (`ctx.ip` is `undefined` on plain fetch-handler runtimes; `@burger-api/node-server` sets it from the Node socket), all such requests share one bucket and the hook warns once.
 
 The hook adds `X-RateLimit-Limit`, `X-RateLimit-Remaining`, and `X-RateLimit-Reset` headers, plus `Retry-After` when the limit is exceeded. The store is in-memory, so limits reset on restart and are per server instance.
 

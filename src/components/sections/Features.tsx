@@ -33,7 +33,7 @@ const features: Feature[] = [
     icon: Route,
     title: "Hybrid Router",
     description:
-      "A trie for dynamic routes plus Bun's native router for static paths. Each request uses the fastest matching strategy.",
+      "On Bun, serve() registers every route (static, :param, wildcard) as a per-method native Bun route. The fetch handler path (Cloudflare, Deno, Vercel, Node) uses a fast radix matcher.",
   },
   {
     icon: ShieldCheck,

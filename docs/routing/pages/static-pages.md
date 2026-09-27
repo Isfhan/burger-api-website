@@ -82,6 +82,10 @@ JSX templating, build the HTML string yourself (e.g. with a template
 function or a JSX-to-string helper) and pass it to `new Response(...)`; there
 is no built-in SSR renderer in 1.0.
 
+## Hooks and context
+
+Global and plugin `onRequest` hooks run for pages, assets, `/openapi.json`, and `/docs`, including in apps with no API routes. No other hook points run for pages. Dynamic (`.tsx`) handlers receive `ctx.services` and `ctx.ip`, like API handlers do; static `.html` files are served as-is.
+
 ## Related
 
 - [File-Based Routing](/docs/routing/file-based-routing)

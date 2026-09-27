@@ -50,7 +50,7 @@ Plugins are registered in `src/plugins.ts`. See [Ecosystem](/docs/ecosystem/intr
 
 ### provide(name, service)
 
-Registers an application service, created once at startup and injected into `ctx.services` for every request.
+Registers an application service, created once at startup and injected into `ctx.services` for every request. Services are frozen and shared across requests.
 
 ```ts
 app.provide("db", createDb());

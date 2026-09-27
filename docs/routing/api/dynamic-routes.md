@@ -198,7 +198,7 @@ export const GET = {
 ## Route Matching Priority
 
 :::tip Understanding Priority
-BurgerAPI uses a hybrid router (static paths via Bun's native router, dynamic and wildcard via a trie). Static routes are matched first, then dynamic, then wildcard.
+BurgerAPI uses a hybrid router. On Bun, `serve()` registers every route (static, `:param`, wildcard) as a per-method native Bun route. The fetch handler path (Cloudflare, Deno, Vercel, Node) uses a fast radix matcher. Static routes are matched first, then dynamic, then wildcard.
 :::
 
 ### Priority Example

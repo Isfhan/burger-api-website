@@ -46,7 +46,7 @@ export const transform: GlobalHooks["transform"] = {
 };
 ```
 
-Built-in fields are reserved and cannot be replaced: `params`, `wildcardParams`, `query`, `cookies`, `headers`, `method`, `url`, `signal`, `body`, `bodyUsed`, `validated`, `set`, `route`, `request`, `services`, `config`, `env`, `executionCtx`, and internal `_`-prefixed keys. A transform entry with a reserved name is dropped (with a warning in debug mode). Global transform entries apply before route-level entries, so a route can override a global value.
+Built-in fields are reserved and cannot be replaced: `params`, `wildcardParams`, `query`, `cookies`, `headers`, `method`, `url`, `signal`, `body`, `bodyUsed`, `validated`, `set`, `route`, `request`, `services`, `config`, `env`, `executionCtx`, `ip`, and internal `_`-prefixed keys. A transform entry with a reserved name is dropped (with a warning in debug mode). Global transform entries apply before route-level entries, so a route can override a global value.
 
 Use global hooks for logging, CORS, auth checks, or any logic that should run for all routes. See [Hook System](/docs/hooks/system) and [Ecosystem](/docs/ecosystem/introduction).
 

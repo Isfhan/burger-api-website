@@ -8,11 +8,11 @@ BurgerAPI is built to keep the request path fast and predictable. The speed come
 
 ## Hybrid router
 
-Static paths are served by Bun's native router, while dynamic and wildcard paths use a trie. Each request is matched on the strategy that fits it, so common static traffic is as fast as the runtime allows and expressive routes stay cheap to match.
+On Bun, `serve()` registers every route (static, `:param`, wildcard) as a per-method native Bun route. The fetch handler path (Cloudflare, Deno, Vercel, Node) uses a fast radix matcher. Each request is matched on the strategy that fits it, so common traffic is as fast as the runtime allows and expressive routes stay cheap to match.
 
 ## Native Bun routing
 
-By leaning on Bun's built-in HTTP router for static routes, BurgerAPI avoids a catch-all handler that would do the routing in our own code. This removes a layer of extra work for the most frequent kind of request.
+By leaning on Bun's built-in HTTP router, BurgerAPI avoids a catch-all handler that would do the routing in our own code. This removes a layer of extra work for the most frequent kind of request.
 
 ## Lazy query parsing
 

@@ -118,7 +118,7 @@ GET /api/files/documents/2024/report.pdf
 Understanding how BurgerAPI matches routes is important when combining different route types.
 
 :::tip Route Matching Order
-BurgerAPI uses a hybrid router (static paths via Bun's native router, dynamic and wildcard via a trie). Static routes are matched first, then dynamic, then wildcard, so more specific routes always win.
+BurgerAPI uses a hybrid router. On Bun, `serve()` registers every route (static, `:param`, wildcard) as a per-method native Bun route. The fetch handler path (Cloudflare, Deno, Vercel, Node) uses a fast radix matcher. Static routes are matched first, then dynamic, then wildcard, so more specific routes always win.
 :::
 
 ### Priority Examples
