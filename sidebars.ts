@@ -14,6 +14,7 @@ const sidebars: SidebarsConfig = {
         "getting-started/cli",
         "key-concepts",
         "javascript",
+        "migration",
       ],
     },
     {

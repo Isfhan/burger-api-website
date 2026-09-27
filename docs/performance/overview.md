@@ -4,7 +4,7 @@ sidebar_label: Overview
 
 # Performance
 
-BurgerAPI is built to keep the request path fast and predictable. The speed comes from a few clear design choices, not from small low-level tweaks. Measured results and raw reports live in [burger-api-benchmarks](https://github.com/isfhan/burger-api-benchmarks); an architectural summary is on the [Benchmarks](/docs/advanced/benchmarks) page.
+BurgerAPI is built to keep the request path fast and predictable. The speed comes from a few clear design choices, not from small low-level tweaks. Measured results and raw reports live in [burger-api-benchmarks](https://github.com/isfhan/buger-api-benchmarks); an architectural summary is on the [Benchmarks](/docs/advanced/benchmarks) page.
 
 ## Hybrid router
 

@@ -14,7 +14,7 @@ export function Performance() {
       <p className="max-w-2xl mx-auto text-center text-ink-muted leading-relaxed m-0">
         Measured numbers live in{" "}
         <a
-          href="https://github.com/isfhan/burger-api-benchmarks"
+          href="https://github.com/isfhan/buger-api-benchmarks"
           target="_blank"
           rel="noopener noreferrer"
           className="text-brand-primary no-underline hover:underline"
@@ -37,7 +37,7 @@ export function Performance() {
           />
         </Button>
         <Button
-          href="https://github.com/isfhan/burger-api-benchmarks"
+          href="https://github.com/isfhan/buger-api-benchmarks"
           variant="secondary"
         >
           <BarChart3 size={16} aria-hidden />

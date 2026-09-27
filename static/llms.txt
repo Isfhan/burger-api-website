@@ -15,6 +15,7 @@
 - [CLI Tool](https://burger-api.com/docs/getting-started/cli): The Burger API CLI creates, manages, and builds Burger API projects.
 - [Key Concepts](https://burger-api.com/docs/key-concepts): BurgerAPI is a Bun-first, WinterCG-compatible framework for APIs and web apps.
 - [JavaScript](https://burger-api.com/docs/javascript): JavaScript is a first-class citizen in BurgerAPI.
+- [Migrating from 0.9.x](https://burger-api.com/docs/migration): This guide is for apps running burger-api 0.9.x and @burger-api/cli 0.9.x.
 
 ### Core Concepts
 
