@@ -1,7 +1,6 @@
 ---
 sidebar_label: "Blog API"
 sidebar_position: 4
-sidebar: tutorialsSidebar
 ---
 
 # Tutorial 3: Blog API

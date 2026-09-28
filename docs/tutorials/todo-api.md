@@ -1,7 +1,6 @@
 ---
 sidebar_label: "Todo List API"
 sidebar_position: 3
-sidebar: tutorialsSidebar
 ---
 
 # Tutorial 2: Todo List API

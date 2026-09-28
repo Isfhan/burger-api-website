@@ -191,13 +191,6 @@ const sidebars: SidebarsConfig = {
       ],
     },
   ],
-
-  tutorialsSidebar: [
-    "tutorials/intro",
-    "tutorials/hello-world",
-    "tutorials/todo-api",
-    "tutorials/blog-api",
-  ],
 };
 
 export default sidebars;

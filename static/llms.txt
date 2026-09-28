@@ -144,10 +144,6 @@
 - [Benchmarks](https://burger-api.com/docs/advanced/benchmarks): BurgerAPI's performance work is architectural, not a hand-tuned hot loop: routes resolve through Bun's native route map first, fall back to a precompiled radix trie otherwise, each route's hook chain is flattened...
 - [Deployment](https://burger-api.com/docs/advanced/deployment): Deployment depends on your runtime.
 
-### Tutorials
-
-- [Tutorials Overview](https://burger-api.com/docs/tutorials/intro): Welcome to the BurgerAPI tutorials!
-
 ## Optional
 
 - [Full documentation for LLMs](https://burger-api.com/llms-full.txt)

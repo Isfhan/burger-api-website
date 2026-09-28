@@ -1,25 +1,49 @@
-# Website
+# BurgerAPI Website
 
-This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.
+Source for [burger-api.com](https://burger-api.com), the documentation site for BurgerAPI.
+Built with Docusaurus and Bun.
 
-### Installation
+## Requirements
 
-```
-$ bun
-```
+- Bun 1.3.0 or newer
 
-### Local Development
+## Setup
 
-```
-$ bun start
-```
-
-This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
-
-### Build
-
-```
-$ bun build
+```sh
+bun install
 ```
 
-This command generates static content into the `build` directory and can be served using any static contents hosting service.
+## Development
+
+```sh
+bun run start
+```
+
+Starts the dev server at http://localhost:3000. Most changes reload live.
+
+## Build
+
+```sh
+bun run build
+```
+
+Generates `static/llms.txt`, `static/llms-full.txt`, and `static/llms-small.txt`
+from `docs/`, then builds the static site into `build/`.
+
+To regenerate only the llms files:
+
+```sh
+bun run generate:llms
+```
+
+Never edit the llms files by hand.
+
+## Typecheck
+
+```sh
+bun run typecheck
+```
+
+## More
+
+See [AGENTS.md](./AGENTS.md) for documentation standards and architecture rules.

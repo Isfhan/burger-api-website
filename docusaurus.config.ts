@@ -12,6 +12,42 @@ const config: Config = {
     "A Bun-native API framework with file-based routing, a hybrid router, a shared request context, Zod validation, and automatic OpenAPI generation.",
   favicon: "img/favicon.ico",
 
+  headTags: [
+    {
+      tagName: "link",
+      attributes: {
+        rel: "apple-touch-icon",
+        sizes: "180x180",
+        href: "/img/apple-touch-icon.png",
+      },
+    },
+    {
+      tagName: "link",
+      attributes: {
+        rel: "icon",
+        type: "image/png",
+        sizes: "32x32",
+        href: "/img/favicon-32x32.png",
+      },
+    },
+    {
+      tagName: "link",
+      attributes: {
+        rel: "icon",
+        type: "image/png",
+        sizes: "16x16",
+        href: "/img/favicon-16x16.png",
+      },
+    },
+    {
+      tagName: "link",
+      attributes: {
+        rel: "manifest",
+        href: "/img/manifest.json",
+      },
+    },
+  ],
+
   // Set the production url of your site here
   url: "https://burger-api.com",
   // Set the /<baseUrl>/ pathname under which your site is served

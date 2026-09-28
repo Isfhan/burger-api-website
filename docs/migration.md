@@ -82,10 +82,10 @@ export async function GET(ctx: BurgerContext) {
 Before (`0.9.x`), middleware in `route.ts` did three different jobs in one shape:
 
 ```ts title="api/products/route.ts"
-import type { BurgerNext, BurgerRequest, Middleware } from "burger-api";
+import type { BurgerRequest, Middleware } from "burger-api";
 
 export const middleware: Middleware[] = [
-    (req: BurgerRequest): BurgerNext => {
+    (req: BurgerRequest) => {
         if (req.headers.get("x-admin") !== "true") {
             return Response.json({ error: "Forbidden" }, { status: 403 });
         }

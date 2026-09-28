@@ -27,7 +27,6 @@ const SMALL_DOC_IDS = [
 
 const SIDEBAR_ROOTS: Record<string, string> = {
   tutorialSidebar: "Overview",
-  tutorialsSidebar: "Tutorials",
 };
 
 interface Doc {

@@ -1,7 +1,6 @@
 ---
 sidebar_label: "Hello World API"
 sidebar_position: 2
-sidebar: tutorialsSidebar
 ---
 
 # Tutorial 1: Hello World API
