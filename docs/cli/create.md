@@ -8,7 +8,7 @@ sidebar_label: Create Command
 
 - Creates directory structure, config, and installs dependencies.
 - New projects get **`burger.build.ts`** at the root (apiDir, pageDir, apiPrefix, pagePrefix). Build-time only: runtime options go in `new Burger({...})`, `src/plugins.ts`, and route `config.ts`.
-- Always writes **`AGENTS.md`** (commands, layout, and framework rules for AI agents) and **`CLAUDE.md`** (`@AGENTS.md`), even with `--no-skills`.
+- Always writes **`AGENTS.md`** (commands, layout, and framework rules for AI agents) (Claude Code and other agents read it), even with `--no-skills`.
 - Prompts: API routes, API directory, API prefix, debug mode, Page routes, Page directory, Page prefix, AI agent skills.
 
 **Example:**

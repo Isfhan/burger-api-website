@@ -33,8 +33,8 @@ When you run `burger-api create`, you'll be asked:
 ```
 
 Answer Yes (default) and the skill is installed automatically. The new project
-also gets `AGENTS.md` (project rules for AI agents) and `CLAUDE.md`
-(`@AGENTS.md`), even if you skip skills.
+also gets `AGENTS.md` (project rules for AI agents, read by Claude Code and
+other agents), even if you skip skills.
 
 ### In an Existing Project
 

@@ -290,7 +290,7 @@ Scaffolds a new project with interactive prompts.
 
 - Creates the project structure and installs dependencies.
 - Writes `burger.build.ts` at the project root (apiDir, pageDir, apiPrefix, pagePrefix, debug). This file is build-time only.
-- Always writes `AGENTS.md` (project rules for AI agents) and `CLAUDE.md` (`@AGENTS.md`).
+- Always writes `AGENTS.md` (project rules for AI agents; Claude Code and other agents read it).
 - Generates the `dev`, `build`, and `start` scripts.
 - Options: `--lang ts|js` (default `ts`), `--yes` / `--defaults` (skip prompts), `--pages` (include `src/pages`), `--ws` (include file-based WebSocket routes), `--no-api` (skip API routes), `--api-dir <dir>`, `--api-prefix <prefix>`, `--no-skills`.
 
@@ -451,7 +451,6 @@ my-api/
 ├── .claude/
 │   └── skills/            # AI agent skills for Claude Code (optional)
 ├── AGENTS.md              # Project rules for AI agents
-├── CLAUDE.md              # Imports AGENTS.md for Claude Code
 ├── burger.build.ts        # Build-time config: apiDir, pageDir, apiPrefix, pagePrefix, debug
 ├── package.json
 └── tsconfig.json
