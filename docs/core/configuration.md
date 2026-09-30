@@ -119,6 +119,18 @@ export default {
 };
 ```
 
+### Per-method overrides
+
+The default export applies to every method. Add an uppercase method export to override it for that method only. The override is shallow-merged over the default, and method keys win:
+
+```typescript title="src/api/items/config.ts"
+export default { auth: false };
+
+export const POST = { auth: { required: true } };
+```
+
+Here GET stays public while POST requires a user. `ctx.config` for a request is the merged object for its method, so plugins and hooks keep reading `ctx.config.auth` unchanged. A `config.ts` with only a default export behaves exactly as before.
+
 Type your keys by augmenting `RouteConfig`, so `ctx.config` is typed wherever a hook or plugin reads it:
 
 ```typescript title="src/types.ts"

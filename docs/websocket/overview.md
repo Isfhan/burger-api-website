@@ -34,7 +34,7 @@ export function close(ws: BurgerWS, code: number, reason: string) {
 Sibling convention files work the same as API routes:
 
 - `hooks.ts`: `onOpen`, `onMessage`, `onClose` lifecycle hooks
-- `config.ts`: route options. Only `auth` is honored per route (`auth: false` still requires a valid handshake if the app-level `wsConfig({ auth })` requires one); transport options such as `maxPayloadLength` and `idleTimeout` are connection-level and are ignored with a warning when set per route. Set them globally with `burger.wsConfig({...})`.
+- `config.ts`: route options. Only `auth` is honored per route (`auth: false` still requires a valid handshake if the app-level `wsConfig({ auth })` requires one); transport options such as `maxPayloadLength` and `idleTimeout` are connection-level and are ignored with a warning when set per route. Set them globally with `burger.wsConfig({...})`. With an auth plugin registered, the plugin gates upgrades: a public WS route needs `auth: false` here, otherwise the plugin default-denies the connection.
 
 **2. Programmatic (production builds)**
 
@@ -70,7 +70,7 @@ TypeScript checks your WebSocket handlers before they run.
 
 The types you use (all from `burger-api`):
 
-- `BurgerWS`, the WebSocket object: `send`, `sendText`, `sendBinary`, `params`, `data`, `services`, `user`, `subscribe`/`unsubscribe`/`publish` (pub/sub, see below), `close`, `terminate`, `cork`, `remoteAddress`, `readyState`, `raw`
+- `BurgerWS`, the WebSocket object: `send`, `sendText`, `sendBinary`, `params`, `url`, `query`, `data`, `services`, `user`, `subscribe`/`unsubscribe`/`publish` (pub/sub, see below), `close`, `terminate`, `cork`, `remoteAddress`, `readyState`, `raw`
 - `WebSocketData`: the data on `ws.data`. You extend it (see below).
 - `WebSocketHandlers`: the shape of `open`, `message`, `close`, `drain`, `ping`, `pong`
 - `WebSocketHooks`: the shape of `onOpen`, `onMessage`, `onClose`
@@ -149,6 +149,19 @@ export function message(ws: BurgerWS, message: string | Buffer) {
 }
 ```
 
+### The upgrade URL
+
+Every socket exposes the upgrade request: `ws.url` (a `URL`) and `ws.query`
+(its `URLSearchParams`). Both parse lazily on first access and are cached for
+the life of the socket:
+
+```ts
+export function open(ws: BurgerWS) {
+    const token = ws.query.get("token");
+    console.log(`connected to ${ws.url.pathname}`);
+}
+```
+
 ## Pub/sub
 
 Every `BurgerWS` connection can subscribe to named topics and publish messages to every other connection subscribed to a topic. This is Bun's native pub/sub, exposed directly on `BurgerWS`, with no separate broker to run.
@@ -181,6 +194,21 @@ The full pub/sub surface on `BurgerWS`:
 - `publishBinary(topic: string, message: Buffer): void`: same as `publish`, narrowed to binary.
 
 A connection is automatically unsubscribed from every topic when it closes. You don't need to call `unsubscribe` yourself in `close`, though doing so is harmless.
+
+### Publishing from HTTP handlers
+
+An HTTP handler can fan out to topic subscribers with `ctx.publish(topic, message)`:
+
+```ts
+import type { BurgerContext } from "burger-api";
+
+export async function POST(ctx: BurgerContext) {
+    const sent = ctx.publish("room:general", "server announcement");
+    return Response.json({ sent });
+}
+```
+
+Unlike `ws.publish`, delivery is not tied to a publishing socket, so `ctx.publish` reaches every subscriber, including a subscribed sender. It returns Bun's send status (bytes sent, `0` when dropped, `-1` on backpressure). It is Bun-only: on Node, Cloudflare Workers, and Deno, and before `app.serve()` has started the server, it throws a clear error. Inside a WS handler, keep using `ws.publish` when you want to skip the sender.
 
 **`subscribe`/`publish` are Bun-only**: they wrap Bun's native topic pub/sub directly, and throw on every other runtime (Node, Cloudflare Workers, Deno). The portable equivalent is a plain connection registry, fanning out manually:
 

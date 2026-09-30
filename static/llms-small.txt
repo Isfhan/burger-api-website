@@ -290,6 +290,7 @@ Scaffolds a new project with interactive prompts.
 
 - Creates the project structure and installs dependencies.
 - Writes `burger.build.ts` at the project root (apiDir, pageDir, apiPrefix, pagePrefix, debug). This file is build-time only.
+- TypeScript projects also get `src/types.ts`, a commented module-augmentation example for app-wide type extensions.
 - Always writes `AGENTS.md` (project rules for AI agents; Claude Code and other agents read it).
 - Generates the `dev`, `build`, and `start` scripts.
 - Options: `--lang ts|js` (default `ts`), `--yes` / `--defaults` (skip prompts), `--pages` (include `src/pages`), `--ws` (include file-based WebSocket routes), `--no-api` (skip API routes), `--api-dir <dir>`, `--api-prefix <prefix>`, `--no-skills`.
@@ -443,6 +444,7 @@ my-api/
 │   ├── plugins.ts         # Register plugins
 │   ├── providers.ts       # Declare shared services
 │   ├── openapi.config.ts  # OpenAPI metadata and docs UI
+│   ├── types.ts           # App-wide type extensions (TypeScript projects)
 │   └── api/               # File-based API routes
 ├── ecosystem/
 │   └── hooks/             # Installed hooks (plugins dir is created by `burger-api add`)

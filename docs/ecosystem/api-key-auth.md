@@ -55,6 +55,26 @@ export default { auth: { required: true } };
 
 A missing or invalid key produces `401 Unauthorized`. The framework core stays auth-agnostic; authentication is always a plugin.
 
+### Per method
+
+The default export applies route-wide; an uppercase method export overrides it for that method (shallow merge, method wins):
+
+```ts title="api/items/config.ts"
+export default { auth: false };
+
+export const POST = { auth: { required: true } };
+```
+
+Here GET stays public while POST needs a valid key.
+
+### WebSocket routes
+
+The plugin gates WebSocket upgrades too. A public WS route needs `auth: false` in its `config.ts`, or the upgrade is rejected:
+
+```ts title="src/websocket/chat/config.ts"
+export default { auth: false };
+```
+
 Check the package README in `ecosystem/plugins/api-key/` for the full option list and security notes.
 
 ## Related

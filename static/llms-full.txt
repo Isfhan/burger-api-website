@@ -290,6 +290,7 @@ Scaffolds a new project with interactive prompts.
 
 - Creates the project structure and installs dependencies.
 - Writes `burger.build.ts` at the project root (apiDir, pageDir, apiPrefix, pagePrefix, debug). This file is build-time only.
+- TypeScript projects also get `src/types.ts`, a commented module-augmentation example for app-wide type extensions.
 - Always writes `AGENTS.md` (project rules for AI agents; Claude Code and other agents read it).
 - Generates the `dev`, `build`, and `start` scripts.
 - Options: `--lang ts|js` (default `ts`), `--yes` / `--defaults` (skip prompts), `--pages` (include `src/pages`), `--ws` (include file-based WebSocket routes), `--no-api` (skip API routes), `--api-dir <dir>`, `--api-prefix <prefix>`, `--no-skills`.
@@ -443,6 +444,7 @@ my-api/
 │   ├── plugins.ts         # Register plugins
 │   ├── providers.ts       # Declare shared services
 │   ├── openapi.config.ts  # OpenAPI metadata and docs UI
+│   ├── types.ts           # App-wide type extensions (TypeScript projects)
 │   └── api/               # File-based API routes
 ├── ecosystem/
 │   └── hooks/             # Installed hooks (plugins dir is created by `burger-api add`)
@@ -1612,6 +1614,18 @@ export default {
   responseValidation: "enforce",
 };
 ```
+
+### Per-method overrides
+
+The default export applies to every method. Add an uppercase method export to override it for that method only. The override is shallow-merged over the default, and method keys win:
+
+```typescript title="src/api/items/config.ts"
+export default { auth: false };
+
+export const POST = { auth: { required: true } };
+```
+
+Here GET stays public while POST requires a user. `ctx.config` for a request is the merged object for its method, so plugins and hooks keep reading `ctx.config.auth` unchanged. A `config.ts` with only a default export behaves exactly as before.
 
 Type your keys by augmenting `RouteConfig`, so `ctx.config` is typed wherever a hook or plugin reads it:
 
@@ -5039,7 +5053,7 @@ export function close(ws: BurgerWS, code: number, reason: string) {
 Sibling convention files work the same as API routes:
 
 - `hooks.ts`: `onOpen`, `onMessage`, `onClose` lifecycle hooks
-- `config.ts`: route options. Only `auth` is honored per route (`auth: false` still requires a valid handshake if the app-level `wsConfig({ auth })` requires one); transport options such as `maxPayloadLength` and `idleTimeout` are connection-level and are ignored with a warning when set per route. Set them globally with `burger.wsConfig({...})`.
+- `config.ts`: route options. Only `auth` is honored per route (`auth: false` still requires a valid handshake if the app-level `wsConfig({ auth })` requires one); transport options such as `maxPayloadLength` and `idleTimeout` are connection-level and are ignored with a warning when set per route. Set them globally with `burger.wsConfig({...})`. With an auth plugin registered, the plugin gates upgrades: a public WS route needs `auth: false` here, otherwise the plugin default-denies the connection.
 
 **2. Programmatic (production builds)**
 
@@ -5075,7 +5089,7 @@ TypeScript checks your WebSocket handlers before they run.
 
 The types you use (all from `burger-api`):
 
-- `BurgerWS`, the WebSocket object: `send`, `sendText`, `sendBinary`, `params`, `data`, `services`, `user`, `subscribe`/`unsubscribe`/`publish` (pub/sub, see below), `close`, `terminate`, `cork`, `remoteAddress`, `readyState`, `raw`
+- `BurgerWS`, the WebSocket object: `send`, `sendText`, `sendBinary`, `params`, `url`, `query`, `data`, `services`, `user`, `subscribe`/`unsubscribe`/`publish` (pub/sub, see below), `close`, `terminate`, `cork`, `remoteAddress`, `readyState`, `raw`
 - `WebSocketData`: the data on `ws.data`. You extend it (see below).
 - `WebSocketHandlers`: the shape of `open`, `message`, `close`, `drain`, `ping`, `pong`
 - `WebSocketHooks`: the shape of `onOpen`, `onMessage`, `onClose`
@@ -5154,6 +5168,19 @@ export function message(ws: BurgerWS, message: string | Buffer) {
 }
 ```
 
+### The upgrade URL
+
+Every socket exposes the upgrade request: `ws.url` (a `URL`) and `ws.query`
+(its `URLSearchParams`). Both parse lazily on first access and are cached for
+the life of the socket:
+
+```ts
+export function open(ws: BurgerWS) {
+    const token = ws.query.get("token");
+    console.log(`connected to ${ws.url.pathname}`);
+}
+```
+
 ## Pub/sub
 
 Every `BurgerWS` connection can subscribe to named topics and publish messages to every other connection subscribed to a topic. This is Bun's native pub/sub, exposed directly on `BurgerWS`, with no separate broker to run.
@@ -5186,6 +5213,21 @@ The full pub/sub surface on `BurgerWS`:
 - `publishBinary(topic: string, message: Buffer): void`: same as `publish`, narrowed to binary.
 
 A connection is automatically unsubscribed from every topic when it closes. You don't need to call `unsubscribe` yourself in `close`, though doing so is harmless.
+
+### Publishing from HTTP handlers
+
+An HTTP handler can fan out to topic subscribers with `ctx.publish(topic, message)`:
+
+```ts
+import type { BurgerContext } from "burger-api";
+
+export async function POST(ctx: BurgerContext) {
+    const sent = ctx.publish("room:general", "server announcement");
+    return Response.json({ sent });
+}
+```
+
+Unlike `ws.publish`, delivery is not tied to a publishing socket, so `ctx.publish` reaches every subscriber, including a subscribed sender. It returns Bun's send status (bytes sent, `0` when dropped, `-1` on backpressure). It is Bun-only: on Node, Cloudflare Workers, and Deno, and before `app.serve()` has started the server, it throws a clear error. Inside a WS handler, keep using `ws.publish` when you want to skip the sender.
 
 **`subscribe`/`publish` are Bun-only**: they wrap Bun's native topic pub/sub directly, and throw on every other runtime (Node, Cloudflare Workers, Deno). The portable equivalent is a plain connection registry, fanning out manually:
 
@@ -7943,6 +7985,26 @@ export default { auth: { required: true, roles: ["admin"] } };
 
 Invalid or missing tokens produce `401 Unauthorized`; insufficient permissions produce `403 Forbidden`. The framework core stays auth-agnostic; authentication is always a plugin.
 
+### Per method
+
+The default export applies route-wide; an uppercase method export overrides it for that method (shallow merge, method wins):
+
+```ts title="api/items/config.ts"
+export default { auth: false };
+
+export const POST = { auth: { required: true } };
+```
+
+Here GET stays public while POST needs a valid token.
+
+### WebSocket routes
+
+The plugin gates WebSocket upgrades too. A public WS route needs `auth: false` in its `config.ts`, or the upgrade is rejected:
+
+```ts title="src/websocket/chat/config.ts"
+export default { auth: false };
+```
+
 Check the package README in `ecosystem/plugins/jwt-auth/` for the full option list and security notes.
 
 ## Related
@@ -8005,6 +8067,26 @@ export default { auth: { required: true } };
 ```
 
 A missing or invalid key produces `401 Unauthorized`. The framework core stays auth-agnostic; authentication is always a plugin.
+
+### Per method
+
+The default export applies route-wide; an uppercase method export overrides it for that method (shallow merge, method wins):
+
+```ts title="api/items/config.ts"
+export default { auth: false };
+
+export const POST = { auth: { required: true } };
+```
+
+Here GET stays public while POST needs a valid key.
+
+### WebSocket routes
+
+The plugin gates WebSocket upgrades too. A public WS route needs `auth: false` in its `config.ts`, or the upgrade is rejected:
+
+```ts title="src/websocket/chat/config.ts"
+export default { auth: false };
+```
 
 Check the package README in `ecosystem/plugins/api-key/` for the full option list and security notes.
 
@@ -8130,6 +8212,7 @@ url: 'https://burger-api.com/docs/cli/create'
 
 - Creates directory structure, config, and installs dependencies.
 - New projects get **`burger.build.ts`** at the root (apiDir, pageDir, apiPrefix, pagePrefix). Build-time only: runtime options go in `new Burger({...})`, `src/plugins.ts`, and route `config.ts`.
+- TypeScript projects also get **`src/types.ts`**, a commented module-augmentation example for app-wide type extensions.
 - Always writes **`AGENTS.md`** (commands, layout, and framework rules for AI agents) (Claude Code and other agents read it), even with `--no-skills`.
 - Prompts: API routes, API directory, API prefix, debug mode, Page routes, Page directory, Page prefix, AI agent skills.
 
@@ -8460,6 +8543,14 @@ A project's declared target is baked into the build as
 `ServerOptions.runtimeTarget`, and a WebSocket route on a target that can't
 support it (`vercel`) fails the build immediately with a clear error. See
 [Compatibility](https://burger-api.com/docs/compatibility) for what each target supports.
+
+## Bun-only code on portable targets
+
+Building for `cloudflare`, `deno`, `vercel`, or `node` prints one warning
+listing any user source file that imports `bun`/`bun:*` or uses the `Bun.`
+global. Those runtimes have no Bun globals, so the code would fail in the
+platform's bundler later. The build still succeeds; remove the Bun-only code
+before deploying.
 
 Platform config files (`wrangler.toml`, `deno.json`, `vercel.json`) are
 scaffolded automatically **only when one doesn't already exist**; an
@@ -10159,7 +10250,7 @@ JavaScript projects get the same checks through JSDoc hints (`/** @type {import(
 
 ## Augmentation: add your own types
 
-Some BurgerAPI types start empty. You fill them with your own types. This is called **augmentation**. Put this block in `src/types.ts` (the single home for app-wide type extensions):
+Some BurgerAPI types start empty. You fill them with your own types. This is called **augmentation**. Put this block in `src/types.ts` (the single home for app-wide type extensions). `burger-api create` scaffolds that file for TypeScript projects with a commented example, so the home already exists:
 
 ```ts
 import type { Database, Logger, User } from "./my-types";

@@ -132,7 +132,7 @@ JavaScript projects get the same checks through JSDoc hints (`/** @type {import(
 
 ## Augmentation: add your own types
 
-Some BurgerAPI types start empty. You fill them with your own types. This is called **augmentation**. Put this block in `src/types.ts` (the single home for app-wide type extensions):
+Some BurgerAPI types start empty. You fill them with your own types. This is called **augmentation**. Put this block in `src/types.ts` (the single home for app-wide type extensions). `burger-api create` scaffolds that file for TypeScript projects with a commented example, so the home already exists:
 
 ```ts
 import type { Database, Logger, User } from "./my-types";

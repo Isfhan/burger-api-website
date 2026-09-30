@@ -65,6 +65,14 @@ A project's declared target is baked into the build as
 support it (`vercel`) fails the build immediately with a clear error. See
 [Compatibility](/docs/compatibility) for what each target supports.
 
+## Bun-only code on portable targets
+
+Building for `cloudflare`, `deno`, `vercel`, or `node` prints one warning
+listing any user source file that imports `bun`/`bun:*` or uses the `Bun.`
+global. Those runtimes have no Bun globals, so the code would fail in the
+platform's bundler later. The build still succeeds; remove the Bun-only code
+before deploying.
+
 Platform config files (`wrangler.toml`, `deno.json`, `vercel.json`) are
 scaffolded automatically **only when one doesn't already exist**; an
 existing config is never overwritten.
