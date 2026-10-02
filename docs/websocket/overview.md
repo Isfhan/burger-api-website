@@ -149,6 +149,37 @@ export function message(ws: BurgerWS, message: string | Buffer) {
 }
 ```
 
+Wildcard routes expose `ws.wildcardParams` (decoded segments, empty for
+non-wildcard routes), mirroring `ctx.wildcardParams` on HTTP. `ws.params["*"]`
+still carries the raw remainder:
+
+```ts
+// /files/[...]  →  connect to /files/a/b%20c
+export function open(ws: BurgerWS) {
+    ws.send(JSON.stringify(ws.wildcardParams)); // ["a", "b c"]
+}
+```
+
+Route matching uses the same specificity as HTTP: static beats param beats
+wildcard, and a param route with an earlier static segment wins.
+
+Messages for one socket are delivered in order, and only after the `open`
+handler has finished. An `async open` (for example, loading the user) runs
+before the first `message` handler.
+
+### The authenticated user
+
+`ws.user` is typed through the same augmentation point as `ctx.user`, so auth
+plugins type both at once:
+
+```ts
+declare module "burger-api" {
+    interface BurgerAuthUser {
+        tenantId?: string;
+    }
+}
+```
+
 ### The upgrade URL
 
 Every socket exposes the upgrade request: `ws.url` (a `URL`) and `ws.query`

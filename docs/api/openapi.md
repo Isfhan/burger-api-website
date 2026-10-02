@@ -4,7 +4,7 @@ sidebar_label: 'OpenAPI / Swagger'
 
 # OpenAPI & Swagger
 
-BurgerAPI automatically generates an [OpenAPI 3.0](https://swagger.io/specification/) specification from your routes and Zod schemas, and serves an interactive docs UI. The spec is derived from the code, so it stays in sync as your API changes.
+BurgerAPI automatically generates an [OpenAPI 3.1](https://spec.openapis.org/oas/v3.1.0) specification from your routes and Zod schemas, and serves an interactive docs UI. OpenAPI 3.1 matches the JSON Schema dialect Zod emits, so generated schemas stay accurate. The spec is derived from the code, so it stays in sync as your API changes.
 
 ## Document metadata
 
@@ -70,6 +70,14 @@ export const GET = {
 ```
 
 The `openapi` type allows `summary`, `description`, `tags`, `operationId`, `deprecated`, `responses`, and `externalDocs` per HTTP method. BurgerAPI infers request and response schemas from your `schema.ts` where possible.
+
+## Generated details
+
+- A `requestBody` is marked `required` only when the body schema rejects `undefined`. `z.object({ ... }).optional()` produces `required: false`.
+- Wildcard routes document the wildcard as a `{wildcard}` path parameter that may contain slashes.
+- Param names may contain `-` and `_`; `[user-id]` documents as `{user-id}`.
+- Standard Schema libraries (Valibot, ArkType, ...) emit parameters by name. With a `mapJsonSchema` converter the parameter gets the real schema; without one it gets `schema: {}` instead of being dropped.
+- `docsAuth` accepts any UTF-8 username/password, including accented characters.
 
 ## Docs UI providers
 

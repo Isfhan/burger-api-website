@@ -20,6 +20,8 @@ export async function GET(ctx: BurgerContext) {
 
 - `ctx.set.status` overrides the response status only when defined.
 - `ctx.set.headers` is merged over the response's existing headers; explicit values win.
+- `ctx.set.headers` is always defined (created on first access), so `ctx.set.headers["x-id"] = value` never throws.
+- An array value appends each entry. A scalar `set-cookie` is appended, so a cookie set by the handler and one set through `ctx.set` both survive.
 
 ## mapResponse
 
@@ -42,6 +44,7 @@ At the single exit point of the request flow, `applySet` merges `ctx.set` into t
 
 - If `ctx.set` is empty (no status, no headers), the original `Response` is returned unchanged, with no extra memory used.
 - It runs uniformly on handler responses and on the auto-`HEAD` responses derived from `GET`.
+- It also runs for 404, 405, auto-`OPTIONS`, errors rendered by `onError`, pages, assets, `/docs` and `/openapi.json`. A `ctx.set` mutation from an `onRequest` hook applies to those responses too.
 
 ## Why a single merge step
 

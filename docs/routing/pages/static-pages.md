@@ -84,7 +84,13 @@ is no built-in SSR renderer in 1.0.
 
 ## Hooks and context
 
-Global and plugin `onRequest` hooks run for pages, assets, `/openapi.json`, and `/docs`, including in apps with no API routes. No other hook points run for pages. Dynamic (`.tsx`) handlers receive `ctx.services` and `ctx.ip`, like API handlers do; static `.html` files are served as-is.
+Global and plugin `onRequest` hooks run for pages, assets, `/openapi.json`, and `/docs`, including in apps with no API routes. Global and plugin `afterRoute` / `mapResponse` hooks also run for these responses, so CORS or security headers are added there too.
+
+Every `.tsx` page handler receives the same `BurgerContext` an API route handler does, so `ctx.services`, `ctx.query`, `ctx.set` and the `Request` surface all work. Static `.html` files are served as-is.
+
+## Methods
+
+Pages, assets, `/docs` and `/openapi.json` answer `GET` and `HEAD` only. Every other method gets `405 Method Not Allowed` with `Allow: GET, HEAD` and an RFC 9457 problem body.
 
 ## Related
 

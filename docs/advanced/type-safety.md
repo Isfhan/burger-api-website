@@ -146,18 +146,34 @@ declare module "burger-api" {
 
     // Custom properties you set in transform hooks
     interface BurgerContext {
-        user: User;
         tenant: string;
+    }
+
+    // Fields of the authenticated user, shared by ctx.user and ws.user.
+    // Auth plugins merge their fields here too.
+    interface BurgerAuthUser {
+        userId?: string;
     }
 
     // Types for ws.data in WebSocket handlers
     interface WebSocketData {
-        userId?: string;
+        room?: string;
     }
 }
 ```
 
-After this block, `ctx.services.db`, `ctx.user`, and `ws.data.userId` are all typed.
+After this block, `ctx.services.db`, `ctx.tenant`, `ctx.user?.userId`, and `ws.data.room` are all typed. Augment `BurgerAuthUser` (not `BurgerContext.user`) for user fields: that keeps every auth plugin and your own types on one shape.
+
+`RouteConfig` ships with `responseValidation` typed (`"off" | "dev" | "enforce"`); augment it for your own route options:
+
+```ts
+declare module "burger-api" {
+    interface RouteConfig {
+        auth?: boolean | { required?: boolean; roles?: string[] };
+        cache?: number;
+    }
+}
+```
 
 ## What is NOT typed
 

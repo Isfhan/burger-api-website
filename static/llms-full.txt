@@ -1811,6 +1811,10 @@ These shapes nest freely by folder depth. See [Nested Routes](https://burger-api
 
 Every route also gets automatic method handling: `HEAD` is derived from `GET`, and `OPTIONS` answers `204` with an `Allow` header, without extra handlers. See [Automatic HEAD](https://burger-api.com/docs/routing/api/static-routes#automatic-head) and [Automatic OPTIONS](https://burger-api.com/docs/routing/api/static-routes#automatic-options).
 
+## Route collisions
+
+API routes, pages, assets, `/openapi.json` and `/docs` share one URL space. If two of them resolve to the same path (for example an API route `/docs` and the docs UI), the app fails at startup with an error naming both sources. Rename one of them. Two dynamic page files at the same level (`[a].tsx` and `[b].tsx`) fail the same way.
+
 For full API details and examples, see [Static API Routes](https://burger-api.com/docs/routing/api/static-routes) (API) and [Static Pages](https://burger-api.com/docs/routing/pages/static-pages) (pages).
 
 ## Types for this feature
@@ -1974,11 +1978,11 @@ Beyond path matching, BurgerAPI applies consistent behavior to every route:
 
 ### Method Not Allowed (405)
 
-When a known route is requested with a method it does not support, BurgerAPI returns `405` and includes an `Allow` header listing the supported methods:
+When a known route is requested with a method it does not support, BurgerAPI returns `405` and includes an `Allow` header listing the supported methods. The list always includes `HEAD` when `GET` exists and always includes `OPTIONS`, so it is never empty:
 
 ```
 GET    /api/products   -> 200
-DELETE /api/products   -> 405  Allow: GET, POST
+DELETE /api/products   -> 405  Allow: GET, HEAD, POST, OPTIONS
 ```
 
 ### Automatic HEAD
@@ -3766,7 +3770,13 @@ is no built-in SSR renderer in 1.0.
 
 ## Hooks and context
 
-Global and plugin `onRequest` hooks run for pages, assets, `/openapi.json`, and `/docs`, including in apps with no API routes. No other hook points run for pages. Dynamic (`.tsx`) handlers receive `ctx.services` and `ctx.ip`, like API handlers do; static `.html` files are served as-is.
+Global and plugin `onRequest` hooks run for pages, assets, `/openapi.json`, and `/docs`, including in apps with no API routes. Global and plugin `afterRoute` / `mapResponse` hooks also run for these responses, so CORS or security headers are added there too.
+
+Every `.tsx` page handler receives the same `BurgerContext` an API route handler does, so `ctx.services`, `ctx.query`, `ctx.set` and the `Request` surface all work. Static `.html` files are served as-is.
+
+## Methods
+
+Pages, assets, `/docs` and `/openapi.json` answer `GET` and `HEAD` only. Every other method gets `405 Method Not Allowed` with `Allow: GET, HEAD` and an RFC 9457 problem body.
 
 ## Related
 
@@ -4096,6 +4106,8 @@ url: 'https://burger-api.com/docs/hooks/after'
 # After Hooks
 
 `afterRoute` runs after the route handler returns. `mapResponse` runs before the response is sent. Both use the response-transform contract: return a function from the hook. The function receives the handler's `Response` and returns a new `Response` (e.g. with added or modified headers).
+
+Global (`src/hooks.ts`) and plugin `afterRoute` / `mapResponse` hooks run for **every** response the app produces: matched routes, 404s, 405s, auto-`OPTIONS`, errors rendered by `onError`, pages, assets, `/docs` and `/openapi.json`. Route-level response hooks run only for their matched route.
 
 ```ts
 // src/hooks.ts
@@ -4621,6 +4633,15 @@ export const GET = {
 ```
 
 Now `?n=42&b=true` validates cleanly and `ctx.validated.query` holds `{ n: 42, b: true }` (real number and boolean).
+
+To enable coercion for every method in one `schema.ts`, export a top-level flag instead:
+
+```typescript title="api/stats/schema.ts"
+export const coerce = true;
+
+export const GET = { query: z.object({ n: z.number() }) };
+export const POST = { query: z.object({ page: z.number() }) };
+```
 
 ## What gets converted
 
@@ -5193,6 +5214,37 @@ export function message(ws: BurgerWS, message: string | Buffer) {
 }
 ```
 
+Wildcard routes expose `ws.wildcardParams` (decoded segments, empty for
+non-wildcard routes), mirroring `ctx.wildcardParams` on HTTP. `ws.params["*"]`
+still carries the raw remainder:
+
+```ts
+// /files/[...]  ->  connect to /files/a/b%20c
+export function open(ws: BurgerWS) {
+    ws.send(JSON.stringify(ws.wildcardParams)); // ["a", "b c"]
+}
+```
+
+Route matching uses the same specificity as HTTP: static beats param beats
+wildcard, and a param route with an earlier static segment wins.
+
+Messages for one socket are delivered in order, and only after the `open`
+handler has finished. An `async open` (for example, loading the user) runs
+before the first `message` handler.
+
+### The authenticated user
+
+`ws.user` is typed through the same augmentation point as `ctx.user`, so auth
+plugins type both at once:
+
+```ts
+declare module "burger-api" {
+    interface BurgerAuthUser {
+        tenantId?: string;
+    }
+}
+```
+
 ### The upgrade URL
 
 Every socket exposes the upgrade request: `ws.url` (a `URL`) and `ws.query`
@@ -5407,7 +5459,7 @@ url: 'https://burger-api.com/docs/api/openapi'
 
 # OpenAPI & Swagger
 
-BurgerAPI automatically generates an [OpenAPI 3.0](https://swagger.io/specification/) specification from your routes and Zod schemas, and serves an interactive docs UI. The spec is derived from the code, so it stays in sync as your API changes.
+BurgerAPI automatically generates an [OpenAPI 3.1](https://spec.openapis.org/oas/v3.1.0) specification from your routes and Zod schemas, and serves an interactive docs UI. OpenAPI 3.1 matches the JSON Schema dialect Zod emits, so generated schemas stay accurate. The spec is derived from the code, so it stays in sync as your API changes.
 
 ## Document metadata
 
@@ -5473,6 +5525,14 @@ export const GET = {
 ```
 
 The `openapi` type allows `summary`, `description`, `tags`, `operationId`, `deprecated`, `responses`, and `externalDocs` per HTTP method. BurgerAPI infers request and response schemas from your `schema.ts` where possible.
+
+## Generated details
+
+- A `requestBody` is marked `required` only when the body schema rejects `undefined`. `z.object({ ... }).optional()` produces `required: false`.
+- Wildcard routes document the wildcard as a `{wildcard}` path parameter that may contain slashes.
+- Param names may contain `-` and `_`; `[user-id]` documents as `{user-id}`.
+- Standard Schema libraries (Valibot, ArkType, ...) emit parameters by name. With a `mapJsonSchema` converter the parameter gets the real schema; without one it gets `schema: {}` instead of being dropped.
+- `docsAuth` accepts any UTF-8 username/password, including accented characters.
 
 ## Docs UI providers
 
@@ -9673,7 +9733,7 @@ url: 'https://burger-api.com/docs/api/context-set'
 ```ts
 interface ContextSet {
   status?: number;
-  headers?: Record<string, string> | Headers;
+  headers?: Record<string, string | string[]> | Headers;
 }
 ```
 
@@ -9686,8 +9746,14 @@ interface ContextSet {
 
 ### headers
 
-- **Type:** `Record<string, string> | Headers | undefined`
-- **Description:** Headers to merge over the response's existing headers. Explicitly set values win.
+- **Type:** `Record<string, string | string[]> | Headers | undefined`
+- **Description:** Headers to merge over the response's existing headers. Explicitly set values win. An array value appends every entry instead of replacing. A scalar `set-cookie` is appended too, so cookies from the handler and from `ctx.set` both survive.
+
+`ctx.set.headers` is always defined: it is created on first access, so this never throws:
+
+```ts
+ctx.set.headers["x-request-id"] = ctx.headers.get("x-request-id") ?? "none";
+```
 
 ## Example
 
@@ -10048,6 +10114,8 @@ export async function GET(ctx: BurgerContext) {
 
 - `ctx.set.status` overrides the response status only when defined.
 - `ctx.set.headers` is merged over the response's existing headers; explicit values win.
+- `ctx.set.headers` is always defined (created on first access), so `ctx.set.headers["x-id"] = value` never throws.
+- An array value appends each entry. A scalar `set-cookie` is appended, so a cookie set by the handler and one set through `ctx.set` both survive.
 
 ## mapResponse
 
@@ -10070,6 +10138,7 @@ At the single exit point of the request flow, `applySet` merges `ctx.set` into t
 
 - If `ctx.set` is empty (no status, no headers), the original `Response` is returned unchanged, with no extra memory used.
 - It runs uniformly on handler responses and on the auto-`HEAD` responses derived from `GET`.
+- It also runs for 404, 405, auto-`OPTIONS`, errors rendered by `onError`, pages, assets, `/docs` and `/openapi.json`. A `ctx.set` mutation from an `onRequest` hook applies to those responses too.
 
 ## Why a single merge step
 
@@ -10341,18 +10410,34 @@ declare module "burger-api" {
 
     // Custom properties you set in transform hooks
     interface BurgerContext {
-        user: User;
         tenant: string;
+    }
+
+    // Fields of the authenticated user, shared by ctx.user and ws.user.
+    // Auth plugins merge their fields here too.
+    interface BurgerAuthUser {
+        userId?: string;
     }
 
     // Types for ws.data in WebSocket handlers
     interface WebSocketData {
-        userId?: string;
+        room?: string;
     }
 }
 ```
 
-After this block, `ctx.services.db`, `ctx.user`, and `ws.data.userId` are all typed.
+After this block, `ctx.services.db`, `ctx.tenant`, `ctx.user?.userId`, and `ws.data.room` are all typed. Augment `BurgerAuthUser` (not `BurgerContext.user`) for user fields: that keeps every auth plugin and your own types on one shape.
+
+`RouteConfig` ships with `responseValidation` typed (`"off" | "dev" | "enforce"`); augment it for your own route options:
+
+```ts
+declare module "burger-api" {
+    interface RouteConfig {
+        auth?: boolean | { required?: boolean; roles?: string[] };
+        cache?: number;
+    }
+}
+```
 
 ## What is NOT typed
 

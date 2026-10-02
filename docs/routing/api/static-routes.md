@@ -132,11 +132,11 @@ Beyond path matching, BurgerAPI applies consistent behavior to every route:
 
 ### Method Not Allowed (405)
 
-When a known route is requested with a method it does not support, BurgerAPI returns `405` and includes an `Allow` header listing the supported methods:
+When a known route is requested with a method it does not support, BurgerAPI returns `405` and includes an `Allow` header listing the supported methods. The list always includes `HEAD` when `GET` exists and always includes `OPTIONS`, so it is never empty:
 
 ```
 GET    /api/products   → 200
-DELETE /api/products   → 405  Allow: GET, POST
+DELETE /api/products   → 405  Allow: GET, HEAD, POST, OPTIONS
 ```
 
 ### Automatic HEAD

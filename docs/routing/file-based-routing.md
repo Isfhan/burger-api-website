@@ -28,6 +28,10 @@ These shapes nest freely by folder depth. See [Nested Routes](/docs/routing/api/
 
 Every route also gets automatic method handling: `HEAD` is derived from `GET`, and `OPTIONS` answers `204` with an `Allow` header, without extra handlers. See [Automatic HEAD](/docs/routing/api/static-routes#automatic-head) and [Automatic OPTIONS](/docs/routing/api/static-routes#automatic-options).
 
+## Route collisions
+
+API routes, pages, assets, `/openapi.json` and `/docs` share one URL space. If two of them resolve to the same path (for example an API route `/docs` and the docs UI), the app fails at startup with an error naming both sources. Rename one of them. Two dynamic page files at the same level (`[a].tsx` and `[b].tsx`) fail the same way.
+
 For full API details and examples, see [Static API Routes](/docs/routing/api/static-routes) (API) and [Static Pages](/docs/routing/pages/static-pages) (pages).
 
 ## Types for this feature

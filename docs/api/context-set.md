@@ -9,7 +9,7 @@ sidebar_label: ContextSet
 ```ts
 interface ContextSet {
   status?: number;
-  headers?: Record<string, string> | Headers;
+  headers?: Record<string, string | string[]> | Headers;
 }
 ```
 
@@ -22,8 +22,14 @@ interface ContextSet {
 
 ### headers
 
-- **Type:** `Record<string, string> | Headers | undefined`
-- **Description:** Headers to merge over the response's existing headers. Explicitly set values win.
+- **Type:** `Record<string, string | string[]> | Headers | undefined`
+- **Description:** Headers to merge over the response's existing headers. Explicitly set values win. An array value appends every entry instead of replacing. A scalar `set-cookie` is appended too, so cookies from the handler and from `ctx.set` both survive.
+
+`ctx.set.headers` is always defined: it is created on first access, so this never throws:
+
+```ts
+ctx.set.headers["x-request-id"] = ctx.headers.get("x-request-id") ?? "none";
+```
 
 ## Example
 

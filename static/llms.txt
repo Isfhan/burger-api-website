@@ -69,7 +69,7 @@
 
 ### OpenAPI & Documentation
 
-- [OpenAPI / Swagger](https://burger-api.com/docs/api/openapi): BurgerAPI automatically generates an OpenAPI 3.0 specification from your routes and Zod schemas, and serves an interactive docs UI.
+- [OpenAPI / Swagger](https://burger-api.com/docs/api/openapi): BurgerAPI automatically generates an OpenAPI 3.1 specification from your routes and Zod schemas, and serves an interactive docs UI.
 
 ### Examples
 

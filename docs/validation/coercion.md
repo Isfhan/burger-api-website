@@ -34,6 +34,15 @@ export const GET = {
 
 Now `?n=42&b=true` validates cleanly and `ctx.validated.query` holds `{ n: 42, b: true }` (real number and boolean).
 
+To enable coercion for every method in one `schema.ts`, export a top-level flag instead:
+
+```typescript title="api/stats/schema.ts"
+export const coerce = true;
+
+export const GET = { query: z.object({ n: z.number() }) };
+export const POST = { query: z.object({ page: z.number() }) };
+```
+
 ## What gets converted
 
 | Schema field | Converts to |
