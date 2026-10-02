@@ -13,6 +13,7 @@ sidebar_label: Build Command
 - `--compile`: Compile to a standalone executable instead of bundling (`--target=bun` only, see [Build Exec](/docs/cli/build-exec))
 - `--minify`: Minify output (`bun`/`node` targets only)
 - `--sourcemap <type>`: `inline`, `linked`, or `none` (`bun`/`node` targets only)
+- `--no-bun-check`: Skip the Bun-only API warning for portable targets
 
 **Default `--outfile` per target:**
 
@@ -68,10 +69,15 @@ support it (`vercel`) fails the build immediately with a clear error. See
 ## Bun-only code on portable targets
 
 Building for `cloudflare`, `deno`, `vercel`, or `node` prints one warning
-listing any user source file that imports `bun`/`bun:*` or uses the `Bun.`
-global. Those runtimes have no Bun globals, so the code would fail in the
-platform's bundler later. The build still succeeds; remove the Bun-only code
-before deploying.
+listing any user source file that imports `bun`/`bun:*`, uses the `Bun.`
+global, or calls Bun's pub/sub (`ctx.publish()`, `ws.publish()`,
+`server.publish()`). Those runtimes have no Bun globals, so the code would
+fail in the platform's bundler later. The build still succeeds; remove the
+Bun-only code before deploying, or pass `--no-bun-check` to skip the scan.
+
+Text in comments and string literals is ignored, and a file that
+feature-checks Bun with `typeof Bun` is portable for its `Bun.` uses (but not
+for its `bun`/`bun:*` imports or publish calls).
 
 Platform config files (`wrangler.toml`, `deno.json`, `vercel.json`) are
 scaffolded automatically **only when one doesn't already exist**; an

@@ -57,11 +57,11 @@ declare module "burger-api" {
 
 ## Signing tokens
 
-The plugin verifies tokens. `signJwt` signs them, so a login route can create a token the plugin accepts. It uses Web Crypto only, always sets `iat`, and sets `exp` when `expiresIn` (seconds) is given.
+The plugin verifies tokens. `signJwt` signs them, so a login route can create a token the plugin accepts. It uses Web Crypto only and always sets `iat`. Pass `expiresIn` (seconds) to set `exp`: the plugin requires an `exp` claim by default (`requireExpiration: true`), so a token signed without one is rejected with 401.
 
 ```ts title="api/login/route.ts"
 import type { BurgerContext } from "burger-api";
-import { signJwt } from "../ecosystem/plugins/jwt-auth/jwt-auth";
+import { signJwt } from "../../../ecosystem/plugins/jwt-auth/jwt-auth";
 
 export async function POST(ctx: BurgerContext) {
   // Check the credentials first, then sign.
