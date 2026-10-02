@@ -9,6 +9,8 @@ sidebar_label: Add Command
 - Downloads the package from GitHub.
 - Hooks install to `ecosystem/hooks/`; plugins install to `ecosystem/plugins/`.
 - Prints usage instructions after install: compose hooks in `src/hooks.ts`, register plugins in `src/plugins.ts`.
+- `--force` replaces an existing install without a prompt, also with no TTY. Without it, a non-TTY run skips the package and tells you to pass `--force`.
+- `--local` reads the local checkout instead of GitHub. See [Local mode](/docs/getting-started/cli#local-mode).
 
 **Examples:**
 
@@ -16,6 +18,7 @@ sidebar_label: Add Command
 burger-api add cors
 burger-api add cors logger rate-limiter
 burger-api add jwt-auth api-key
+burger-api add cors --force
 ```
 
 List available hooks and plugins with `burger-api list`. See [CLI Tool](/docs/getting-started/cli) and [Ecosystem](/docs/ecosystem/introduction).

@@ -25,6 +25,11 @@ directory, then copies the folder to `.claude/skills/<name>/`. The name
 defaults to `burger-api`, and the files are downloaded from the framework's
 `ecosystem/skills/<name>/` directory on GitHub.
 
+`--force` replaces an existing install without a prompt, also with no TTY.
+Without it, a non-TTY run exits with a message pointing at `--force`.
+`--local` copies the skill from the local checkout instead. See
+[Local mode](/docs/getting-started/cli#local-mode).
+
 ### `burger-api skills list`
 
 List locally installed skills:
@@ -44,7 +49,7 @@ Browse all skills available from the ecosystem:
 burger-api skills available
 ```
 
-Fetches the remote catalog from GitHub and shows descriptions parsed from each skill's `SKILL.md`. Install one with `burger-api skills install <name>`.
+Fetches the remote catalog from GitHub and shows descriptions parsed from each skill's `SKILL.md`. Install one with `burger-api skills install <name>`. `--local` lists the skills in the local checkout instead.
 
 ## Output Structure
 

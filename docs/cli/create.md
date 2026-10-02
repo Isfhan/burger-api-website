@@ -11,6 +11,7 @@ sidebar_label: Create Command
 - TypeScript projects also get **`src/types.ts`**, a commented module-augmentation example for app-wide type extensions.
 - Always writes **`AGENTS.md`** (commands, layout, and framework rules for AI agents) (Claude Code and other agents read it), even with `--no-skills`.
 - Prompts: API routes, API directory, API prefix, debug mode, Page routes, Page directory, Page prefix, AI agent skills.
+- `--local` scaffolds `link:burger-api` and `link:@burger-api/cli` from your checkout instead of npm. See [Local mode](/docs/getting-started/cli#local-mode).
 
 **Example:**
 

@@ -41,7 +41,7 @@ Scaffolds a new project with interactive prompts.
 - TypeScript projects also get `src/types.ts`, a commented module-augmentation example for app-wide type extensions.
 - Always writes `AGENTS.md` (project rules for AI agents; Claude Code and other agents read it).
 - Generates the `dev`, `build`, and `start` scripts.
-- Options: `--lang ts|js` (default `ts`), `--yes` / `--defaults` (skip prompts), `--pages` (include `src/pages`), `--ws` (include file-based WebSocket routes), `--no-api` (skip API routes), `--api-dir <dir>`, `--api-prefix <prefix>`, `--no-skills`.
+- Options: `--lang ts|js` (default `ts`), `--yes` / `--defaults` (skip prompts), `--pages` (include `src/pages`), `--ws` (include file-based WebSocket routes), `--no-api` (skip API routes), `--api-dir <dir>`, `--api-prefix <prefix>`, `--no-skills`, `--local` (use the local checkout instead of npm/GitHub).
 
 ```bash
 burger-api create my-api
@@ -57,6 +57,7 @@ Shows available hooks and plugins from the official ecosystem.
 
 ```bash
 burger-api list
+burger-api list --local
 ```
 
 See [List Command](/docs/cli/list).
@@ -68,11 +69,14 @@ Installs hooks and plugins from the ecosystem into your project.
 - Hooks install to `ecosystem/hooks/` and compose in `src/hooks.ts`.
 - Plugins install to `ecosystem/plugins/` and register in `src/plugins.ts`.
 - Prints usage instructions after install.
+- `--force` replaces an existing install without a prompt (also with no TTY). Without it, a non-TTY run skips the package and points at `--force`.
+- `--local` reads the local checkout instead of GitHub.
 
 ```bash
 burger-api add cors
 burger-api add cors logger rate-limiter
 burger-api add jwt-auth api-key
+burger-api add cors --force
 ```
 
 See [Add Command](/docs/cli/add) and [Ecosystem](/docs/ecosystem/introduction).
@@ -168,17 +172,37 @@ See [Doctor Command](/docs/cli/doctor).
 
 Manages AI agent skills for agentic IDEs.
 
-- `skills install [name]`: Install a skill (defaults to `burger-api`) to `.agents/skills/<name>/` and `.claude/skills/<name>/`.
+- `skills install [name]`: Install a skill (defaults to `burger-api`) to `.agents/skills/<name>/` and `.claude/skills/<name>/`. `--force` replaces an existing install without a prompt (also with no TTY); `--local` copies from the local checkout.
 - `skills list`: Show locally installed skills, once each, with their folders.
-- `skills available`: Browse the remote catalog.
+- `skills available`: Browse the remote catalog (`--local` lists the checkout instead).
 
 ```bash
 burger-api skills install
 burger-api skills list
 burger-api skills available
+burger-api skills install burger-api --force
 ```
 
 See [Skills Command](/docs/cli/skills).
+
+## Local mode
+
+Working on BurgerAPI itself? Pass `--local` on `create`, `add`, `list`, or
+`skills install|available`, or set `BURGER_API_LOCAL=1` (also accepts `true`)
+for the whole shell. The CLI then reads hooks, plugins, and skills from the
+checkout it runs from instead of npm/GitHub, and `create --local` writes
+`link:burger-api` plus `link:@burger-api/cli`.
+
+Run the CLI from the checkout and register the packages once:
+
+```bash
+cd burger-api/packages/burger-api && bun link
+cd burger-api/packages/cli && bun link
+```
+
+Local mode never reads or writes the ecosystem cache. If the CLI is not running
+from a checkout, or the links are missing, the command fails with the exact
+`bun link` commands to run. It never silently falls back to the network.
 
 ## Project structure
 
@@ -230,7 +254,8 @@ my-api/
 
 - `GITHUB_TOKEN`: token sent to the GitHub API when fetching the ecosystem catalog for `add`, `list`, and `skills`. Setting it raises the unauthenticated rate limit; the CLI prints a hint when GitHub answers `403`.
 - `BURGER_API_BRANCH`: overrides the GitHub branch the CLI reads ecosystem content from. Defaults to `main` on stable CLI releases, and to the matching prerelease branch (for example `feat/burger-api-v1`) on beta/RC builds.
-- `BURGER_API_CACHE_DIR`: overrides the ecosystem catalog cache directory. Defaults to `~/.burger-api/cache/`, with a four-hour TTL. A stale cache is used with a warning when a live refresh fails.
+- `BURGER_API_CACHE_DIR`: overrides the ecosystem catalog cache directory. Defaults to `~/.burger-api/cache/`, with a four-hour TTL. A stale cache is used with a warning when a live refresh fails. Local mode ignores this cache.
+- `BURGER_API_LOCAL`: set to `1` or `true` to turn on [local mode](#local-mode) for the shell. `--local` on a command wins over this variable.
 
 ## Troubleshooting
 

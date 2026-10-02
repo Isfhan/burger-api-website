@@ -55,6 +55,26 @@ declare module "burger-api" {
 }
 ```
 
+## Signing tokens
+
+The plugin verifies tokens. `signJwt` signs them, so a login route can create a token the plugin accepts. It uses Web Crypto only, always sets `iat`, and sets `exp` when `expiresIn` (seconds) is given.
+
+```ts title="api/login/route.ts"
+import type { BurgerContext } from "burger-api";
+import { signJwt } from "../ecosystem/plugins/jwt-auth/jwt-auth";
+
+export async function POST(ctx: BurgerContext) {
+  // Check the credentials first, then sign.
+  const token = await signJwt(
+    { sub: "user-123", roles: ["admin"] },
+    { secret: process.env.JWT_SECRET!, expiresIn: 3600 }
+  );
+  return Response.json({ token });
+}
+```
+
+Use the same `secret` and `algorithm` (default `HS256`) the plugin is configured with. For asymmetric algorithms, pass `privateKey` instead of `secret`; the plugin verifies with the matching `publicKey`. HMAC secrets must be at least 32 bytes, the same minimum the plugin enforces.
+
 ## Route configuration
 
 The plugin integrates with route `config.ts`. Open routes opt out with `auth: false`; protected routes require auth and optionally roles:
