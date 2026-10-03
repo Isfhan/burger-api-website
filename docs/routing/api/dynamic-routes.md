@@ -4,7 +4,7 @@ sidebar_label: "Dynamic Routes"
 
 # Dynamic Routes
 
-Dynamic routes allow you to capture values from the URL and use them in your route handlers. They're perfect for RESTful APIs where you need to work with specific resources identified by IDs or slugs.
+Dynamic routes capture values from the URL and make them available in your route handlers. Use them for RESTful APIs where resources are identified by IDs or slugs.
 
 ## What Are Dynamic Routes?
 
@@ -517,5 +517,5 @@ Now that you understand dynamic routes, explore other routing patterns:
 - **[Route Groups](./route-groups.md)** - Organize without affecting URLs
 - **[Wildcard Routes](./wildcard-routes.md)** - Handle complex nested paths
 
-Dynamic routes are essential for RESTful APIs. They let you build flexible endpoints that work with any resource identifier, making your API scalable and maintainable.
+Dynamic routes let you build endpoints that work with any resource identifier.
 

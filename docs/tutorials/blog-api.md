@@ -42,7 +42,7 @@ burger-api create blog-api
 cd blog-api
 ```
 
-The `burger-api create` command scaffolds an entry file and a `burger.build.ts` that define your `apiDir`, `pageDir`, and route prefixes. We'll hook our blog API into that setup.
+The `burger-api create` command scaffolds an entry file and a `burger.build.ts` that define your `apiDir` and route prefixes (plus `pageDir` when pages are enabled). We'll hook our blog API into that setup.
 
 For more details, see [Configuration](../core/configuration.md), [Server Options](../core/server-options.md), and the [CLI Tool](../getting-started/cli.md).
 
@@ -788,7 +788,7 @@ This will produce:
 
 - `.build/bundle/app.js`
 
-Pass `--target=node|cloudflare|deno|vercel` to build for a different platform. See [Deployment](../deployment/bun.md) and [Compatibility](../compatibility.md) for what each one supports.
+Pass `--target=node|cloudflare|deno|vercel` to build for a different platform. Each target writes to its own path (for example `.build/cloudflare/index.ts`, or `api/index.ts` for Vercel). See [Build Command](../cli/build.md), [Deployment](../deployment/bun.md), and [Compatibility](../compatibility.md) for what each one supports.
 
 To build a standalone executable:
 
@@ -817,9 +817,11 @@ blog-api/
 │   ├── openapi.config.ts               # OpenAPI metadata
 │   ├── hooks.ts                        # Global hooks (logging)
 │   ├── plugins.ts                      # Auth plugin registration
+│   ├── providers.ts                    # Services (from the scaffold)
 │   ├── database.ts                     # SQLite database layer
 │   ├── types.ts                        # TypeScript interfaces
 │   └── api/
+│       ├── route.ts                    # Sample route from the scaffold (GET /api)
 │       └── posts/
 │           ├── route.ts                # GET, POST /api/posts
 │           ├── schema.ts               # Validation for /api/posts

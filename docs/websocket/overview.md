@@ -34,9 +34,9 @@ export function close(ws: BurgerWS, code: number, reason: string) {
 Sibling convention files work the same as API routes:
 
 - `hooks.ts`: `onOpen`, `onMessage`, `onClose` lifecycle hooks
-- `config.ts`: route options. Only `auth` is honored per route (`auth: false` still requires a valid handshake if the app-level `wsConfig({ auth })` requires one); transport options such as `maxPayloadLength` and `idleTimeout` are connection-level and are ignored with a warning when set per route. Set them globally with `burger.wsConfig({...})`. With an auth plugin registered, the plugin gates upgrades: a public WS route needs `auth: false` here, otherwise the plugin default-denies the connection.
+- `config.ts`: route options. Only `auth` is honored per route: `auth: false` disables auth for that route, even when the app-level `wsConfig({ auth })` requires it; `auth: { roles: [...] }` merges with the app-level `auth.required`. Transport options such as `maxPayloadLength` and `idleTimeout` are connection-level and are ignored with a warning when set per route. Set them globally with `burger.wsConfig({...})`. With an auth plugin registered, the plugin gates upgrades: a public WS route needs `auth: false` here, otherwise the plugin default-denies the connection.
 
-**2. Programmatic (production builds)**
+**2. Programmatic**
 
 Register routes and connection options directly on the app:
 
@@ -345,8 +345,7 @@ deno serve --port 8000 .build/deno/index.ts
 Vercel Functions have no persistent-connection model to upgrade a request
 into, since there's no runtime primitive to bridge to, unlike Node (which at least
 has `node:http`'s `'upgrade'` event). `burger-api build --target=vercel`
-**fails at build time** if the project has any WebSocket routes, rather than
-shipping a build that would 501 on every real connection attempt:
+**fails at build time** if the project has any WebSocket routes, rather than shipping a build that would 501 on every real connection attempt. The error looks like this:
 
 ```
 --target=vercel does not support WebSocket routes, but 1 were found under

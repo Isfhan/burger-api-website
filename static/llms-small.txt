@@ -6,7 +6,7 @@ url: 'https://burger-api.com/docs/'
 
 BurgerAPI is a Bun-first, WinterCG-compatible framework for building modern APIs with file-based routing, end-to-end type safety, and a clear project structure. TypeScript and JavaScript are both first-class: the same conventions work with `.ts`, `.js`, and `.mjs` route files, and JavaScript projects get full JSDoc type-checking.
 
-`burger-api` and `@burger-api/cli` ship `1.0.0-beta` by default. It's our biggest release yet: a full rewrite with many new features, so please try it and [open an issue](https://github.com/isfhan/burger-api/issues) if anything breaks or feels wrong. [Coming from `0.9.x`?](https://burger-api.com/docs/migration) The guide covers every breaking change, and the [beta release notes](https://burger-api.com/blog/burger-api-v1.0.0-beta-release) cover what is new. The `0.9.x` line is still on npm (`burger-api@0.9.7`, `@burger-api/cli@0.9.9`).
+`burger-api` and `@burger-api/cli` ship `1.0.0-beta` by default. It is a full rewrite, so please try it and [open an issue](https://github.com/isfhan/burger-api/issues) if anything breaks or feels wrong. [Coming from `0.9.x`?](https://burger-api.com/docs/migration) The guide covers every breaking change, and the [beta release notes](https://burger-api.com/blog/burger-api-v1.0.0-beta-release) cover what is new. The `0.9.x` line is still on npm (`burger-api@0.9.7`, `@burger-api/cli@0.9.9`).
 
 ### What BurgerAPI is built around
 
@@ -65,12 +65,11 @@ Full install options (standalone executable, manual setup): [Installation](https
 
 This is the short version. For every install method, see [Installation](https://burger-api.com/docs/getting-started/installation).
 
-1. **Install the CLI** (if you have Bun) or use **bunx** without installing:
+1. **Install the CLI** (if you have Bun), or run it with **bunx** without installing:
 
     ```bash
     bun add -g @burger-api/cli
-    # or, no install needed:
-    bunx @burger-api/cli create my-app
+    # no install needed: bunx @burger-api/cli <command>
     ```
 
 2. **Create a project, enter it, and start the dev server:**
@@ -162,6 +161,16 @@ bunx @burger-api/cli create my-project
   irm https://burger-api.com/install.ps1 | iex
   ```
 
+#### Option 3: Download a binary from GitHub Releases
+
+1. Download the executable for your platform from [GitHub Releases](https://github.com/isfhan/burger-api/releases/latest).
+2. Add the downloaded file to your `PATH`.
+3. On Linux and macOS, make it executable:
+
+   ```bash
+   chmod +x burger-api
+   ```
+
 ### Create your project
 
 Once installed, you can create a new project by running:
@@ -240,9 +249,9 @@ If you prefer not to use the CLI, you can set up a project manually using standa
 
 ## Ready to Go!
 
-That's it! You now have a Bun project set up with BurgerAPI installed.
+You now have a Bun project set up with BurgerAPI installed.
 
-Next, you might want to check out the [Configuration](https://burger-api.com/docs/core/configuration) guide to see how to create your first BurgerAPI instance.
+Next, see the [Configuration](https://burger-api.com/docs/core/configuration) guide to learn how a BurgerAPI instance is configured.
 
 ## Related
 
@@ -289,10 +298,10 @@ See [Quick Start](https://burger-api.com/docs/quick-start) for the full walkthro
 Scaffolds a new project with interactive prompts.
 
 - Creates the project structure and installs dependencies.
-- Writes `burger.build.ts` at the project root (apiDir, pageDir, apiPrefix, pagePrefix, debug). This file is build-time only.
+- Writes `burger.build.ts` at the project root (the dirs and prefixes for the features you enabled, plus `debug`). This file is build-time only.
 - TypeScript projects also get `src/types.ts`, a commented module-augmentation example for app-wide type extensions.
 - Always writes `AGENTS.md` (project rules for AI agents; Claude Code and other agents read it).
-- Generates the `dev`, `build`, and `start` scripts.
+- Generates the `dev`, `build`, `start`, and `typecheck` scripts.
 - Options: `--lang ts|js` (default `ts`), `--yes` / `--defaults` (skip prompts), `--pages` (include `src/pages`), `--ws` (include file-based WebSocket routes), `--no-api` (skip API routes), `--api-dir <dir>`, `--api-prefix <prefix>`, `--no-skills`, `--local` (use the local checkout instead of npm/GitHub).
 
 ```bash
@@ -337,7 +346,7 @@ See [Add Command](https://burger-api.com/docs/cli/add) and [Ecosystem](https://b
 
 Starts the development server with hot reload. The server restarts when you change files.
 
-- Options: `-p, --port <port>` (default `4000`), `-f, --file <file>` (default `src/index.ts`).
+- Options: `-p, --port <port>` (default `$PORT`, else `4000`), `-f, --file <file>` (default `src/index.ts`, `src/index.js`, or `src/index.mjs`).
 
 ```bash
 burger-api dev
@@ -345,11 +354,12 @@ burger-api dev
 
 `bun run dev` runs the same command through the project's `dev` script.
 
-### `burger-api build <file>`
+### `burger-api build [file]`
 
 Builds your project for a deployment target. Routes are discovered at build time (via `burger.build.ts` or conventions) and compiled ahead of time (AOT), so production never depends on the filesystem.
 
-- Options: `--target <platform>` (`bun` default, `node`, `cloudflare`, `deno`, `vercel`), `--outfile <path>` (default depends on `--target`), `--compile` (standalone executable, `bun` target only), `--minify`, `--sourcemap <type>`.
+- The entry file is optional: `burger-api build` uses `src/index.ts`, `src/index.js`, or `src/index.mjs` when no file is given.
+- Options: `--target <platform>` (`bun` default, `node`, `cloudflare`, `deno`, `vercel`), `--outfile <path>` (default depends on `--target`), `--compile` (standalone executable, `bun` target only), `--no-bytecode` (`--compile` only), `--minify`, `--sourcemap <type>`, `--no-bun-check`.
 
 ```bash
 burger-api build src/index.ts --target=cloudflare
@@ -363,9 +373,9 @@ See [Build Command](https://burger-api.com/docs/cli/build) and [Compatibility](h
 
 ### `burger-api start`
 
-Runs the production server (no hot reload) for a **Bun** build. Run `burger-api build` first. For other targets, run the build's own output directly: `node dist/server.js` (Node), `wrangler dev`/`deploy` (Cloudflare), `deno serve` (Deno), `vercel dev`/`--prod` (Vercel). See [Deployment](https://burger-api.com/docs/deployment/bun).
+Runs the production server (no hot reload) for a **Bun** build. Run `burger-api build` first. For other targets, run the build's own output directly: `node .build/bundle/app.js` (Node, the default output), `wrangler dev`/`deploy` (Cloudflare), `deno serve` (Deno), `vercel dev`/`--prod` (Vercel). See [Deployment](https://burger-api.com/docs/deployment/bun).
 
-- Options: `-p, --port <port>` (default `4000`), `-f, --file <file>`.
+- Options: `-p, --port <port>` (default `$PORT`, else `4000`), `-f, --file <file>` (default `.build/bundle/app.js` when it exists, else `src/index.ts`, `src/index.js`, or `src/index.mjs`).
 
 ```bash
 burger-api start
@@ -373,7 +383,7 @@ burger-api start
 
 `bun run start` runs the same command through the project's `start` script.
 
-### `burger-api build:exec <file>`
+### `burger-api build:exec [file]`
 
 Compiles your project into a standalone executable that runs without Bun installed.
 
@@ -439,11 +449,12 @@ See [Skills Command](https://burger-api.com/docs/cli/skills).
 
 ## Local mode
 
-Working on BurgerAPI itself? Pass `--local` on `create`, `add`, `list`, or
-`skills install|available`, or set `BURGER_API_LOCAL=1` (also accepts `true`)
-for the whole shell. The CLI then reads hooks, plugins, and skills from the
-checkout it runs from instead of npm/GitHub, and `create --local` writes
-`link:burger-api` plus `link:@burger-api/cli`.
+Working on BurgerAPI itself? Pass `--local` on `create`, `add`, `list`,
+`skills install|available`, `generate hook`, or `generate plugin`, or set
+`BURGER_API_LOCAL=1` (also accepts `true`) for the whole shell. The CLI then
+reads hooks, plugins, and skills from the checkout it runs from instead of
+npm/GitHub, and `create --local` writes `link:burger-api` plus
+`link:@burger-api/cli`.
 
 Run the CLI from the checkout and register the packages once:
 
@@ -470,16 +481,15 @@ my-api/
 │   ├── openapi.config.ts  # OpenAPI metadata and docs UI
 │   ├── types.ts           # App-wide type extensions (TypeScript projects)
 │   └── api/               # File-based API routes
-├── ecosystem/
-│   └── hooks/             # Installed hooks (plugins dir is created by `burger-api add`)
+├── ecosystem/             # Hooks and plugins installed with `burger-api add`
 ├── .agents/
 │   └── skills/            # AI agent skills (optional)
 ├── .claude/
 │   └── skills/            # AI agent skills for Claude Code (optional)
 ├── AGENTS.md              # Project rules for AI agents
-├── burger.build.ts        # Build-time config: apiDir, pageDir, apiPrefix, pagePrefix, debug
+├── burger.build.ts        # Build-time config: dirs/prefixes for enabled features (apiDir, pageDir, wsDir) plus debug; pageDir/pagePrefix only with pages
 ├── package.json
-└── tsconfig.json
+└── tsconfig.json          # jsconfig.json in a JavaScript project
 ```
 
 ## Common workflows
@@ -499,7 +509,7 @@ my-api/
 ### Build for production
 
 1. `burger-api build src/index.ts --target=<platform>`: `bun` (default), `node`, `cloudflare`, `deno`, or `vercel`.
-2. Run it: `burger-api start` (Bun), `node dist/server.js` (Node), or hand off to the platform's own tool: `wrangler dev`/`deploy`, `deno serve`, `vercel dev`/`--prod`.
+2. Run it: `burger-api start` (Bun), `node .build/bundle/app.js` (Node default output), or hand off to the platform's own tool: `wrangler dev`/`deploy`, `deno serve`, `vercel dev`/`--prod`.
 3. `burger-api build src/index.ts --compile --outfile=my-app` for a standalone Bun binary (or `burger-api build:exec src/index.ts --target bun-linux-x64` for a specific OS/arch).
 
 ## Environment variables
@@ -546,7 +556,8 @@ See [File-Based Routing](https://burger-api.com/docs/routing/file-based-routing)
 ## Burger instance and configuration
 
 You create one **`Burger`** instance with runtime options (`apiDir`,
-`apiPrefix`, validation settings, OpenAPI metadata). Build-time concerns
+`apiPrefix`, validation settings, and fallback OpenAPI metadata such as
+`title`). Build-time concerns
 (dirs, prefixes, debug) live in **`burger.build.ts`** and are used by the CLI
 only. For WinterCG deployments you pass pre-built **`apiRoutes`** instead of
 directories.
@@ -594,7 +605,7 @@ See [Zod Validation](https://burger-api.com/docs/validation/zod), [Schema Defini
 
 ## OpenAPI
 
-BurgerAPI can **generate an OpenAPI 3.0 specification** from your routes and
+BurgerAPI can **generate an OpenAPI 3.1 specification** from your routes and
 schemas and serve an interactive docs UI.
 
 See [OpenAPI & Swagger](https://burger-api.com/docs/api/openapi).
@@ -660,7 +671,7 @@ BurgerAPI uses a **hook-based request lifecycle**. Six named stages with clear j
 **Hooks** control when code runs on a request.  
 **Plugins** extend the application (and may register hooks). Keep them separate.
 
-## Six hooks (vision)
+## Six hooks
 
 | Hook | When |
 |------|------|
@@ -676,7 +687,7 @@ onRequest -> Routing -> transform -> Validation -> beforeRoute
   -> Handler -> afterRoute -> mapResponse
 ```
 
-Errors thrown after routing (validation, `beforeRoute`, handler, `afterRoute`, `mapResponse`) jump to `onError`. Errors thrown in `onRequest`, and requests that match no route, are rendered directly without running `onError`.
+Errors thrown after routing (validation, `beforeRoute`, handler, `afterRoute`, `mapResponse`) jump to `onError`. Errors thrown in `onRequest` also run through the global, plugin and framework `onError` hooks. A request that matches no route is rendered directly (404) without running `onError`.
 
 ## Scopes
 
@@ -818,7 +829,7 @@ function usesLimit(limit: Query["limit"]) { /* ... */ }
 
 ```ts
 export async function GET(ctx: BurgerContext) {
-    ctx.validated.query.limit; // ❌ Property 'limit' does not exist (untyped)
+    ctx.validated.query.limit; // ❌ 'validated' is possibly undefined and 'query' is unknown
 }
 ```
 
@@ -894,7 +905,7 @@ The raw request body stream (`ReadableStream | null`), delegated from `ctx.reque
 
 ## ctx.json() and ctx.text()
 
-Read the request body as JSON or text. These delegate to the underlying request:
+Read the request body as JSON or text. The body is read once and cached on `ctx`, so `ctx.json()`, `ctx.text()` and `ctx.arrayBuffer()` can be called after validation read the stream:
 
 ```ts
 export async function POST(ctx: BurgerContext) {
@@ -922,12 +933,12 @@ The matched route's identity:
 
 ```ts
 export async function GET(ctx: BurgerContext) {
-  // ctx.route.pattern === "/api/users/:id" (includes apiPrefix)
-  return Response.json({ pattern: ctx.route.pattern });
+  // ctx.route?.pattern === "/api/users/:id" (includes apiPrefix)
+  return Response.json({ pattern: ctx.route?.pattern });
 }
 ```
 
-Present on every matched route, including static routes. See [Route Metadata](https://burger-api.com/docs/api/route-metadata).
+The route is always set in a matched handler, but the type is `RouteMeta | undefined`, so use optional chaining. See [Route Metadata](https://burger-api.com/docs/api/route-metadata).
 
 ## ctx.validated
 
@@ -1023,7 +1034,7 @@ export async function GET(ctx: BurgerContext) {
 }
 ```
 
-- `ctx.set.status` overrides the response status only when defined.
+- `ctx.set.status` overrides the response status only when defined, and never replaces an error status (`400` or higher). Errors stay errors.
 - `ctx.set.headers` is merged over the response's existing headers; explicit values win.
 - `ctx.set.headers` is always defined (created on first access), so `ctx.set.headers["x-id"] = value` never throws.
 - An array value appends each entry. A scalar `set-cookie` is appended, so a cookie set by the handler and one set through `ctx.set` both survive.

@@ -37,7 +37,7 @@ bun add @burger-api/node-server
 | `globalMiddleware` in `new Burger({...})` | `src/hooks.ts` | Export global hooks from `src/hooks.ts` (`onRequest` for work before routing, `beforeRoute` for work after validation). |
 | CLI `burger-api serve` | `burger-api dev` | Rename the command and any package script that calls it. |
 | `burger.config.ts` | `burger.build.ts` | Rename the file. It is build-time only; `dev` and `start` read `new Burger({...})`. `doctor` flags the old name as an error. |
-| `use.ts` / `webhook.ts` route files | `config.ts` | These convention files were reserved and never executed in 0.9.x. Route options now live in `config.ts`. |
+| `use.ts` / `webhook.ts` route files | `config.ts` | These convention files were removed. Route options now live in `config.ts`. |
 | Auth factories in `ecosystem/middlewares/` (`jwt`, `apiKey`, ...) | Plugins in `ecosystem/plugins/` (`jwtAuth`, `apiKey`, ...) | Install with `burger-api add jwt-auth` and register in `src/plugins.ts`. See [Ecosystem](/docs/ecosystem/introduction). |
 | Group/folder files shared across routes | Self-contained route directories | Groups only strip the URL. Copy shared `schema.ts` / `hooks.ts` code into each route that needs it, or import a shared module. See [File-Based Routing](/docs/routing/file-based-routing). |
 | `req.validated?.query` with a manual generic | `ctx.validated.query` via `defineRoute` / `defineHooks` | Per-method `schema.ts` exports plus `defineRoute` infer `ctx.validated` with no generic to write. |
@@ -124,7 +124,7 @@ Mapping rules:
 - A middleware that returned a function `(response) => response` becomes `afterRoute` or `mapResponse` returning that function. `mapResponse` is the last chance to change headers.
 - A middleware that returned `undefined` becomes a hook that returns `undefined`.
 
-`onRequest` is app-level only. You cannot scope it to one route, and declaring it in a route's `hooks.ts` is a compile error. See [Route Hooks](/docs/hooks/route-specific).
+`onRequest` is app-level only. You cannot scope it to one route: declaring it in a route's `hooks.ts` fails the TypeScript check, and the runtime warns and ignores it. See [Route Hooks](/docs/hooks/route-specific).
 
 ### 3. Global middleware becomes `src/hooks.ts`
 
@@ -229,7 +229,7 @@ Before (`0.9.x`), auth was middleware added to `globalMiddleware`:
 
 ```ts title="index.ts"
 import { Burger } from "burger-api";
-import { jwt } from "./ecosystem/middleware/jwt-auth/jwt-auth";
+import { jwt } from "./ecosystem/middlewares/jwt-auth/jwt-auth";
 
 const burger = new Burger({
     apiDir: "./api",

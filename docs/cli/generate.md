@@ -49,6 +49,7 @@ Creates a local hook factory in `ecosystem/hooks/<name>/`.
 **Options:**
 
 - `-l, --lang <lang>`: `ts` or `js` (detected from `jsconfig.json`)
+- `--local`: read the ecosystem catalog from the local checkout instead of GitHub. See [Local mode](/docs/getting-started/cli#local-mode).
 
 ```bash
 burger-api generate hook rate-limit
@@ -63,6 +64,7 @@ Creates a local plugin in `ecosystem/plugins/<name>/`.
 **Options:**
 
 - `-l, --lang <lang>`: `ts` or `js` (detected from `jsconfig.json`)
+- `--local`: read the ecosystem catalog from the local checkout instead of GitHub. See [Local mode](/docs/getting-started/cli#local-mode).
 
 ```bash
 burger-api generate plugin audit-log

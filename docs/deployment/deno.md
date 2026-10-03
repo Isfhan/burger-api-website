@@ -10,7 +10,9 @@ Workers, and Vercel; only the entry file and platform config differ.
 
 ## How it works
 
-- `deno.json` maps `burger-api` to the npm package, pinned to the beta range (`npm:burger-api@^1.0.0-beta`).
+- `deno.json` maps `burger-api` and its subpaths to the npm package, pinned to
+  the project's range (`npm:burger-api@^1.0.0-beta`), and enables
+  `sloppy-imports` so extensionless relative imports resolve.
 - `src/index.ts` exports the `deno serve` shape:
   `export default { fetch: toFetchHandler(burger) }`.
 - Routes are declared via `apiRoutes` (AOT). Deno Deploy has no filesystem,
@@ -69,11 +71,16 @@ export default { fetch: toFetchHandler(burger) } satisfies {
 
 ```json
 {
+  "unstable": ["sloppy-imports"],
   "imports": {
-    "burger-api": "npm:burger-api@^1.0.0-beta"
+    "burger-api": "npm:burger-api@^1.0.0-beta",
+    "burger-api/": "npm:burger-api@^1.0.0-beta/"
   }
 }
 ```
+
+A local-mode project (`--local` links) gets `"nodeModulesDir": "manual"`
+instead of the `imports` map.
 
 ## Run locally
 
@@ -83,8 +90,9 @@ deno serve --port 8000 src/index.ts
 
 ## Deploy
 
-Push the project to Deno Deploy and point it at `src/index.ts` (Deno Deploy
-uses `deno serve` under the hood).
+Push the project to Deno Deploy and point it at the generated
+`.build/deno/index.ts` entry (or your own `src/index.ts` if you wrote the
+entry by hand).
 
 ## Related
 

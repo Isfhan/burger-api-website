@@ -4,7 +4,7 @@ sidebar_label: "Route Groups"
 
 # Route Groups
 
-Route groups allow you to organize your API route files into logical folders without affecting the URL structure. This is perfect for keeping large projects organized while maintaining clean, simple URLs.
+Route groups organize API route files into logical folders without affecting the URL structure.
 
 ## What Are Route Groups?
 
@@ -107,7 +107,7 @@ api/
 
 ### 3. Organizing by Version
 
-Two route groups must never resolve to the same URL. A route group is ignored in the path, so copying a route into a second group silently creates a duplicate:
+Two route groups must never resolve to the same URL. A route group is ignored in the path, so copying a route into a second group creates a duplicate:
 
 ```
 api/
@@ -232,7 +232,7 @@ api/
         route.ts            → /api/analytics/[...]
 ```
 
-**Result:** Clean URLs with excellent organization!
+**Result:** Clean URLs with clear organization.
 
 ## Best Practices
 
@@ -349,5 +349,5 @@ Learn about other routing patterns:
 - **[Dynamic Routes](./dynamic-routes.md)** - Capture URL parameters
 - **[Wildcard Routes](./wildcard-routes.md)** - Handle complex nested paths
 
-Route groups are a powerful organizational tool. Use them to keep your codebase clean and maintainable as your API grows, without sacrificing URL simplicity.
+Route groups keep your codebase organized as your API grows, without changing URLs.
 

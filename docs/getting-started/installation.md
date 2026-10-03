@@ -47,6 +47,16 @@ bunx @burger-api/cli create my-project
   irm https://burger-api.com/install.ps1 | iex
   ```
 
+#### Option 3: Download a binary from GitHub Releases
+
+1. Download the executable for your platform from [GitHub Releases](https://github.com/isfhan/burger-api/releases/latest).
+2. Add the downloaded file to your `PATH`.
+3. On Linux and macOS, make it executable:
+
+   ```bash
+   chmod +x burger-api
+   ```
+
 ### Create your project
 
 Once installed, you can create a new project by running:
@@ -125,9 +135,9 @@ If you prefer not to use the CLI, you can set up a project manually using standa
 
 ## Ready to Go!
 
-That's it! You now have a Bun project set up with BurgerAPI installed.
+You now have a Bun project set up with BurgerAPI installed.
 
-Next, you might want to check out the [Configuration](./../core/configuration.md) guide to see how to create your first BurgerAPI instance.
+Next, see the [Configuration](./../core/configuration.md) guide to learn how a BurgerAPI instance is configured.
 
 
 ## Related

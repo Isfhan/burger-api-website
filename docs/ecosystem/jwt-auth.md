@@ -35,7 +35,7 @@ export default (burger: PluginRegistrar) => {
 - `clockTolerance`: clock skew allowance in seconds. Default `0`.
 - `requireExpiration`: require an `exp` claim. Default `true`, so tokens without an expiry are rejected.
 
-After a successful login flow the plugin attaches the decoded payload as `ctx.user`. The plugin augments `BurgerContext` with `user?: BurgerAuthUser & Record<string, unknown>`, so importing it in `src/plugins.ts` is enough for TypeScript to type `ctx.user` in your routes (no local cast needed):
+After a successful login flow the plugin attaches the decoded payload as `ctx.user`. The plugin augments `BurgerAuthUser` with standard claims (`sub`, `roles`, `exp`, and so on). `BurgerAuthUser` is the shared augmentation point for `ctx.user` and `ws.user`, and core declares `ctx.user` as `BurgerAuthUser & Record<string, unknown>`. Importing the plugin in `src/plugins.ts` is enough for TypeScript to type `ctx.user` in your routes (no local cast needed):
 
 ```ts title="api/me/route.ts"
 import type { BurgerContext } from "burger-api";
@@ -71,6 +71,12 @@ export async function POST(ctx: BurgerContext) {
   );
   return Response.json({ token });
 }
+```
+
+The login route runs before a token exists, so its `config.ts` must opt out of auth:
+
+```ts title="api/login/config.ts"
+export default { auth: false };
 ```
 
 Use the same `secret` and `algorithm` (default `HS256`) the plugin is configured with. For asymmetric algorithms, pass `privateKey` instead of `secret`; the plugin verifies with the matching `publicKey`. HMAC secrets must be at least 32 bytes, the same minimum the plugin enforces.

@@ -4,9 +4,9 @@ sidebar_label: Benchmarks
 
 # Benchmarks
 
-BurgerAPI's performance work is architectural, not a hand-tuned hot loop: routes resolve through Bun's native route map first, fall back to a precompiled radix trie otherwise, each route's hook chain is flattened once at boot into a frozen `HookPlan`, validators are compiled once and cached by structural identity, and a JIT compiler collapses a route's whole hook chain into one function (on by default). None of that work happens per request.
+BurgerAPI's performance work is architectural, not a hand-tuned hot loop: routes resolve through Bun's native route map first, fall back to a precompiled radix trie otherwise, each route's hook chain is flattened once at boot into a frozen `HookPlan`, validators are compiled once per route (structurally identical Zod schemas share a cached validator), and a JIT compiler collapses a route's whole hook chain into one function (on by default). None of that work happens per request.
 
-All measured numbers live in [burger-api-benchmarks](https://github.com/isfhan/burger-api-benchmarks), a dedicated sibling repository and the single home for BurgerAPI performance data. It contains the harness, the methodology, the raw JSON, and dated reports, so results can be reproduced and audited instead of copied out of date.
+All measured numbers live in [burger-api-benchmarks](https://github.com/isfhan/burger-api-benchmarks), a dedicated sibling repository and the single home for BurgerAPI performance data. It contains the harness, the methodology, the JSON reports, and dated summaries, so results can be reproduced and audited instead of copied out of date.
 
 ## Reproduce it yourself
 
@@ -16,7 +16,7 @@ Clone the repository and run:
 bun run battle --profile ci
 ```
 
-`--profile ci` uses modest load settings suitable for a developer machine. Raw output lands in the repository's `reports/` directory. Run it a few times and compare: single-run throughput on shared, non-dedicated hardware varies by 10-15% run to run, so averages are more trustworthy than a single sample.
+`--profile ci` uses modest load settings suitable for a developer machine. Reports land in the repository's `reports/` directory. Run it a few times and compare averages: single-run throughput on shared, non-dedicated hardware varies from run to run, so one sample is not trustworthy.
 
 ## What the JIT hook compiler does
 

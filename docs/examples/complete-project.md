@@ -34,7 +34,7 @@ burger.serve(4000);
 import type { PluginRegistrar } from "burger-api";
 
 export default (burger: PluginRegistrar) => {
-  burger.usePlugin(/* ... */);
+  // burger.usePlugin(myPlugin);
 };
 ```
 
@@ -42,7 +42,7 @@ export default (burger: PluginRegistrar) => {
 import type { ProviderRegistrar } from "burger-api";
 
 export default (burger: ProviderRegistrar) => {
-  burger.provide("db", createDb());
+  // burger.provide("db", db);
 };
 ```
 

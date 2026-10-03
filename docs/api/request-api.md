@@ -57,7 +57,7 @@ The raw request body stream (`ReadableStream | null`), delegated from `ctx.reque
 
 ## ctx.json() and ctx.text()
 
-Read the request body as JSON or text. These delegate to the underlying request:
+Read the request body as JSON or text. The body is read once and cached on `ctx`, so `ctx.json()`, `ctx.text()` and `ctx.arrayBuffer()` can be called after validation read the stream:
 
 ```ts
 export async function POST(ctx: BurgerContext) {
@@ -85,12 +85,12 @@ The matched route's identity:
 
 ```ts
 export async function GET(ctx: BurgerContext) {
-  // ctx.route.pattern === "/api/users/:id" (includes apiPrefix)
-  return Response.json({ pattern: ctx.route.pattern });
+  // ctx.route?.pattern === "/api/users/:id" (includes apiPrefix)
+  return Response.json({ pattern: ctx.route?.pattern });
 }
 ```
 
-Present on every matched route, including static routes. See [Route Metadata](./route-metadata.md).
+The route is always set in a matched handler, but the type is `RouteMeta | undefined`, so use optional chaining. See [Route Metadata](./route-metadata.md).
 
 ## ctx.validated
 

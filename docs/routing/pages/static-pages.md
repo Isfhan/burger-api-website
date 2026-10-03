@@ -28,7 +28,7 @@ burger.serve(4000);
 Organize your page files within the `pageDir` directory:
 
 - **Directory Structure = URL Path:** Just like API routes, the folder structure maps directly to the URL path (relative to any `pagePrefix`).
-- **Supported Files:** BurgerAPI looks for `.html` files (served as static assets) and `.tsx` files (plain handler functions, see below).
+- **Supported Files:** BurgerAPI looks for `.html` files (served as HTML) and `.tsx` files (plain handler functions, see below).
 - **URL Mapping Examples:**
   - `src/pages/index.html` or `src/pages/index.tsx` → `/`
   - `src/pages/about.html` → `/about`
@@ -91,6 +91,10 @@ Every `.tsx` page handler receives the same `BurgerContext` an API route handler
 ## Methods
 
 Pages, assets, `/docs` and `/openapi.json` answer `GET` and `HEAD` only. Every other method gets `405 Method Not Allowed` with `Allow: GET, HEAD` and an RFC 9457 problem body.
+
+## Runtime support
+
+`serve()` on Bun serves every page type. On WinterCG targets (`toFetchHandler`: Node, Cloudflare, Deno, Vercel), function page routes and embedded assets are served, but dynamic (`[param]`) pages are Bun-only. The framework logs one warning listing the page routes it cannot serve instead of failing silently.
 
 ## Related
 

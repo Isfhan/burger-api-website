@@ -18,7 +18,7 @@ interface ContextSet {
 ### status
 
 - **Type:** `number | undefined`
-- **Description:** The HTTP status to set on the response. When omitted, the handler's status is preserved.
+- **Description:** The HTTP status to set on the response. When omitted, the handler's status is preserved. A response with an error status (`400` or higher) keeps that status: `ctx.set.status` only restyles success responses.
 
 ### headers
 

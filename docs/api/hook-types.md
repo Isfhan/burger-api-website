@@ -9,13 +9,25 @@ Hooks are the request lifecycle functions. This page is the type reference. For 
 ## Hook
 
 ```ts
+type ForwardHookResult =
+  | Response
+  | ((response: Response) => Response | Promise<Response>)
+  | void
+  | undefined;
+
+type ResponseHookResult =
+  | Response
+  | ((response: Response) => Response | Promise<Response>)
+  | void
+  | undefined;
+
 type ForwardHook = (
   ctx: BurgerContext
-) => Response | ((response: Response) => Response | Promise<Response>) | void | undefined;
+) => ForwardHookResult | Promise<ForwardHookResult>;
 
 type ResponseHook = (
   ctx: BurgerContext
-) => Response | ((response: Response) => Response | Promise<Response>) | void | undefined;
+) => ResponseHookResult | Promise<ResponseHookResult>;
 
 type Hook = ForwardHook | ResponseHook;
 ```
@@ -24,9 +36,9 @@ type Hook = ForwardHook | ResponseHook;
 
 A hook returns one of three things:
 
-- A `Response` stops the pipeline. That response is sent and the rest of the pipeline is skipped.
+- A `Response` for a forward hook stops the pipeline: that response is sent and the handler is skipped. For a response hook it replaces the current response and the remaining hooks still run.
 - `undefined` continues to the next hook or to the handler.
-- A function `(response) => Response` registers a mapper. Forward hooks queue it to run on the final response after the handler; response hooks apply it immediately.
+- A function `(response) => Response` registers a mapper. A forward hook queues it to run right after the handler returns (before response validation and `afterRoute`). A response hook applies it immediately.
 
 ## ErrorHook
 
@@ -38,6 +50,8 @@ type ErrorHook = (
 ```
 
 `onError` hooks handle errors thrown after routing (validation, `beforeRoute`, the handler, `afterRoute`, `mapResponse`). They run nearest-first, Route → Global → Plugin → Framework. Return a `Response` to handle the error, or `undefined`/`void` to let the next `onError` hook try. If none handles it, the framework renders the default error response and logs 5xx errors. May be async.
+
+An error thrown by an `onRequest` hook also reaches `onError`, through the global, plugin and framework hooks (no route is matched yet, so route hooks are not involved).
 
 ## RouteHooks
 

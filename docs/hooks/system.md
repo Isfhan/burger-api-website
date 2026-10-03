@@ -9,7 +9,7 @@ BurgerAPI uses a **hook-based request lifecycle**. Six named stages with clear j
 **Hooks** control when code runs on a request.  
 **Plugins** extend the application (and may register hooks). Keep them separate.
 
-## Six hooks (vision)
+## Six hooks
 
 | Hook | When |
 |------|------|
@@ -25,7 +25,7 @@ onRequest → Routing → transform → Validation → beforeRoute
   → Handler → afterRoute → mapResponse
 ```
 
-Errors thrown after routing (validation, `beforeRoute`, handler, `afterRoute`, `mapResponse`) jump to `onError`. Errors thrown in `onRequest`, and requests that match no route, are rendered directly without running `onError`.
+Errors thrown after routing (validation, `beforeRoute`, handler, `afterRoute`, `mapResponse`) jump to `onError`. Errors thrown in `onRequest` also run through the global, plugin and framework `onError` hooks. A request that matches no route is rendered directly (404) without running `onError`.
 
 ## Scopes
 

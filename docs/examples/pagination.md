@@ -4,7 +4,7 @@ sidebar_label: Pagination
 
 # Pagination Example
 
-Paginate a list using `ctx.query` and advertise totals via `ctx.set`.
+Paginate a list using a validated query and advertise totals via `ctx.set`.
 
 ```ts title="src/api/posts/schema.ts"
 import { z } from "zod";
@@ -38,7 +38,7 @@ export const GET = defineRoute(GETSchema, (ctx) => {
 });
 ```
 
-`ctx.query` parses only when read, and `ctx.set` applies the pagination headers once at the end of the request lifecycle. See also the [CRUD API](./crud-api.md).
+The query is validated against `schema.ts`, so `page` and `limit` are numbers, and `ctx.set` applies the pagination headers once at the end of the request lifecycle. See also the [CRUD API](./crud-api.md).
 
 
 ## Related

@@ -4,9 +4,10 @@ sidebar_position: 1
 
 # Deploy on Bun
 
-Bun is BurgerAPI's primary runtime. A Bun deployment uses the Bun adapter
-directly: `burger.serve(port)` runs a long-lived HTTP server with the full
-feature set (native static route map, WebSockets, pages).
+Bun is BurgerAPI's primary runtime and needs Bun 1.4.0 or newer. A Bun
+deployment uses the Bun adapter directly: `burger.serve(port)` runs a
+long-lived HTTP server with the full feature set (native static route map,
+WebSockets, pages).
 
 ## How it works
 
@@ -38,8 +39,9 @@ The generated `package.json` maps the CLI commands to Bun scripts:
 {
   "scripts": {
     "dev": "burger-api dev",
+    "start": "burger-api start",
     "build": "burger-api build src/index.ts",
-    "start": "burger-api start"
+    "typecheck": "tsc --noEmit"
   }
 }
 ```

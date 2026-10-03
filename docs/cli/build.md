@@ -4,13 +4,14 @@ sidebar_label: Build Command
 
 # Build Command
 
-`burger-api build <file>` builds your project for a deployment target. Routes are discovered at build time (via `burger.build.ts` or conventions) and compiled ahead of time (AOT) so production never depends on filesystem scanning.
+`burger-api build [file]` builds your project for a deployment target. The entry defaults to `src/index.ts`, `src/index.js`, or `src/index.mjs`. Routes are discovered at build time (via `burger.build.ts` or conventions) and compiled ahead of time (AOT) so production never depends on filesystem scanning.
 
 **Options:**
 
-- `--target <platform>`: `bun` (default), `node`, `cloudflare`, `deno`, `vercel` (or `browser`, a legacy raw `Bun.build` passthrough for bundling client-side code)
+- `--target <platform>`: `bun` (default), `node`, `cloudflare`, `deno`, `vercel` (or `browser`, a raw `Bun.build` passthrough for bundling client-side code)
 - `--outfile <path>`: Output path; defaults depend on `--target` (see table below)
-- `--compile`: Compile to a standalone executable instead of bundling (`--target=bun` only, see [Build Exec](/docs/cli/build-exec))
+- `--compile`: Compile to a standalone executable instead of bundling (`--target=bun` only, see [Build Exec](/docs/cli/build-exec)). On Windows, the emitted file is `<outfile>.exe` when the outfile does not already end in `.exe`; the CLI prints that real path.
+- `--no-bytecode`: Disable bytecode compilation (`--compile` only)
 - `--minify`: Minify output (`bun`/`node` targets only)
 - `--sourcemap <type>`: `inline`, `linked`, or `none` (`bun`/`node` targets only)
 - `--no-bun-check`: Skip the Bun-only API warning for portable targets
@@ -19,7 +20,7 @@ sidebar_label: Build Command
 
 | Target | Default output | What builds it |
 |---|---|---|
-| `bun` | `.build/bundle/app.js` | `Bun.build()`, a self-contained single file |
+| `bun` | `.build/bundle/app.js` | `Bun.build()`, a self-contained entry file |
 | `node` | `.build/bundle/app.js` | `Bun.build({ target: 'node' })` |
 | `cloudflare` | `.build/cloudflare/index.ts` | `wrangler` (not this CLI) |
 | `deno` | `.build/deno/index.ts` | `deno` (not this CLI) |
@@ -53,8 +54,9 @@ burger-api build src/index.ts --compile --outfile=my-app
 
 ## What differs per target
 
-For `bun` and `node`, this command runs `Bun.build()` and produces a single
-bundled file. For `cloudflare`, `deno`, and `vercel`, there's no long-running
+For `bun` and `node`, this command runs `Bun.build()` and produces one
+bundled entry file. Projects with pages also emit the page assets next to
+it, so deploy the whole directory. For `cloudflare`, `deno`, and `vercel`, there's no long-running
 process to bundle for. The generated entry (a plain `.ts` file exporting
 `{ fetch: toFetchHandler(app) }`) is handed to the platform's own tool to
 bundle and deploy, the same way a hand-written project on that platform

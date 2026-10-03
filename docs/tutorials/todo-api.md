@@ -354,9 +354,7 @@ curl -X DELETE http://localhost:4000/api/todos/1
 Visit `http://localhost:4000/docs` to see your complete API documentation. You should see:
 
 - All five endpoints (GET, POST, PUT, DELETE)
-- Request/response schemas
-- Validation rules
-- Example requests and responses
+- Request body schemas and validation rules
 - Interactive testing interface
 
 :::info Validation in Action
@@ -371,9 +369,14 @@ Your project should now look like this:
 todo-api/
 ├── src/
 │   ├── index.ts                 # Server configuration
+│   ├── openapi.config.ts        # OpenAPI metadata (from the scaffold)
+│   ├── hooks.ts                 # Global hooks (from the scaffold)
+│   ├── plugins.ts               # Plugins (from the scaffold)
+│   ├── providers.ts             # Services (from the scaffold)
 │   ├── types.ts                 # TypeScript interfaces
 │   ├── database.ts              # In-memory storage
 │   └── api/
+│       ├── route.ts             # Sample route from the scaffold (GET /api)
 │       └── todos/
 │           ├── route.ts         # GET /api/todos, POST /api/todos
 │           ├── schema.ts        # Validation for /api/todos
@@ -397,7 +400,7 @@ This generates a bundle at:
 
 - `.build/bundle/app.js`
 
-Pass `--target=node|cloudflare|deno|vercel` to build for a different deployment platform instead of Bun. See [Deployment](../deployment/bun.md).
+Pass `--target=node|cloudflare|deno|vercel` to build for a different deployment platform instead of Bun. Each target writes to its own path (for example `.build/cloudflare/index.ts`, or `api/index.ts` for Vercel); see [Build Command](../cli/build.md) and [Deployment](../deployment/bun.md).
 
 To create a standalone executable:
 

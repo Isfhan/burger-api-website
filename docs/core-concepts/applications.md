@@ -16,7 +16,7 @@ const burger = new Burger({
 burger.serve(4000);
 ```
 
-OpenAPI metadata such as the title and version lives in `src/openapi.config.ts`, not in `new Burger({...})`:
+OpenAPI metadata such as the title and version lives in `src/openapi.config.ts`. The `new Burger({ title, version })` options still work as a fallback:
 
 ```ts title="src/openapi.config.ts"
 import type { OpenAPIConfig } from "burger-api";

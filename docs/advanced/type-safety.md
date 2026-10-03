@@ -57,7 +57,7 @@ import { GET as GetSchema } from "./schema";
 
 export const { beforeRoute } = defineHooks(GetSchema, {
     beforeRoute: (ctx) => {
-        ctx.validated.query; // typed, same as in route.ts
+        ctx.validated.query; // typed; slots are optional because hooks run for every method
     },
 });
 ```
@@ -112,7 +112,7 @@ No errors means your types are correct. Your editor shows the same problems whil
 
 ## Convention files and their types
 
-Every convention file has a consumer type. The scaffolded templates already use them:
+Every convention file has a consumer type:
 
 | File | Type | Example |
 |------|------|---------|
@@ -128,7 +128,7 @@ Every convention file has a consumer type. The scaffolded templates already use 
 | ws `ws.ts` | `BurgerWS`, `WebSocketHandlers` | typed handler parameters |
 | `src/types.ts` | app type extensions | `declare module 'burger-api' { ... }` |
 
-JavaScript projects get the same checks through JSDoc hints (`/** @type {import('burger-api').BuildConfig} */`).
+JavaScript projects get the same checks through JSDoc hints (`/** @type {Partial<import('burger-api').BuildConfig>} */`).
 
 ## Augmentation: add your own types
 

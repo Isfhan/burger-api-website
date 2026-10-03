@@ -92,15 +92,15 @@ export const GET = defineRoute(GetSchema, (ctx) => {
 });
 ```
 
-❌ Wrong. Reading a slot you did not declare:
+❌ Wrong. Using a slot you did not declare:
 
 ```typescript
 export const GET = defineRoute(GetSchema, (ctx) => {
-    ctx.validated.body; // ❌ Property 'body' does not exist (no body schema on GET)
+    ctx.validated.body.name; // ❌ 'body' is unknown (no body schema on GET)
 });
 ```
 
-A slot without a schema is `unknown`. See the [TypeScript overview](/docs/advanced/type-safety).
+A slot without a schema is `unknown` and is never set at runtime. See the [TypeScript overview](/docs/advanced/type-safety).
 
 Check your code: `bun run typecheck`.
 

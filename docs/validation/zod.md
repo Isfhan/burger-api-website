@@ -71,7 +71,7 @@ function usesLimit(limit: Query["limit"]) { /* ... */ }
 
 ```ts
 export async function GET(ctx: BurgerContext) {
-    ctx.validated.query.limit; // ❌ Property 'limit' does not exist (untyped)
+    ctx.validated.query.limit; // ❌ 'validated' is possibly undefined and 'query' is unknown
 }
 ```
 

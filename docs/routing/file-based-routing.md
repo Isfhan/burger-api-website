@@ -6,6 +6,8 @@ sidebar_label: File-Based Routing
 
 BurgerAPI uses file-based routing: the folders and files under your `apiDir` (with `apiPrefix` applied) become the URL paths. There is no manual route registration. Each folder adds a segment to the URL, and a file named `route.ts` at a path defines the handlers for that path.
 
+Convention files also accept `.js` and `.mjs` extensions, so a JavaScript project uses `route.js`, `schema.js`, and so on.
+
 ## Example
 
 ```
@@ -21,7 +23,7 @@ BurgerAPI supports a few route shapes, all built from the same folder rules:
 
  - **Static routes**: fixed paths. See [Static API Routes](/docs/routing/api/static-routes).
  - **Dynamic routes**: capture a segment with `[param]`. See [Dynamic Routes](/docs/routing/api/dynamic-routes).
- - **Wildcard routes**: match the rest of the path with a `[...]` folder. See [Wildcard Routes](/docs/routing/api/wildcard-routes).
+ - **Wildcard routes**: match the rest of the path with a `[...]` folder. The folder is anonymous: a named folder such as `[...slug]` fails in dev and in builds. See [Wildcard Routes](/docs/routing/api/wildcard-routes).
  - **Route groups**: organize with `(folder)` without changing the URL. See [Route Groups](/docs/routing/api/route-groups).
 
 These shapes nest freely by folder depth. See [Nested Routes](/docs/routing/api/nested-routes) for how paths grow with folders.

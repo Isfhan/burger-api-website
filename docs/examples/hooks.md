@@ -19,7 +19,7 @@ export const onRequest = [
 ];
 ```
 
-**Route-specific:** Export the same hook points from a route's `hooks.ts`. The hooks run only for that route directory, after global hooks and validation, and before the handler.
+**Route-specific:** Export hook points (`transform`, `beforeRoute`, `afterRoute`, `mapResponse`, `onError`) from a route's `hooks.ts`. They run only for that route directory. `beforeRoute` runs after global hooks and validation, before the handler.
 
 ```ts
 // src/api/products/hooks.ts

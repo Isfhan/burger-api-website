@@ -8,7 +8,7 @@ The `Burger` constructor accepts a **ServerOptions** object. These are the main 
 
 | Option | Type | Description |
 |--------|------|-------------|
-| `apiDir` | `string` | Directory containing API route files (e.g. `./src/api`). Defaults to `./src/api` in filesystem mode when that directory exists. Relative to the project root, with an entry-file fallback (`src/`) under `burger-api dev`. See [How directories resolve](/docs/core/configuration#how-directories-resolve). |
+| `apiDir` | `string` | Directory containing API route files (e.g. `./src/api`). Defaults to `./src/api` in filesystem mode when that directory exists. Relative to the project root, with an entry-file fallback (`src/`) when the CLI loads or scans the app. See [How directories resolve](/docs/core/configuration#how-directories-resolve). |
 | `apiRoutes` | `RouteDefinition[]` | Pre-built API routes from the CLI build. When present, `apiDir` is ignored and no runtime filesystem scan happens. |
 | `pageDir` | `string` | Directory for page files. Defaults to `./src/pages` when that directory exists. |
 | `pageRoutes` | `PageDefinition[]` | Pre-built page routes from the CLI build. When present, `pageDir` is ignored. |
@@ -20,7 +20,7 @@ The `Burger` constructor accepts a **ServerOptions** object. These are the main 
 | `title` | `string` | Fallback API title for the OpenAPI document when no `openapi.config.ts` exists. Prefer [OpenAPI config](/docs/api/openapi). |
 | `description` | `string` | Fallback API description, same rules as `title`. |
 | `version` | `string` | Fallback API version, same rules as `title`. |
-| `debug` | `boolean` | Enable debug mode (e.g. richer error rendering, dev-mode logging). |
+| `debug` | `boolean` | Enable debug mode (richer error rendering, response-validation detail). Defaults to on when `NODE_ENV=development` (the CLI `dev` command sets it); `false` turns it off even in development. |
 | `validation` | object | Validation settings: `coerce` (`boolean`), `responseValidation` (`'off' \| 'dev' \| 'enforce'`), `errorFormat` (`'plain' \| 'problem+json'`), `status` (`number`), `errorRenderer`. See [Validation Configuration](/docs/validation/configuration). |
 | `openapi` | `OpenAPIConfig` | OpenAPI configuration for programmatic apps. In dev, `openapi.config.ts` is auto-discovered; `burger-api build` embeds the convention file, so you rarely set this. See [OpenAPI](/docs/api/openapi). |
 | `globalHooks` | `Record<string, unknown>` | Pre-resolved global hooks module (from `src/hooks.ts`). Used in production builds with `apiRoutes`; in dev, `src/hooks.ts` is auto-discovered and this field is ignored. |
@@ -35,7 +35,7 @@ The `Burger` constructor accepts a **ServerOptions** object. These are the main 
 
 ## Dev vs production
 
-You must provide either `apiDir`/`pageDir`/`wsDir` (development) or the prebuilt `apiRoutes`/`pageRoutes`/`wsRoutes` (production builds). In filesystem mode, an unset directory defaults to `./src/api`, `./src/pages`, or `./src/websocket` when that directory exists, matching the CLI build defaults. The CLI build produces the AOT route tables: `burger-api build` embeds them into the bundle, so production never scans the filesystem at runtime. See [CLI Tool](/docs/getting-started/cli) and [Burger Class](/docs/core/burger-class).
+In filesystem mode you pass `apiDir`/`pageDir`/`wsDir`, or let them default to the conventions (`./src/api`, `./src/pages`, `./src/websocket`) when those directories exist. Production builds pass the prebuilt `apiRoutes`/`pageRoutes`/`wsRoutes` instead. The CLI build produces the AOT route tables: `burger-api build` embeds them into the bundle, so production never scans the filesystem at runtime. See [CLI Tool](/docs/getting-started/cli) and [Burger Class](/docs/core/burger-class).
 
 ## Types for this feature
 

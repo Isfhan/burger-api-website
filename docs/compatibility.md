@@ -9,6 +9,9 @@ hooks, validation, OpenAPI, plugins, providers) runs on Bun in development and
 deploys to five targets via `burger-api build --target=<platform>`: Bun,
 Node.js, Cloudflare Workers, Deno, and Vercel.
 
+The framework and CLI require **Bun 1.4.0 or newer**. Node.js deployments
+target **Node 24+**.
+
 Every claim on this page is backed by one thing: `RUNTIME_CAPABILITIES`, a
 small data table exported from `burger-api` itself. The CLI's `build
 --target` reads the same table to reject an unsupported combination (e.g. a

@@ -13,13 +13,14 @@ burger-api doctor
 It checks, in order:
 
 - `package.json` exists.
-- `burger-api` is listed in `dependencies`/`devDependencies`.
-- A build config (`burger.build.ts`/`.js`, or the legacy `burger.config.ts`/`.js`): informational only, convention defaults apply if none is found.
-- `src/index.ts` exists.
-- `src/api/` exists, and if it does, that at least one `route.ts` is discoverable under it.
-- `tsconfig.json` exists.
+- `burger-api` is listed in `dependencies`/`devDependencies` and resolves from the project. A listed but not installed package tells you to run `bun install`.
+- A build config (`burger.build.ts`/`.js`, or the legacy `burger.config.ts`/`.js`): when found it must load, otherwise the check fails. When missing, the check is informational and convention defaults apply.
+- `src/index.ts` (or `src/index.js`/`src/index.mjs`) exists.
+- API routes under the configured `apiDir`: a missing default `src/api` is informational (fine for pages-only apps), a missing custom directory is an error, and every discovered route and convention file must import without errors.
+- `tsconfig.json` (or `jsconfig.json` for JavaScript projects) exists.
 - No legacy `burger.config.ts`/`.js` left over: the config file was renamed to `burger.build.ts` at some point; doctor flags the old name as an error if found.
-- `src/hooks.ts`, `src/plugins.ts`, `src/openapi.config.ts`: reported as found or not found, but never as errors (all three are optional).
+- The scan options in `src/index.*` agree with `burger.build.ts`: a mismatch is a warning, not an error.
+- `src/hooks.ts`, `src/plugins.ts`, `src/providers.ts`, `src/openapi.config.ts`: reported as found or not found, but never as errors (all are optional).
 
 Exits `0` when every check passes, `1` otherwise, so it's safe to wire into a pre-commit hook or CI step alongside `bun run typecheck`.
 
@@ -29,7 +30,7 @@ Exits `0` when every check passes, `1` otherwise, so it's safe to wire into a pr
 burger-api doctor --json
 ```
 
-Emits a single structured, versioned JSON object (`{ version: 1, ok, errorCount, checks: [{ name, pass, message }] }`) instead of colored console lines; the exit code behavior is unchanged either way. Meant for tooling/CI that wants to read individual check results rather than grep formatted text.
+Emits a single structured, versioned JSON object (`{ version: 1, ok, errorCount, checks: [{ name, pass, message }] }`) instead of colored console lines; a check may also carry a `severity` (`info` or `warning`). The exit code behavior is unchanged either way. Meant for tooling/CI that wants to read individual check results rather than grep formatted text.
 
 ## Related
 

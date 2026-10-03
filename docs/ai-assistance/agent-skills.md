@@ -1,5 +1,5 @@
 ---
-sidebar_label: "Agent Skills (New)"
+sidebar_label: "Agent Skills"
 title: "AI Agent Skills"
 description: "Learn how to use Agent Skills to help AI assistants understand your BurgerAPI project structure, APIs, and patterns."
 sidebar_position: 1

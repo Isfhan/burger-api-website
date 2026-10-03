@@ -37,10 +37,10 @@ See [Quick Start](/docs/quick-start) for the full walkthrough.
 Scaffolds a new project with interactive prompts.
 
 - Creates the project structure and installs dependencies.
-- Writes `burger.build.ts` at the project root (apiDir, pageDir, apiPrefix, pagePrefix, debug). This file is build-time only.
+- Writes `burger.build.ts` at the project root (the dirs and prefixes for the features you enabled, plus `debug`). This file is build-time only.
 - TypeScript projects also get `src/types.ts`, a commented module-augmentation example for app-wide type extensions.
 - Always writes `AGENTS.md` (project rules for AI agents; Claude Code and other agents read it).
-- Generates the `dev`, `build`, and `start` scripts.
+- Generates the `dev`, `build`, `start`, and `typecheck` scripts.
 - Options: `--lang ts|js` (default `ts`), `--yes` / `--defaults` (skip prompts), `--pages` (include `src/pages`), `--ws` (include file-based WebSocket routes), `--no-api` (skip API routes), `--api-dir <dir>`, `--api-prefix <prefix>`, `--no-skills`, `--local` (use the local checkout instead of npm/GitHub).
 
 ```bash
@@ -85,7 +85,7 @@ See [Add Command](/docs/cli/add) and [Ecosystem](/docs/ecosystem/introduction).
 
 Starts the development server with hot reload. The server restarts when you change files.
 
-- Options: `-p, --port <port>` (default `4000`), `-f, --file <file>` (default `src/index.ts`).
+- Options: `-p, --port <port>` (default `$PORT`, else `4000`), `-f, --file <file>` (default `src/index.ts`, `src/index.js`, or `src/index.mjs`).
 
 ```bash
 burger-api dev
@@ -93,11 +93,12 @@ burger-api dev
 
 `bun run dev` runs the same command through the project's `dev` script.
 
-### `burger-api build <file>`
+### `burger-api build [file]`
 
 Builds your project for a deployment target. Routes are discovered at build time (via `burger.build.ts` or conventions) and compiled ahead of time (AOT), so production never depends on the filesystem.
 
-- Options: `--target <platform>` (`bun` default, `node`, `cloudflare`, `deno`, `vercel`), `--outfile <path>` (default depends on `--target`), `--compile` (standalone executable, `bun` target only), `--minify`, `--sourcemap <type>`.
+- The entry file is optional: `burger-api build` uses `src/index.ts`, `src/index.js`, or `src/index.mjs` when no file is given.
+- Options: `--target <platform>` (`bun` default, `node`, `cloudflare`, `deno`, `vercel`), `--outfile <path>` (default depends on `--target`), `--compile` (standalone executable, `bun` target only), `--no-bytecode` (`--compile` only), `--minify`, `--sourcemap <type>`, `--no-bun-check`.
 
 ```bash
 burger-api build src/index.ts --target=cloudflare
@@ -111,9 +112,9 @@ See [Build Command](/docs/cli/build) and [Compatibility](/docs/compatibility) fo
 
 ### `burger-api start`
 
-Runs the production server (no hot reload) for a **Bun** build. Run `burger-api build` first. For other targets, run the build's own output directly: `node dist/server.js` (Node), `wrangler dev`/`deploy` (Cloudflare), `deno serve` (Deno), `vercel dev`/`--prod` (Vercel). See [Deployment](/docs/deployment/bun).
+Runs the production server (no hot reload) for a **Bun** build. Run `burger-api build` first. For other targets, run the build's own output directly: `node .build/bundle/app.js` (Node, the default output), `wrangler dev`/`deploy` (Cloudflare), `deno serve` (Deno), `vercel dev`/`--prod` (Vercel). See [Deployment](/docs/deployment/bun).
 
-- Options: `-p, --port <port>` (default `4000`), `-f, --file <file>`.
+- Options: `-p, --port <port>` (default `$PORT`, else `4000`), `-f, --file <file>` (default `.build/bundle/app.js` when it exists, else `src/index.ts`, `src/index.js`, or `src/index.mjs`).
 
 ```bash
 burger-api start
@@ -121,7 +122,7 @@ burger-api start
 
 `bun run start` runs the same command through the project's `start` script.
 
-### `burger-api build:exec <file>`
+### `burger-api build:exec [file]`
 
 Compiles your project into a standalone executable that runs without Bun installed.
 
@@ -187,11 +188,12 @@ See [Skills Command](/docs/cli/skills).
 
 ## Local mode
 
-Working on BurgerAPI itself? Pass `--local` on `create`, `add`, `list`, or
-`skills install|available`, or set `BURGER_API_LOCAL=1` (also accepts `true`)
-for the whole shell. The CLI then reads hooks, plugins, and skills from the
-checkout it runs from instead of npm/GitHub, and `create --local` writes
-`link:burger-api` plus `link:@burger-api/cli`.
+Working on BurgerAPI itself? Pass `--local` on `create`, `add`, `list`,
+`skills install|available`, `generate hook`, or `generate plugin`, or set
+`BURGER_API_LOCAL=1` (also accepts `true`) for the whole shell. The CLI then
+reads hooks, plugins, and skills from the checkout it runs from instead of
+npm/GitHub, and `create --local` writes `link:burger-api` plus
+`link:@burger-api/cli`.
 
 Run the CLI from the checkout and register the packages once:
 
@@ -218,16 +220,15 @@ my-api/
 │   ├── openapi.config.ts  # OpenAPI metadata and docs UI
 │   ├── types.ts           # App-wide type extensions (TypeScript projects)
 │   └── api/               # File-based API routes
-├── ecosystem/
-│   └── hooks/             # Installed hooks (plugins dir is created by `burger-api add`)
+├── ecosystem/             # Hooks and plugins installed with `burger-api add`
 ├── .agents/
 │   └── skills/            # AI agent skills (optional)
 ├── .claude/
 │   └── skills/            # AI agent skills for Claude Code (optional)
 ├── AGENTS.md              # Project rules for AI agents
-├── burger.build.ts        # Build-time config: apiDir, pageDir, apiPrefix, pagePrefix, debug
+├── burger.build.ts        # Build-time config: dirs/prefixes for enabled features (apiDir, pageDir, wsDir) plus debug; pageDir/pagePrefix only with pages
 ├── package.json
-└── tsconfig.json
+└── tsconfig.json          # jsconfig.json in a JavaScript project
 ```
 
 ## Common workflows
@@ -247,7 +248,7 @@ my-api/
 ### Build for production
 
 1. `burger-api build src/index.ts --target=<platform>`: `bun` (default), `node`, `cloudflare`, `deno`, or `vercel`.
-2. Run it: `burger-api start` (Bun), `node dist/server.js` (Node), or hand off to the platform's own tool: `wrangler dev`/`deploy`, `deno serve`, `vercel dev`/`--prod`.
+2. Run it: `burger-api start` (Bun), `node .build/bundle/app.js` (Node default output), or hand off to the platform's own tool: `wrangler dev`/`deploy`, `deno serve`, `vercel dev`/`--prod`.
 3. `burger-api build src/index.ts --compile --outfile=my-app` for a standalone Bun binary (or `burger-api build:exec src/index.ts --target bun-linux-x64` for a specific OS/arch).
 
 ## Environment variables

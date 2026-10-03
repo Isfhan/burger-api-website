@@ -31,7 +31,8 @@ cd my-burger-api
 This command:
 
 - Scaffolds the `src/` layout: `src/index.ts`, `src/api/`, `src/hooks.ts`, `src/plugins.ts`.
-- Creates a `burger.build.ts` with build-time defaults for `apiDir`, `pageDir`, and URL prefixes.
+- Creates a `burger.build.ts` for build-time settings. It lists the enabled directories and URL prefixes (for example `apiDir` and `apiPrefix`); disabled features are omitted.
+- Adds a sample `src/api/route.ts` (`GET /api`) plus `src/openapi.config.ts`, `src/providers.ts`, and `src/types.ts`.
 
 For more details on what `burger-api create` does, see the [CLI Tool](../getting-started/cli.md) guide.
 
@@ -155,10 +156,12 @@ One of BurgerAPI's best features is automatic OpenAPI documentation generation. 
 `http://localhost:4000/docs`
 
 You'll see an interactive Swagger UI showing your API endpoint with:
-- Available HTTP methods
-- Response schema
-- Example responses
+
+- The route path and available HTTP methods
+- A generated operation summary
 - Try-it-out functionality
+
+Add a `schema.ts` or `openapi.ts` file next to `route.ts` and the docs gain request and response schemas, tags, and examples.
 
 :::info Why This Matters
 BurgerAPI automatically generates this documentation from your code. As you add more endpoints and validation schemas, the documentation updates automatically!
@@ -204,9 +207,14 @@ my-burger-api/
 ├── src/
 │   ├── index.ts
 │   ├── openapi.config.ts
+│   ├── hooks.ts
+│   ├── plugins.ts
+│   ├── providers.ts
+│   ├── types.ts
 │   └── api/
+│       ├── route.ts          # sample route from the scaffold (GET /api)
 │       └── hello/
-│           └── route.ts
+│           └── route.ts      # the route you added
 ├── burger.build.ts
 ├── package.json
 └── bun.lock
@@ -225,7 +233,7 @@ This produces a bundle under:
 
 - `.build/bundle/app.js`
 
-Pass `--target=<platform>` to build for somewhere other than Bun (`node`, `cloudflare`, `deno`, or `vercel`); see [Deployment](../deployment/bun.md).
+Pass `--target=<platform>` to build for somewhere other than Bun (`node`, `cloudflare`, `deno`, or `vercel`). Each target writes to its own path (for example `.build/cloudflare/index.ts`, or `api/index.ts` for Vercel); see [Build Command](../cli/build.md) and [Deployment](../deployment/bun.md).
 
 If you prefer a standalone executable (great for simple deployments), run:
 

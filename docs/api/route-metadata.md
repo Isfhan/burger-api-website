@@ -28,7 +28,8 @@ import type { BurgerContext } from "burger-api";
 
 export async function GET(ctx: BurgerContext) {
   // pattern includes the API prefix, e.g. "/api/products"
-  console.log(`served by ${ctx.route.pattern}`);
+  // The type is RouteMeta | undefined; in a matched handler it is always set.
+  console.log(`served by ${ctx.route?.pattern}`);
   return Response.json({ ok: true });
 }
 ```

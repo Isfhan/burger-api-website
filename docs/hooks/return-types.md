@@ -7,8 +7,8 @@ sidebar_label: Hook Return Types
 A hook can return one of three things:
 
 1. **`undefined`**: Continue to the next hook or the route handler.
-2. **`Response`**: Short-circuit: stop the lifecycle and send this response (e.g. 401 Unauthorized).
-3. **A function**: Transform the response. The function runs after the handler (`afterRoute` / `mapResponse`), receives the handler's `Response`, and returns a modified `Response` (e.g. for CORS headers).
+2. **`Response`**: For a forward hook (`onRequest`, `beforeRoute`), stop the pipeline and send this response (e.g. 401 Unauthorized). For a response hook (`afterRoute`, `mapResponse`), replace the current response; the remaining hooks still run on the replacement.
+3. **A function**: Transform the response. A forward hook's function runs right after the handler returns, before response validation and `afterRoute`. A response hook's function runs immediately at its stage. Either receives the current `Response` and returns a modified `Response` (e.g. for CORS headers).
 
 ```ts
 // Continue
@@ -62,7 +62,7 @@ export const afterRoute: RouteHooks["afterRoute"] = [
 ];
 ```
 
-✅ Correct: a transform function on a forward hook. The mapper is queued and runs on the final response after the handler:
+✅ Correct: a transform function on a forward hook. The mapper is queued and runs right after the handler returns, before response validation and `afterRoute`:
 
 ```ts
 import type { RouteHooks } from "burger-api";

@@ -63,7 +63,7 @@ export async function GET(ctx: BurgerContext) {
 
 ## Read the authenticated identity
 
-The plugin attaches the authenticated identity to the context. With the API key plugin it is `ctx.apiKey`; with the JWT plugin it is the decoded payload as `ctx.user`. Both are declared by the plugin through module augmentation of `BurgerContext`, so they are typed as soon as the plugin is imported in `src/plugins.ts`:
+The plugin attaches the authenticated identity to the context. With the API key plugin it is `ctx.apiKey`; with the JWT plugin it is the decoded payload as `ctx.user`. Both are typed through the plugin's module augmentation (the API key plugin extends `BurgerContext`; the JWT plugin extends `BurgerAuthUser`, the shared type behind `ctx.user`), so they are typed as soon as the plugin is imported in `src/plugins.ts`:
 
 ```ts
 import type { BurgerContext } from "burger-api";

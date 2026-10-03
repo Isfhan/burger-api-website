@@ -4,7 +4,7 @@ sidebar_label: "Wildcard Routes"
 
 # Wildcard Routes
 
-Wildcard routes let you create catch-all routes that match any number of path segments after a certain point in the URL. This powerful feature is perfect for building admin panels, file systems, documentation sites, proxies, and more.
+Wildcard routes are catch-all routes that match any number of path segments after a certain point in the URL. Use them for admin panels, file systems, documentation sites, and proxies.
 
 ## What Are Wildcard Routes?
 
@@ -12,7 +12,7 @@ Think of wildcard routes as a "catch everything else" pattern. While static rout
 
 **Common Use Cases:**
 
-- **OAuth/Authentication:** Handle multiple authentication providers in one route (like BetterAuth does with `/auth/[...]` for Google, GitHub, Facebook, etc.)
+- **OAuth/Authentication:** Handle multiple authentication providers in one route, for example `/auth/[...]` for Google, GitHub, and Facebook callbacks.
 - **Multi-tenant Applications:** Serve tenant-specific content with dynamic subpaths like `/tenants/[tenantId]/[...]`
 - **Blog/CMS Systems:** Manage deeply nested content categories like `/blog/tech/web-dev/react/2024/hooks-guide`
 - **E-commerce Catalogs:** Handle complex product category hierarchies like `/products/electronics/computers/laptops/gaming`
@@ -45,7 +45,7 @@ import type { BurgerContext } from "burger-api";
 
 export async function GET(ctx: BurgerContext) {
   // wildcardParams contains all segments after /admin/
-  const wildcardParams = ctx.wildcardParams || [];
+  const wildcardParams = ctx.wildcardParams;
 
   return Response.json({
     message: "Admin wildcard route",
@@ -80,7 +80,7 @@ The `ctx.wildcardParams` property gives you access to all captured path segments
 import type { BurgerContext } from "burger-api";
 
 export async function GET(ctx: BurgerContext) {
-  const segments = ctx.wildcardParams || [];
+  const segments = ctx.wildcardParams;
 
   // Build the file path from segments
   const filePath = segments.join("/");
@@ -147,7 +147,7 @@ api/
 
 ## Advanced Usage
 
-Wildcard routes become even more powerful when combined with dynamic routes.
+Wildcard routes combine well with dynamic routes.
 
 ### Wildcard Inside Dynamic Routes
 
@@ -186,7 +186,7 @@ export const GET = defineRoute(GetSchema, (ctx) => {
   const { userId } = ctx.validated.params;
 
   // Access the remaining path segments
-  const wildcardParams = ctx.wildcardParams || [];
+  const wildcardParams = ctx.wildcardParams;
 
   return Response.json({
     userId,
@@ -215,7 +215,7 @@ GET /api/users/abc/files/documents/resume.pdf
 
 ## Real-World Examples
 
-### Example 1: OAuth Authentication Handler (Like BetterAuth)
+### Example 1: OAuth Authentication Handler
 
 Handle multiple OAuth providers with a single wildcard route:
 
@@ -231,7 +231,7 @@ const providers = {
 };
 
 export async function GET(ctx: BurgerContext) {
-  const segments = ctx.wildcardParams || [];
+  const segments = ctx.wildcardParams;
   const authPath = segments.join("/");
 
   // Check if it's a known auth route
@@ -287,7 +287,7 @@ import { GET as GetSchema } from "./schema";
 
 export const GET = defineRoute(GetSchema, (ctx) => {
   const { tenantId } = ctx.validated.params;
-  const resourcePath = ctx.wildcardParams || [];
+  const resourcePath = ctx.wildcardParams;
 
   // Handle different tenant resources
   const [resource, ...rest] = resourcePath;
@@ -338,7 +338,7 @@ Handle deeply nested blog categories and posts:
 import type { BurgerContext } from "burger-api";
 
 export async function GET(ctx: BurgerContext) {
-  const segments = ctx.wildcardParams || [];
+  const segments = ctx.wildcardParams;
 
   // Parse the path: /blog/tech/web-dev/react/2024/hooks-guide
   if (segments.length === 0) {
@@ -390,7 +390,7 @@ Handle complex product category hierarchies:
 import type { BurgerContext } from "burger-api";
 
 export async function GET(ctx: BurgerContext) {
-  const categoryPath = ctx.wildcardParams || [];
+  const categoryPath = ctx.wildcardParams;
 
   // Example: /products/electronics/computers/laptops/gaming
   const category = categoryPath[categoryPath.length - 1];
@@ -441,7 +441,7 @@ import { GET as GetSchema } from "./schema";
 
 export const GET = defineRoute(GetSchema, (ctx) => {
   const { locale } = ctx.validated.params;
-  const docPath = ctx.wildcardParams || [];
+  const docPath = ctx.wildcardParams;
 
   if (docPath.length === 0) {
     // Return documentation home for this locale
@@ -484,7 +484,7 @@ const services = {
 };
 
 export async function GET(ctx: BurgerContext) {
-  const segments = ctx.wildcardParams || [];
+  const segments = ctx.wildcardParams;
   const [service, ...path] = segments;
 
   const serviceUrl = services[service];
@@ -523,7 +523,7 @@ export async function GET(ctx: BurgerContext) {
       {
         error: "Service unavailable",
         service,
-        message: error.message,
+        message: error instanceof Error ? error.message : String(error),
       },
       { status: 503 }
     );
@@ -560,11 +560,10 @@ When working with wildcard routes, keep these limitations in mind:
 
 1. **Mixing with Dynamic Routes:** Dynamic `[id]` and wildcard `[...]` folders can coexist at the same directory level. The router resolves them by priority: static > dynamic > wildcard. See [Dynamic Routes](/docs/routing/api/dynamic-routes) for the full rule.
 2. **Lowest Priority:** Wildcard routes are always matched last. If a static or dynamic route exists that matches the path, it will be chosen first.
-
-3. **Single Wildcard Per Branch:** Each route branch should have only one wildcard route. Having multiple wildcards in the same path can lead to unpredictable behavior.
-
-4. **All Segments Captured:** The wildcard captures **all** remaining segments as an array. There's no partial wildcard matching.
-   :::
+3. **Placement:** A wildcard folder must be the last segment of the path. Two wildcard folders at the same directory level, or any segment after a wildcard, fail at startup with a clear error.
+4. **Anonymous Only:** The folder is named `[...]`. A named wildcard folder such as `[...slug]` is not supported: development and production builds both fail with a clear error. Use `[...]` and read `ctx.wildcardParams` instead.
+5. **All Segments Captured:** The wildcard captures **all** remaining segments as an array. There is no partial wildcard matching.
+:::
 
 :::tip Best Practices
 
@@ -577,15 +576,15 @@ When working with wildcard routes, keep these limitations in mind:
 
 ## Summary
 
-Wildcard routes give you the flexibility to handle complex, nested URL structures with ease:
+Wildcard routes handle complex, nested URL structures:
 
 - Use `[...]` folder syntax to create wildcard routes
 - Access captured segments via `ctx.wildcardParams`
-- Combine with dynamic routes for powerful patterns
+- Combine with dynamic routes for flexible patterns
 - Remember: Static > Dynamic > Wildcard in matching priority
-- Perfect for admin panels, file systems, and proxy APIs
+- Use them for admin panels, file systems, and proxy APIs
 
-Ready to build something amazing? Check out the other routing documentation to learn more:
+See the other routing documentation to learn more:
 
 - **[Static Routes](./static-routes.md)** - Learn about fixed API endpoints
 - **[Route Groups](./route-groups.md)** - Organize routes without affecting URLs

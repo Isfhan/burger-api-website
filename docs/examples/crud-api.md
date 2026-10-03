@@ -4,7 +4,7 @@ sidebar_label: CRUD API
 
 # CRUD API Example
 
-A complete products API with list, read, create, update, and delete, using file-based routing, Zod validation, lazy query access, and `ctx.set`.
+A complete products API with list, read, create, update, and delete, using file-based routing, Zod validation, and `ctx.set`.
 
 Each route directory is self-contained: `route.ts` holds the handlers, `schema.ts` holds the per-method validation schemas.
 
@@ -62,7 +62,7 @@ export const POST = defineRoute(POSTSchema, (ctx) => {
 });
 ```
 
-## Read one
+## Read, update, and delete one
 
 ```ts title="src/api/products/[id]/schema.ts"
 import { z } from "zod";
@@ -70,11 +70,23 @@ import { z } from "zod";
 export const GET = {
   params: z.object({ id: z.string() }),
 };
+
+export const PUT = {
+  params: z.object({ id: z.string() }),
+  body: z.object({
+    name: z.string().min(1).optional(),
+    price: z.number().positive().optional(),
+  }),
+};
+
+export const DELETE = {
+  params: z.object({ id: z.string() }),
+};
 ```
 
 ```ts title="src/api/products/[id]/route.ts"
 import { defineRoute } from "burger-api";
-import { GET as GetSchema } from "./schema";
+import { GET as GetSchema, PUT as PutSchema, DELETE as DeleteSchema } from "./schema";
 import { products } from "../store";
 
 export const GET = defineRoute(GetSchema, (ctx) => {
@@ -82,11 +94,25 @@ export const GET = defineRoute(GetSchema, (ctx) => {
   if (!product) return Response.json({ error: "Not found" }, { status: 404 });
   return Response.json(product);
 });
+
+export const PUT = defineRoute(PutSchema, (ctx) => {
+  const product = products.find((p) => p.id === ctx.validated.params.id);
+  if (!product) return Response.json({ error: "Not found" }, { status: 404 });
+  Object.assign(product, ctx.validated.body);
+  return Response.json(product);
+});
+
+export const DELETE = defineRoute(DeleteSchema, (ctx) => {
+  const index = products.findIndex((p) => p.id === ctx.validated.params.id);
+  if (index === -1) return Response.json({ error: "Not found" }, { status: 404 });
+  products.splice(index, 1);
+  return new Response(null, { status: 204 });
+});
 ```
 
-`ctx.query` and `ctx.params` are lazy: they parse only when read. `ctx.set` collects status and header changes, applied once when the response leaves the app. See [Response Mutation](/docs/api/response-mutation).
+`ctx.set` collects status and header changes, applied once when the response leaves the app. See [Response Mutation](/docs/api/response-mutation).
 
-This example shows routing, validation, lazy query access, and response mutation working together. See also the [Todo API](../tutorials/todo-api.md) and [Blog API](../tutorials/blog-api.md).
+This example shows routing, validation, and response mutation working together. See also the [Todo API](../tutorials/todo-api.md) and [Blog API](../tutorials/blog-api.md).
 
 
 ## Related

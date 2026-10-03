@@ -48,10 +48,13 @@ export const POST = { query: z.object({ page: z.number() }) };
 | Schema field | Converts to |
 |--------------|-------------|
 | `z.number()` | number |
-| `z.boolean()` | boolean (`"true"` → `true`, `"false"` → `false`) |
+| `z.boolean()` | boolean (`"true"`/`"1"` → `true`, `"false"`/`"0"` → `false`) |
 | `z.date()` | `Date` |
+| `z.array(z.number())` | array of numbers (a single value is wrapped in an array first) |
 
 Coercion applies to `query`, `params`, `headers`, and `cookies`, but not to the request `body` (JSON bodies are already typed).
+
+Conversion plans are built from Zod object fields. For other schema libraries, use that library's own conversion: framework `coerce: true` does not pre-convert non-Zod schemas.
 
 ## Safe by design
 

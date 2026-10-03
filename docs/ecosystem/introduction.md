@@ -9,7 +9,7 @@ BurgerAPI keeps a small core and ships optional packages under `ecosystem/`:
 
 ```
 ecosystem/
-├── hooks/      # Request lifecycle factories (CORS, logger, rate-limit, ...)
+├── hooks/      # Request lifecycle factories (CORS, logger, rate-limiter, ...)
 ├── plugins/    # Application extensions (JWT, session, env, ...)
 └── skills/     # AI agent skills
 ```

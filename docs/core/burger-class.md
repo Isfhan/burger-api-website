@@ -95,7 +95,7 @@ export default { fetch: toFetchHandler(app) };
 Deno.serve(toFetchHandler(app));
 ```
 
-WinterCG targets must pass AOT `apiRoutes`: there is no filesystem at runtime. See [Deployment](/docs/deployment/bun).
+Cloudflare Workers, Deno, and Vercel pass AOT `apiRoutes`: those runtimes have no filesystem at request time. See [Deployment](/docs/deployment/bun).
 
 ### createNodeWsBridge(options)
 
@@ -133,6 +133,7 @@ Scaffolded projects split configuration across convention files:
 | `src/hooks.ts` | Global lifecycle hooks |
 | `src/plugins.ts` | Register plugins |
 | `src/providers.ts` | Declare shared services |
+| `src/openapi.config.ts` | OpenAPI metadata, docs UI, docs auth |
 | `burger.build.ts` | Build-time only (CLI) |
 
 ## Related

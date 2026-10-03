@@ -141,11 +141,11 @@ DELETE /api/products   → 405  Allow: GET, HEAD, POST, OPTIONS
 
 ### Automatic HEAD
 
-You do not need to write a separate `HEAD` handler. A `HEAD` request to any route that defines `GET` runs the `GET` handler and returns the same response with the body removed and the `Content-Length` of the GET response reported. The route's validation also applies to `HEAD` requests, so `ctx.validated` is fully populated inside the handler.
+You do not need to write a separate `HEAD` handler. A `HEAD` request to any route that defines `GET` runs the `GET` handler. The server sends no body for `HEAD` and reports the size of a buffered `GET` body through `Content-Length` (a `Content-Length` set by the handler is kept). The route's validation also applies to `HEAD`, except the `body` slot: `HEAD` carries no body, so `ctx.validated.body` stays unset.
 
 ### Automatic OPTIONS
 
-Every route answers `OPTIONS` with `204 No Content` and an `Allow` header, even when you do not export an `OPTIONS` handler. The automatic handler skips `beforeRoute` (so auth hooks do not reject CORS preflights), but `onRequest` hooks still run. A user-defined `OPTIONS` handler takes over and runs the full pipeline. The automatic handler is not listed in the generated OpenAPI document.
+Every route answers `OPTIONS` with `204 No Content` and an `Allow` header, even when you do not export an `OPTIONS` handler. The automatic `Allow` matches the `405` `Allow` exactly: it includes `HEAD` when `GET` exists and always includes `OPTIONS`. The automatic handler skips `beforeRoute` (so auth hooks do not reject CORS preflights), but `onRequest` hooks still run. A user-defined `OPTIONS` handler takes over and runs the full pipeline. The automatic handler is not listed in the generated OpenAPI document.
 
 ### Trailing Slash
 
@@ -261,5 +261,5 @@ Now that you understand static routes, learn about other routing patterns:
 - **[Dynamic Routes](./dynamic-routes.md)** - Capture URL parameters like IDs
 - **[Wildcard Routes](./wildcard-routes.md)** - Handle complex nested paths
 
-Static routes form the backbone of your API. Use them for well-defined endpoints with fixed paths, and combine them with dynamic and wildcard routes for a powerful, flexible routing system.
+Use static routes for well-defined endpoints with fixed paths, and combine them with dynamic and wildcard routes when paths vary.
 

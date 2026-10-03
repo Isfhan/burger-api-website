@@ -4,7 +4,7 @@ sidebar_label: After Hooks
 
 # After Hooks
 
-`afterRoute` runs after the route handler returns. `mapResponse` runs before the response is sent. Both use the response-transform contract: return a function from the hook. The function receives the handler's `Response` and returns a new `Response` (e.g. with added or modified headers).
+`afterRoute` runs after the route handler returns. `mapResponse` runs before the response is sent. Both use the response-transform contract: return a function from the hook. The function receives the current `Response` and returns a new `Response` (e.g. with added or modified headers).
 
 Global (`src/hooks.ts`) and plugin `afterRoute` / `mapResponse` hooks run for **every** response the app produces: matched routes, 404s, 405s, auto-`OPTIONS`, errors rendered by `onError`, pages, assets, `/docs` and `/openapi.json`. Route-level response hooks run only for their matched route.
 

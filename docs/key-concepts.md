@@ -21,7 +21,8 @@ See [File-Based Routing](/docs/routing/file-based-routing), [Static API Routes](
 ## Burger instance and configuration
 
 You create one **`Burger`** instance with runtime options (`apiDir`,
-`apiPrefix`, validation settings, OpenAPI metadata). Build-time concerns
+`apiPrefix`, validation settings, and fallback OpenAPI metadata such as
+`title`). Build-time concerns
 (dirs, prefixes, debug) live in **`burger.build.ts`** and are used by the CLI
 only. For WinterCG deployments you pass pre-built **`apiRoutes`** instead of
 directories.
@@ -69,7 +70,7 @@ See [Zod Validation](/docs/validation/zod), [Schema Definition](/docs/validation
 
 ## OpenAPI
 
-BurgerAPI can **generate an OpenAPI 3.0 specification** from your routes and
+BurgerAPI can **generate an OpenAPI 3.1 specification** from your routes and
 schemas and serve an interactive docs UI.
 
 See [OpenAPI & Swagger](/docs/api/openapi).

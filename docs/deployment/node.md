@@ -13,8 +13,9 @@ don't hand-write an `IncomingMessage`⇄`Request` bridge yourself.
 ## How it works
 
 - `serve(app, options?)` starts a real `node:http` server and returns it.
-- Routes are declared via `apiRoutes` (AOT), the same as every other WinterCG
-  target; plain Node has no dev-time filesystem route scanner either.
+- The `--target=node` build compiles routes ahead of time (AOT) into the
+  bundle, the same as every other WinterCG target. The server never scans the
+  filesystem, and there is no file-watching dev server on Node.
 - If the app has WebSocket routes configured (`wsRoutes`, `wsDir`, or
   `app.websocket()`), `serve()` wires `createNodeWsBridge()` and the `ws`
   package automatically, since Node has no `fetch`-handler upgrade path of its
@@ -109,11 +110,8 @@ const burger = new Burger({
 ## Run
 
 ```bash
-# Node 22.18+ / 24+ run TypeScript directly (type stripping is on by default)
+# Node 24+ runs TypeScript directly (type stripping is on by default)
 node src/server.ts
-
-# Node 22.6 to 22.17 need the flag
-node --experimental-strip-types src/server.ts
 
 # or build first with your own toolchain (tsc, esbuild, bun build --target node)
 ```

@@ -72,10 +72,14 @@ export default { fetch: toFetchHandler(burger) };
 
 ```toml
 name = "my-api"
-main = "src/index.ts"
-compatibility_date = "2025-01-01"
+main = ".build/cloudflare/index.ts"
+compatibility_date = "2025-06-01"
 compatibility_flags = ["nodejs_compat"]
 ```
+
+The CLI writes this file when it is missing, with `main` pointing at the
+generated entry. For the hand-written `src/index.ts` entry above, set
+`main = "src/index.ts"` instead.
 
 ## Run locally
 

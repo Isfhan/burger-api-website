@@ -18,7 +18,7 @@ export async function GET(ctx: BurgerContext) {
 }
 ```
 
-- `ctx.set.status` overrides the response status only when defined.
+- `ctx.set.status` overrides the response status only when defined, and never replaces an error status (`400` or higher). Errors stay errors.
 - `ctx.set.headers` is merged over the response's existing headers; explicit values win.
 - `ctx.set.headers` is always defined (created on first access), so `ctx.set.headers["x-id"] = value` never throws.
 - An array value appends each entry. A scalar `set-cookie` is appended, so a cookie set by the handler and one set through `ctx.set` both survive.

@@ -4,7 +4,7 @@ sidebar_label: "Configuration"
 
 # Configuration
 
-BurgerAPI uses four clear configuration layers.
+BurgerAPI uses five clear configuration layers.
 
 | Layer | Where | Purpose |
 |-------|--------|---------|
@@ -50,7 +50,7 @@ export default {
 
 1. Absolute path, used as-is.
 2. Relative to the project root, for example `./src/api`.
-3. Relative to the entry file's directory, when the app runs via `burger-api dev` or `burger-api build`. For the default entry `src/index.ts`, that directory is `src/`, so `apiDir: "api"` finds `src/api`.
+3. Relative to the entry file's directory, when the CLI is loading or scanning the app (`burger-api dev`, `build`, `inspect`, `doctor`). For the default entry `src/index.ts`, that directory is `src/`, so `apiDir: "api"` finds `src/api`.
 
 Both forms work with the default scaffold layout:
 
@@ -170,6 +170,10 @@ Every configuration layer has a type.
 The types you use (all from `burger-api`):
 
 - `ServerOptions`: the `new Burger({...})` options
+- `OpenAPIConfig`: the `src/openapi.config.ts` default export
+- `BuildConfig`: the `burger.build.ts` export
+- `RouteConfig`: the `config.ts` options (augment it to type your keys)
+- `GlobalHooks`: the `src/hooks.ts` named exports
 - `RouteDefinition`: a route with handlers, schema, and openapi metadata
 - `RouteSchema`: a route's full schema map
 - `HTTPMethod`: the allowed method names

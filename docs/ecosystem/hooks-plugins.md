@@ -23,7 +23,7 @@ export const onRequest = [cors({ origin: ["https://app.example.com"] })];
 
 ## Plugins
 
-Plugins are application extensions. They package hooks and inject request-scoped values onto `BurgerContext` through `transform` (for example `ctx.user` or `ctx.apiKey`). They cannot register providers: services are registered in `src/providers.ts` with `burger.provide()`.
+Plugins are application extensions. They package hooks and inject request-scoped values onto `BurgerContext` (for example `ctx.apiKey` from `transform`, or `ctx.user` from `beforeRoute`). They cannot register providers: services are registered in `src/providers.ts` with `burger.provide()`.
 
 - **What they do:** integrate with the application, often combining hooks with route `config.ts` (for example, auth).
 - **Where they live:** `ecosystem/plugins/` after install.

@@ -18,22 +18,24 @@ with one flag.
 burger-api create my-api --lang js
 ```
 
-This creates the same project as `--lang ts`, with one difference: instead of
-`tsconfig.json` you get a `jsconfig.json` that enables type-checking of JSDoc
-annotations:
+This creates the same project as `--lang ts` with `.js` files and no
+`src/types.ts`. Instead of `tsconfig.json` you get a `jsconfig.json` that
+enables type-checking of JSDoc annotations:
 
 ```json
 {
   "compilerOptions": {
-    "lib": ["ESNext"],
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "target": "ESNext",
     "module": "ESNext",
     "moduleDetection": "force",
+    "jsx": "react-jsx",
     "checkJs": true,
     "strict": true,
     "noImplicitAny": true,
     "noUncheckedIndexedAccess": true,
     "moduleResolution": "bundler",
+    "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "noEmit": true
@@ -42,7 +44,7 @@ annotations:
 }
 ```
 
-With `checkJs` on, your editor type-checks your JSDoc against the shipped `burger-api` type declarations, so you get full IntelliSense without writing a single type annotation in a `.ts` file.
+With `checkJs` on, your editor type-checks your JSDoc against the shipped `burger-api` type declarations, so you get full IntelliSense without writing a single type annotation in a `.ts` file. All of it lives in `.js` comments.
 
 ## Route files
 
@@ -70,8 +72,8 @@ Because JavaScript has no `import type`, you reference framework types
 through JSDoc import types:
 
 - `@param {import('burger-api').BurgerContext} ctx` for handlers and hooks.
-- `@type {import('burger-api').Hook}` or `@type {import('burger-api').Plugin}`
-  for hook factories and plugins.
+- `@type {import('burger-api').Hook}` for hook functions and
+  `@type {import('burger-api').Plugin}` for plugins.
 - `@returns {Promise<Response>}` keeps handlers explicitly typed.
 
 There is no runtime cost: JSDoc types are comments and are erased by Bun.

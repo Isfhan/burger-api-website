@@ -4,7 +4,7 @@ sidebar_label: Global Hooks
 
 # Global Hooks
 
-Global hooks run on every request. Define them in `src/hooks.ts` with one named export per hook point:
+Global hooks are defined once and applied across the app. Define them in `src/hooks.ts` with one named export per hook point:
 
 ```ts
 // src/hooks.ts
@@ -46,9 +46,11 @@ export const transform: GlobalHooks["transform"] = {
 };
 ```
 
-Built-in fields are reserved and cannot be replaced: `params`, `wildcardParams`, `query`, `cookies`, `headers`, `method`, `url`, `signal`, `body`, `bodyUsed`, `validated`, `set`, `route`, `request`, `services`, `config`, `env`, `executionCtx`, `ip`, and internal `_`-prefixed keys. A transform entry with a reserved name is dropped (with a warning in debug mode). Global transform entries apply before route-level entries, so a route can override a global value.
+Built-in fields are reserved and cannot be replaced: every field, getter and method on `BurgerContext` (for example `params`, `query`, `json`, `route`, `set`, `services`, `ip`) plus internal names such as `cache` and `_`-prefixed keys. A transform entry with a reserved name throws at startup, so the typo is fixed before a request runs. Global transform entries apply before route-level entries, so a route can override a global value.
 
-Use global hooks for logging, CORS, auth checks, or any logic that should run for all routes. See [Hook System](/docs/hooks/system) and [Ecosystem](/docs/ecosystem/introduction).
+`onRequest`, `afterRoute` and `mapResponse` run for every response the app produces, including pages, assets, `/docs` and `/openapi.json`. `transform` and `beforeRoute` run for matched API routes and WebSocket upgrades.
+
+Use global hooks for logging, CORS, auth checks, or any logic that should run across routes. See [Hook System](/docs/hooks/system) and [Ecosystem](/docs/ecosystem/introduction).
 
 
 ## Related

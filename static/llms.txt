@@ -25,23 +25,23 @@
 - [Request Context](https://burger-api.com/docs/core/request-handling): Every handler and hook receives a BurgerContext (ctx), the request context for that request.
 - [Hooks](https://burger-api.com/docs/core-concepts/hooks): Hooks control when code runs on a request.
 - [Validation](https://burger-api.com/docs/core-concepts/validation): Validation checks the incoming request at a fixed point in the lifecycle: after transform, before beforeRoute.
-- [Configuration](https://burger-api.com/docs/core/configuration): BurgerAPI uses four clear configuration layers.
+- [Configuration](https://burger-api.com/docs/core/configuration): BurgerAPI uses five clear configuration layers.
 - [Response Types](https://burger-api.com/docs/core/response-types): Route handlers and hooks return Response objects.
 
 ### Routing
 
 - [File-Based Routing](https://burger-api.com/docs/routing/file-based-routing): BurgerAPI uses file-based routing: the folders and files under your apiDir (with apiPrefix applied) become the URL paths.
 - [Static Routes](https://burger-api.com/docs/routing/api/static-routes): Static routes are the foundation of BurgerAPI's file-based routing system.
-- [Route Groups](https://burger-api.com/docs/routing/api/route-groups): Route groups allow you to organize your API route files into logical folders without affecting the URL structure.
-- [Dynamic Routes](https://burger-api.com/docs/routing/api/dynamic-routes): Dynamic routes allow you to capture values from the URL and use them in your route handlers.
-- [Wildcard Routes](https://burger-api.com/docs/routing/api/wildcard-routes): Wildcard routes let you create catch-all routes that match any number of path segments after a certain point in the URL.
+- [Route Groups](https://burger-api.com/docs/routing/api/route-groups): Route groups organize API route files into logical folders without affecting the URL structure.
+- [Dynamic Routes](https://burger-api.com/docs/routing/api/dynamic-routes): Dynamic routes capture values from the URL and make them available in your route handlers.
+- [Wildcard Routes](https://burger-api.com/docs/routing/api/wildcard-routes): Wildcard routes are catch-all routes that match any number of path segments after a certain point in the URL.
 - [Nested Routes](https://burger-api.com/docs/routing/api/nested-routes): Nested routes are built from folder depth: each folder under your apiDir adds one segment to the URL.
 - [Static Pages](https://burger-api.com/docs/routing/pages/static-pages): Beyond APIs, BurgerAPI can serve static HTML files by leveraging the same intuitive file-based routing conventions.
 
 ### Hooks
 
 - [Hook System](https://burger-api.com/docs/hooks/system): BurgerAPI uses a hook-based request lifecycle.
-- [Global Hooks](https://burger-api.com/docs/hooks/global): Global hooks run on every request.
+- [Global Hooks](https://burger-api.com/docs/hooks/global): Global hooks are defined once and applied across the app.
 - [Route Hooks](https://burger-api.com/docs/hooks/route-specific): Route hooks run only for a given route.
 - [Hook Return Types](https://burger-api.com/docs/hooks/return-types): A hook can return one of three things:
 - [After Hooks](https://burger-api.com/docs/hooks/after): afterRoute runs after the route handler returns.
@@ -76,10 +76,10 @@
 - [Basic Route Example](https://burger-api.com/docs/examples/basic-route): A minimal API route that responds to GET:
 - [Hello World API](https://burger-api.com/docs/tutorials/hello-world): In this tutorial, you'll create your first BurgerAPI application: a simple "Hello World" API that demonstrates the core concepts of file-based routing and automatic documentation generation.
 - [Todo List API](https://burger-api.com/docs/tutorials/todo-api): In this tutorial, you'll build a complete CRUD (Create, Read, Update, Delete) API for managing a todo list.
-- [CRUD API](https://burger-api.com/docs/examples/crud-api): A complete products API with list, read, create, update, and delete, using file-based routing, Zod validation, lazy query access, and ctx.set.
+- [CRUD API](https://burger-api.com/docs/examples/crud-api): A complete products API with list, read, create, update, and delete, using file-based routing, Zod validation, and ctx.set.
 - [Blog API](https://burger-api.com/docs/tutorials/blog-api): In this final tutorial, you'll build a sophisticated blog API with multiple related resources (posts and comments), hooks, plugins, nested routes, and advanced features.
 - [Authentication](https://burger-api.com/docs/examples/authentication): Protect routes with an auth plugin.
-- [Pagination](https://burger-api.com/docs/examples/pagination): Paginate a list using ctx.query and advertise totals via ctx.set.
+- [Pagination](https://burger-api.com/docs/examples/pagination): Paginate a list using a validated query and advertise totals via ctx.set.
 - [Validation Example](https://burger-api.com/docs/examples/validation): Validate query and body with per-method schemas in schema.ts, then read the validated data from ctx.validated.
 - [Hooks Example](https://burger-api.com/docs/examples/hooks): Using global and route-specific hooks:
 - [Complete Project Example](https://burger-api.com/docs/examples/complete-project): A full BurgerAPI project follows the 1.0 layout.
@@ -107,15 +107,15 @@
 - [List Command](https://burger-api.com/docs/cli/list): burger-api list (alias: ls) shows all available hooks and plugins from the official ecosystem.
 - [Skills Command](https://burger-api.com/docs/cli/skills): burger-api skills manages AI agent skills for your project.
 - [Dev Command](https://burger-api.com/docs/cli/dev): burger-api dev runs your API in development mode with hot reload.
-- [Build Command](https://burger-api.com/docs/cli/build): burger-api build builds your project for a deployment target.
-- [Build Exec Command (build:exec)](https://burger-api.com/docs/cli/build-exec): burger-api build:exec compiles your project into a standalone executable that runs without Bun installed.
+- [Build Command](https://burger-api.com/docs/cli/build): burger-api build [file] builds your project for a deployment target.
+- [Build Exec Command (build:exec)](https://burger-api.com/docs/cli/build-exec): burger-api build:exec [file] compiles your project into a standalone executable that runs without Bun installed.
 - [Inspect Command](https://burger-api.com/docs/cli/inspect): burger-api inspect prints a summary of everything the CLI discovers in your project: config, routes, hooks, plugins, and convention-file coverage.
 - [Doctor Command](https://burger-api.com/docs/cli/doctor): burger-api doctor validates your project structure and reports issues: a quick health check before you dig into a bug that might just be a missing file.
 
 ### Deployment
 
 - [Runtimes & Compatibility](https://burger-api.com/docs/compatibility): BurgerAPI is Bun-first and WinterCG-compatible.
-- [Deploy on Bun](https://burger-api.com/docs/deployment/bun): Bun is BurgerAPI's primary runtime.
+- [Deploy on Bun](https://burger-api.com/docs/deployment/bun): Bun is BurgerAPI's primary runtime and needs Bun 1.4.0 or newer.
 - [Deploy on Node.js](https://burger-api.com/docs/deployment/node): Run BurgerAPI on plain Node.js: a real long-lived node:http server, not just the WinterCG fetch entry other targets use.
 - [Deploy on Cloudflare Workers](https://burger-api.com/docs/deployment/cloudflare): BurgerAPI apps are WinterCG-compatible, so the same code that runs on Bun runs on Cloudflare Workers through the web-standard adapter.
 - [Deploy on Vercel](https://burger-api.com/docs/deployment/vercel): Deploy BurgerAPI to Vercel as a web-standard Function.

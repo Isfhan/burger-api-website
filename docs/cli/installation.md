@@ -16,7 +16,7 @@ Or use it without installing:
 bunx @burger-api/cli create my-project
 ```
 
-For standalone executables, manual Bun setup, and GitHub Releases downloads, see [Installation](/docs/getting-started/installation).
+For standalone executables and manual Bun setup, see [Installation](/docs/getting-started/installation).
 
 
 ## Related

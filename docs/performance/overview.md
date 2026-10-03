@@ -8,11 +8,7 @@ BurgerAPI is built to keep the request path fast and predictable. The speed come
 
 ## Hybrid router
 
-On Bun, `serve()` registers every route (static, `:param`, wildcard) as a per-method native Bun route. The fetch handler path (Cloudflare, Deno, Vercel, Node) uses a fast radix matcher. Each request is matched on the strategy that fits it, so common traffic is as fast as the runtime allows and expressive routes stay cheap to match.
-
-## Native Bun routing
-
-By leaning on Bun's built-in HTTP router, BurgerAPI avoids a catch-all handler that would do the routing in our own code. This removes a layer of extra work for the most frequent kind of request.
+On Bun, `serve()` registers every route (static, `:param`, wildcard) as a per-method native Bun route, so the most frequent requests avoid a catch-all handler that would do the routing in our own code. The fetch handler path (Cloudflare, Deno, Vercel, Node) uses a fast radix matcher. Each request is matched on the strategy that fits it, so common traffic is as fast as the runtime allows and expressive routes stay cheap to match.
 
 ## Lazy query parsing
 
@@ -24,13 +20,11 @@ Each request gets one context object built from the same template. It is cheap t
 
 ## Efficient request processing
 
-Hooks, validation, and response handling run in one set of processing steps (a pipeline). Response changes collected in `ctx.set` are applied in a single step at the end, and when nothing is set the original `Response` is returned without rebuild. Using less memory in the code that runs for every request keeps response times steady under heavy load.
-
-These choices keep response times steady under heavy load.
+Hooks, validation, and response handling run in one pipeline. Response changes collected in `ctx.set` are applied in a single step at the end, and when nothing is set the original `Response` is returned without rebuild.
 
 ## JIT-compiled hook plans
 
-Each route's hooks (`transform`, validation, `beforeRoute`, `afterRoute`, `mapResponse`) are flattened once at boot into a plan, and that plan (on by default, capability-probed per process) is JIT-compiled into a single function instead of being walked with a generic loop on every request. Runtimes that forbid dynamic code generation (Cloudflare Workers) silently keep the interpreter; nothing breaks, it's just not faster there. The JIT compiler is capability-probed per process and enabled by default.
+Each route's hooks (`transform`, validation, `beforeRoute`, `afterRoute`, `mapResponse`) are flattened once at boot into a plan, and that plan (on by default, capability-probed per process) is JIT-compiled into a single function instead of being walked with a generic loop on every request. Runtimes that forbid dynamic code generation (Cloudflare Workers) silently keep the interpreter; nothing breaks, it's just not faster there.
 
 ## Related
 

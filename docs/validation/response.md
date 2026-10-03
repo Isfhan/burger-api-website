@@ -4,7 +4,7 @@ sidebar_label: Response Validation
 
 # Response Validation
 
-BurgerAPI can also check what your handler **returns**. Declare a `response` schema and BurgerAPI validates the handler's output after it runs, helping you catch contract drift and bugs early.
+BurgerAPI can also check what your handler **returns**. Declare a `response` schema and BurgerAPI validates the handler's output after it runs, helping you catch contract drift and bugs early. Only JSON responses are checked: `application/json` and `application/*+json` (for example `application/vnd.api+json`) are validated. Other content types are skipped.
 
 ## Example
 
@@ -42,7 +42,7 @@ The default `dev` mode means adding a `response` schema is **free and safe**: ex
 
 ## Status selection
 
-BurgerAPI picks the schema by status code: an exact code first (`200`), then a class (`2xx`). So `response: { "2xx": ... }` covers every success status.
+BurgerAPI picks the schema by status code: an exact code first (`200`), then a class (`2xx`). So `response: { "2xx": ... }` covers every success status. A key that is neither a status code nor a class, such as `good`, can never be selected, so it fails at startup with an error naming the route, method and key. Use a status code (`"200"`) or a lowercase status class (`"2xx"`).
 
 ## When to use it
 
@@ -74,16 +74,7 @@ import type { GET } from "./schema";
 type StatusResponse = z.infer<typeof GET.response["200"]>; // { ok: boolean }
 ```
 
-❌ Wrong. The schema key is not a status code or class:
-
-```typescript
-export const GET = {
-    // ❌ Only status codes like "200" or classes like "2xx" are valid
-    response: { good: z.object({ ok: z.boolean() }) },
-};
-```
-
-The runtime check happens after the handler; for strict typing of what the handler produces, keep the schema and handler in the same file pair. See the [TypeScript overview](/docs/advanced/type-safety).
+The runtime check happens after the handler; for strict typing of what the handler produces, keep the schema and handler in the same route directory and pass the schema export to `defineRoute`. See the [TypeScript overview](/docs/advanced/type-safety).
 
 Check your code: `bun run typecheck`.
 

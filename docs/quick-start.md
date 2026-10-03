@@ -17,12 +17,11 @@ Full install options (standalone executable, manual setup): [Installation](/docs
 
 This is the short version. For every install method, see [Installation](/docs/getting-started/installation).
 
-1. **Install the CLI** (if you have Bun) or use **bunx** without installing:
+1. **Install the CLI** (if you have Bun), or run it with **bunx** without installing:
 
     ```bash
     bun add -g @burger-api/cli
-    # or, no install needed:
-    bunx @burger-api/cli create my-app
+    # no install needed: bunx @burger-api/cli <command>
     ```
 
 2. **Create a project, enter it, and start the dev server:**

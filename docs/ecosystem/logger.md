@@ -25,10 +25,10 @@ export const beforeRoute = [logger()];
 - `colors`: colorized output. Default `true`.
 - `format`: `"text"` or `"json"`.
 - `logQuery`, `logHeaders`, `logBody`: extra request details. Default `false`. `logBody` may log sensitive data; use only in development.
-- `requestId`: attach and log a request ID, read from `requestIdHeader` when present. Default `true`. The ID is available as `ctx.requestId` (set by the hook, not declared through module augmentation).
-- `requestIdHeader`: header the request ID is read from and echoed on. Default `"X-Request-ID"`.
+- `requestId`: attach and log a request ID, read from `requestIdHeader` when present. Default `true`. The ID is available as `ctx.requestId` (typed by the hook's module augmentation).
+- `requestIdHeader`: header an existing request ID is read from. Default `"X-Request-ID"`.
 - `includeRequestIdInLog`: include the ID in each log line. Default `true`.
-- `skip`: a string, regex, or function to skip certain requests.
+- `skip`: a string, regex, or function to skip certain requests. Strings and regexes match the request pathname, not the full URL.
 - `formatter`: custom log format.
 - `logFn`: custom output function (file, external service).
 

@@ -30,9 +30,9 @@ export async function GET(ctx: BurgerContext) {
 }
 ```
 
-A route's `hooks.ts` can export any of: `transform`, `beforeRoute`, `afterRoute`, `mapResponse`, `onError`. `onRequest` is app-level only: define it in `src/hooks.ts` or a plugin, never in a route's `hooks.ts` (declaring `onRequest` there is a compile error, since it runs before a route is matched).
+A route's `hooks.ts` can export any of: `transform`, `beforeRoute`, `afterRoute`, `mapResponse`, `onError`. `onRequest` is app-level only: define it in `src/hooks.ts` or a plugin, never in a route's `hooks.ts`. It runs before a route is matched, so a route-level export is ignored with a warning (and a `RouteHooks`-typed object rejects it at compile time).
 
-Route hooks run after global hooks and validation, and before the route handler. There is no folder or group inheritance: hooks apply only to their own route directory.
+Route `beforeRoute` hooks run after global `beforeRoute` hooks and after validation, before the handler. Route `transform` entries run after global ones, before validation. There is no folder or group inheritance: hooks apply only to their own route directory.
 
 Use route hooks for admin checks, loading route-specific data, or any logic that applies to a single endpoint. See [Hook System](/docs/hooks/system).
 
@@ -49,6 +49,8 @@ export const { beforeRoute } = defineHooks(GetSchema, {
   },
 });
 ```
+
+Hooks run for every method of the route, so a slot that only one method declares (like `body`) is typed possibly `undefined`. Read it with `ctx.validated.body?.name`.
 
 See [Type Safety](/docs/advanced/type-safety).
 

@@ -32,7 +32,7 @@ If the `x-api-key` header is missing or empty, BurgerAPI responds with `422` and
 
 ## Notes
 
-- Header names are matched case-insensitively.
+- BurgerAPI lowercases incoming header names before validation, so declare header keys in lowercase (`"x-api-key"`). A schema key with capitals, such as `"X-Api-Key"`, can never match, so it fails at startup with an error naming the key and its lowercase form.
 - Headers are text, so enable [coercion](/docs/validation/coercion) if you expect typed header values.
 - Cookie values are validated separately. See [Cookie Validation](/docs/validation/cookie).
 

@@ -42,7 +42,7 @@ plugins, providers, OpenAPI generation, and WebSocket under `src/websocket/`.
 
 ### Runtime
 
-- Bun ≥ 1.3.0 primary; Node 24+ and WinterCG edge where practical
+- Bun ≥ 1.4.0 primary; Node 24+ and WinterCG edge where practical
 - Zod ^4 / Standard Schema
 
 ### Project shape
