@@ -116,7 +116,7 @@ export function Hero() {
                 v{fields.frameworkVersion || "1.0.0"}
               </Badge>
               <Badge icon={Zap} variant="info">
-                {fields.bunVersion || "Bun 1.3.0+"}
+                {fields.bunVersion || "Bun 1.4.0+"}
               </Badge>
               <GitHubStars />
             </motion.div>

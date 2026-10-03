@@ -72,7 +72,7 @@ const config: Config = {
   customFields: {
     status: "Public Beta",
     license: "MIT License",
-    bunVersion: "Bun 1.3.0+",
+    bunVersion: "Bun 1.4.0+",
     frameworkVersion: "1.0.0-beta",
     getStartedUrl: "/docs/",
     githubUrl: "https://github.com/isfhan/burger-api",

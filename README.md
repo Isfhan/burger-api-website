@@ -5,7 +5,7 @@ Built with Docusaurus and Bun.
 
 ## Requirements
 
-- Bun 1.3.0 or newer
+- Bun 1.4.0 or newer
 
 ## Setup
 
