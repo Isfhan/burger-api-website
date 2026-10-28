@@ -312,7 +312,7 @@ After (`1.0.0-beta`), scripts call the CLI, which the project should carry as a 
     "dev": "burger-api dev",
     "start": "burger-api start",
     "build": "burger-api build src/index.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "bun check"
   },
   "devDependencies": {
     "@burger-api/cli": "^1.0.0-beta"

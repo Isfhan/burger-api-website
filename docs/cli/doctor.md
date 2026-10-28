@@ -12,6 +12,8 @@ burger-api doctor
 
 It checks, in order:
 
+- Bun is 1.4.4 or newer (older versions miss the October 2026 security fixes): an older Bun is an error.
+- When Node is installed, it is 24.22.1+ or 26.12.1+ (needed only for the `node` build target): an older Node is a warning.
 - `package.json` exists.
 - `burger-api` is listed in `dependencies`/`devDependencies` and resolves from the project. A listed but not installed package tells you to run `bun install`.
 - A build config (`burger.build.ts`/`.js`, or the legacy `burger.config.ts`/`.js`): when found it must load, otherwise the check fails. When missing, the check is informational and convention defaults apply.

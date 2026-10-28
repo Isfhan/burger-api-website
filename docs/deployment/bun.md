@@ -41,7 +41,7 @@ The generated `package.json` maps the CLI commands to Bun scripts:
     "dev": "burger-api dev",
     "start": "burger-api start",
     "build": "burger-api build src/index.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "bun check"
   }
 }
 ```

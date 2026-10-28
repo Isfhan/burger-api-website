@@ -40,7 +40,7 @@ All fields:
 | `enabled` | `boolean` | Enable the OpenAPI endpoints. Defaults to `true` |
 | `docsAuth` | `DocsAuth` | Basic auth for `/docs` and `/openapi.json` (`{ username, password }`). Omit for no protection |
 | `provider` | `DocsProvider` | Docs UI function. Defaults to Swagger UI; alternatives: `scalarDocs()`, `redocDocs()` |
-| `mapJsonSchema` | `Record<string, JsonSchemaConverter>` | JSON Schema converters for non-Zod validators (Valibot, ArkType, ...) |
+| `mapJsonSchema` | `Record<string, JsonSchemaConverter>` | JSON Schema converters keyed by vendor, for validators that can't describe themselves (for example Valibot) |
 
 `new Burger({ title, version, description })` is a fallback for programmatic apps that do not use the convention file. When both exist, `openapi.config.ts` wins.
 
@@ -76,7 +76,8 @@ The `openapi` type allows `summary`, `description`, `tags`, `operationId`, `depr
 - A `requestBody` is marked `required` only when the body schema rejects `undefined`. `z.object({ ... }).optional()` produces `required: false`.
 - Wildcard routes document the wildcard as a `{wildcard}` path parameter that may contain slashes.
 - Param names may contain `-` and `_`; `[user-id]` documents as `{user-id}`.
-- Standard Schema libraries (Valibot, ArkType, ...) emit parameters by name. With a `mapJsonSchema` converter the parameter gets the real schema; without one it gets `schema: {}` instead of being dropped.
+- Validators that support [Standard JSON Schema](https://standardschema.dev) (Zod, ArkType, ...) are documented automatically, with no converter.
+- Other Standard Schema libraries (for example Valibot) emit parameters by name. With a `mapJsonSchema` converter the parameter gets the real schema; without one it gets `schema: {}` instead of being dropped. A `mapJsonSchema` converter always wins over the built-in conversion.
 - `docsAuth` accepts any UTF-8 username/password, including accented characters.
 
 ## Docs UI providers
