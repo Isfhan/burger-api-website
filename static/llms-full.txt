@@ -1116,7 +1116,7 @@ After (`1.0.0-beta`), scripts call the CLI, which the project should carry as a 
     "dev": "burger-api dev",
     "start": "burger-api start",
     "build": "burger-api build src/index.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "bun check"
   },
   "devDependencies": {
     "@burger-api/cli": "^1.0.0-beta"
@@ -5517,7 +5517,7 @@ All fields:
 | `enabled` | `boolean` | Enable the OpenAPI endpoints. Defaults to `true` |
 | `docsAuth` | `DocsAuth` | Basic auth for `/docs` and `/openapi.json` (`{ username, password }`). Omit for no protection |
 | `provider` | `DocsProvider` | Docs UI function. Defaults to Swagger UI; alternatives: `scalarDocs()`, `redocDocs()` |
-| `mapJsonSchema` | `Record<string, JsonSchemaConverter>` | JSON Schema converters for non-Zod validators (Valibot, ArkType, ...) |
+| `mapJsonSchema` | `Record<string, JsonSchemaConverter>` | JSON Schema converters keyed by vendor, for validators that can't describe themselves (for example Valibot) |
 
 `new Burger({ title, version, description })` is a fallback for programmatic apps that do not use the convention file. When both exist, `openapi.config.ts` wins.
 
@@ -5553,7 +5553,8 @@ The `openapi` type allows `summary`, `description`, `tags`, `operationId`, `depr
 - A `requestBody` is marked `required` only when the body schema rejects `undefined`. `z.object({ ... }).optional()` produces `required: false`.
 - Wildcard routes document the wildcard as a `{wildcard}` path parameter that may contain slashes.
 - Param names may contain `-` and `_`; `[user-id]` documents as `{user-id}`.
-- Standard Schema libraries (Valibot, ArkType, ...) emit parameters by name. With a `mapJsonSchema` converter the parameter gets the real schema; without one it gets `schema: {}` instead of being dropped.
+- Validators that support [Standard JSON Schema](https://standardschema.dev) (Zod, ArkType, ...) are documented automatically, with no converter.
+- Other Standard Schema libraries (for example Valibot) emit parameters by name. With a `mapJsonSchema` converter the parameter gets the real schema; without one it gets `schema: {}` instead of being dropped. A `mapJsonSchema` converter always wins over the built-in conversion.
 - `docsAuth` accepts any UTF-8 username/password, including accented characters.
 
 ## Docs UI providers
@@ -8870,6 +8871,8 @@ burger-api doctor
 
 It checks, in order:
 
+- Bun is 1.4.4 or newer (older versions miss the October 2026 security fixes): an older Bun is an error.
+- When Node is installed, it is 24.22.1+ or 26.12.1+ (needed only for the `node` build target): an older Node is a warning.
 - `package.json` exists.
 - `burger-api` is listed in `dependencies`/`devDependencies` and resolves from the project. A listed but not installed package tells you to run `bun install`.
 - A build config (`burger.build.ts`/`.js`, or the legacy `burger.config.ts`/`.js`): when found it must load, otherwise the check fails. When missing, the check is informational and convention defaults apply.
@@ -9038,7 +9041,7 @@ The generated `package.json` maps the CLI commands to Bun scripts:
     "dev": "burger-api dev",
     "start": "burger-api start",
     "build": "burger-api build src/index.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "bun check"
   }
 }
 ```
