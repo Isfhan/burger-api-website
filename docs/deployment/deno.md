@@ -4,8 +4,15 @@ sidebar_position: 5
 
 # Deploy on Deno
 
-Deploy BurgerAPI to Deno Deploy (or any Deno server) through the
-web-standard adapter. The same WinterCG entry works on Deno, Cloudflare
+:::warning Deno is in maintenance mode
+In October 2026 the Deno team [joined Cloudflare](https://deno.com/blog/cloudflare).
+The Deno runtime gets bug-fix and security releases for about one year, and
+Deno Deploy shuts down about six months after the announcement. BurgerAPI keeps
+the Deno target working, but for new hosted projects we recommend
+[Cloudflare Workers](/docs/deployment/cloudflare): the same entry file works there.
+:::
+
+Run BurgerAPI on any Deno server through the web-standard adapter. The same WinterCG entry works on Deno, Cloudflare
 Workers, and Vercel; only the entry file and platform config differ.
 
 ## How it works
@@ -15,8 +22,8 @@ Workers, and Vercel; only the entry file and platform config differ.
   `sloppy-imports` so extensionless relative imports resolve.
 - `src/index.ts` exports the `deno serve` shape:
   `export default { fetch: toFetchHandler(burger) }`.
-- Routes are declared via `apiRoutes` (AOT). Deno Deploy has no filesystem,
-  so there is no runtime route scanning.
+- Routes are declared via `apiRoutes` (AOT), so there is no runtime route
+  scanning.
 - The module graph contains no `bun` imports.
 
 ## Quick start: `burger-api build --target=deno`
@@ -90,9 +97,10 @@ deno serve --port 8000 src/index.ts
 
 ## Deploy
 
-Push the project to Deno Deploy and point it at the generated
+Run `deno serve` on your own server or container with the generated
 `.build/deno/index.ts` entry (or your own `src/index.ts` if you wrote the
-entry by hand).
+entry by hand). To move a Deno Deploy project, deploy the same entry to
+[Cloudflare Workers](/docs/deployment/cloudflare) instead.
 
 ## Related
 

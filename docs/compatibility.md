@@ -76,7 +76,7 @@ small, bundled assets (an icon, a manifest), not as a CDN replacement.
 
 ## What the non-Bun targets need
 
-Cloudflare Workers, Vercel, and Deno Deploy have no persistent filesystem at
+Cloudflare Workers and Vercel have no persistent filesystem at
 request time, so:
 
 - Routes must be **compiled ahead of time (AOT)**. `burger-api build

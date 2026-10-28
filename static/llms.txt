@@ -119,7 +119,7 @@
 - [Deploy on Node.js](https://burger-api.com/docs/deployment/node): Run BurgerAPI on plain Node.js: a real long-lived node:http server, not just the WinterCG fetch entry other targets use.
 - [Deploy on Cloudflare Workers](https://burger-api.com/docs/deployment/cloudflare): BurgerAPI apps are WinterCG-compatible, so the same code that runs on Bun runs on Cloudflare Workers through the web-standard adapter.
 - [Deploy on Vercel](https://burger-api.com/docs/deployment/vercel): Deploy BurgerAPI to Vercel as a web-standard Function.
-- [Deploy on Deno](https://burger-api.com/docs/deployment/deno): Deploy BurgerAPI to Deno Deploy (or any Deno server) through the web-standard adapter.
+- [Deploy on Deno](https://burger-api.com/docs/deployment/deno): In October 2026 the Deno team joined Cloudflare.
 
 ### Performance
 
