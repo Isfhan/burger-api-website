@@ -8907,7 +8907,7 @@ hooks, validation, OpenAPI, plugins, providers) runs on Bun in development and
 deploys to five targets via `burger-api build --target=<platform>`: Bun,
 Node.js, Cloudflare Workers, Deno, and Vercel.
 
-The framework and CLI require **Bun 1.4.0 or newer**. Node.js deployments
+The framework and CLI require **Bun 1.4.4 or newer**. Node.js deployments
 target **Node 24+**.
 
 Every claim on this page is backed by one thing: `RUNTIME_CAPABILITIES`, a
@@ -9000,7 +9000,7 @@ url: 'https://burger-api.com/docs/deployment/bun'
 
 # Deploy on Bun
 
-Bun is BurgerAPI's primary runtime and needs Bun 1.4.0 or newer. A Bun
+Bun is BurgerAPI's primary runtime and needs Bun 1.4.4 or newer. A Bun
 deployment uses the Bun adapter directly: `burger.serve(port)` runs a
 long-lived HTTP server with the full feature set (native static route map,
 WebSockets, pages).

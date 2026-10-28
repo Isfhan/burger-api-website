@@ -115,7 +115,7 @@
 ### Deployment
 
 - [Runtimes & Compatibility](https://burger-api.com/docs/compatibility): BurgerAPI is Bun-first and WinterCG-compatible.
-- [Deploy on Bun](https://burger-api.com/docs/deployment/bun): Bun is BurgerAPI's primary runtime and needs Bun 1.4.0 or newer.
+- [Deploy on Bun](https://burger-api.com/docs/deployment/bun): Bun is BurgerAPI's primary runtime and needs Bun 1.4.4 or newer.
 - [Deploy on Node.js](https://burger-api.com/docs/deployment/node): Run BurgerAPI on plain Node.js: a real long-lived node:http server, not just the WinterCG fetch entry other targets use.
 - [Deploy on Cloudflare Workers](https://burger-api.com/docs/deployment/cloudflare): BurgerAPI apps are WinterCG-compatible, so the same code that runs on Bun runs on Cloudflare Workers through the web-standard adapter.
 - [Deploy on Vercel](https://burger-api.com/docs/deployment/vercel): Deploy BurgerAPI to Vercel as a web-standard Function.
