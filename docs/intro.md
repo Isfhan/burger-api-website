@@ -8,7 +8,9 @@ slug: /
 
 BurgerAPI is a Bun-first, WinterCG-compatible framework for building modern APIs with file-based routing, end-to-end type safety, and a clear project structure. TypeScript and JavaScript are both first-class: the same conventions work with `.ts`, `.js`, and `.mjs` route files, and JavaScript projects get full JSDoc type-checking.
 
-`burger-api` and `@burger-api/cli` ship `1.0.0-beta` by default. It is a full rewrite, so please try it and [open an issue](https://github.com/isfhan/burger-api/issues) if anything breaks or feels wrong. [Coming from `0.9.x`?](/docs/migration) The guide covers every breaking change, and the [beta release notes](/blog/burger-api-v1.0.0-beta-release) cover what is new. The `0.9.x` line is still on npm (`burger-api@0.9.7`, `@burger-api/cli@0.9.9`).
+:::info A new BurgerAPI
+`burger-api` and `@burger-api/cli` 1.0.0-beta are rebuilt from the ground up and install by default. Please try them and [open an issue](https://github.com/isfhan/burger-api/issues) if anything breaks or feels wrong. See the [release notes](/blog/burger-api-v1.0.0-beta-release) for what is new. Coming from `burger-api@0.9.7` or `@burger-api/cli@0.9.9`? The [migration guide](/docs/migration) covers every breaking change.
+:::
 
 ### What BurgerAPI is built around
 

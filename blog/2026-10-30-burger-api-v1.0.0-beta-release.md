@@ -5,7 +5,9 @@ authors: [isfhan]
 tags: [release, beta, 1.0, typescript, javascript, wintercg, cli, benchmarks]
 ---
 
-**`burger-api` and `@burger-api/cli` both ship `1.0.0-beta` today: our biggest release yet, and the first since `0.9.7` / `0.9.9` on npm. `bun add burger-api` and `bun add -g @burger-api/cli` install it by default. It's a full rewrite of the framework, not an incremental update, so please try it and [open an issue](https://github.com/isfhan/burger-api/issues) if anything breaks or feels wrong. Coming from `0.9.x`? The [migration guide](/docs/migration) covers every breaking change; the `0.9.x` line is still on npm (`burger-api@0.9.7`, `@burger-api/cli@0.9.9`).**
+**Today we release a new BurgerAPI. `burger-api` and `@burger-api/cli` 1.0.0-beta are rebuilt from the ground up: a new core, a new request lifecycle, and a new CLI. They follow `burger-api@0.9.7` and `@burger-api/cli@0.9.9`, but they are not an update to them. Alongside them, `@burger-api/node-server` 0.1.0 is our first official Node.js server.**
+
+`bun add burger-api` and `bun add -g @burger-api/cli` install the beta by default. Coming from `0.9.x`? The [migration guide](/docs/migration) covers every breaking change, and the `0.9.x` line stays on npm. Please try the beta and [open an issue](https://github.com/isfhan/burger-api/issues) if anything breaks or feels wrong.
 
 {/* truncate */}
 
@@ -70,9 +72,9 @@ export const GET = defineRoute(GetSchema, (ctx) => {
 
 ### Validation and OpenAPI
 
-Validation is Standard Schema, with Zod as the default. Query, params, headers, cookies, and body are all first-class slots, plus optional response validation. Failures return RFC 9457 Problem Details with a `422`.
+Validation is Standard Schema, with Zod as the default and Valibot and ArkType supported. Query, params, headers, cookies, and body are all first-class slots, plus optional response validation. Failures return RFC 9457 Problem Details with a `422`.
 
-The OpenAPI spec and the docs UI are generated from the same schemas. `/openapi.json` serves the spec, `/docs` serves the UI, and Swagger UI, Scalar, and Redoc are all built in.
+The OpenAPI spec and the docs UI are generated from the same schemas. When a schema library can describe itself as JSON Schema (Zod and ArkType can), BurgerAPI uses that output directly. `/openapi.json` serves the spec, `/docs` serves the UI, and Swagger UI, Scalar, and Redoc are all built in.
 
 ```ts
 // src/api/products/schema.ts
@@ -125,8 +127,16 @@ The CLI grew up with the framework:
 - `create` now takes flags: `--lang ts|js`, `--yes`, `--pages`, `--ws`, `--no-api`, `--api-dir`, `--api-prefix`, `--no-skills`.
 - `generate route|ws|hook|plugin` scaffolds in the project's language.
 - `inspect` prints the project's shape, with `--json` for tooling.
-- `doctor` validates the project shape and fails on legacy files, with `--json` too.
+- `doctor` validates the project shape, fails on legacy files, and checks your Bun and Node versions, with `--json` too.
 - `skills` installs AI agent skills for agentic IDEs.
+- New projects use TypeScript 7 and type-check with `bun check`.
+
+## Requirements
+
+- **Bun 1.4.4 or later.**
+- **Node.js 24.22.1+ or 26.12.1+** when you deploy to Node.
+
+These are the October 2026 security releases of each runtime, so we made them the minimum.
 
 ## Faster than before
 
@@ -146,8 +156,10 @@ Measured numbers, the harness, and dated reports live in [burger-api-benchmarks]
 
 Before calling this a beta rather than a draft, we ran it, not just compiled it:
 
-- **More than 1,000 tests pass, 0 failures**: routing, lifecycle, context, validation, the compiler, every adapter, providers, and WebSocket, plus the CLI's own suite.
-- Typecheck and production builds are clean.
+- **Nearly 1,500 tests pass, 0 failures**, on Windows and Linux: routing, lifecycle, context, validation, the compiler, every adapter, providers, and WebSocket, plus the CLI's own suite.
+- The CLI's end-to-end tests create real projects and build them for Bun, Node, Cloudflare Workers, and Deno.
+- Typecheck is clean on TypeScript 5 and 7, and production builds are clean.
+- Every npm package is published with provenance.
 - `@burger-api/node-server`'s adapter is verified against a real `node:http` server and a real two-client WebSocket broadcast, running under plain Node, not simulated.
 - `bun audit`: no known vulnerabilities in the dependency tree.
 
@@ -160,6 +172,7 @@ This is a breaking rewrite: middleware became hooks, `BurgerRequest` became `Bur
 We'd rather list these than have you discover them:
 
 - **Pages (`src/pages/`) are mostly Bun-only.** `serve()` on Bun covers every page feature. On other runtimes, `toFetchHandler` serves function pages and embedded assets; HTML-import pages stay Bun-only. API routes are fully portable across all targets.
+- **WebSocket pub/sub is Bun-only.** `ws.subscribe()`, `ws.publish()`, and `ctx.publish()` use Bun's server. On other runtimes, keep your own list of connections.
 
 ## What's next
 
