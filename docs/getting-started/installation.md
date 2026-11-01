@@ -74,6 +74,28 @@ bun run dev
 
 For detailed CLI usage, check out the [CLI Tool Guide](./cli.md).
 
+### Update to the latest version
+
+:::tip Getting an error?
+Update the CLI and the framework to the latest version first. Most problems are already fixed there.
+:::
+
+- **Installed with Bun:** this replaces the old version.
+
+  ```bash
+  bun add -g @burger-api/cli@latest
+  ```
+
+- **Installed with the install script:** run the same script again. It removes old versions first (a global `@burger-api/cli` from Bun or npm, and the previous executable), then installs the latest one.
+
+- **The framework in your project:**
+
+  ```bash
+  bun add burger-api@latest
+  ```
+
+Run `burger-api --version` to check which version you have. If it still shows an old version, another `burger-api` comes first on your `PATH`: remove it, or run the install script, which tells you where it is.
+
 ---
 
 ## Alternative: Manual Setup (Standard Bun)
