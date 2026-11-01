@@ -4,31 +4,24 @@ sidebar_label: CLI Installation
 
 # CLI Installation
 
-Install the Burger API CLI to create projects, add middleware, and build for production.
-
-## Option 1: Bun global (recommended)
+Install the Burger API CLI to create projects, add hooks and plugins, and build for production.
 
 ```bash
 bun add -g @burger-api/cli
 ```
 
-## Option 2: bunx (no install)
+Or use it without installing:
 
 ```bash
 bunx @burger-api/cli create my-project
 ```
 
-## Option 3: Standalone executable
+For standalone executables and manual Bun setup, see [Installation](/docs/getting-started/installation).
 
-- **macOS/Linux/WSL:** `curl -fsSL https://burger-api.com/install.sh | bash`
-- **Windows PowerShell:** `irm https://burger-api.com/install.ps1 | iex`
 
-Or download from [GitHub Releases](https://github.com/isfhan/burger-api/releases/latest).
+## Related
 
-## Verify
-
-```bash
-burger-api --version
-```
-
-For all commands and workflows, see [CLI Tool](/docs/getting-started/cli).
+- [Create Command](/docs/cli/create)
+- [Add Command](/docs/cli/add)
+- [List Command](/docs/cli/list)
+- [Burger API CLI Tool](/docs/getting-started/cli)

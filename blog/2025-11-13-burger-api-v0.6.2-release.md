@@ -7,6 +7,10 @@ tags: [release, performance, middleware, monorepo]
 
 We're excited to announce the release of **BurgerAPI v0.6.2**! This update focuses on performance optimization, architectural simplification, and improved project structure while maintaining 100% backward compatibility.
 
+:::caution Pre-1.0 release notes
+This post describes a pre-1.0 release, built on the earlier `BurgerRequest`/middleware-based API. The [BurgerAPI v1.0.0-beta rewrite](/blog/burger-api-v1.0.0-beta-release) replaced that API with `BurgerContext` and hooks. Code samples below won't run as-is on 1.0.0-beta. Kept as accurate release history, not a current guide.
+:::
+
 {/* truncate */}
 
 ## 🚀 What's New in v0.6.2
@@ -38,7 +42,7 @@ Different execution paths optimized for common scenarios:
 
 ### Key Optimizations
 
-**AOT (Ahead-of-Time) Compilation**: Routes are now compiled at server startup with pre-computed middleware arrays, reducing runtime overhead.
+**Startup Compilation**: Routes are now compiled at server startup with pre-computed middleware arrays, reducing runtime overhead.
 
 **Zero Runtime Allocations**: Pre-allocated arrays eliminate dynamic memory allocations during request processing.
 

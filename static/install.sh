@@ -133,6 +133,16 @@ fi
 DOWNLOAD_URL="https://github.com/isfhan/burger-api/releases/download/$LATEST_VERSION/$EXECUTABLE_NAME"
 INSTALL_PATH="$INSTALL_DIR/burger-api"
 
+# Remove old versions first, so the new CLI is the only burger-api on PATH
+print_info "Removing old BurgerAPI CLI versions..."
+if command -v bun >/dev/null 2>&1 && bun pm ls -g 2>/dev/null | grep -q "@burger-api/cli"; then
+    bun remove -g @burger-api/cli >/dev/null 2>&1 && print_success "Removed the global Bun package @burger-api/cli" || true
+fi
+if command -v npm >/dev/null 2>&1 && npm ls -g --depth=0 @burger-api/cli >/dev/null 2>&1; then
+    npm uninstall -g @burger-api/cli >/dev/null 2>&1 && print_success "Removed the global npm package @burger-api/cli" || true
+fi
+rm -f "$INSTALL_PATH"
+
 # Download the executable
 print_info "Downloading from GitHub..."
 echo ""
@@ -142,9 +152,14 @@ if curl -fL --progress-bar -H "User-Agent: BurgerAPI-Installer/1.0" -o "$INSTALL
     # Verify checksum when release provides checksums.txt
     CHECKSUMS_URL="https://github.com/isfhan/burger-api/releases/download/$LATEST_VERSION/checksums.txt"
     if CHECKSUMS=$(curl -sfL -H "User-Agent: BurgerAPI-Installer/1.0" "$CHECKSUMS_URL" 2>/dev/null); then
-        EXPECTED_HASH=$(echo "$CHECKSUMS" | grep "$EXECUTABLE_NAME" | grep -oE '`[a-fA-F0-9]{64}`' | tr -d '`' | head -1)
+        # Match the exact file name: "burger-api-mac" must not match "burger-api-mac-intel"
+        EXPECTED_HASH=$(echo "$CHECKSUMS" | grep -F "/$EXECUTABLE_NAME\`:" | grep -oE '`[a-fA-F0-9]{64}`' | tr -d '`' | head -1)
         if [ -n "$EXPECTED_HASH" ]; then
-            ACTUAL_HASH=$(sha256sum "$INSTALL_PATH" | awk '{print $1}')
+            if command -v sha256sum >/dev/null 2>&1; then
+                ACTUAL_HASH=$(sha256sum "$INSTALL_PATH" | awk '{print $1}')
+            else
+                ACTUAL_HASH=$(shasum -a 256 "$INSTALL_PATH" | awk '{print $1}')
+            fi
             if [ "$(echo "$ACTUAL_HASH" | tr '[:upper:]' '[:lower:]')" != "$(echo "$EXPECTED_HASH" | tr '[:upper:]' '[:lower:]')" ]; then
                 rm -f "$INSTALL_PATH"
                 print_error "Checksum verification failed. The downloaded file may be corrupted or modified."
@@ -193,10 +208,7 @@ else
 fi
 
 # Add to PATH - Check if already in PATH first
-if command -v burger-api >/dev/null 2>&1; then
-    print_success "burger-api is already in PATH"
-    refresh_command=""
-elif echo "$PATH" | grep -q "$INSTALL_DIR"; then
+if echo "$PATH" | grep -q "$INSTALL_DIR"; then
     print_success "Already in PATH"
     refresh_command=""
 else
@@ -329,6 +341,13 @@ else
     fi
 fi
 
+# Warn when another burger-api still comes first on PATH
+FOUND_PATH=$(command -v burger-api 2>/dev/null || true)
+if [ -n "$FOUND_PATH" ] && [ "$FOUND_PATH" != "$INSTALL_PATH" ]; then
+    print_error "Another burger-api comes first on your PATH: $FOUND_PATH"
+    print_info "Remove it so the new version runs:  rm \"$FOUND_PATH\""
+fi
+
 # Verify installation
 print_header "Installation Complete!"
 print_success "burger-api has been installed to $INSTALL_PATH"
@@ -341,6 +360,8 @@ echo ""
 print_info "To get started, create a new project:"
 echo ""
 echo "    burger-api create my-awesome-api"
+echo ""
+print_info "Getting an error later? Run this installer again to get the latest version."
 echo ""
 print_success "Happy coding!"
 

@@ -4,15 +4,26 @@ sidebar_label: List Command
 
 # List Command
 
-`burger-api list` (alias: `ls`) shows all available middleware from the official ecosystem.
+`burger-api list` (alias: `ls`) shows all available hooks and plugins from the official ecosystem.
 
 - Fetches the latest list and displays names and descriptions in a table.
-- Use with `burger-api add <name>` to install middleware.
+- Use with `burger-api add <name>` to install hooks or plugins.
+- The catalog is cached locally (`~/.burger-api/cache/`, four hours) so repeat runs don't hit GitHub every time. If GitHub is unreachable, `list` falls back to the cached catalog with a warning instead of failing outright, as long as a cache already exists from a prior successful run.
+- `--local` reads the local checkout instead (no cache, no network). See [Local mode](/docs/getting-started/cli#local-mode).
 
 **Example:**
 
 ```bash
 burger-api list
+burger-api list --local
 ```
 
 See [CLI Tool](/docs/getting-started/cli) and [Ecosystem](/docs/ecosystem/introduction).
+
+
+## Related
+
+- [CLI Installation](/docs/cli/installation)
+- [Create Command](/docs/cli/create)
+- [Add Command](/docs/cli/add)
+- [Burger API CLI Tool](/docs/getting-started/cli)

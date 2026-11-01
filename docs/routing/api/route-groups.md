@@ -4,7 +4,7 @@ sidebar_label: "Route Groups"
 
 # Route Groups
 
-Route groups allow you to organize your API route files into logical folders without affecting the URL structure. This is perfect for keeping large projects organized while maintaining clean, simple URLs.
+Route groups organize API route files into logical folders without affecting the URL structure.
 
 ## What Are Route Groups?
 
@@ -32,7 +32,7 @@ api/
     route.ts           → /api/orders
 ```
 
-All files are at the root level—hard to organize as your API grows.
+All files are at the root level: hard to organize as your API grows.
 
 ### With Route Groups
 
@@ -107,21 +107,33 @@ api/
 
 ### 3. Organizing by Version
 
-Prepare for API versioning without changing URLs:
+Two route groups must never resolve to the same URL. A route group is ignored in the path, so copying a route into a second group creates a duplicate:
 
 ```
 api/
   (v1)/
     users/
       route.ts         → /api/users
-    products/
-      route.ts         → /api/products
   (v2-draft)/
     users/
-      route.ts         → /api/users (new version in development)
+      route.ts         → /api/users  ❌ duplicate: startup fails
 ```
 
-Later, you can switch versions by moving files or changing your apiDir configuration.
+Keep the version in the URL when it matters, using regular folders instead of groups:
+
+```
+api/
+  v1/
+    users/
+      route.ts         → /api/v1/users
+    products/
+      route.ts         → /api/v1/products
+  v2/
+    users/
+      route.ts         → /api/v2/users
+```
+
+Alternatively, serve one version at a time by pointing `apiDir` at a different directory.
 
 ### 4. Organizing by Team
 
@@ -220,7 +232,7 @@ api/
         route.ts            → /api/analytics/[...]
 ```
 
-**Result:** Clean URLs with excellent organization!
+**Result:** Clean URLs with clear organization.
 
 ## Best Practices
 
@@ -309,6 +321,26 @@ Don't use route groups when:
    api/users/route.ts
    ```
 
+## Types for this feature
+
+Route groups do not change the types of a route. A group folder is removed from the URL, and the handlers inside are typed exactly like any other route.
+
+✅ Correct: the handler type is the same as without the group:
+
+```typescript
+// api/(admin)/users/route.ts → /api/users
+import { defineRoute } from "burger-api";
+import { GET as GetSchema } from "./schema";
+
+export const GET = defineRoute(GetSchema, (ctx) => {
+    return Response.json({ ok: true });
+});
+```
+
+There is no group type to learn. For the handler and parameter types, see [Static Routes](/docs/routing/api/static-routes) and [Dynamic Routes](/docs/routing/api/dynamic-routes). See the [TypeScript overview](/docs/advanced/type-safety).
+
+Check your code: `bun run typecheck`.
+
 ## Next Steps
 
 Learn about other routing patterns:
@@ -317,5 +349,5 @@ Learn about other routing patterns:
 - **[Dynamic Routes](./dynamic-routes.md)** - Capture URL parameters
 - **[Wildcard Routes](./wildcard-routes.md)** - Handle complex nested paths
 
-Route groups are a powerful organizational tool. Use them to keep your codebase clean and maintainable as your API grows, without sacrificing URL simplicity.
+Route groups keep your codebase organized as your API grows, without changing URLs.
 

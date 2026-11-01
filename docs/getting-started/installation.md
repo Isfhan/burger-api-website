@@ -19,7 +19,7 @@ BurgerAPI is built for the [Bun.js](https://bun.sh/) runtime. Make sure you have
 
 ## Recommended: Using the Burger API CLI
 
-Burger API comes with a powerful CLI tool that makes it easy to scaffold new projects and manage middleware. Install it globally to get started:
+Burger API comes with a powerful CLI tool that makes it easy to scaffold new projects and manage hooks and plugins. Install it globally to get started:
 
 ### Installation
 
@@ -47,6 +47,16 @@ bunx @burger-api/cli create my-project
   irm https://burger-api.com/install.ps1 | iex
   ```
 
+#### Option 3: Download a binary from GitHub Releases
+
+1. Download the executable for your platform from [GitHub Releases](https://github.com/isfhan/burger-api/releases/latest).
+2. Add the downloaded file to your `PATH`.
+3. On Linux and macOS, make it executable:
+
+   ```bash
+   chmod +x burger-api
+   ```
+
 ### Create your project
 
 Once installed, you can create a new project by running:
@@ -64,6 +74,28 @@ bun run dev
 
 For detailed CLI usage, check out the [CLI Tool Guide](./cli.md).
 
+### Update to the latest version
+
+:::tip Getting an error?
+Update the CLI and the framework to the latest version first. Most problems are already fixed there.
+:::
+
+- **Installed with Bun:** this replaces the old version.
+
+  ```bash
+  bun add -g @burger-api/cli@latest
+  ```
+
+- **Installed with the install script:** run the same script again. It removes old versions first (a global `@burger-api/cli` from Bun or npm, and the previous executable), then installs the latest one.
+
+- **The framework in your project:**
+
+  ```bash
+  bun add burger-api@latest
+  ```
+
+Run `burger-api --version` to check which version you have. If it still shows an old version, another `burger-api` comes first on your `PATH`: remove it, or run the install script, which tells you where it is.
+
 ---
 
 ## Alternative: Manual Setup (Standard Bun)
@@ -77,16 +109,62 @@ If you prefer not to use the CLI, you can set up a project manually using standa
    ```
    Follow the prompts to create a basic Bun project.
 
-2. **Install BurgerAPI:**
-   Add the framework to your dependencies:
+2. **Install BurgerAPI and Zod:**
    ```bash
-   bun add burger-api
+   bun add burger-api zod
    ```
+
+3. **Create your entry file** (`src/index.ts`):
+   ```typescript title="src/index.ts"
+   import { Burger } from "burger-api";
+
+   const app = new Burger({
+     apiDir: "./src/api",
+   });
+
+   const port = Number(process.env.PORT) || 4000;
+   app.serve(port, () => {
+     console.log(`Server running on http://localhost:${port}`);
+   });
+   ```
+
+4. **Create your first route.** The runtime reads validation from a route's `schema.ts`, so declare the schema there and import it into `route.ts`:
+   ```typescript title="src/api/schema.ts"
+   import { z } from "zod";
+   import type { MethodSchema } from "burger-api";
+
+   export const GET = {
+     query: z.object({ name: z.string().default("world") }),
+   } satisfies MethodSchema;
+   ```
+   ```typescript title="src/api/route.ts"
+   import { defineRoute } from "burger-api";
+   import { GET as GetSchema } from "./schema";
+
+   export const GET = defineRoute(GetSchema, (ctx) => {
+     return Response.json({ message: `Hello, ${ctx.validated.query.name}!` });
+   });
+   ```
+
+5. **Run it:**
+   ```bash
+   bun run src/index.ts
+   ```
+
+   Open `http://localhost:4000/api` (try `?name=Burger`) and `http://localhost:4000/docs`.
 
 ---
 
 ## Ready to Go!
 
-That's it! You now have a Bun project set up with BurgerAPI installed.
+You now have a Bun project set up with BurgerAPI installed.
 
-Next, you might want to check out the [Configuration](./../core/configuration.md) guide to see how to create your first BurgerAPI instance.
+Next, see the [Configuration](./../core/configuration.md) guide to learn how a BurgerAPI instance is configured.
+
+
+## Related
+
+- [Quick Start](/docs/quick-start)
+- [Key Concepts](/docs/key-concepts)
+- [Burger API CLI Tool](/docs/getting-started/cli)
+- [Request Context](/docs/core/request-handling)

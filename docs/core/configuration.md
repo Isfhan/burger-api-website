@@ -4,85 +4,218 @@ sidebar_label: "Configuration"
 
 # Configuration
 
-Getting your BurgerAPI server running starts with configuration. You'll import the `Burger` class and instantiate it, passing an options object.
+BurgerAPI uses five clear configuration layers.
 
-:::tip For BurgerAPI CLI Users
-If you used the `burger-api create` command, this file and the basic configuration have already been set up for you!
-:::
+| Layer | Where | Purpose |
+|-------|--------|---------|
+| Build | `burger.build.ts` | Dirs, prefixes, debug. Read by `burger-api build`, `inspect`, and `doctor` (CLI only) |
+| App | `new Burger({...})` | Runtime options: dirs, prefixes, validation, prebuilt routes |
+| App docs | `src/openapi.config.ts` | OpenAPI metadata, docs UI, docs auth |
+| Plugins | `src/plugins.ts` | Register plugins |
+| Route | `api/**/config.ts` | Plain data exposed as `ctx.config`; core only reads `responseValidation` |
 
-```typescript title="index.ts"
+`burger.build.ts` is **not** runtime configuration. `burger-api dev` and `burger-api start` load the options in `src/index.ts` (`new Burger({...})`); `burger-api build`, `inspect`, and `doctor` read `burger.build.ts` to find route directories. The scaffold keeps the two in sync (`apiDir: "./src/api"`, `apiPrefix: "/api"` in both), and the convention defaults below agree out of the box, so a default project works without touching either file. If you change one, change the other: `burger-api doctor` warns when they disagree.
+
+## Application entry
+
+```typescript title="src/index.ts"
 import { Burger } from "burger-api";
-import { globalLogger } from "./middleware/logger"; // Example: Assuming you have middleware defined
 
-// Create a new Burger instance
 const burger = new Burger({
-  // --- Required ---
-  apiDir: "api", // Specify the directory holding your API routes
-
-  // --- Optional but Recommended ---
-  title: "My Burger API", // Title for OpenAPI docs
-  version: "1.0.0", // Version for OpenAPI docs
-
-  // --- Other Optional Settings ---
-  pageDir: "pages", // Directory for static pages
-  globalMiddleware: [globalLogger], // Middleware applied to ALL requests
-  apiPrefix: "api", // URL prefix for API routes (defaults to 'api')
-  pagePrefix: "", // URL prefix for page routes (defaults to no prefix)
-  description: "An amazing API built with BurgerAPI", // OpenAPI description
-  debug: true, // Enable debug features/logging
+  apiDir: "./src/api",
+  apiPrefix: "/api",
 });
 
-// Start the server (defaults to port 4000)
 burger.serve(4000);
 ```
 
-## Key Options Explained
+OpenAPI metadata belongs in `src/openapi.config.ts`, which `burger-api create` scaffolds. It takes `title`, `description`, `version`, `servers`, `contact`, `license`, `docsAuth`, `provider`, `path`, and more. See [OpenAPI](/docs/api/openapi) for the full field list.
 
-Let's break down the essential configuration options:
+```typescript title="src/openapi.config.ts"
+import type { OpenAPIConfig } from "burger-api";
 
-- **`apiDir`** (`string`, **Required**)
-  The heart of your API. This specifies the path (usually relative to your project root) where BurgerAPI will look for your API route files (like `route.ts`).
-
-- **`pageDir`** (`string`, Optional)
-  If you plan to serve static HTML pages or use `.tsx` for server-rendered pages, specify the directory containing these files here.
-
-- **`apiRoutes`** (`RouteDefinition[]`, Optional)
-  Pre-built API route list. When set, `apiDir` is ignored and no API route scanning runs. Typically used by the CLI-generated production entry; you can pass it for custom builds. See the [CLI build docs](./../getting-started/cli.md) for production builds.
-
-- **`pageRoutes`** (`PageDefinition[]`, Optional)
-  Pre-built page route list. When set, `pageDir` is ignored and no page scanning runs. Typically used by the CLI-generated production entry; you can pass it for custom builds.
-
-- **`globalMiddleware`** (`Middleware[]`, Optional)
-  An array of [middleware functions](./../request-handling/middleware.md) that will run for _every_ incoming request before any route-specific logic.
-
-- **`apiPrefix`** (`string`, Optional, Default: `'api'`)
-  Prepends a path segment to all your API routes. With the default, a route in `api/users/route.ts` becomes accessible at `/api/users`.
-
-- **`pagePrefix`** (`string`, Optional, Default: `''`)
-  Similar to `apiPrefix`, but for page routes defined in `pageDir`. By default, there is no prefix.
-
-- **`title`**, **`description`**, **`version`** (`string`, Optional)
-  Crucial metadata for generating your [OpenAPI documentation](./../api/openapi.md). It's highly recommended to set `title` and `version`.
-
-- **`debug`** (`boolean`, Optional)
-  Setting this to `true` will enable stack traces page for errors.
-
-## Project config file (burger.config.ts)
-
-If you use the CLI to create a project, you get a **`burger.config.ts`** (or `.js`) at the project root. It defines `apiDir`, `pageDir`, `apiPrefix`, `pagePrefix`, and `debug` in one place. The CLI uses this file for `burger-api build` and `burger-api build:exec` so dev and production stay in sync. You can also load it in your app if you want a single source for paths and prefixes. See [CLI Tool](./../getting-started/cli.md) for create and build commands.
-
-If you don't provide either `apiDir`/`pageDir` or `apiRoutes`/`pageRoutes`, the Burger class will throw: *"Please provide apiDir/pageDir (for dev) or apiRoutes/pageRoutes (for production builds) when initializing the Burger class."*
-
-## Starting the Server: `serve()`
-
-Once configured, bring your server to life with the `serve` method:
-
-```typescript
-burger.serve(port, callback);
+export default {
+  title: "My Burger API",
+  version: "1.0.0",
+  description: "An API built with BurgerAPI",
+  servers: [{ url: "https://api.example.com", description: "Production" }],
+} satisfies OpenAPIConfig;
 ```
 
-- **`port`** (`number`, Optional, Default: `4000`)
-  Specifies the network port the server should listen on.
+`new Burger({ title, version, description })` still works as a fallback for apps that do not use an `openapi.config.ts` file.
 
-- **`callback`** (`() => void`, Optional)
-  A function that gets called _after_ the server has successfully started listening on the specified port. Useful for logging a confirmation message.
+## How directories resolve
+
+`apiDir`, `pageDir`, and `wsDir` are looked up in this order until one exists:
+
+1. Absolute path, used as-is.
+2. Relative to the project root, for example `./src/api`.
+3. Relative to the entry file's directory, when the CLI is loading or scanning the app (`burger-api dev`, `build`, `inspect`, `doctor`). For the default entry `src/index.ts`, that directory is `src/`, so `apiDir: "api"` finds `src/api`.
+
+Both forms work with the default scaffold layout:
+
+```typescript
+apiDir: "./src/api",   // relative to the project root
+// or
+apiDir: "api",         // found under src/ via the entry-file fallback
+```
+
+The project root always wins when both locations exist. Running the app with plain `bun src/index.ts` (no CLI) skips the entry-file fallback.
+
+If a directory cannot be resolved, the error names the exact paths that were tried:
+
+```
+Routes directory "backend" does not exist. Tried "./backend" (project root)
+and "./src/backend" (src/). Check the apiDir option in src/index.ts.
+```
+
+## Build file
+
+```typescript title="burger.build.ts"
+export default {
+  apiDir: "./src/api",
+  pageDir: "./src/pages",
+  apiPrefix: "/api",
+  pagePrefix: "/",
+  debug: false,
+};
+```
+
+Generated by `burger-api create`. Used by the CLI for discovery and build.
+
+## Plugins and providers
+
+```typescript title="src/plugins.ts"
+import type { PluginRegistrar } from "burger-api";
+
+export default (burger: PluginRegistrar) => {
+  burger.usePlugin(/* ecosystem plugin */);
+};
+```
+
+```typescript title="src/providers.ts"
+import type { ProviderRegistrar } from "burger-api";
+
+export default (burger: ProviderRegistrar) => {
+  burger.provide("db", db);
+};
+```
+
+## Route config
+
+A route's `config.ts` default export is plain data, available to hooks and plugins as `ctx.config`. Core itself reads exactly one key: `responseValidation` (`"off" | "dev" | "enforce"`), which overrides the app-wide mode for that route. Keys such as `auth`, `cache`, and `timeout` do nothing unless a plugin or hook reads them. See [Validation Configuration](/docs/validation/configuration) for the response mode.
+
+```typescript title="src/api/public/health/config.ts"
+export default {
+  auth: false,
+};
+```
+
+```typescript title="src/api/admin/config.ts"
+export default {
+  auth: { required: true, roles: ["admin"] },
+  timeout: 5000,
+  responseValidation: "enforce",
+};
+```
+
+### Per-method overrides
+
+The default export applies to every method. Add an uppercase method export to override it for that method only. The override is shallow-merged over the default, and method keys win:
+
+```typescript title="src/api/items/config.ts"
+export default { auth: false };
+
+export const POST = { auth: { required: true } };
+```
+
+Here GET stays public while POST requires a user. `ctx.config` for a request is the merged object for its method, so plugins and hooks keep reading `ctx.config.auth` unchanged. A `config.ts` with only a default export behaves exactly as before.
+
+Type your keys by augmenting `RouteConfig`, so `ctx.config` is typed wherever a hook or plugin reads it:
+
+```typescript title="src/types.ts"
+declare module "burger-api" {
+  interface RouteConfig {
+    auth?: boolean | { required?: boolean; roles?: string[] };
+    cache?: { maxAge: number };
+    timeout?: number;
+  }
+}
+```
+
+`config.ts` applies per route directory: there is no inheritance between folders.
+
+## Global hooks
+
+Annotate global hooks with `GlobalHooks` so TypeScript checks the hook signature and infers `ctx`:
+
+```typescript title="src/hooks.ts"
+import type { GlobalHooks } from "burger-api";
+
+export const onRequest: GlobalHooks["onRequest"] = [/* ... */];
+
+export const onError: GlobalHooks["onError"] = (error, ctx) => {
+  console.error(error);
+};
+```
+
+## Environment variables
+
+BurgerAPI does not ship its own `.env` loader. Bun loads `.env` natively. Optional validation can live in an ecosystem plugin.
+
+## Types for this feature
+
+Every configuration layer has a type.
+
+The types you use (all from `burger-api`):
+
+- `ServerOptions`: the `new Burger({...})` options
+- `OpenAPIConfig`: the `src/openapi.config.ts` default export
+- `BuildConfig`: the `burger.build.ts` export
+- `RouteConfig`: the `config.ts` options (augment it to type your keys)
+- `GlobalHooks`: the `src/hooks.ts` named exports
+- `RouteDefinition`: a route with handlers, schema, and openapi metadata
+- `RouteSchema`: a route's full schema map
+- `HTTPMethod`: the allowed method names
+- `BurgerContext`: the request object (for typing handlers and hooks)
+
+✅ Correct, typed configuration:
+
+```typescript title="src/index.ts"
+import { Burger } from "burger-api";
+import type { RouteDefinition } from "burger-api";
+
+const routes: RouteDefinition[] = [
+    {
+        path: "/users",
+        handlers: { GET: (ctx) => Response.json({ ok: true }) },
+    },
+];
+
+const burger = new Burger({
+    apiRoutes: routes,
+});
+```
+
+When `apiRoutes` is provided, it replaces filesystem discovery: `apiDir` is ignored and no route files are scanned at runtime. This is how `burger-api build` produces portable bundles.
+
+❌ Wrong, a typo in an option name or a method key:
+
+```typescript
+new Burger({ apiDri: "./src/api" }); // ❌ Property 'apiDri' does not exist
+
+const bad: RouteDefinition = {
+    path: "/x",
+    handlers: { get: () => new Response() }, // ❌ lowercase 'get' is not an HTTP method
+};
+```
+
+For typed `ctx.services` and custom context values, use the augmentation pattern. See the [TypeScript overview](/docs/advanced/type-safety).
+
+Check your code: `bun run typecheck`.
+
+## Related
+
+- [Applications](/docs/core-concepts/applications)
+- [Hooks](/docs/hooks/system)
+- [Ecosystem](/docs/ecosystem/introduction)

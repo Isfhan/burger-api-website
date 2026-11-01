@@ -7,6 +7,10 @@ tags: [release, typescript, cors, middleware]
 
 We're excited to announce the release of **BurgerAPI v0.5.0**! This critical update fixes TypeScript support and adds new features to make your API development experience even better.
 
+:::caution Pre-1.0 release notes
+This post describes a pre-1.0 release, built on the earlier `BurgerRequest`/middleware-based API. The [BurgerAPI v1.0.0-beta rewrite](/blog/burger-api-v1.0.0-beta-release) replaced that API with `BurgerContext` and hooks. Code samples below won't run as-is on 1.0.0-beta. Kept as accurate release history, not a current guide.
+:::
+
 {/* truncate */}
 
 ## 🚀 What's New in v0.5.0
@@ -244,10 +248,10 @@ Visit:
 ## 💬 What Developers Are Saying
 
 > "Finally! The TypeScript support actually works. This makes BurgerAPI a joy to use."  
-> — *Early adopter feedback*
+> *Early adopter feedback*
 
 > "Auto OPTIONS handlers saved me so much boilerplate code. This is how it should be."  
-> — *Community feedback*
+> *Community feedback*
 
 
 

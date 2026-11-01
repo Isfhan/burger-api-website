@@ -1,0 +1,56 @@
+---
+sidebar_label: Response Mutation
+---
+
+# Response Mutation
+
+Handlers always return a standard Web `Response`. Response changes are expressed through `ctx.set`, and the framework applies them once at the end of the lifecycle, after `mapResponse`, via `applySet`.
+
+## Setting status and headers
+
+```ts
+export async function GET(ctx: BurgerContext) {
+  ctx.set = {
+    status: 201,
+    headers: { "x-total": "42" },
+  };
+  return Response.json({ created: true });
+}
+```
+
+- `ctx.set.status` overrides the response status only when defined, and never replaces an error status (`400` or higher). Errors stay errors.
+- `ctx.set.headers` is merged over the response's existing headers; explicit values win.
+- `ctx.set.headers` is always defined (created on first access), so `ctx.set.headers["x-id"] = value` never throws.
+- An array value appends each entry. A scalar `set-cookie` is appended, so a cookie set by the handler and one set through `ctx.set` both survive.
+
+## mapResponse
+
+For response shaping that needs the actual response, use `mapResponse` hooks. They run nearest-first (Route → Global → Plugin → Framework), after `afterRoute`:
+
+```ts title="src/hooks.ts"
+export const mapResponse = [
+  (ctx: BurgerContext) => (res: Response) => {
+    res.headers.set("x-server", "burger");
+    return res;
+  },
+];
+```
+
+A `mapResponse` hook returns a function that receives the current response and returns the transformed response, or returns a `Response` to replace it, or `undefined` to continue. CORS and logger hooks use this phase to decorate responses.
+
+## applySet
+
+At the single exit point of the request flow, `applySet` merges `ctx.set` into the outgoing `Response`:
+
+- If `ctx.set` is empty (no status, no headers), the original `Response` is returned unchanged, with no extra memory used.
+- It runs uniformly on handler responses and on the auto-`HEAD` responses derived from `GET`.
+- It also runs for 404, 405, auto-`OPTIONS`, errors rendered by `onError`, pages, assets, `/docs` and `/openapi.json`. A `ctx.set` mutation from an `onRequest` hook applies to those responses too.
+
+## Why a single merge step
+
+Collecting response changes in `ctx.set` and applying them in one place keeps response handling predictable: hooks and handlers all influence the response the same way, and the framework controls exactly when the `Response` is finalized. This also keeps the code that runs for every request light on memory.
+
+## Related
+
+- [ContextSet](/docs/api/context-set)
+- [Hook System](/docs/hooks/system)

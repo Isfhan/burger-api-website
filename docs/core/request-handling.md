@@ -1,24 +1,93 @@
 ---
-sidebar_label: Request Handling
+sidebar_label: Request Context
 ---
 
-# Request Handling
+# Request Context
 
-BurgerAPI handles each request by running **middleware** (if any) and then the **route handler**. Middleware can short-circuit by returning a `Response`, or continue by returning `undefined`, or return a function to run after the handler (e.g. to modify the response).
+Every handler and hook receives a `BurgerContext` (`ctx`), the request context for that request. It is a single, lightweight object that exposes the standard `Request` surface through delegation, plus a few framework additions:
 
-## Flow
+- `ctx.request`: the original raw `Request`.
+- `ctx.params`: dynamic path parameters.
+- `ctx.wildcardParams`: wildcard segments.
+- `ctx.query`: the parsed query string (evaluated lazily).
+- `ctx.cookies`: parsed cookies (evaluated lazily).
+- `ctx.route`: the matched route's path and pattern.
+- `ctx.validated`: data validated by your schemas.
+- `ctx.set`: response changes applied at the end of the request lifecycle.
+- `ctx.services`: application services declared in `src/providers.ts`.
+- `ctx.config`: the route's `config.ts` settings, read-only.
 
-1. **Global middleware** runs first (in order).
-2. **Route-specific middleware** runs next (if the route defines any).
-3. **Route handler** runs (e.g. `GET`, `POST` exported from `route.ts`).
-4. **After-middleware** (if a middleware returned a function) runs with the response.
+Request data is read lazily. For example, `ctx.query` is parsed only when you use it, so a request that never reads the query pays nothing for parsing.
 
-## Request object
+`ctx` is not a `Request` subclass: use `ctx.request` for the raw object and the delegated helpers (`ctx.json()`, `ctx.text()`, `ctx.headers`, `ctx.method`, `ctx.url`, `ctx.body`, ...) for everything else.
 
-Handlers and middleware receive a **BurgerRequest** object (extends the standard request with `params`, `validated`, etc.). Use it to read headers, URL, and validated query/body from [Zod validation](/docs/request-handling/validation).
+## Handler story
 
-## Key docs
+Handlers are per-method exports that receive the context and return a standard Web `Response`:
 
-- [Middleware System](/docs/middleware/system) — How middleware works.
-- [Global Middleware](/docs/middleware/global) and [Route-Specific Middleware](/docs/middleware/route-specific).
-- [Validation](/docs/request-handling/validation) — Validating params, query, and body with Zod.
+```ts title="api/users/[id]/route.ts"
+import type { BurgerContext } from "burger-api";
+
+export async function GET(ctx: BurgerContext) {
+  const { id } = ctx.params;
+  return Response.json({ id });
+}
+```
+
+See [Request API](/docs/api/request-api) for every property with examples. For routing details, see [File-Based Routing](/docs/routing/file-based-routing).
+
+## Types for this feature
+
+The types you use (from `burger-api`):
+
+- `BurgerContext`: the request object passed to handlers and hooks
+- `BurgerContext<typeof GET>`: the request object with `ctx.validated` typed from your schema
+- `defineRoute(schema, handler)`: infers `ctx` from `schema` automatically; no generic to write
+
+✅ Correct, `defineRoute` infers the handler's `ctx` from the schema:
+
+```ts title="api/users/[id]/route.ts"
+import { defineRoute } from "burger-api";
+import { GET as GetSchema } from "./schema";
+
+export const GET = defineRoute(GetSchema, (ctx) => {
+    const { id } = ctx.validated.params; // typed from the schema
+    return Response.json({ id });
+});
+```
+
+Equally correct, the manual generic form does the same thing by hand:
+
+```ts title="api/users/[id]/route.ts"
+import type { BurgerContext } from "burger-api";
+import type { GET as RouteSchema } from "./schema";
+
+export async function GET(ctx: BurgerContext<typeof RouteSchema>) {
+    const { id } = ctx.validated.params; // typed from the schema
+    return Response.json({ id });
+}
+```
+
+❌ Wrong, reading a body field that was not validated:
+
+```ts
+export async function POST(ctx: BurgerContext) {
+    ctx.validated.body.anything; // ❌ 'ctx.validated' is possibly undefined
+}
+```
+
+Use `ctx.json<T>()` to give the parsed body a type:
+
+```ts
+const body = await ctx.json<{ id: number }>();
+```
+
+See the [TypeScript overview](/docs/advanced/type-safety).
+
+Check your code: `bun run typecheck`.
+
+## Related
+
+- [Applications](/docs/core-concepts/applications)
+- [Routing](/docs/core-concepts/routing)
+- [Handlers](/docs/core-concepts/handlers)

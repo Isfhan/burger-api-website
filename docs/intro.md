@@ -6,46 +6,47 @@ slug: /
 
 # Welcome to BurgerAPI
 
-BurgerAPI is a modern, open-source framework built natively for Bun.js. It simplifies building web applications and APIs with features designed for speed and ease of use.
+BurgerAPI is a Bun-first, WinterCG-compatible framework for building modern APIs with file-based routing, end-to-end type safety, and a clear project structure. TypeScript and JavaScript are both first-class: the same conventions work with `.ts`, `.js`, and `.mjs` route files, and JavaScript projects get full JSDoc type-checking.
 
-:::tip What makes BurgerAPI special?
-
-BurgerAPI leverages Bun's speed and offers a streamlined development experience through:
-
-- **Declarative File-Based Routing:** Define API endpoints and static pages simply by organizing your files and folders.
-- **Integrated Middleware:** Apply logic globally or target specific routes for concerns like logging, authentication, and data processing.
-- **Automatic Zod Validation:** Define Zod schemas alongside your routes for effortless request validation (query parameters and request bodies). Now powered by Zod 4.x for enhanced performance and better error handling.
-- **OpenAPI Specification & Swagger UI:** Automatically generate OpenAPI 3.0 documentation from your code (including Zod schemas and route metadata) and serve interactive Swagger UI.
-- **TypeScript First:** Designed with TypeScript for improved developer experience and code safety.
-- **Burger API CLI:** Scaffolding, middleware management, and build tools built-in.
-
+:::info A new BurgerAPI
+`burger-api` and `@burger-api/cli` 1.0.0-beta are rebuilt from the ground up and install by default. Please try them and [open an issue](https://github.com/isfhan/burger-api/issues) if anything breaks or feels wrong. See the [release notes](/blog/burger-api-v1.0.0-beta-release) for what is new. Coming from `burger-api@0.9.7` or `@burger-api/cli@0.9.9`? The [migration guide](/docs/migration) covers every breaking change.
 :::
 
-**New in v0.9.3:** Production builds with AOT route discovery, `burger.config.ts`, and `burger-api build:exec` — see [What's New](/blog/burger-api-v0.9.3-release).
+### What BurgerAPI is built around
 
-This documentation provides guides on using these core features based on the framework's implementation.
+- **File-based routing:** A route is a directory of sibling files.
+- **Route convention files:** `route.ts`, `schema.ts`, `hooks.ts`, `openapi.ts`, `config.ts` (self-contained; no group inheritance).
+- **Hooks:** Request lifecycle (`onRequest`, `transform`, `beforeRoute`, `afterRoute`, `mapResponse`, `onError`).
+- **Plugins:** Application extensions (`src/plugins.ts`). Hooks and plugins are separate concepts.
+- **Providers:** App services via `src/providers.ts` → `ctx.services`.
+- **Validation:** Standard Schema (Zod default) in `schema.ts` with per-method exports (`GET`, `POST`, …).
+- **Context:** Public type **`BurgerContext`**. Handlers return standard Web **`Response`**.
+- **Type inference:** `defineRoute(schema, handler)` / `defineHooks(schema, hooks)` infer `ctx.validated` from your schema, so there is no generic to write by hand.
+- **OpenAPI:** Spec + docs UI.
+- **Ecosystem:** `ecosystem/hooks/`, `ecosystem/plugins/`, `ecosystem/skills/`.
+- **Build config:** `burger.build.ts` is read by `burger-api build`, `inspect`, and `doctor`; `burger-api dev`/`start` read `new Burger({...})` in `src/index.ts`. The scaffold keeps both in sync and the defaults agree out of the box. Runtime config lives in `new Burger({...})`, `openapi.config.ts`, plugins, and route `config.ts`.
+- **Deploy targets:** `burger-api build --target=bun|node|cloudflare|deno|vercel`: one command per platform, no hand-written entry files.
 
-### Getting Started
+### Getting started
 
-Ready to build something tasty? Choose your learning path:
+- **[CLI Quick Start](./getting-started/cli.md)**
+- **[Key Concepts](./key-concepts.md)**
+- **[JavaScript](./javascript.md)**
+- **[Routing](./routing/file-based-routing.md)**
+- **[Hooks](./hooks/system.md)**
+- **[Validation](./validation/zod.md)**
+- **[OpenAPI](./api/openapi.md)**
+- **[Deployment](./deployment/bun.md)**: Bun, [Node.js](./deployment/node.md), [Cloudflare Workers](./deployment/cloudflare.md), [Deno](./deployment/deno.md), [Vercel](./deployment/vercel.md)
+- **[Ecosystem](./ecosystem/introduction.md)**
 
-**🚀 Hands-on Learning (Recommended):**
-- **[CLI Quick Start](./getting-started/cli.md):** The fastest way to get up and running with a new project.
-- **[Tutorials](./tutorials/intro.md):** Step-by-step tutorials that guide you from Hello World to building a complete blog API.
+### Core ideas
 
-**📚 Concept Guides:**
-- **[Configuration](./core/configuration.md):** Learn how to initialize and configure your BurgerAPI instance.
-- **[API Routing](./routing/api/static-routes.md):** Understand how to define API endpoints using the file system.
-- **[Static Pages](./routing/pages/static-pages.md):** See how to serve static HTML pages.
-- **[Middleware](./request-handling/middleware.md):** Discover how to use global and route-specific middleware.
-- **[Schema Validation](./request-handling/validation.md):** Implement request validation using Zod.
-- **[OpenAPI / Swagger](./api/openapi.md):** Learn about automatic API documentation generation.
-- **[Ecosystem](./ecosystem/introduction.md):** Discover and add middleware to your project using the CLI.
+- **[Performance](./performance/overview.md)** and **[Benchmarks](./advanced/benchmarks.md)**
+- **[Type Safety](./advanced/type-safety.md)**
+- **[Compatibility](./compatibility.md)**: what works on each runtime
 
-### Coming Soon
+## Related
 
-We are actively working on expanding BurgerAPI! Keep an eye on these sections for future updates:
-
-- **[Advanced Dynamic Pages](./routing/pages/dynamic-pages.md):** Enhanced server-side rendering capabilities are planned.
-- **Upcoming Features:** Look forward to WebSocket support and more features.
-- **Deployment:** Guides for deploying your BurgerAPI project are coming soon.
+- [Key Concepts](/docs/key-concepts)
+- [Applications](/docs/core-concepts/applications)
+- [Routing](/docs/core-concepts/routing)

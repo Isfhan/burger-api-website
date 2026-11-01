@@ -4,21 +4,61 @@ sidebar_label: File-Based Routing
 
 # File-Based Routing
 
-BurgerAPI uses **file-based routing**: your folder structure under the API (or page) directory defines the URL paths. No manual route registration is needed.
+BurgerAPI uses file-based routing: the folders and files under your `apiDir` (with `apiPrefix` applied) become the URL paths. There is no manual route registration. Each folder adds a segment to the URL, and a file named `route.ts` at a path defines the handlers for that path.
 
-## How it works
+Convention files also accept `.js` and `.mjs` extensions, so a JavaScript project uses `route.js`, `schema.js`, and so on.
 
-- **Folders** under `apiDir` map to URL segments (with `apiPrefix` applied).
-- A file named **`route.ts`** at a path defines the handlers for that path.
-- Export **HTTP method** functions (`GET`, `POST`, `PUT`, `DELETE`, etc.) to handle each method.
+## Example
 
-Example: `api/products/route.ts` → `/api/products`; `api/users/[id]/route.ts` → `/api/users/:id`.
+```
+api/products/route.ts     →  /api/products
+api/users/[id]/route.ts   →  /api/users/:id
+```
+
+Inside `route.ts`, export a function for each HTTP method you want to support (`GET`, `POST`, `PUT`, `DELETE`, and so on).
 
 ## Route types
 
-- **Static routes** — Fixed paths (e.g. `/api/products`). See [Static Routes](/docs/routing/static-routes).
-- **Dynamic routes** — Capture segments with `[param]` (e.g. `/api/products/[id]`). See [Dynamic Routes](/docs/routing/dynamic-routes).
-- **Wildcard routes** — Match the rest of the path with `[...rest]`. See [Wildcard Routes](/docs/routing/wildcard-routes).
-- **Route groups** — Organize with `(folder)` without changing the URL. See [Route Groups](/docs/routing/route-groups).
+BurgerAPI supports a few route shapes, all built from the same folder rules:
 
-For full details and examples, see [Static Routes](/docs/routing/api/static-routes) (API) and [Static Pages](/docs/routing/pages/static-pages) (pages).
+ - **Static routes**: fixed paths. See [Static API Routes](/docs/routing/api/static-routes).
+ - **Dynamic routes**: capture a segment with `[param]`. See [Dynamic Routes](/docs/routing/api/dynamic-routes).
+ - **Wildcard routes**: match the rest of the path with a `[...]` folder. The folder is anonymous: a named folder such as `[...slug]` fails in dev and in builds. See [Wildcard Routes](/docs/routing/api/wildcard-routes).
+ - **Route groups**: organize with `(folder)` without changing the URL. See [Route Groups](/docs/routing/api/route-groups).
+
+These shapes nest freely by folder depth. See [Nested Routes](/docs/routing/api/nested-routes) for how paths grow with folders.
+
+Every route also gets automatic method handling: `HEAD` is derived from `GET`, and `OPTIONS` answers `204` with an `Allow` header, without extra handlers. See [Automatic HEAD](/docs/routing/api/static-routes#automatic-head) and [Automatic OPTIONS](/docs/routing/api/static-routes#automatic-options).
+
+## Route collisions
+
+API routes, pages, assets, `/openapi.json` and `/docs` share one URL space. If two of them resolve to the same path (for example an API route `/docs` and the docs UI), the app fails at startup with an error naming both sources. Rename one of them. Two dynamic page files at the same level (`[a].tsx` and `[b].tsx`) fail the same way.
+
+For full API details and examples, see [Static API Routes](/docs/routing/api/static-routes) (API) and [Static Pages](/docs/routing/pages/static-pages) (pages).
+
+## Types for this feature
+
+Handlers take one argument: `BurgerContext`. When a route has a `schema.ts`, wrap the handler with `defineRoute(schema, handler)` and `ctx.validated` becomes typed from that schema automatically:
+
+```typescript
+// api/products/route.ts
+import { defineRoute } from "burger-api";
+import { GET as GetSchema } from "./schema";
+
+export const GET = defineRoute(GetSchema, (ctx) => {
+    ctx.validated.query; // typed from schema.ts
+    return Response.json({ ok: true });
+});
+```
+
+The equivalent manual form, `export async function GET(ctx: BurgerContext<typeof GetSchema>)`, still works if you'd rather write the generic by hand.
+
+Each route type has its own type notes: [Static](/docs/routing/api/static-routes), [Dynamic](/docs/routing/api/dynamic-routes), [Wildcard](/docs/routing/api/wildcard-routes), [Nested](/docs/routing/api/nested-routes). The full picture is in the [TypeScript overview](/docs/advanced/type-safety).
+
+Check your code: `bun run typecheck`.
+
+## Related
+
+- [Static API Routes](/docs/routing/api/static-routes)
+- [Dynamic Routes](/docs/routing/api/dynamic-routes)
+- [Wildcard Routes](/docs/routing/api/wildcard-routes)

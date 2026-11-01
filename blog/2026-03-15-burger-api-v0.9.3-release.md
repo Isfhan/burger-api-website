@@ -5,7 +5,11 @@ authors: [isfhan]
 tags: [release, production, cli, config]
 ---
 
-**v0.9.3** focuses on production readiness and consistency. Builds use **AOT route discovery**: the CLI discovers routes at build time and embeds them so your app doesn't depend on the filesystem in production. New projects get a **`burger.config.ts`** for API/page dirs and prefixes, and the Burger constructor supports **`apiRoutes`** and **`pageRoutes`** for pre-built route lists. The CLI command for standalone executables is now **`burger-api build:exec`**, with default outputs under `.build/bundle/` and `.build/executable/`. Your middleware and options are preserved in the generated build entry.
+**v0.9.3** focuses on production readiness and consistency. Builds use **build-time route discovery**: the CLI discovers routes at build time and embeds them so your app doesn't depend on the filesystem in production. New projects get a **`burger.config.ts`** for API/page dirs and prefixes, and the Burger constructor supports **`apiRoutes`** and **`pageRoutes`** for pre-built route lists. The CLI command for standalone executables is now **`burger-api build:exec`**, with default outputs under `.build/bundle/` and `.build/executable/`. Your middleware and options are preserved in the generated build entry.
+
+:::caution Pre-1.0 release notes
+This post describes a pre-1.0 release, built on the earlier `globalMiddleware`/`burger.config.ts` API. The [BurgerAPI v1.0.0-beta rewrite](/blog/burger-api-v1.0.0-beta-release) replaced those with hooks, plugins, and `burger.build.ts`. Code samples below won't run as-is on 1.0.0-beta. Kept as accurate release history, not a current guide.
+:::
 
 {/* truncate */}
 
@@ -19,7 +23,7 @@ tags: [release, production, cli, config]
 
 ## Pre-built Routes for Production
 
-In production (bundled or executable), you don't want to depend on the filesystem. The CLI's build pipeline discovers routes at build time and injects them into your entry file. Your app then starts without scanning—faster startup and no path issues in single-file or binary deploys.
+In production (bundled or executable), you don't want to depend on the filesystem. The CLI's build pipeline discovers routes at build time and injects them into your entry file. Your app then starts without scanning: faster startup and no path issues in single-file or binary deploys.
 
 You can pass route lists into the `Burger` constructor instead of relying on runtime file scanning. When **either** `apiRoutes` or `pageRoutes` is provided, the corresponding `apiDir` / `pageDir` is ignored for that type.
 
@@ -60,7 +64,7 @@ export default {
 
 Edit as needed. For build, the CLI resolves config from the current working directory (convention defaults: `./src/api`, `./src/pages`, `/api`, `/`).
 
-## Build-Time (AOT) Route Discovery
+## Build-Time Route Discovery
 
 `burger-api build` and `burger-api build:exec` no longer rely on runtime file scanning. The CLI discovers routes at build time, generates a virtual entry that imports them and passes `apiRoutes` / `pageRoutes` into `new Burger({ ... })`, then runs Bun's build. Your middleware and other options are preserved in that generated entry.
 
@@ -93,7 +97,7 @@ Both are optional. Existing code using only `apiDir` / `pageDir` is unchanged.
 
 ## Upgrade and Migration
 
-If you use `burger-api build:executable` or rely on the old default output paths, see **[Migrating to BurgerAPI 0.9](/docs/migration/migrating-to-0.9)** for a short checklist.
+If you use `burger-api build:executable`, note that the command is now `burger-api build:exec`.
 
 Otherwise, upgrade and enjoy production-ready builds:
 

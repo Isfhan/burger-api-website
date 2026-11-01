@@ -7,6 +7,10 @@ tags: [release, framework, wildcard, routing]
 
 We're excited to announce the release of **BurgerAPI v0.4.0**! This update brings a powerful new routing feature that makes building flexible, complex APIs easier than ever before.
 
+:::caution Pre-1.0 release notes
+This post describes a pre-1.0 release, built on the earlier `BurgerRequest`/middleware-based API. The [BurgerAPI v1.0.0-beta rewrite](/blog/burger-api-v1.0.0-beta-release) replaced that API with `BurgerContext` and hooks. Code samples below won't run as-is on 1.0.0-beta. Kept as accurate release history, not a current guide.
+:::
+
 {/* truncate */}
 
 ## 🚀 What's New in v0.4.0

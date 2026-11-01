@@ -1,0 +1,36 @@
+---
+sidebar_label: After Hooks
+---
+
+# After Hooks
+
+`afterRoute` runs after the route handler returns. `mapResponse` runs before the response is sent. Both use the response-transform contract: return a function from the hook. The function receives the current `Response` and returns a new `Response` (e.g. with added or modified headers).
+
+Global (`src/hooks.ts`) and plugin `afterRoute` / `mapResponse` hooks run for **every** response the app produces: matched routes, 404s, 405s, auto-`OPTIONS`, errors rendered by `onError`, pages, assets, `/docs` and `/openapi.json`. Route-level response hooks run only for their matched route.
+
+```ts
+// src/hooks.ts
+import type { GlobalHooks } from "burger-api";
+
+export const afterRoute: GlobalHooks["afterRoute"] = [
+  () => (response) => {
+    const headers = new Headers(response.headers);
+    headers.set("X-Powered-By", "BurgerAPI");
+    return new Response(response.body, { status: response.status, headers });
+  },
+];
+```
+
+Common use: adding CORS headers or other response transforms. For CORS, prefer the [cors hook](/docs/ecosystem/cors) from the ecosystem.
+
+Use `mapResponse` for work that must happen right before the response is sent, such as final headers.
+
+See [Hook Return Types](/docs/hooks/return-types) and [Hook System](/docs/hooks/system).
+
+
+## Related
+
+- [Hook System](/docs/hooks/system)
+- [Global Hooks](/docs/hooks/global)
+- [Route Hooks](/docs/hooks/route-specific)
+- [Request Context](/docs/core/request-handling)

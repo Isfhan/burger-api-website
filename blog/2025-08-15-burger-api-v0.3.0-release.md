@@ -7,6 +7,10 @@ tags: [release, framework, zod, validation]
 
 We're excited to announce the release of **BurgerAPI v0.3.0**! This update brings significant improvements to our request validation system and dependency management.
 
+:::caution Pre-1.0 release notes
+This post describes a pre-1.0 release, built on the earlier `BurgerRequest`/middleware-based API. The [BurgerAPI v1.0.0-beta rewrite](/blog/burger-api-v1.0.0-beta-release) replaced that API with `BurgerContext` and hooks. Code samples below won't run as-is on 1.0.0-beta. Kept as accurate release history, not a current guide.
+:::
+
 {/* truncate */}
 
 ## 🚀 What's New in v0.3.0
@@ -152,7 +156,7 @@ If you're currently handling validation errors in your frontend or API consumers
 
 ## 📚 Documentation
 
-For detailed information about the new validation features, check out our [validation documentation](/docs/request-handling/validation).
+For detailed information about the new validation features, check out our [validation documentation](/docs/validation/zod).
 
 ## 🤝 Community
 

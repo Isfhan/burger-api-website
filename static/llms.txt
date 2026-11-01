@@ -1,92 +1,150 @@
-# Burger API - Modern API Framework for Bun
+# BurgerAPI - Bun-native API Framework
 
-> A modern, high-performance API framework built on Bun.js with file-based routing, built-in middleware, Zod validation, and automatic OpenAPI generation.
+> BurgerAPI is a Bun-first, WinterCG-compatible API framework with file-based routing, six lifecycle hooks, plugins, providers, Standard Schema (Zod) validation, automatic OpenAPI generation, shared `BurgerContext`, and WebSocket support. It ships as two packages, `burger-api` and `@burger-api/cli`, both at `1.0.0-beta` (public beta; feedback welcome at GitHub issues). TypeScript and JavaScript are both first-class, and the same app runs on Bun, Node, Cloudflare Workers, Deno, and Vercel.
 
 ## Table of Contents
 
+### Overview
+
+- [Introduction](https://burger-api.com/docs/): BurgerAPI is a Bun-first, WinterCG-compatible framework for building modern APIs with file-based routing, end-to-end type safety, and a clear project structure.
+
 ### Getting Started
 
-- [Quick Start - Burger API](https://burger-api.com/docs/quick-start)
-- [Installation - Burger API](https://burger-api.com/docs/installation)
-- [Key Concepts - Burger API](https://burger-api.com/docs/key-concepts)
+- [Quick Start](https://burger-api.com/docs/quick-start): Get a BurgerAPI app running in under a minute.
+- [Installation](https://burger-api.com/docs/getting-started/installation): BurgerAPI is built for the Bun.js runtime.
+- [CLI Tool](https://burger-api.com/docs/getting-started/cli): The Burger API CLI creates, manages, and builds Burger API projects.
+- [Key Concepts](https://burger-api.com/docs/key-concepts): BurgerAPI is a Bun-first, WinterCG-compatible framework for APIs and web apps.
+- [JavaScript](https://burger-api.com/docs/javascript): JavaScript is a first-class citizen in BurgerAPI.
+- [Migrating from 0.9.x](https://burger-api.com/docs/migration): This guide is for apps running burger-api 0.9.x and @burger-api/cli 0.9.x.
 
-### Framework Core
+### Core Concepts
 
-- [Burger Class - Burger API](https://burger-api.com/docs/core/burger-class)
-- [Server Options - Burger API](https://burger-api.com/docs/core/server-options)
-- [Request Handling - Burger API](https://burger-api.com/docs/core/request-handling)
-- [Response Types - Burger API](https://burger-api.com/docs/core/response-types)
+- [Applications](https://burger-api.com/docs/core-concepts/applications): A BurgerAPI application is an instance of the Burger class.
+- [Routing](https://burger-api.com/docs/core-concepts/routing): BurgerAPI uses file-based routing: the files and folders under your API directory become HTTP routes.
+- [Handlers](https://burger-api.com/docs/core-concepts/handlers): Each route file exports functions named after HTTP methods (GET, POST, PUT, DELETE, PATCH, ...).
+- [Request Context](https://burger-api.com/docs/core/request-handling): Every handler and hook receives a BurgerContext (ctx), the request context for that request.
+- [Hooks](https://burger-api.com/docs/core-concepts/hooks): Hooks control when code runs on a request.
+- [Validation](https://burger-api.com/docs/core-concepts/validation): Validation checks the incoming request at a fixed point in the lifecycle: after transform, before beforeRoute.
+- [Configuration](https://burger-api.com/docs/core/configuration): BurgerAPI uses five clear configuration layers.
+- [Response Types](https://burger-api.com/docs/core/response-types): Route handlers and hooks return Response objects.
 
 ### Routing
 
-- [File-Based Routing - Burger API](https://burger-api.com/docs/routing/file-based-routing)
-- [Static Routes - Burger API](https://burger-api.com/docs/routing/static-routes)
-- [Dynamic Routes - Burger API](https://burger-api.com/docs/routing/dynamic-routes)
-- [Wildcard Routes - Burger API](https://burger-api.com/docs/routing/wildcard-routes)
-- [Route Groups - Burger API](https://burger-api.com/docs/routing/route-groups)
-- [Nested Routes - Burger API](https://burger-api.com/docs/routing/nested-routes)
+- [File-Based Routing](https://burger-api.com/docs/routing/file-based-routing): BurgerAPI uses file-based routing: the folders and files under your apiDir (with apiPrefix applied) become the URL paths.
+- [Static Routes](https://burger-api.com/docs/routing/api/static-routes): Static routes are the foundation of BurgerAPI's file-based routing system.
+- [Route Groups](https://burger-api.com/docs/routing/api/route-groups): Route groups organize API route files into logical folders without affecting the URL structure.
+- [Dynamic Routes](https://burger-api.com/docs/routing/api/dynamic-routes): Dynamic routes capture values from the URL and make them available in your route handlers.
+- [Wildcard Routes](https://burger-api.com/docs/routing/api/wildcard-routes): Wildcard routes are catch-all routes that match any number of path segments after a certain point in the URL.
+- [Nested Routes](https://burger-api.com/docs/routing/api/nested-routes): Nested routes are built from folder depth: each folder under your apiDir adds one segment to the URL.
+- [Static Pages](https://burger-api.com/docs/routing/pages/static-pages): Beyond APIs, BurgerAPI can serve static HTML files by leveraging the same intuitive file-based routing conventions.
 
-### Middleware
+### Hooks
 
-- [Middleware System - Burger API](https://burger-api.com/docs/middleware/system)
-- [Global Middleware - Burger API](https://burger-api.com/docs/middleware/global)
-- [Route-Specific Middleware - Burger API](https://burger-api.com/docs/middleware/route-specific)
-- [Middleware Return Types - Burger API](https://burger-api.com/docs/middleware/return-types)
-- [After Middleware - Burger API](https://burger-api.com/docs/middleware/after)
+- [Hook System](https://burger-api.com/docs/hooks/system): BurgerAPI uses a hook-based request lifecycle.
+- [Global Hooks](https://burger-api.com/docs/hooks/global): Global hooks are defined once and applied across the app.
+- [Route Hooks](https://burger-api.com/docs/hooks/route-specific): Route hooks run only for a given route.
+- [Hook Return Types](https://burger-api.com/docs/hooks/return-types): A hook can return one of three things:
+- [After Hooks](https://burger-api.com/docs/hooks/after): afterRoute runs after the route handler returns.
 
 ### Validation
 
-- [Zod Validation - Burger API](https://burger-api.com/docs/validation/zod)
-- [Schema Definition - Burger API](https://burger-api.com/docs/validation/schema)
-- [Params Validation - Burger API](https://burger-api.com/docs/validation/params)
-- [Query Validation - Burger API](https://burger-api.com/docs/validation/query)
-- [Body Validation - Burger API](https://burger-api.com/docs/validation/body)
-- [Error Handling - Burger API](https://burger-api.com/docs/validation/errors)
+- [Zod Validation](https://burger-api.com/docs/validation/zod): BurgerAPI uses Zod to check that incoming requests are shaped the way you expect.
+- [Schema Definition](https://burger-api.com/docs/validation/schema): The validation schema lives in schema.ts, one per route directory.
+- [Params Validation](https://burger-api.com/docs/validation/params): Validate path parameters (e.g.
+- [Query Validation](https://burger-api.com/docs/validation/query): Validate query parameters by defining a query schema for the HTTP method in your route's schema.ts.
+- [Body Validation](https://burger-api.com/docs/validation/body): Validate request body (e.g.
+- [Headers Validation](https://burger-api.com/docs/validation/headers): You can validate request headers the same way you validate the query string or body.
+- [Cookie Validation](https://burger-api.com/docs/validation/cookie): You can validate cookie values by declaring a cookies schema.
+- [Coercion](https://burger-api.com/docs/validation/coercion): Query strings, path parameters, headers, and cookies always arrive as text.
+- [Response Validation](https://burger-api.com/docs/validation/response): BurgerAPI can also check what your handler returns.
+- [Standard Schema Support](https://burger-api.com/docs/validation/standard-schema): BurgerAPI is not locked to Zod.
+- [Error Handling](https://burger-api.com/docs/validation/errors): When validation fails, BurgerAPI throws a ValidationError, which is rendered as a 422 response with a structured error payload.
+- [Problem Details](https://burger-api.com/docs/validation/problem-details): When a request fails validation, BurgerAPI returns a 422 with a structured error body in the Problem Details format (application/problem+json), which follows the shape described in RFC 9457.
+- [Validation Config](https://burger-api.com/docs/validation/configuration): Validation behavior is controlled by the validation option in the Burger constructor.
+- [Best Practices](https://burger-api.com/docs/validation/best-practices): A few habits that keep validation clear, fast, and easy to maintain.
+
+### WebSocket
+
+- [WebSocket Overview](https://burger-api.com/docs/websocket/overview): BurgerAPI supports WebSocket routes.
 
 ### OpenAPI & Documentation
 
-- [OpenAPI Generation - Burger API](https://burger-api.com/docs/openapi/generation)
-- [Swagger UI - Burger API](https://burger-api.com/docs/openapi/swagger-ui)
-- [OpenAPI Metadata - Burger API](https://burger-api.com/docs/openapi/metadata)
-
-### CLI Tool
-
-- [CLI Installation - Burger API](https://burger-api.com/docs/cli/installation)
-- [Create Command - Burger API](https://burger-api.com/docs/cli/create)
-- [Add Command - Burger API](https://burger-api.com/docs/cli/add)
-- [List Command - Burger API](https://burger-api.com/docs/cli/list)
-- [Skills Command - Burger API](https://burger-api.com/docs/cli/skills)
-- [Serve Command - Burger API](https://burger-api.com/docs/cli/serve)
-- [Build Command - Burger API](https://burger-api.com/docs/cli/build)
-- [Build Exec Command (build:exec) - Burger API](https://burger-api.com/docs/cli/build-exec)
+- [OpenAPI / Swagger](https://burger-api.com/docs/api/openapi): BurgerAPI automatically generates an OpenAPI 3.1 specification from your routes and Zod schemas, and serves an interactive docs UI.
 
 ### Examples
 
-- [Basic Route Example - Burger API](https://burger-api.com/docs/examples/basic-route)
-- [Middleware Example - Burger API](https://burger-api.com/docs/examples/middleware)
-- [Validation Example - Burger API](https://burger-api.com/docs/examples/validation)
-- [Complete Project Example - Burger API](https://burger-api.com/docs/examples/complete-project)
+- [Basic Route Example](https://burger-api.com/docs/examples/basic-route): A minimal API route that responds to GET:
+- [Hello World API](https://burger-api.com/docs/tutorials/hello-world): In this tutorial, you'll create your first BurgerAPI application: a simple "Hello World" API that demonstrates the core concepts of file-based routing and automatic documentation generation.
+- [Todo List API](https://burger-api.com/docs/tutorials/todo-api): In this tutorial, you'll build a complete CRUD (Create, Read, Update, Delete) API for managing a todo list.
+- [CRUD API](https://burger-api.com/docs/examples/crud-api): A complete products API with list, read, create, update, and delete, using file-based routing, Zod validation, and ctx.set.
+- [Blog API](https://burger-api.com/docs/tutorials/blog-api): In this final tutorial, you'll build a sophisticated blog API with multiple related resources (posts and comments), hooks, plugins, nested routes, and advanced features.
+- [Authentication](https://burger-api.com/docs/examples/authentication): Protect routes with an auth plugin.
+- [Pagination](https://burger-api.com/docs/examples/pagination): Paginate a list using a validated query and advertise totals via ctx.set.
+- [Validation Example](https://burger-api.com/docs/examples/validation): Validate query and body with per-method schemas in schema.ts, then read the validated data from ctx.validated.
+- [Hooks Example](https://burger-api.com/docs/examples/hooks): Using global and route-specific hooks:
+- [Complete Project Example](https://burger-api.com/docs/examples/complete-project): A full BurgerAPI project follows the 1.0 layout.
 
 ### Ecosystem
 
-- [Available Middleware - Burger API](https://burger-api.com/docs/ecosystem/middleware)
-- [CORS Middleware - Burger API](https://burger-api.com/docs/ecosystem/cors)
-- [Logger Middleware - Burger API](https://burger-api.com/docs/ecosystem/logger)
-- [Rate Limiter - Burger API](https://burger-api.com/docs/ecosystem/rate-limiter)
-- [JWT Auth - Burger API](https://burger-api.com/docs/ecosystem/jwt-auth)
-- [API Key Auth - Burger API](https://burger-api.com/docs/ecosystem/api-key-auth)
+- [Introduction](https://burger-api.com/docs/ecosystem/introduction): BurgerAPI keeps a small core and ships optional packages under ecosystem/:
+- [Hooks & Plugins](https://burger-api.com/docs/ecosystem/hooks-plugins): The BurgerAPI ecosystem ships two kinds of packages, plus AI agent skills.
+- [CORS Hook](https://burger-api.com/docs/ecosystem/cors): The CORS hook adds the appropriate Access-Control-* headers to responses, for example to allow browser cross-origin requests.
+- [Logger Hook](https://burger-api.com/docs/ecosystem/logger): The logger hook logs requests with method, URL, status code, response time, and optional extras.
+- [Rate Limiter](https://burger-api.com/docs/ecosystem/rate-limiter): The rate limiter hook limits how many requests a client can make within a time window.
+- [JWT Auth](https://burger-api.com/docs/ecosystem/jwt-auth): The JWT auth plugin parses a JSON Web Token from the Authorization header, verifies the signature, and attaches the decoded payload to the context.
+- [API Key Auth](https://burger-api.com/docs/ecosystem/api-key-auth): The API key auth plugin reads an API key from a header, validates it against a static list or a custom function, and attaches it to the context.
 
 ### AI Assistance
 
-- [Agent Skills - Burger API](https://burger-api.com/docs/ai-assistance/agent-skills)
-- [LLM Context Files - Burger API](https://burger-api.com/docs/ai-assistance/llm-context-files)
-- [Using LLM Files - Burger API](https://burger-api.com/docs/ai-assistance/using-llm-files)
-- [LLM Files Reference - Burger API](https://burger-api.com/docs/ai-assistance/llm-files-reference)
-- [Integration Examples - Burger API](https://burger-api.com/docs/ai-assistance/integration-examples)
+- [AI Agent Skills](https://burger-api.com/docs/ai-assistance/agent-skills): Learn how to use Agent Skills to help AI assistants understand your BurgerAPI project structure, APIs, and patterns.
+
+### CLI Tool
+
+- [CLI Installation](https://burger-api.com/docs/cli/installation): Install the Burger API CLI to create projects, add hooks and plugins, and build for production.
+- [Create Command](https://burger-api.com/docs/cli/create): burger-api create scaffolds a new Burger API project with interactive prompts.
+- [Generate Command](https://burger-api.com/docs/cli/generate): burger-api generate (alias g) scaffolds route directories, WebSocket route directories, and local hook/plugin stubs.
+- [Add Command](https://burger-api.com/docs/cli/add): burger-api add adds hooks and plugins from the ecosystem to your project.
+- [List Command](https://burger-api.com/docs/cli/list): burger-api list (alias: ls) shows all available hooks and plugins from the official ecosystem.
+- [Skills Command](https://burger-api.com/docs/cli/skills): burger-api skills manages AI agent skills for your project.
+- [Dev Command](https://burger-api.com/docs/cli/dev): burger-api dev runs your API in development mode with hot reload.
+- [Build Command](https://burger-api.com/docs/cli/build): burger-api build [file] builds your project for a deployment target.
+- [Build Exec Command (build:exec)](https://burger-api.com/docs/cli/build-exec): burger-api build:exec [file] compiles your project into a standalone executable that runs without Bun installed.
+- [Inspect Command](https://burger-api.com/docs/cli/inspect): burger-api inspect prints a summary of everything the CLI discovers in your project: config, routes, hooks, plugins, and convention-file coverage.
+- [Doctor Command](https://burger-api.com/docs/cli/doctor): burger-api doctor validates your project structure and reports issues: a quick health check before you dig into a bug that might just be a missing file.
+
+### Deployment
+
+- [Runtimes & Compatibility](https://burger-api.com/docs/compatibility): BurgerAPI is Bun-first and WinterCG-compatible.
+- [Deploy on Bun](https://burger-api.com/docs/deployment/bun): Bun is BurgerAPI's primary runtime and needs Bun 1.4.4 or newer.
+- [Deploy on Node.js](https://burger-api.com/docs/deployment/node): Run BurgerAPI on plain Node.js: a real long-lived node:http server, not just the WinterCG fetch entry other targets use.
+- [Deploy on Cloudflare Workers](https://burger-api.com/docs/deployment/cloudflare): BurgerAPI apps are WinterCG-compatible, so the same code that runs on Bun runs on Cloudflare Workers through the web-standard adapter.
+- [Deploy on Vercel](https://burger-api.com/docs/deployment/vercel): Deploy BurgerAPI to Vercel as a web-standard Function.
+- [Deploy on Deno](https://burger-api.com/docs/deployment/deno): In October 2026 the Deno team joined Cloudflare.
+
+### Performance
+
+- [Overview](https://burger-api.com/docs/performance/overview): BurgerAPI is built to keep the request path fast and predictable.
+
+### API Reference
+
+- [Burger](https://burger-api.com/docs/core/burger-class): The Burger class is the main entry point for your BurgerAPI application.
+- [Burger Options](https://burger-api.com/docs/core/server-options): The Burger constructor accepts a ServerOptions object.
+- [ContextSet](https://burger-api.com/docs/api/context-set): ContextSet is the type of ctx.set.
+- [Validation Types](https://burger-api.com/docs/api/validation-types): Validation is declared with Zod (or any Standard Schema library).
+- [Hook Types](https://burger-api.com/docs/api/hook-types): Hooks are the request lifecycle functions.
+- [Request API](https://burger-api.com/docs/api/request-api): The ctx object your handlers receive exposes request data through a small, consistent set of properties.
+- [Response Mutation](https://burger-api.com/docs/api/response-mutation): Handlers always return a standard Web Response.
+- [Route Metadata](https://burger-api.com/docs/api/route-metadata): ctx.route identifies the route that handled a request.
+- [Query Parsing](https://burger-api.com/docs/api/query-parsing): Query strings are available through ctx.query.
 
 ### Advanced
 
-- [Performance Optimization - Burger API](https://burger-api.com/docs/advanced/performance)
-- [Error Handling Patterns - Burger API](https://burger-api.com/docs/advanced/error-handling)
-- [Type Safety - Burger API](https://burger-api.com/docs/advanced/type-safety)
-- [Deployment - Burger API](https://burger-api.com/docs/advanced/deployment)
+- [Error Handling Patterns](https://burger-api.com/docs/advanced/error-handling): Validation errors: BurgerAPI returns 422 with an RFC 9457 Problem Details body when validation fails.
+- [Type Safety](https://burger-api.com/docs/advanced/type-safety): BurgerAPI is built with TypeScript.
+- [Benchmarks](https://burger-api.com/docs/advanced/benchmarks): BurgerAPI's performance work is architectural, not a hand-tuned hot loop: routes resolve through Bun's native route map first, fall back to a precompiled radix trie otherwise, each route's hook chain is flattened...
+- [Deployment](https://burger-api.com/docs/advanced/deployment): Deployment depends on your runtime.
+
+## Optional
+
+- [Full documentation for LLMs](https://burger-api.com/llms-full.txt)
+- [Essential reference for LLMs](https://burger-api.com/llms-small.txt)

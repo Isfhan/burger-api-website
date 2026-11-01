@@ -121,6 +121,27 @@ catch {
 $downloadUrl = "https://github.com/isfhan/burger-api/releases/download/$latestVersion/$executableName"
 $installPath = Join-Path $installDir "burger-api.exe"
 
+# Remove old versions first, so the new CLI is the only burger-api on PATH
+Print-Info "Removing old BurgerAPI CLI versions..."
+# Native tools write progress to stderr, which "Stop" would treat as a failure
+$ErrorActionPreference = "Continue"
+if (Get-Command bun.exe -ErrorAction SilentlyContinue) {
+    if ((& bun.exe pm ls -g 2>&1 | Out-String) -match "@burger-api/cli") {
+        & bun.exe remove -g @burger-api/cli *> $null
+        if ($LASTEXITCODE -eq 0) { Print-Success "Removed the global Bun package @burger-api/cli" }
+    }
+}
+# npm.cmd, not npm: npm.ps1 is blocked by the default execution policy
+if (Get-Command npm.cmd -ErrorAction SilentlyContinue) {
+    & npm.cmd ls -g --depth=0 @burger-api/cli *> $null
+    if ($LASTEXITCODE -eq 0) {
+        & npm.cmd uninstall -g @burger-api/cli *> $null
+        if ($LASTEXITCODE -eq 0) { Print-Success "Removed the global npm package @burger-api/cli" }
+    }
+}
+$ErrorActionPreference = "Stop"
+Remove-Item -Path $installPath -Force -ErrorAction SilentlyContinue
+
 # Download the executable
 Print-Info "Downloading from GitHub..."
 
@@ -232,6 +253,13 @@ else {
 # Update PATH for current session
 $env:Path = "$env:Path;$installDir"
 
+# Warn when another burger-api still comes first on PATH
+$found = Get-Command burger-api -ErrorAction SilentlyContinue | Select-Object -First 1
+if ($found -and $found.Source -ne $installPath) {
+    Print-Error "Another burger-api comes first on your PATH: $($found.Source)"
+    Print-Info "Remove it so the new version runs:  Remove-Item `"$($found.Source)`""
+}
+
 # Verify installation
 Print-Header "Installation Complete!"
 Print-Success "burger-api has been installed to $installPath"
@@ -244,6 +272,8 @@ Write-Host ""
 Print-Info "To get started, create a new project:"
 Write-Host ""
 Write-Host "    burger-api create my-awesome-api" -ForegroundColor Cyan
+Write-Host ""
+Print-Info "Getting an error later? Run this installer again to get the latest version."
 Write-Host ""
 Print-Success "Happy coding!"
 Write-Host ""
