@@ -10,7 +10,7 @@ Query strings, path parameters, headers, and cookies always arrive as **text**. 
 
 ## Turn it on
 
-Coercion is **opt-in and off by default**, so existing apps keep their exact behavior. Enable it for the whole app:
+Coercion is **opt-in and off by default**. Enable it for the whole app:
 
 ```typescript title="src/index.ts"
 import { Burger } from "burger-api";
@@ -59,7 +59,7 @@ Conversion plans are built from Zod object fields. For other schema libraries, u
 ## Safe by design
 
 - A value that cannot be converted fails the validation normally. It never becomes `NaN` or silently corrupts your data.
-- When coercion is off, nothing changes: `"42"` stays `"42"` and strict schemas behave exactly as before.
+- When coercion is off, `"42"` stays `"42"` and strict schemas validate the raw values.
 - You can still use Zod's own `z.coerce.number()` if you prefer per-field control; the framework `coerce: true` is a simpler, app-wide switch.
 
 

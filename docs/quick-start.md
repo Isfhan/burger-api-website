@@ -55,6 +55,8 @@ burger-api build src/index.ts --target=cloudflare
 wrangler dev   # boots the generated build locally, then `wrangler deploy`
 ```
 
+The Node.js target also needs `@burger-api/node-server` (`bun add @burger-api/node-server`). See [Node.js deployment](/docs/deployment/node).
+
 See [Deployment](/docs/deployment/bun) for each target and [Compatibility](/docs/compatibility) for what works where (WebSocket, for example, works on every target except Vercel).
 
 ## Next steps

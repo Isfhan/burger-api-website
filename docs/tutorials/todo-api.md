@@ -81,9 +81,9 @@ export default {
 
 ## Step 3: Create the Todo Model
 
-First, let's define what a todo looks like. Create a `src/types.ts` file:
+First, let's define what a todo looks like. Add the models to a new `src/models.ts` file. The scaffold already creates `src/types.ts` for `declare module 'burger-api'` augmentations, so keep your app models separate:
 
-```typescript title="src/types.ts"
+```typescript title="src/models.ts"
 export interface Todo {
   id: number;
   title: string;
@@ -108,7 +108,7 @@ export interface UpdateTodoRequest {
 Create a simple in-memory database:
 
 ```typescript title="src/database.ts"
-import type { Todo } from "./types";
+import type { Todo } from "./models";
 
 // In-memory storage (in a real app, you'd use a database)
 let todos: Todo[] = [
@@ -373,7 +373,7 @@ todo-api/
 │   ├── hooks.ts                 # Global hooks (from the scaffold)
 │   ├── plugins.ts               # Plugins (from the scaffold)
 │   ├── providers.ts             # Services (from the scaffold)
-│   ├── types.ts                 # TypeScript interfaces
+│   ├── models.ts                # TypeScript interfaces
 │   ├── database.ts              # In-memory storage
 │   └── api/
 │       ├── route.ts             # Sample route from the scaffold (GET /api)

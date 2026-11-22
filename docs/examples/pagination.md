@@ -6,6 +6,20 @@ sidebar_label: Pagination
 
 Paginate a list using a validated query and advertise totals via `ctx.set`.
 
+## Store
+
+```ts title="src/api/posts/store.ts"
+export interface Post {
+  id: string;
+  title: string;
+  content: string;
+}
+
+export const posts: Post[] = [];
+```
+
+## Paginated list
+
 ```ts title="src/api/posts/schema.ts"
 import { z } from "zod";
 

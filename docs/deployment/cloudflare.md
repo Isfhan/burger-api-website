@@ -100,8 +100,8 @@ npx wrangler deploy
   you when it scaffolds `wrangler.toml`). Either way, never rely on
   filesystem scanning at runtime: Workers has no filesystem.
 - WebSocket **does** work on Workers, natively, via `WebSocketPair` (see
-  [Compatibility](/docs/compatibility)). Pages (`HTMLBundle`) is Bun-only in
-  1.0 and not available on Workers.
+  [Compatibility](/docs/compatibility)). Pages (`HTMLBundle`) are Bun-only and
+  not available on Workers.
 
 ## Related
 

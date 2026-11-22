@@ -28,7 +28,7 @@ don't hand-write an `IncomingMessage`⇄`Request` bridge yourself.
 ## Install
 
 ```bash
-npm install @burger-api/node-server
+bun add @burger-api/node-server
 ```
 
 ## Quick start: `burger-api build --target=node`
@@ -110,7 +110,7 @@ const burger = new Burger({
 ## Run
 
 ```bash
-# Node 24+ runs TypeScript directly (type stripping is on by default)
+# Node 24.22.1+ or 26.12.1+ runs TypeScript directly (type stripping is on by default)
 node src/server.ts
 
 # or build first with your own toolchain (tsc, esbuild, bun build --target node)

@@ -44,7 +44,7 @@ export const GET = defineRoute(GetSchema, (ctx) => {
 });
 ```
 
-The older, equivalent form (annotate the handler with `BurgerContext<typeof GET>` directly) still works:
+The equivalent form annotates the handler with `BurgerContext<typeof GET>` directly:
 
 ```ts
 import type { BurgerContext } from "burger-api";

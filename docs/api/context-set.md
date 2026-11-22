@@ -25,11 +25,13 @@ interface ContextSet {
 - **Type:** `Record<string, string | string[]> | Headers | undefined`
 - **Description:** Headers to merge over the response's existing headers. Explicitly set values win. An array value appends every entry instead of replacing. A scalar `set-cookie` is appended too, so cookies from the handler and from `ctx.set` both survive.
 
-`ctx.set.headers` is always defined: it is created on first access, so this never throws:
+`ctx.set.headers` is always defined at runtime: it is created on first access.
 
 ```ts
-ctx.set.headers["x-request-id"] = ctx.headers.get("x-request-id") ?? "none";
+ctx.set.headers = { "x-request-id": ctx.headers.get("x-request-id") ?? "none" };
 ```
+
+In JavaScript, setting a single key (`ctx.set.headers["x-request-id"] = value`) also works. In TypeScript, assign an object as shown, because the type also allows a `Headers` object.
 
 ## Example
 

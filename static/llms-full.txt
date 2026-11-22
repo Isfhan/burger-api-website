@@ -105,6 +105,8 @@ burger-api build src/index.ts --target=cloudflare
 wrangler dev   # boots the generated build locally, then `wrangler deploy`
 ```
 
+The Node.js target also needs `@burger-api/node-server` (`bun add @burger-api/node-server`). See [Node.js deployment](https://burger-api.com/docs/deployment/node).
+
 See [Deployment](https://burger-api.com/docs/deployment/bun) for each target and [Compatibility](https://burger-api.com/docs/compatibility) for what works where (WebSocket, for example, works on every target except Vercel).
 
 ## Next steps
@@ -384,6 +386,7 @@ Builds your project for a deployment target. Routes are discovered at build time
 
 - The entry file is optional: `burger-api build` uses `src/index.ts`, `src/index.js`, or `src/index.mjs` when no file is given.
 - Options: `--target <platform>` (`bun` default, `node`, `cloudflare`, `deno`, `vercel`), `--outfile <path>` (default depends on `--target`), `--compile` (standalone executable, `bun` target only), `--no-bytecode` (`--compile` only), `--minify`, `--sourcemap <type>`, `--no-bun-check`.
+- The `node` target needs `@burger-api/node-server` in your project: run `bun add @burger-api/node-server` first. See [Node.js deployment](https://burger-api.com/docs/deployment/node).
 
 ```bash
 burger-api build src/index.ts --target=cloudflare
@@ -532,14 +535,14 @@ my-api/
 
 ### Build for production
 
-1. `burger-api build src/index.ts --target=<platform>`: `bun` (default), `node`, `cloudflare`, `deno`, or `vercel`.
+1. `burger-api build src/index.ts --target=<platform>`: `bun` (default), `node`, `cloudflare`, `deno`, or `vercel`. For `node`, run `bun add @burger-api/node-server` first.
 2. Run it: `burger-api start` (Bun), `node .build/bundle/app.js` (Node default output), or hand off to the platform's own tool: `wrangler dev`/`deploy`, `deno serve`, `vercel dev`/`--prod`.
 3. `burger-api build src/index.ts --compile --outfile=my-app` for a standalone Bun binary (or `burger-api build:exec src/index.ts --target bun-linux-x64` for a specific OS/arch).
 
 ## Environment variables
 
 - `GITHUB_TOKEN`: token sent to the GitHub API when fetching the ecosystem catalog for `add`, `list`, and `skills`. Setting it raises the unauthenticated rate limit; the CLI prints a hint when GitHub answers `403`.
-- `BURGER_API_BRANCH`: overrides the GitHub branch the CLI reads ecosystem content from. Defaults to `main` on stable CLI releases, and to the matching prerelease branch (for example `feat/burger-api-v1`) on beta/RC builds.
+- `BURGER_API_BRANCH`: overrides the GitHub branch the CLI reads ecosystem content from. Defaults to `main`.
 - `BURGER_API_CACHE_DIR`: overrides the ecosystem catalog cache directory. Defaults to `~/.burger-api/cache/`, with a four-hour TTL. A stale cache is used with a warning when a live refresh fails. Local mode ignores this cache.
 - `BURGER_API_LOCAL`: set to `1` or `true` to turn on [local mode](#local-mode) for the shell. `--local` on a command wins over this variable.
 
@@ -865,7 +868,7 @@ bun add @burger-api/node-server
 | `globalMiddleware` in `new Burger({...})` | `src/hooks.ts` | Export global hooks from `src/hooks.ts` (`onRequest` for work before routing, `beforeRoute` for work after validation). |
 | CLI `burger-api serve` | `burger-api dev` | Rename the command and any package script that calls it. |
 | `burger.config.ts` | `burger.build.ts` | Rename the file. It is build-time only; `dev` and `start` read `new Burger({...})`. `doctor` flags the old name as an error. |
-| `use.ts` / `webhook.ts` route files | `config.ts` | These convention files were removed. Route options now live in `config.ts`. |
+| `middleware.ts` / `use.ts` / `webhook.ts` route files | `config.ts`, `hooks.ts`, plugins | A leftover file is a startup error: `Forbidden convention file`. Delete it, then move the logic to hooks, plugins, or `config.ts`. |
 | Auth factories in `ecosystem/middlewares/` (`jwt`, `apiKey`, ...) | Plugins in `ecosystem/plugins/` (`jwtAuth`, `apiKey`, ...) | Install with `burger-api add jwt-auth` and register in `src/plugins.ts`. See [Ecosystem](https://burger-api.com/docs/ecosystem/introduction). |
 | Group/folder files shared across routes | Self-contained route directories | Groups only strip the URL. Copy shared `schema.ts` / `hooks.ts` code into each route that needs it, or import a shared module. See [File-Based Routing](https://burger-api.com/docs/routing/file-based-routing). |
 | `req.validated?.query` with a manual generic | `ctx.validated.query` via `defineRoute` / `defineHooks` | Per-method `schema.ts` exports plus `defineRoute` infer `ctx.validated` with no generic to write. |
@@ -1346,7 +1349,7 @@ export const GET = defineRoute(GetSchema, (ctx) => {
 });
 ```
 
-The older, equivalent form (annotate the handler with `BurgerContext<typeof GET>` directly) still works:
+The equivalent form annotates the handler with `BurgerContext<typeof GET>` directly:
 
 ```ts
 import type { BurgerContext } from "burger-api";
@@ -1689,7 +1692,7 @@ export default { auth: false };
 export const POST = { auth: { required: true } };
 ```
 
-Here GET stays public while POST requires a user. `ctx.config` for a request is the merged object for its method, so plugins and hooks keep reading `ctx.config.auth` unchanged. A `config.ts` with only a default export behaves exactly as before.
+Here GET stays public while POST requires a user. `ctx.config` for a request is the merged object for its method, so plugins and hooks keep reading `ctx.config.auth` unchanged. A `config.ts` with only a default export applies to every method.
 
 Type your keys by augmenting `RouteConfig`, so `ctx.config` is typed wherever a hook or plugin reads it:
 
@@ -2235,6 +2238,22 @@ api/
       route.ts         -> /api/analytics
 ```
 
+:::warning Groups do not enforce anything
+A route group only removes its own name from the URL. It does not apply
+`hooks.ts` or `config.ts` to the routes inside it. Routes never inherit from
+parent folders.
+
+Put `hooks.ts` and `config.ts` next to each `route.ts` they should affect. To
+protect many routes at once, use a plugin or a global hook instead.
+
+A folder with convention files but no `route.ts` applies to nothing, and
+BurgerAPI prints a startup warning:
+
+```
+[burger-api] (authenticated) has config.ts, hooks.ts but no route.ts, so they apply to nothing.
+```
+:::
+
 **Benefits:**
 - Clear visual separation by access level
 - Maintains clean, simple URLs
@@ -2440,9 +2459,13 @@ Add a README in your api directory explaining your grouping strategy:
 
 ## Route Groups
 
-- `(public)` - Public endpoints, no authentication
-- `(authenticated)` - Requires user authentication
-- `(admin)` - Requires admin privileges
+- `(public)` - Public endpoints
+- `(authenticated)` - Routes used by signed-in users
+- `(admin)` - Routes used by admins
+
+These folders are only for organization. They do not check who is calling.
+Authentication and authorization live in each route's `config.ts` or in a
+plugin.
 ```
 
 ## Route Groups vs. URL Segments
@@ -3810,7 +3833,7 @@ does (`ctx.params`, `ctx.services`, etc.) and must return a `Response`;
 returning a JSX element instead will not render anything. If you want actual
 JSX templating, build the HTML string yourself (e.g. with a template
 function or a JSX-to-string helper) and pass it to `new Response(...)`; there
-is no built-in SSR renderer in 1.0.
+is no built-in SSR renderer.
 
 ## Hooks and context
 
@@ -4662,7 +4685,7 @@ Query strings, path parameters, headers, and cookies always arrive as **text**. 
 
 ## Turn it on
 
-Coercion is **opt-in and off by default**, so existing apps keep their exact behavior. Enable it for the whole app:
+Coercion is **opt-in and off by default**. Enable it for the whole app:
 
 ```typescript title="src/index.ts"
 import { Burger } from "burger-api";
@@ -4711,7 +4734,7 @@ Conversion plans are built from Zod object fields. For other schema libraries, u
 ## Safe by design
 
 - A value that cannot be converted fails the validation normally. It never becomes `NaN` or silently corrupts your data.
-- When coercion is off, nothing changes: `"42"` stays `"42"` and strict schemas behave exactly as before.
+- When coercion is off, `"42"` stays `"42"` and strict schemas validate the raw values.
 - You can still use Zod's own `z.coerce.number()` if you prefer per-field control; the framework `coerce: true` is a simpler, app-wide switch.
 
 ## Related
@@ -4761,7 +4784,7 @@ export default {
 };
 ```
 
-The default `dev` mode means adding a `response` schema is **free and safe**: existing apps that declare none are unaffected, and apps that declare one get helpful feedback without risking a broken response.
+The default `dev` mode means adding a `response` schema is **free and safe**: a route that declares none is unaffected, and a route that declares one gets helpful feedback without risking a broken response.
 
 ## Status selection
 
@@ -5155,7 +5178,7 @@ Register routes and connection options directly on the app:
 ```ts
 import { Burger } from "burger-api";
 
-const app = new Burger();
+const app = new Burger({});
 
 app.websocket("/chat", {
     open(ws) {
@@ -5712,7 +5735,7 @@ bun init
 bun add burger-api
 ```
 
-Then follow the same `index.ts` and `api` setup from the rest of this tutorial.
+Then follow the same `index.ts` and `api` setup from the rest of this tutorial. A manual project has no `dev` script, so start it with `bun run src/index.ts` instead of `bun run dev`. See [Manual Setup](https://burger-api.com/docs/getting-started/installation#alternative-manual-setup-standard-bun) for the full steps.
 :::
 
 ## Step 2: Configure Your Server
@@ -6026,9 +6049,9 @@ export default {
 
 ## Step 3: Create the Todo Model
 
-First, let's define what a todo looks like. Create a `src/types.ts` file:
+First, let's define what a todo looks like. Add the models to a new `src/models.ts` file. The scaffold already creates `src/types.ts` for `declare module 'burger-api'` augmentations, so keep your app models separate:
 
-```typescript title="src/types.ts"
+```typescript title="src/models.ts"
 export interface Todo {
   id: number;
   title: string;
@@ -6053,7 +6076,7 @@ export interface UpdateTodoRequest {
 Create a simple in-memory database:
 
 ```typescript title="src/database.ts"
-import type { Todo } from "./types";
+import type { Todo } from "./models";
 
 // In-memory storage (in a real app, you'd use a database)
 let todos: Todo[] = [
@@ -6318,7 +6341,7 @@ todo-api/
 │   ├── hooks.ts                 # Global hooks (from the scaffold)
 │   ├── plugins.ts               # Plugins (from the scaffold)
 │   ├── providers.ts             # Services (from the scaffold)
-│   ├── types.ts                 # TypeScript interfaces
+│   ├── models.ts                # TypeScript interfaces
 │   ├── database.ts              # In-memory storage
 │   └── api/
 │       ├── route.ts             # Sample route from the scaffold (GET /api)
@@ -6619,11 +6642,11 @@ export default {
 } satisfies OpenAPIConfig;
 ```
 
-## Step 3: Create Types and Interfaces
+## Step 3: Create Models and Interfaces
 
-Define your data models:
+Define your data models in a new `src/models.ts` file. The scaffold's `src/types.ts` holds `declare module 'burger-api'` augmentations, so keep your app models separate:
 
-```typescript title="src/types.ts"
+```typescript title="src/models.ts"
 export interface Post {
   id: number;
   title: string;
@@ -6792,7 +6815,7 @@ Set up SQLite database with Bun's native SQLite client:
 
 ```typescript title="src/database.ts"
 import { Database } from "bun:sqlite";
-import type { Post, Comment, PostFilters } from "./types";
+import type { Post, Comment, PostFilters } from "./models";
 
 // Initialize SQLite database
 const db = new Database("blog.db");
@@ -6876,13 +6899,16 @@ export const postDatabase = {
     const offset = (page - 1) * limit;
 
     // Get filtered posts
-    const posts = getPostsQuery.all({
+    const rows = getPostsQuery.all({
       $author: filters.author || null,
       $published: filters.published ?? null,
       $search: filters.search || null,
       $limit: limit,
       $offset: offset,
     }) as Post[];
+
+    // SQLite stores booleans as 0/1; convert so the JSON matches the Post type
+    const posts = rows.map((row) => ({ ...row, published: Boolean(row.published) }));
 
     // Get total count for pagination
     const countQuery = db.query(`
@@ -6907,7 +6933,9 @@ export const postDatabase = {
   },
 
   getById(id: number): Post | undefined {
-    return getPostByIdQuery.get({ $id: id }) as Post | undefined;
+    const row = getPostByIdQuery.get({ $id: id }) as Post | undefined;
+    if (!row) return undefined;
+    return { ...row, published: Boolean(row.published) };
   },
 
   create(title: string, content: string, author: string, published = false): Post {
@@ -7243,7 +7271,13 @@ export default (burger: PluginRegistrar) => {
 };
 ```
 
-With the plugin registered, every route requires a valid key unless its `config.ts` opts out. The posts routes require auth explicitly:
+With the plugin registered, every route requires a valid key unless its `config.ts` opts out. That includes the scaffold's `GET /api` route, which otherwise returns `401 Missing API key`. Keep the starter route public:
+
+```typescript title="src/api/config.ts"
+export default { auth: false };
+```
+
+The posts routes require auth explicitly:
 
 ```typescript title="src/api/posts/config.ts"
 export default { auth: { required: true } };
@@ -7362,9 +7396,10 @@ blog-api/
 │   ├── plugins.ts                      # Auth plugin registration
 │   ├── providers.ts                    # Services (from the scaffold)
 │   ├── database.ts                     # SQLite database layer
-│   ├── types.ts                        # TypeScript interfaces
+│   ├── models.ts                       # TypeScript interfaces
 │   └── api/
 │       ├── route.ts                    # Sample route from the scaffold (GET /api)
+│       ├── config.ts                   # Auth: false (starter route stays public)
 │       └── posts/
 │           ├── route.ts                # GET, POST /api/posts
 │           ├── schema.ts               # Validation for /api/posts
@@ -7560,6 +7595,20 @@ url: 'https://burger-api.com/docs/examples/pagination'
 # Pagination Example
 
 Paginate a list using a validated query and advertise totals via `ctx.set`.
+
+## Store
+
+```ts title="src/api/posts/store.ts"
+export interface Post {
+  id: string;
+  title: string;
+  content: string;
+}
+
+export const posts: Post[] = [];
+```
+
+## Paginated list
 
 ```ts title="src/api/posts/schema.ts"
 import { z } from "zod";
@@ -8009,13 +8058,15 @@ burger-api add logger
 
 ## Usage
 
-Compose it in `src/hooks.ts`. The logger decorates the response, so it runs as a `beforeRoute` hook:
+Compose it in `src/hooks.ts` as an `onRequest` hook:
 
 ```ts title="src/hooks.ts"
 import { logger } from "../ecosystem/hooks/logger/logger";
 
-export const beforeRoute = [logger()];
+export const onRequest = [logger()];
 ```
+
+The logger returns a response mapper, so it logs each request when the response is ready. `onRequest` runs for every response the app produces, including 404s and CORS preflights, so those requests appear in the log too. A `beforeRoute` hook runs only for matched routes and would miss them.
 
 ## Options
 
@@ -8032,7 +8083,7 @@ export const beforeRoute = [logger()];
 ```ts title="src/hooks.ts"
 import { createLogger } from "../ecosystem/hooks/logger/logger";
 
-export const beforeRoute = [
+export const onRequest = [
   createLogger({ format: "json", skip: /^\/(health|metrics)/ }),
 ];
 ```
@@ -8739,6 +8790,7 @@ url: 'https://burger-api.com/docs/cli/build'
 burger-api build src/index.ts
 
 # Node.js, uses @burger-api/node-server's serve() instead of app.serve()
+bun add @burger-api/node-server
 burger-api build src/index.ts --target=node
 
 # Cloudflare Workers, generates .build/cloudflare/index.ts + wrangler.toml
@@ -8793,8 +8845,9 @@ existing config is never overwritten.
 
 Production flow on Bun/Node: run `burger-api build`, then start the server
 with `burger-api start` (Bun) or `node <outfile>` (Node, via
-`@burger-api/node-server`). On Cloudflare/Deno/Vercel, `wrangler
-deploy`/`deno deploy`/`vercel --prod` take over from there.
+`@burger-api/node-server`). On Cloudflare and Vercel, `wrangler deploy` and
+`vercel --prod` take over from there. On Deno, run the generated entry with
+`deno serve`; for hosting, see [Deno deployment](https://burger-api.com/docs/deployment/deno).
 
 See [CLI Tool](https://burger-api.com/docs/getting-started/cli).
 
@@ -8899,11 +8952,11 @@ It checks, in order:
 - When Node is installed, it is 24.22.1+ or 26.12.1+ (needed only for the `node` build target): an older Node is a warning.
 - `package.json` exists.
 - `burger-api` is listed in `dependencies`/`devDependencies` and resolves from the project. A listed but not installed package tells you to run `bun install`.
-- A build config (`burger.build.ts`/`.js`, or the legacy `burger.config.ts`/`.js`): when found it must load, otherwise the check fails. When missing, the check is informational and convention defaults apply.
+- A build config (`burger.build.ts`/`.js`): when found it must load, otherwise the check fails. When missing, the check is informational and convention defaults apply. Build settings belong in `burger.build.ts`.
 - `src/index.ts` (or `src/index.js`/`src/index.mjs`) exists.
 - API routes under the configured `apiDir`: a missing default `src/api` is informational (fine for pages-only apps), a missing custom directory is an error, and every discovered route and convention file must import without errors.
 - `tsconfig.json` (or `jsconfig.json` for JavaScript projects) exists.
-- No legacy `burger.config.ts`/`.js` left over: the config file was renamed to `burger.build.ts` at some point; doctor flags the old name as an error if found.
+- No `burger.config.ts`/`.js` file: doctor reports it as an error if found.
 - The scan options in `src/index.*` agree with `burger.build.ts`: a mismatch is a warning, not an error.
 - `src/hooks.ts`, `src/plugins.ts`, `src/providers.ts`, `src/openapi.config.ts`: reported as found or not found, but never as errors (all are optional).
 
@@ -8938,12 +8991,10 @@ The framework and CLI require **Bun 1.4.4 or newer**. Node.js deployments
 target **Node 24.22.1+ or 26.12.1+**. These versions include the October
 2026 security fixes (Brotli, TLS), so don't run anything older.
 
-Every claim on this page is backed by one thing: `RUNTIME_CAPABILITIES`, a
-small data table exported from `burger-api` itself. The CLI's `build
---target` reads the same table to reject an unsupported combination (e.g. a
-WebSocket route targeting Vercel) at build time, so this page and the build
-can't quietly drift apart the way hand-maintained compatibility prose
-otherwise does.
+Every claim on this page comes from `RUNTIME_CAPABILITIES`, a small data table
+exported from `burger-api` itself. The CLI's `build --target` reads the same
+table to reject an unsupported combination (e.g. a WebSocket route targeting
+Vercel) at build time.
 
 ## Feature matrix
 
@@ -9138,7 +9189,7 @@ don't hand-write an `IncomingMessage`⇄`Request` bridge yourself.
 ## Install
 
 ```bash
-npm install @burger-api/node-server
+bun add @burger-api/node-server
 ```
 
 ## Quick start: `burger-api build --target=node`
@@ -9220,7 +9271,7 @@ const burger = new Burger({
 ## Run
 
 ```bash
-# Node 24+ runs TypeScript directly (type stripping is on by default)
+# Node 24.22.1+ or 26.12.1+ runs TypeScript directly (type stripping is on by default)
 node src/server.ts
 
 # or build first with your own toolchain (tsc, esbuild, bun build --target node)
@@ -9338,8 +9389,8 @@ npx wrangler deploy
   you when it scaffolds `wrangler.toml`). Either way, never rely on
   filesystem scanning at runtime: Workers has no filesystem.
 - WebSocket **does** work on Workers, natively, via `WebSocketPair` (see
-  [Compatibility](https://burger-api.com/docs/compatibility)). Pages (`HTMLBundle`) is Bun-only in
-  1.0 and not available on Workers.
+  [Compatibility](https://burger-api.com/docs/compatibility)). Pages (`HTMLBundle`) are Bun-only and
+  not available on Workers.
 
 ## Related
 
@@ -9646,23 +9697,33 @@ This is the Bun deployment surface. See [Deployment](https://burger-api.com/docs
 
 ### usePlugin(plugin, scope?, seed?)
 
-Registers a plugin (application extension). Plugin hooks are compiled into the hook chain for every route. The same plugin identity is deduplicated. Returns `this` for chaining.
+Registers a plugin (application extension) through the registrar passed to `src/plugins.ts`. Plugin hooks are compiled into the hook chain for every route. The same plugin identity is deduplicated. Returns the registrar for chaining.
 
-```ts
-app.usePlugin(apiKey({ keys: ["demo-api-key-123"] }));
+```ts title="src/plugins.ts"
+import type { PluginRegistrar } from "burger-api";
+import { apiKey } from "../ecosystem/plugins/api-key/api-key";
+
+export default function (burger: PluginRegistrar) {
+  burger.usePlugin(apiKey({ keys: ["demo-api-key-123"] }));
+}
 ```
 
-Plugins are registered in `src/plugins.ts`. See [Ecosystem](https://burger-api.com/docs/ecosystem/introduction).
+The default export of `src/plugins.ts` is the place to register plugins. See [Hooks and Plugins](https://burger-api.com/docs/ecosystem/hooks-plugins) and [Configuration](https://burger-api.com/docs/core/configuration#plugins-and-providers).
 
 ### provide(name, service)
 
 Registers an application service, created once at startup and injected into `ctx.services` for every request. Services are frozen and shared across requests.
 
-```ts
-app.provide("db", createDb());
+```ts title="src/providers.ts"
+import type { ProviderRegistrar } from "burger-api";
+import { createDb } from "./db";
+
+export default function (burger: ProviderRegistrar) {
+  burger.provide("db", createDb());
+}
 ```
 
-Services are registered in `src/providers.ts` and accessed as `ctx.services.name`, typed via module augmentation.
+The default export of `src/providers.ts` is the place to register services. Access them as `ctx.services.name`, typed via module augmentation. See [Configuration](https://burger-api.com/docs/core/configuration#plugins-and-providers).
 
 ### websocket(path, handlers)
 
@@ -9683,7 +9744,7 @@ Programmatic WebSocket routes are a **dev-only** convenience. They are not captu
 
 ### fetchHandler()
 
-Builds a Web-Standard fetch handler for the app. Usable with `Bun.serve`, `Deno.serve`, Vercel, Cloudflare Workers, and Node 24+. It serves static function page routes and embedded assets, and handles WebSocket upgrades where the runtime supports them (Bun, Deno, Cloudflare Workers). Bun-only page features (HTML-import bundles and dynamic `[param]` pages) and disk-backed dev assets are only served by `serve()` on Bun; see [Compatibility](https://burger-api.com/docs/compatibility).
+Builds a Web-Standard fetch handler for the app. Usable with `Bun.serve`, `Deno.serve`, Vercel, Cloudflare Workers, and Node 24.22.1+ or 26.12.1+. It serves static function page routes and embedded assets, and handles WebSocket upgrades where the runtime supports them (Bun, Deno, Cloudflare Workers). Bun-only page features (HTML-import bundles and dynamic `[param]` pages) and disk-backed dev assets are only served by `serve()` on Bun; see [Compatibility](https://burger-api.com/docs/compatibility).
 
 ### toFetchHandler(burger)
 
@@ -9869,11 +9930,13 @@ interface ContextSet {
 - **Type:** `Record<string, string | string[]> | Headers | undefined`
 - **Description:** Headers to merge over the response's existing headers. Explicitly set values win. An array value appends every entry instead of replacing. A scalar `set-cookie` is appended too, so cookies from the handler and from `ctx.set` both survive.
 
-`ctx.set.headers` is always defined: it is created on first access, so this never throws:
+`ctx.set.headers` is always defined at runtime: it is created on first access.
 
 ```ts
-ctx.set.headers["x-request-id"] = ctx.headers.get("x-request-id") ?? "none";
+ctx.set.headers = { "x-request-id": ctx.headers.get("x-request-id") ?? "none" };
 ```
+
+In JavaScript, setting a single key (`ctx.set.headers["x-request-id"] = value`) also works. In TypeScript, assign an object as shown, because the type also allows a `Headers` object.
 
 ## Example
 
@@ -9935,7 +9998,8 @@ import { defineRoute } from "burger-api";
 import { GET as GetSchema } from "./schema";
 
 export const GET = defineRoute(GetSchema, (ctx) => {
-  ctx.validated.query; // inferred, no generic to write
+  // ctx.validated.query is inferred, no generic to write
+  return Response.json({ limit: ctx.validated.query.limit });
 });
 ```
 
@@ -10248,7 +10312,7 @@ export async function GET(ctx: BurgerContext) {
 
 - `ctx.set.status` overrides the response status only when defined, and never replaces an error status (`400` or higher). Errors stay errors.
 - `ctx.set.headers` is merged over the response's existing headers; explicit values win.
-- `ctx.set.headers` is always defined (created on first access), so `ctx.set.headers["x-id"] = value` never throws.
+- `ctx.set.headers` is always defined (created on first access). In TypeScript, assign an object (`ctx.set.headers = { "x-id": value }`); see [Context Set](https://burger-api.com/docs/api/context-set).
 - An array value appends each entry. A scalar `set-cookie` is appended, so a cookie set by the handler and one set through `ctx.set` both survive.
 
 ## mapResponse
@@ -10264,7 +10328,7 @@ export const mapResponse = [
 ];
 ```
 
-A `mapResponse` hook returns a function that receives the current response and returns the transformed response, or returns a `Response` to replace it, or `undefined` to continue. CORS and logger hooks use this phase to decorate responses.
+A `mapResponse` hook returns a function that receives the current response and returns the transformed response, or returns a `Response` to replace it, or `undefined` to continue. The CORS and logger hooks are `onRequest` hooks that return a response mapper like this, so they decorate every response, including 404s and CORS preflights.
 
 ## applySet
 
@@ -10430,7 +10494,7 @@ export const GET = defineRoute(GetSchema, (ctx) => {
 
 `defineRoute` does nothing at runtime; it returns your handler exactly as written. What it buys you is that the schema you pass and the schema TypeScript types `ctx` against are always the literal same object, so the two can never quietly drift apart. Runtime validation still comes from the route's `schema.ts` convention file, so always pass that same export rather than an inline schema object.
 
-The equivalent, older form still works: annotate the handler with `BurgerContext<typeof GET>` directly:
+The equivalent form annotates the handler with `BurgerContext<typeof GET>` directly:
 
 ```ts
 import type { BurgerContext } from "burger-api";

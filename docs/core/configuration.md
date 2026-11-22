@@ -129,7 +129,7 @@ export default { auth: false };
 export const POST = { auth: { required: true } };
 ```
 
-Here GET stays public while POST requires a user. `ctx.config` for a request is the merged object for its method, so plugins and hooks keep reading `ctx.config.auth` unchanged. A `config.ts` with only a default export behaves exactly as before.
+Here GET stays public while POST requires a user. `ctx.config` for a request is the merged object for its method, so plugins and hooks keep reading `ctx.config.auth` unchanged. A `config.ts` with only a default export applies to every method.
 
 Type your keys by augmenting `RouteConfig`, so `ctx.config` is typed wherever a hook or plugin reads it:
 

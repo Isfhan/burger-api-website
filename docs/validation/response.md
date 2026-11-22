@@ -38,7 +38,7 @@ export default {
 };
 ```
 
-The default `dev` mode means adding a `response` schema is **free and safe**: existing apps that declare none are unaffected, and apps that declare one get helpful feedback without risking a broken response.
+The default `dev` mode means adding a `response` schema is **free and safe**: a route that declares none is unaffected, and a route that declares one gets helpful feedback without risking a broken response.
 
 ## Status selection
 

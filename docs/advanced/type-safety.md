@@ -31,7 +31,7 @@ export const GET = defineRoute(GetSchema, (ctx) => {
 
 `defineRoute` does nothing at runtime; it returns your handler exactly as written. What it buys you is that the schema you pass and the schema TypeScript types `ctx` against are always the literal same object, so the two can never quietly drift apart. Runtime validation still comes from the route's `schema.ts` convention file, so always pass that same export rather than an inline schema object.
 
-The equivalent, older form still works: annotate the handler with `BurgerContext<typeof GET>` directly:
+The equivalent form annotates the handler with `BurgerContext<typeof GET>` directly:
 
 ```ts
 import type { BurgerContext } from "burger-api";

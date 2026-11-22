@@ -13,12 +13,10 @@ The framework and CLI require **Bun 1.4.4 or newer**. Node.js deployments
 target **Node 24.22.1+ or 26.12.1+**. These versions include the October
 2026 security fixes (Brotli, TLS), so don't run anything older.
 
-Every claim on this page is backed by one thing: `RUNTIME_CAPABILITIES`, a
-small data table exported from `burger-api` itself. The CLI's `build
---target` reads the same table to reject an unsupported combination (e.g. a
-WebSocket route targeting Vercel) at build time, so this page and the build
-can't quietly drift apart the way hand-maintained compatibility prose
-otherwise does.
+Every claim on this page comes from `RUNTIME_CAPABILITIES`, a small data table
+exported from `burger-api` itself. The CLI's `build --target` reads the same
+table to reject an unsupported combination (e.g. a WebSocket route targeting
+Vercel) at build time.
 
 ## Feature matrix
 

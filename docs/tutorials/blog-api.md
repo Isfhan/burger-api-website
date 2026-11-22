@@ -76,11 +76,11 @@ export default {
 } satisfies OpenAPIConfig;
 ```
 
-## Step 3: Create Types and Interfaces
+## Step 3: Create Models and Interfaces
 
-Define your data models:
+Define your data models in a new `src/models.ts` file. The scaffold's `src/types.ts` holds `declare module 'burger-api'` augmentations, so keep your app models separate:
 
-```typescript title="src/types.ts"
+```typescript title="src/models.ts"
 export interface Post {
   id: number;
   title: string;
@@ -249,7 +249,7 @@ Set up SQLite database with Bun's native SQLite client:
 
 ```typescript title="src/database.ts"
 import { Database } from "bun:sqlite";
-import type { Post, Comment, PostFilters } from "./types";
+import type { Post, Comment, PostFilters } from "./models";
 
 // Initialize SQLite database
 const db = new Database("blog.db");
@@ -333,13 +333,16 @@ export const postDatabase = {
     const offset = (page - 1) * limit;
 
     // Get filtered posts
-    const posts = getPostsQuery.all({
+    const rows = getPostsQuery.all({
       $author: filters.author || null,
       $published: filters.published ?? null,
       $search: filters.search || null,
       $limit: limit,
       $offset: offset,
     }) as Post[];
+
+    // SQLite stores booleans as 0/1; convert so the JSON matches the Post type
+    const posts = rows.map((row) => ({ ...row, published: Boolean(row.published) }));
 
     // Get total count for pagination
     const countQuery = db.query(`
@@ -364,7 +367,9 @@ export const postDatabase = {
   },
 
   getById(id: number): Post | undefined {
-    return getPostByIdQuery.get({ $id: id }) as Post | undefined;
+    const row = getPostByIdQuery.get({ $id: id }) as Post | undefined;
+    if (!row) return undefined;
+    return { ...row, published: Boolean(row.published) };
   },
 
   create(title: string, content: string, author: string, published = false): Post {
@@ -700,7 +705,13 @@ export default (burger: PluginRegistrar) => {
 };
 ```
 
-With the plugin registered, every route requires a valid key unless its `config.ts` opts out. The posts routes require auth explicitly:
+With the plugin registered, every route requires a valid key unless its `config.ts` opts out. That includes the scaffold's `GET /api` route, which otherwise returns `401 Missing API key`. Keep the starter route public:
+
+```typescript title="src/api/config.ts"
+export default { auth: false };
+```
+
+The posts routes require auth explicitly:
 
 ```typescript title="src/api/posts/config.ts"
 export default { auth: { required: true } };
@@ -819,9 +830,10 @@ blog-api/
 │   ├── plugins.ts                      # Auth plugin registration
 │   ├── providers.ts                    # Services (from the scaffold)
 │   ├── database.ts                     # SQLite database layer
-│   ├── types.ts                        # TypeScript interfaces
+│   ├── models.ts                       # TypeScript interfaces
 │   └── api/
 │       ├── route.ts                    # Sample route from the scaffold (GET /api)
+│       ├── config.ts                   # Auth: false (starter route stays public)
 │       └── posts/
 │           ├── route.ts                # GET, POST /api/posts
 │           ├── schema.ts               # Validation for /api/posts

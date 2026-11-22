@@ -80,7 +80,7 @@ does (`ctx.params`, `ctx.services`, etc.) and must return a `Response`;
 returning a JSX element instead will not render anything. If you want actual
 JSX templating, build the HTML string yourself (e.g. with a template
 function or a JSX-to-string helper) and pass it to `new Response(...)`; there
-is no built-in SSR renderer in 1.0.
+is no built-in SSR renderer.
 
 ## Hooks and context
 

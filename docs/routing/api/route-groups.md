@@ -79,6 +79,22 @@ api/
       route.ts         → /api/analytics
 ```
 
+:::warning Groups do not enforce anything
+A route group only removes its own name from the URL. It does not apply
+`hooks.ts` or `config.ts` to the routes inside it. Routes never inherit from
+parent folders.
+
+Put `hooks.ts` and `config.ts` next to each `route.ts` they should affect. To
+protect many routes at once, use a plugin or a global hook instead.
+
+A folder with convention files but no `route.ts` applies to nothing, and
+BurgerAPI prints a startup warning:
+
+```
+[burger-api] (authenticated) has config.ts, hooks.ts but no route.ts, so they apply to nothing.
+```
+:::
+
 **Benefits:**
 - Clear visual separation by access level
 - Maintains clean, simple URLs
@@ -284,9 +300,13 @@ Add a README in your api directory explaining your grouping strategy:
 
 ## Route Groups
 
-- `(public)` - Public endpoints, no authentication
-- `(authenticated)` - Requires user authentication
-- `(admin)` - Requires admin privileges
+- `(public)` - Public endpoints
+- `(authenticated)` - Routes used by signed-in users
+- `(admin)` - Routes used by admins
+
+These folders are only for organization. They do not check who is calling.
+Authentication and authorization live in each route's `config.ts` or in a
+plugin.
 ```
 
 ## Route Groups vs. URL Segments
