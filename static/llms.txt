@@ -24,6 +24,7 @@
 - [Handlers](https://burger-api.com/docs/core-concepts/handlers): Each route file exports functions named after HTTP methods (GET, POST, PUT, DELETE, PATCH, ...).
 - [Request Context](https://burger-api.com/docs/core/request-handling): Every handler and hook receives a BurgerContext (ctx), the request context for that request.
 - [Hooks](https://burger-api.com/docs/core-concepts/hooks): Hooks control when code runs on a request.
+- [Providers](https://burger-api.com/docs/core-concepts/providers): A provider is a service your app needs at runtime: a database client, a mailer, a cache.
 - [Validation](https://burger-api.com/docs/core-concepts/validation): Validation checks the incoming request at a fixed point in the lifecycle: after transform, before beforeRoute.
 - [Configuration](https://burger-api.com/docs/core/configuration): BurgerAPI uses five clear configuration layers.
 - [Response Types](https://burger-api.com/docs/core/response-types): Route handlers and hooks return Response objects.
@@ -91,8 +92,17 @@
 - [CORS Hook](https://burger-api.com/docs/ecosystem/cors): The CORS hook adds the appropriate Access-Control-* headers to responses, for example to allow browser cross-origin requests.
 - [Logger Hook](https://burger-api.com/docs/ecosystem/logger): The logger hook logs requests with method, URL, status code, response time, and optional extras.
 - [Rate Limiter](https://burger-api.com/docs/ecosystem/rate-limiter): The rate limiter hook limits how many requests a client can make within a time window.
+- [Cache](https://burger-api.com/docs/ecosystem/cache): The cache hook sets Cache-Control headers so browsers, CDNs, and proxies know how long they may keep a response.
+- [Compression](https://burger-api.com/docs/ecosystem/compression): The compression hook gzips or deflates response bodies when the client says it accepts them.
+- [Security Headers](https://burger-api.com/docs/ecosystem/security-headers): The security headers hook adds response headers that block common browser attacks: CSP, HSTS, X-Frame-Options, and a few more.
+- [Timeout](https://burger-api.com/docs/ecosystem/timeout): The timeout package gives you request budgets.
+- [Body Size Limiter](https://burger-api.com/docs/ecosystem/body-size-limiter): The body size limiter rejects request bodies larger than a limit, so a client cannot send an oversized payload.
 - [JWT Auth](https://burger-api.com/docs/ecosystem/jwt-auth): The JWT auth plugin parses a JSON Web Token from the Authorization header, verifies the signature, and attaches the decoded payload to the context.
 - [API Key Auth](https://burger-api.com/docs/ecosystem/api-key-auth): The API key auth plugin reads an API key from a header, validates it against a static list or a custom function, and attaches it to the context.
+- [Basic Auth](https://burger-api.com/docs/ecosystem/basic-auth): HTTP Basic sends username:password in a Base64 Authorization header.
+- [Session](https://burger-api.com/docs/ecosystem/session): The session plugin keeps per-visitor state in a cookie-backed store and exposes it as ctx.session.
+- [OIDC](https://burger-api.com/docs/ecosystem/oidc): The OIDC plugin verifies a token from an OpenID Connect provider against the provider's published signing keys.
+- [Env Validation](https://burger-api.com/docs/ecosystem/env): The env plugin checks your environment variables when the app starts.
 
 ### AI Assistance
 
@@ -139,6 +149,7 @@
 
 ### Advanced
 
+- [Testing](https://burger-api.com/docs/advanced/testing): You can test routes without starting a server or opening a port.
 - [Error Handling Patterns](https://burger-api.com/docs/advanced/error-handling): Validation errors: BurgerAPI returns 422 with an RFC 9457 Problem Details body when validation fails.
 - [Type Safety](https://burger-api.com/docs/advanced/type-safety): BurgerAPI is built with TypeScript.
 - [Benchmarks](https://burger-api.com/docs/advanced/benchmarks): BurgerAPI's performance work is architectural, not a hand-tuned hot loop: routes resolve through Bun's native route map first, fall back to a precompiled radix trie otherwise, each route's hook chain is flattened...

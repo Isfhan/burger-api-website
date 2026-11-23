@@ -39,7 +39,8 @@ import { defineRoute } from "burger-api";
 import { GET as GetSchema } from "./schema";
 
 export const GET = defineRoute(GetSchema, (ctx) => {
-  ctx.validated.query; // inferred, no generic to write
+  // ctx.validated.query is inferred, no generic to write
+  return Response.json({ limit: ctx.validated.query.limit });
 });
 ```
 

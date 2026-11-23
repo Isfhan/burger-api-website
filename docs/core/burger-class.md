@@ -40,23 +40,33 @@ This is the Bun deployment surface. See [Deployment](/docs/deployment/bun).
 
 ### usePlugin(plugin, scope?, seed?)
 
-Registers a plugin (application extension). Plugin hooks are compiled into the hook chain for every route. The same plugin identity is deduplicated. Returns `this` for chaining.
+Registers a plugin (application extension) through the registrar passed to `src/plugins.ts`. Plugin hooks are compiled into the hook chain for every route. The same plugin identity is deduplicated. Returns the registrar for chaining.
 
-```ts
-app.usePlugin(apiKey({ keys: ["demo-api-key-123"] }));
+```ts title="src/plugins.ts"
+import type { PluginRegistrar } from "burger-api";
+import { apiKey } from "../ecosystem/plugins/api-key/api-key";
+
+export default function (burger: PluginRegistrar) {
+  burger.usePlugin(apiKey({ keys: ["demo-api-key-123"] }));
+}
 ```
 
-Plugins are registered in `src/plugins.ts`. See [Ecosystem](/docs/ecosystem/introduction).
+The default export of `src/plugins.ts` is the place to register plugins. See [Hooks and Plugins](/docs/ecosystem/hooks-plugins) and [Configuration](/docs/core/configuration#plugins-and-providers).
 
 ### provide(name, service)
 
 Registers an application service, created once at startup and injected into `ctx.services` for every request. Services are frozen and shared across requests.
 
-```ts
-app.provide("db", createDb());
+```ts title="src/providers.ts"
+import type { ProviderRegistrar } from "burger-api";
+import { createDb } from "./db";
+
+export default function (burger: ProviderRegistrar) {
+  burger.provide("db", createDb());
+}
 ```
 
-Services are registered in `src/providers.ts` and accessed as `ctx.services.name`, typed via module augmentation.
+The default export of `src/providers.ts` is the place to register services. Access them as `ctx.services.name`, typed via module augmentation. See [Configuration](/docs/core/configuration#plugins-and-providers).
 
 ### websocket(path, handlers)
 
@@ -77,7 +87,7 @@ Programmatic WebSocket routes are a **dev-only** convenience. They are not captu
 
 ### fetchHandler()
 
-Builds a Web-Standard fetch handler for the app. Usable with `Bun.serve`, `Deno.serve`, Vercel, Cloudflare Workers, and Node 24+. It serves static function page routes and embedded assets, and handles WebSocket upgrades where the runtime supports them (Bun, Deno, Cloudflare Workers). Bun-only page features (HTML-import bundles and dynamic `[param]` pages) and disk-backed dev assets are only served by `serve()` on Bun; see [Compatibility](/docs/compatibility).
+Builds a Web-Standard fetch handler for the app. Usable with `Bun.serve`, `Deno.serve`, Vercel, Cloudflare Workers, and Node 24.22.1+ or 26.12.1+. It serves static function page routes and embedded assets, and handles WebSocket upgrades where the runtime supports them (Bun, Deno, Cloudflare Workers). Bun-only page features (HTML-import bundles and dynamic `[param]` pages) and disk-backed dev assets are only served by `serve()` on Bun; see [Compatibility](/docs/compatibility).
 
 ### toFetchHandler(burger)
 

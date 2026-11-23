@@ -37,7 +37,7 @@ bun add @burger-api/node-server
 | `globalMiddleware` in `new Burger({...})` | `src/hooks.ts` | Export global hooks from `src/hooks.ts` (`onRequest` for work before routing, `beforeRoute` for work after validation). |
 | CLI `burger-api serve` | `burger-api dev` | Rename the command and any package script that calls it. |
 | `burger.config.ts` | `burger.build.ts` | Rename the file. It is build-time only; `dev` and `start` read `new Burger({...})`. `doctor` flags the old name as an error. |
-| `use.ts` / `webhook.ts` route files | `config.ts` | These convention files were removed. Route options now live in `config.ts`. |
+| `middleware.ts` / `use.ts` / `webhook.ts` route files | `config.ts`, `hooks.ts`, plugins | A leftover file is a startup error: `Forbidden convention file`. Delete it, then move the logic to hooks, plugins, or `config.ts`. |
 | Auth factories in `ecosystem/middlewares/` (`jwt`, `apiKey`, ...) | Plugins in `ecosystem/plugins/` (`jwtAuth`, `apiKey`, ...) | Install with `burger-api add jwt-auth` and register in `src/plugins.ts`. See [Ecosystem](/docs/ecosystem/introduction). |
 | Group/folder files shared across routes | Self-contained route directories | Groups only strip the URL. Copy shared `schema.ts` / `hooks.ts` code into each route that needs it, or import a shared module. See [File-Based Routing](/docs/routing/file-based-routing). |
 | `req.validated?.query` with a manual generic | `ctx.validated.query` via `defineRoute` / `defineHooks` | Per-method `schema.ts` exports plus `defineRoute` infer `ctx.validated` with no generic to write. |

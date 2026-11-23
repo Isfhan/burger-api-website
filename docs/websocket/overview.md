@@ -43,7 +43,7 @@ Register routes and connection options directly on the app:
 ```ts
 import { Burger } from "burger-api";
 
-const app = new Burger();
+const app = new Burger({});
 
 app.websocket("/chat", {
     open(ws) {

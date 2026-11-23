@@ -12,13 +12,15 @@ burger-api add logger
 
 ## Usage
 
-Compose it in `src/hooks.ts`. The logger decorates the response, so it runs as a `beforeRoute` hook:
+Compose it in `src/hooks.ts` as an `onRequest` hook:
 
 ```ts title="src/hooks.ts"
 import { logger } from "../ecosystem/hooks/logger/logger";
 
-export const beforeRoute = [logger()];
+export const onRequest = [logger()];
 ```
+
+The logger returns a response mapper, so it logs each request when the response is ready. `onRequest` runs for every response the app produces, including 404s and CORS preflights, so those requests appear in the log too. A `beforeRoute` hook runs only for matched routes and would miss them.
 
 ## Options
 
@@ -35,7 +37,7 @@ export const beforeRoute = [logger()];
 ```ts title="src/hooks.ts"
 import { createLogger } from "../ecosystem/hooks/logger/logger";
 
-export const beforeRoute = [
+export const onRequest = [
   createLogger({ format: "json", skip: /^\/(health|metrics)/ }),
 ];
 ```

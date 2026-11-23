@@ -33,6 +33,7 @@ sidebar_label: Build Command
 burger-api build src/index.ts
 
 # Node.js, uses @burger-api/node-server's serve() instead of app.serve()
+bun add @burger-api/node-server
 burger-api build src/index.ts --target=node
 
 # Cloudflare Workers, generates .build/cloudflare/index.ts + wrangler.toml
@@ -87,8 +88,9 @@ existing config is never overwritten.
 
 Production flow on Bun/Node: run `burger-api build`, then start the server
 with `burger-api start` (Bun) or `node <outfile>` (Node, via
-`@burger-api/node-server`). On Cloudflare/Deno/Vercel, `wrangler
-deploy`/`deno deploy`/`vercel --prod` take over from there.
+`@burger-api/node-server`). On Cloudflare and Vercel, `wrangler deploy` and
+`vercel --prod` take over from there. On Deno, run the generated entry with
+`deno serve`; for hosting, see [Deno deployment](/docs/deployment/deno).
 
 See [CLI Tool](/docs/getting-started/cli).
 

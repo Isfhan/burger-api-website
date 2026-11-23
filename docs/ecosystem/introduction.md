@@ -22,6 +22,19 @@ ecosystem/
 
 **Hooks** control the request lifecycle. **Plugins** extend the application. They are separate concepts.
 
+### Hook packages
+
+See [Hooks & Plugins](/docs/ecosystem/hooks-plugins) for how hooks work. Available hook packages:
+
+- [CORS](/docs/ecosystem/cors)
+- [Logger](/docs/ecosystem/logger)
+- [Rate limiter](/docs/ecosystem/rate-limiter)
+- [Cache](/docs/ecosystem/cache)
+- [Compression](/docs/ecosystem/compression)
+- [Security headers](/docs/ecosystem/security-headers)
+- [Timeout](/docs/ecosystem/timeout)
+- [Body size limiter](/docs/ecosystem/body-size-limiter)
+
 ### CLI
 
 ```bash
@@ -35,7 +48,14 @@ Packages install into `ecosystem/hooks/` or `ecosystem/plugins/` as appropriate.
 
 ### Authentication
 
-Authentication is implemented through official ecosystem **plugins** that integrate with BurgerAPI's hook system and route `config.ts`. The framework core stays auth-agnostic.
+Authentication is implemented through official ecosystem **plugins** that integrate with BurgerAPI's hook system and route `config.ts`. The framework core stays auth-agnostic. Available plugin packages:
+
+- [JWT Auth](/docs/ecosystem/jwt-auth)
+- [API Key Auth](/docs/ecosystem/api-key-auth)
+- [Basic Auth](/docs/ecosystem/basic-auth)
+- [Session](/docs/ecosystem/session)
+- [OIDC](/docs/ecosystem/oidc)
+- [Env Validation](/docs/ecosystem/env) (startup config, not an auth plugin)
 
 ### Agent skills
 

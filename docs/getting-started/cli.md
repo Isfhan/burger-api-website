@@ -99,6 +99,7 @@ Builds your project for a deployment target. Routes are discovered at build time
 
 - The entry file is optional: `burger-api build` uses `src/index.ts`, `src/index.js`, or `src/index.mjs` when no file is given.
 - Options: `--target <platform>` (`bun` default, `node`, `cloudflare`, `deno`, `vercel`), `--outfile <path>` (default depends on `--target`), `--compile` (standalone executable, `bun` target only), `--no-bytecode` (`--compile` only), `--minify`, `--sourcemap <type>`, `--no-bun-check`.
+- The `node` target needs `@burger-api/node-server` in your project: run `bun add @burger-api/node-server` first. See [Node.js deployment](/docs/deployment/node).
 
 ```bash
 burger-api build src/index.ts --target=cloudflare
@@ -247,14 +248,14 @@ my-api/
 
 ### Build for production
 
-1. `burger-api build src/index.ts --target=<platform>`: `bun` (default), `node`, `cloudflare`, `deno`, or `vercel`.
+1. `burger-api build src/index.ts --target=<platform>`: `bun` (default), `node`, `cloudflare`, `deno`, or `vercel`. For `node`, run `bun add @burger-api/node-server` first.
 2. Run it: `burger-api start` (Bun), `node .build/bundle/app.js` (Node default output), or hand off to the platform's own tool: `wrangler dev`/`deploy`, `deno serve`, `vercel dev`/`--prod`.
 3. `burger-api build src/index.ts --compile --outfile=my-app` for a standalone Bun binary (or `burger-api build:exec src/index.ts --target bun-linux-x64` for a specific OS/arch).
 
 ## Environment variables
 
 - `GITHUB_TOKEN`: token sent to the GitHub API when fetching the ecosystem catalog for `add`, `list`, and `skills`. Setting it raises the unauthenticated rate limit; the CLI prints a hint when GitHub answers `403`.
-- `BURGER_API_BRANCH`: overrides the GitHub branch the CLI reads ecosystem content from. Defaults to `main` on stable CLI releases, and to the matching prerelease branch (for example `feat/burger-api-v1`) on beta/RC builds.
+- `BURGER_API_BRANCH`: overrides the GitHub branch the CLI reads ecosystem content from. Defaults to `main`.
 - `BURGER_API_CACHE_DIR`: overrides the ecosystem catalog cache directory. Defaults to `~/.burger-api/cache/`, with a four-hour TTL. A stale cache is used with a warning when a live refresh fails. Local mode ignores this cache.
 - `BURGER_API_LOCAL`: set to `1` or `true` to turn on [local mode](#local-mode) for the shell. `--local` on a command wins over this variable.
 

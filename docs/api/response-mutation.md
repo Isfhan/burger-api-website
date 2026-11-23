@@ -20,7 +20,7 @@ export async function GET(ctx: BurgerContext) {
 
 - `ctx.set.status` overrides the response status only when defined, and never replaces an error status (`400` or higher). Errors stay errors.
 - `ctx.set.headers` is merged over the response's existing headers; explicit values win.
-- `ctx.set.headers` is always defined (created on first access), so `ctx.set.headers["x-id"] = value` never throws.
+- `ctx.set.headers` is always defined (created on first access). In TypeScript, assign an object (`ctx.set.headers = { "x-id": value }`); see [Context Set](/docs/api/context-set).
 - An array value appends each entry. A scalar `set-cookie` is appended, so a cookie set by the handler and one set through `ctx.set` both survive.
 
 ## mapResponse
@@ -36,7 +36,7 @@ export const mapResponse = [
 ];
 ```
 
-A `mapResponse` hook returns a function that receives the current response and returns the transformed response, or returns a `Response` to replace it, or `undefined` to continue. CORS and logger hooks use this phase to decorate responses.
+A `mapResponse` hook returns a function that receives the current response and returns the transformed response, or returns a `Response` to replace it, or `undefined` to continue. The CORS and logger hooks are `onRequest` hooks that return a response mapper like this, so they decorate every response, including 404s and CORS preflights.
 
 ## applySet
 
