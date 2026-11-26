@@ -293,11 +293,12 @@ function readConfigValue(key: string): string | null {
 
 const { ordered, docsById } = loadDocs();
 const projectName = readConfigValue("projectName") || "BurgerAPI";
-const version = readConfigValue("frameworkVersion") || "unknown";
+const frameworkVersion = readConfigValue("frameworkVersion") || "unknown";
+const cliVersion = readConfigValue("cliVersion") || "unknown";
 
 const summary = [
   `${projectName} is a Bun-first, WinterCG-compatible API framework with file-based routing, six lifecycle hooks, plugins, providers, Standard Schema (Zod) validation, automatic OpenAPI generation, shared \`BurgerContext\`, and WebSocket support.`,
-  `It ships as two packages, \`burger-api\` and \`@burger-api/cli\`, both at \`${version}\` (public beta; feedback welcome at GitHub issues).`,
+  `It ships as two packages, \`burger-api\` (\`${frameworkVersion}\`) and \`@burger-api/cli\` (\`${cliVersion}\`) (public beta; feedback welcome at GitHub issues).`,
   `TypeScript and JavaScript are both first-class, and the same app runs on Bun, Node, Cloudflare Workers, Deno, and Vercel.`,
 ].join(" ");
 
