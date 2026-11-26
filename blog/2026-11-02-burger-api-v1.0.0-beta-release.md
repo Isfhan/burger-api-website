@@ -36,19 +36,21 @@ Four goals shaped the rewrite:
 
 Six named lifecycle points, each with one job: `onRequest`, `transform`, `beforeRoute`, `afterRoute`, `mapResponse`, `onError`. Hooks are not a renamed middleware stack. They are stages, and each stage returns a defined shape: a `Response` to stop, `undefined` to continue, or a mapper function to change the final response.
 
-Global hooks live in `src/hooks.ts`. Route hooks live in a `hooks.ts` next to `route.ts`:
+Global hooks live in `src/hooks.ts`. Route hooks live in a `hooks.ts` next to `route.ts`. Authentication belongs in `transform`, which runs before validation:
 
 ```ts
 // src/api/products/hooks.ts
+import { UnauthorizedError } from "burger-api";
 import type { BurgerContext } from "burger-api";
 
-export const beforeRoute = [
-    async (ctx: BurgerContext) => {
+export const transform = {
+    user: async (ctx: BurgerContext) => {
         if (!ctx.headers.get("authorization")) {
-            return Response.json({ error: "Unauthorized" }, { status: 401 });
+            throw new UnauthorizedError("Unauthorized");
         }
+        return { id: "42" };
     },
-];
+};
 ```
 
 Plugins are a separate concept: they extend the app, and they may register hooks. See the [hook system](/docs/hooks/system).

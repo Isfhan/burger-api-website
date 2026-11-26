@@ -23,15 +23,17 @@ export const onRequest = [
 
 ```ts
 // src/api/products/hooks.ts
-import type { BurgerContext } from "burger-api";
+import { ForbiddenError } from "burger-api";
+import type { RouteHooks } from "burger-api";
 
-export const beforeRoute = [
-  async (ctx: BurgerContext) => {
+export const transform: RouteHooks["transform"] = {
+  admin: (ctx) => {
     if (ctx.query.admin !== "true") {
-      return Response.json({ error: "Forbidden" }, { status: 403 });
+      throw new ForbiddenError("Admin only");
     }
+    return true;
   },
-];
+};
 ```
 
 ```ts

@@ -126,17 +126,21 @@ export const POST = {
 
 ```js
 // src/api/products/hooks.js
+import { UnauthorizedError } from "burger-api";
+
 /**
- * Route hooks: require a valid authorization header before the handler runs.
- * @type {import('burger-api').Hook[]}
+ * Route transform: require a valid authorization header before validation.
+ * @type {import('burger-api').TransformMap}
  */
-export const beforeRoute = [
-  (ctx) => {
-    if (!ctx.headers.get("authorization")) {
-      return Response.json({ error: "Unauthorized" }, { status: 401 });
+export const transform = {
+  user: (ctx) => {
+    const token = ctx.headers.get("authorization");
+    if (!token) {
+      throw new UnauthorizedError("Unauthorized");
     }
+    return { token };
   },
-];
+};
 ```
 
 ```js

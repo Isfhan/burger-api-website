@@ -716,6 +716,8 @@ onRequest -> Routing -> transform -> Validation -> beforeRoute
 
 Errors thrown after routing (validation, `beforeRoute`, handler, `afterRoute`, `mapResponse`) jump to `onError`. Errors thrown in `onRequest` also run through the global, plugin and framework `onError` hooks. A request that matches no route is rendered directly (404) without running `onError`.
 
+`transform` runs before validation, so authenticate there: throw `UnauthorizedError` to reject, or return the user to set `ctx.user`. An unauthenticated caller then gets a 401, not a validation error. `beforeRoute` runs after validation; use it for checks that need `ctx.validated`.
+
 ## Scopes
 
 1. Framework  
@@ -742,7 +744,7 @@ Each hook point has its own type. TypeScript checks the return value of your hoo
 
 The types you use (all from `burger-api`):
 
-- `ForwardHook`: for `onRequest` and `beforeRoute`: returns `Response` (stop), `(response) => Response` (transform the eventual response), or `undefined` (continue)
+- `ForwardHook`: for `onRequest` and `beforeRoute`: returns `Response` (skip the handler and later forward hooks, then run the response hooks), `(response) => Response` (transform the eventual response), or `undefined` (continue)
 - `ResponseHook`: for `afterRoute` and `mapResponse`: returns `Response`, `(response) => Response`, or `undefined`
 - `ErrorHook`: for `onError`: takes `(error, ctx)`, returns `Response` or `undefined`
 - `RouteHooks`: the object with all hook points, for typing `hooks.ts` files
@@ -754,7 +756,7 @@ The types you use (all from `burger-api`):
 import type { RouteHooks } from "burger-api";
 
 export const beforeRoute: RouteHooks["beforeRoute"] = [
-    (ctx) => new Response("blocked", { status: 401 }), // stop
+    (ctx) => new Response("blocked", { status: 429 }), // stop
     () => (res) => res, // continue, but transform the final response
     () => undefined, // continue
 ];

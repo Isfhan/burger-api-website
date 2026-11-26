@@ -101,15 +101,19 @@ export async function GET(req: BurgerRequest) {
 }
 ```
 
-After (`1.0.0-beta`), the stop and the transform are separate hook points in `hooks.ts`:
+After (`1.0.0-beta`), the auth check and the transform are separate hook points in `hooks.ts`:
 
 ```ts title="src/api/products/hooks.ts"
+import { ForbiddenError } from "burger-api";
 import type { RouteHooks } from "burger-api";
 
-export const beforeRoute: RouteHooks["beforeRoute"] = (ctx) => {
-    if (ctx.headers.get("x-admin") !== "true") {
-        return Response.json({ error: "Forbidden" }, { status: 403 });
-    }
+export const transform: RouteHooks["transform"] = {
+    admin: (ctx) => {
+        if (ctx.headers.get("x-admin") !== "true") {
+            throw new ForbiddenError("Forbidden");
+        }
+        return true;
+    },
 };
 
 export const afterRoute: RouteHooks["afterRoute"] = () => (response) => {
@@ -120,7 +124,8 @@ export const afterRoute: RouteHooks["afterRoute"] = () => (response) => {
 
 Mapping rules:
 
-- A middleware that returned a `Response` becomes a `beforeRoute` hook that returns a `Response`.
+- A middleware that checked credentials or roles becomes a `transform` entry that throws an `HTTPError`.
+- A middleware that returned a `Response` to stop for another reason becomes a `beforeRoute` hook that returns a `Response`.
 - A middleware that returned a function `(response) => response` becomes `afterRoute` or `mapResponse` returning that function. `mapResponse` is the last chance to change headers.
 - A middleware that returned `undefined` becomes a hook that returns `undefined`.
 
