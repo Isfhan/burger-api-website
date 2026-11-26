@@ -27,14 +27,14 @@ const heroTabs = [
     code: `import { Burger } from "burger-api";
 
 const burger = new Burger({
-  apiDir: "api",
+  apiDir: "./src/api",
 });
 
 burger.serve(4000);`,
   },
   {
     id: "route",
-    title: "api/route.ts",
+    title: "src/api/route.ts",
     code: `import { defineRoute } from "burger-api";
 import { GET as GetSchema } from "./schema";
 

@@ -7,7 +7,7 @@ import githubStarsPlugin from "./plugins/github-stars";
 
 const config: Config = {
   projectName: "BurgerAPI",
-  title: "BurgerAPI — Bun-native API framework",
+  title: "BurgerAPI: Bun-native API framework",
   tagline:
     "A Bun-native API framework with file-based routing, a hybrid router, a shared request context, Zod validation, and automatic OpenAPI generation.",
   favicon: "img/favicon.ico",

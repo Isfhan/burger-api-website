@@ -50,11 +50,11 @@ export async function POST(ctx: BurgerContext) {
 import { z } from "zod";
 
 export const GET = {
-  params: z.object({ id: z.string().uuid() }),
+  params: z.object({ id: z.uuid() }),
 };
 
 export const PUT = {
-  params: z.object({ id: z.string().uuid() }),
+  params: z.object({ id: z.uuid() }),
   body: z.object({
     name: z.string().min(1),
     price: z.number().positive(),

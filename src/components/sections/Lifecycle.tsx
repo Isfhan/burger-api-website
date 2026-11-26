@@ -17,16 +17,17 @@ import type { LucideIcon } from "lucide-react";
 import { Section, SectionHeader, CodeBlock, Button } from "../ui";
 
 const code = `// src/hooks.ts: global lifecycle hooks
-import type { GlobalHooks } from "burger-api";
+import { UnauthorizedError, type GlobalHooks } from "burger-api";
 
 export const onRequest: GlobalHooks["onRequest"] = [
   () => {
     const id = crypto.randomUUID();
-    // Forward hooks may return a response mapper. It wraps the final
-    // response, so the header is set even when a later hook short-circuits.
+    // A response mapper from onRequest sees every response,
+    // including 404s and errors, with the final status.
     return (response: Response) => {
       const headers = new Headers(response.headers);
       headers.set("x-request-id", id);
+      console.log(response.status, id);
       return new Response(response.body, {
         status: response.status,
         statusText: response.statusText,
@@ -36,23 +37,16 @@ export const onRequest: GlobalHooks["onRequest"] = [
   },
 ];
 
-export const beforeRoute: GlobalHooks["beforeRoute"] = [
-  (ctx) => {
+// transform runs before validation, so a request without
+// credentials gets 401 before any validation error.
+export const transform: GlobalHooks["transform"] = {
+  user: (ctx) => {
     if (!ctx.headers.get("authorization")) {
-      return Response.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+      throw new UnauthorizedError("Login required");
     }
+    return { id: "42" };
   },
-];
-
-export const afterRoute: GlobalHooks["afterRoute"] = [
-  () => (response: Response) => {
-    console.log(response.status, response.headers.get("x-request-id"));
-    return response;
-  },
-];`;
+};`;
 
 type Stage = { id: string; label: string; icon: LucideIcon; kind: "process" | "hook" | "peak" };
 
