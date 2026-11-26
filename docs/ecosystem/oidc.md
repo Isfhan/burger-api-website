@@ -30,7 +30,7 @@ export default (burger: PluginRegistrar) => {
 };
 ```
 
-The plugin reads the discovery document from `<issuer>/.well-known/openid-configuration` the first time it has to verify a token. Verification runs in `beforeRoute`, so it finishes before the handler.
+The plugin reads the discovery document from `<issuer>/.well-known/openid-configuration` the first time it has to verify a token. Verification runs in `transform`, before validation, so an unauthenticated request gets a 401 even when the body is invalid.
 
 Public routes opt out with `auth: false`; protected routes require a token and may list roles:
 

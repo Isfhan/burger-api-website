@@ -145,7 +145,7 @@ You do not need to write a separate `HEAD` handler. A `HEAD` request to any rout
 
 ### Automatic OPTIONS
 
-Every route answers `OPTIONS` with `204 No Content` and an `Allow` header, even when you do not export an `OPTIONS` handler. The automatic `Allow` matches the `405` `Allow` exactly: it includes `HEAD` when `GET` exists and always includes `OPTIONS`. The automatic handler skips `beforeRoute` (so auth hooks do not reject CORS preflights), but `onRequest` hooks still run. A user-defined `OPTIONS` handler takes over and runs the full pipeline. The automatic handler is not listed in the generated OpenAPI document.
+Every route answers `OPTIONS` with `204 No Content` and an `Allow` header, even when you do not export an `OPTIONS` handler. The automatic `Allow` matches the `405` `Allow` exactly: it includes `HEAD` when `GET` exists and always includes `OPTIONS`. The automatic handler skips `transform` and `beforeRoute` (so auth checks do not reject CORS preflights), but `onRequest` hooks still run. A user-defined `OPTIONS` handler takes over and runs the full pipeline. The automatic handler is not listed in the generated OpenAPI document.
 
 ### Trailing Slash
 

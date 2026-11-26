@@ -14,20 +14,22 @@ burger-api add security-headers
 
 ## Usage
 
-The hook returns a response transform, so compose it in `beforeRoute`:
+The hook returns a response transform, so compose it in `onRequest`:
 
 ```ts title="src/hooks.ts"
 import { securityHeaders } from "../ecosystem/hooks/security-headers/security-headers";
 
-export const beforeRoute = [securityHeaders()];
+export const onRequest = [securityHeaders()];
 ```
+
+`onRequest` runs for every request, so the hook's response mapper also covers 404, 405, validation errors and `onError` responses, and sees the final status.
 
 For a stricter setup, use a preset. `strictSecurity()` adds a `'self'`-only CSP, a two year HSTS policy with `preload`, and disables camera, microphone, geolocation, and payment:
 
 ```ts title="src/hooks.ts"
 import { strictSecurity } from "../ecosystem/hooks/security-headers/security-headers";
 
-export const beforeRoute = [strictSecurity()];
+export const onRequest = [strictSecurity()];
 ```
 
 The other preset is `relaxedSecurity()`, which sends no CSP and no HSTS, sets `X-Frame-Options: SAMEORIGIN`, and keeps `X-XSS-Protection`.
@@ -37,7 +39,7 @@ To write your own CSP, pass camelCase directive names. They become kebab-case di
 ```ts title="src/hooks.ts"
 import { securityHeaders } from "../ecosystem/hooks/security-headers/security-headers";
 
-export const beforeRoute = [
+export const onRequest = [
   securityHeaders({
     contentSecurityPolicy: {
       defaultSrc: ["'self'"],

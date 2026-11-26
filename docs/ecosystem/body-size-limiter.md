@@ -42,7 +42,7 @@ Presets are also available: `smallPayloadLimit()` (100KB), `mediumPayloadLimit()
 ## Good to know
 
 - The hook decides by body presence, not by method. A `GET` or `DELETE` with a body is checked like any other request. A request without a body is skipped.
-- Header mode trusts the client. A body without `Content-Length` is rejected with `411`, and a malformed one with `400`, but a client can still send a false length. Use `"stream"` on endpoints where that matters.
+- Header mode trusts the client. A body without `Content-Length` (chunked) gets `411 Length Required`, and a malformed one gets `400`, but a client can still send a false length. The `411` is intended, but some clients and fetch-handler targets (Cloudflare Workers, Deno, Vercel, a proxy) may forward bodies without `Content-Length`; use `mode: "stream"` there.
 - Stream mode reads a clone, so validation and the handler still get the original body. It must run before anything else reads the body, which means `onRequest`. If the body was already read, the hook warns once and lets the request through, because measuring then protects nothing.
 - Global hooks run before route hooks. A per-route limit in a route's `hooks.ts` can therefore be stricter than the global one, never looser.
 

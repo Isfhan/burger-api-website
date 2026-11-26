@@ -8,15 +8,17 @@ Route hooks run only for a given route. Define them in the route's `hooks.ts` fi
 
 ```ts
 // src/api/users/hooks.ts
-import type { BurgerContext } from "burger-api";
+import { ForbiddenError } from "burger-api";
+import type { RouteHooks } from "burger-api";
 
-export const beforeRoute = [
-  async (ctx: BurgerContext) => {
+export const transform: RouteHooks["transform"] = {
+  admin: (ctx) => {
     if (ctx.query.admin !== "true") {
-      return Response.json({ error: "Forbidden" }, { status: 403 });
+      throw new ForbiddenError("Admin only");
     }
+    return true;
   },
-];
+};
 ```
 
 The handler lives in `route.ts`:
@@ -33,6 +35,8 @@ export async function GET(ctx: BurgerContext) {
 A route's `hooks.ts` can export any of: `transform`, `beforeRoute`, `afterRoute`, `mapResponse`, `onError`. `onRequest` is app-level only: define it in `src/hooks.ts` or a plugin, never in a route's `hooks.ts`. It runs before a route is matched, so a route-level export is ignored with a warning (and a `RouteHooks`-typed object rejects it at compile time).
 
 Route `beforeRoute` hooks run after global `beforeRoute` hooks and after validation, before the handler. Route `transform` entries run after global ones, before validation. There is no folder or group inheritance: hooks apply only to their own route directory.
+
+Authenticate in `transform`: it runs before validation, so an unauthenticated request gets a 401, not a 422 that lists the schema fields. `beforeRoute` runs after validation; use it for checks that need `ctx.validated`.
 
 Use route hooks for admin checks, loading route-specific data, or any logic that applies to a single endpoint. See [Hook System](/docs/hooks/system).
 

@@ -8,16 +8,21 @@ Global hooks are defined once and applied across the app. Define them in `src/ho
 
 ```ts
 // src/hooks.ts
-import type { BurgerContext } from "burger-api";
+import { UnauthorizedError } from "burger-api";
+import type { GlobalHooks } from "burger-api";
 
-export const beforeRoute = [
-  async (ctx: BurgerContext) => {
-    if (!ctx.headers.get("authorization")) {
-      return Response.json({ error: "Unauthorized" }, { status: 401 });
+export const transform: GlobalHooks["transform"] = {
+  user: (ctx) => {
+    const token = ctx.headers.get("authorization");
+    if (!token) {
+      throw new UnauthorizedError("Missing token");
     }
+    return { token };
   },
-];
+};
 ```
+
+Authenticate in `transform`: it runs after routing and before validation, so an unauthenticated request gets a 401, not a 422 that lists the schema fields. `beforeRoute` runs after validation; use it for checks that need `ctx.validated`.
 
 You can export any of the six hook points: `onRequest`, `transform`, `beforeRoute`, `afterRoute`, `mapResponse`, `onError`.
 

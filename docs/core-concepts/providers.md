@@ -92,7 +92,7 @@ export const transform: GlobalHooks["transform"] = {
 import type { BurgerContext } from "burger-api";
 
 export function GET(ctx: BurgerContext) {
-  return Response.json({ requestId: ctx.requestId });
+  return Response.json({ requestId: ctx.requestId ?? null });
 }
 ```
 
@@ -101,10 +101,12 @@ Add `requestId` to `BurgerContext` in the same `src/types.ts` block so TypeScrip
 ```ts
 declare module "burger-api" {
   interface BurgerContext {
-    requestId: string;
+    requestId?: string;
   }
 }
 ```
+
+`requestId` is optional because a hook can leave it unset for some requests. The logger hook declares the same field, so the two declarations must agree.
 
 See [Global Hooks](/docs/hooks/global#transform) for the full `transform` contract.
 

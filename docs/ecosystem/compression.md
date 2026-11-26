@@ -14,13 +14,15 @@ burger-api add compression
 
 ## Usage
 
-The hook returns a response transform, so compose it in `beforeRoute`:
+The hook returns a response transform, so compose it in `onRequest`:
 
 ```ts title="src/hooks.ts"
 import { compress } from "../ecosystem/hooks/compression/compression";
 
-export const beforeRoute = [compress()];
+export const onRequest = [compress()];
 ```
+
+`onRequest` runs for every request, so the hook's response mapper also covers 404, 405, validation errors and `onError` responses, and sees the final status.
 
 With no options it compresses bodies of 1KB or more with gzip, then deflate, whichever the client accepts first.
 
@@ -29,7 +31,7 @@ Raise the threshold or limit the content types:
 ```ts title="src/hooks.ts"
 import { compress } from "../ecosystem/hooks/compression/compression";
 
-export const beforeRoute = [
+export const onRequest = [
   compress({
     threshold: 2048,
     contentTypes: /^(text\/|application\/(json|javascript|xml))/,

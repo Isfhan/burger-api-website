@@ -74,6 +74,8 @@ This is the short version. For every install method, see [Installation](https://
     # no install needed: bunx @burger-api/cli <command>
     ```
 
+    Global Bun installs go to `~/.bun/bin`. If you see `burger-api: command not found`, add `~/.bun/bin` to your `PATH` (`%USERPROFILE%\.bun\bin` on Windows) and open a new terminal.
+
 2. **Create a project, enter it, and start the dev server:**
 
     ```bash
@@ -147,6 +149,8 @@ Burger API comes with a powerful CLI tool that makes it easy to scaffold new pro
 # Global installation
 bun add -g @burger-api/cli
 ```
+
+Global Bun installs go to `~/.bun/bin`. If you see `burger-api: command not found`, add `~/.bun/bin` to your `PATH` (`%USERPROFILE%\.bun\bin` on Windows) and open a new terminal.
 
 Or use with **bunx** (No Installation Needed):
 
@@ -329,6 +333,7 @@ Scaffolds a new project with interactive prompts.
 - Always writes `AGENTS.md` (project rules for AI agents; Claude Code and other agents read it).
 - Generates the `dev`, `build`, `start`, and `typecheck` scripts.
 - Options: `--lang ts|js` (default `ts`), `--yes` / `--defaults` (skip prompts), `--pages` (include `src/pages`), `--ws` (include file-based WebSocket routes), `--no-api` (skip API routes), `--api-dir <dir>`, `--api-prefix <prefix>`, `--no-skills`, `--local` (use the local checkout instead of npm/GitHub).
+- `--no-api` needs `--pages` and/or `--ws`. On its own, `create` stops with an error, because the project would serve nothing.
 
 ```bash
 burger-api create my-api
@@ -508,7 +513,7 @@ my-api/
 │   ├── openapi.config.ts  # OpenAPI metadata and docs UI
 │   ├── types.ts           # App-wide type extensions (TypeScript projects)
 │   └── api/               # File-based API routes
-├── ecosystem/             # Hooks and plugins installed with `burger-api add`
+├── ecosystem/             # Created by `burger-api add` / `generate hook|plugin`, not by `create`
 ├── .agents/
 │   └── skills/            # AI agent skills (optional)
 ├── .claude/
@@ -794,17 +799,21 @@ export const POST = {
 
 ```js
 // src/api/products/hooks.js
+import { UnauthorizedError } from "burger-api";
+
 /**
- * Route hooks: require a valid authorization header before the handler runs.
- * @type {import('burger-api').Hook[]}
+ * Route transform: require a valid authorization header before validation.
+ * @type {import('burger-api').TransformMap}
  */
-export const beforeRoute = [
-  (ctx) => {
-    if (!ctx.headers.get("authorization")) {
-      return Response.json({ error: "Unauthorized" }, { status: 401 });
+export const transform = {
+  user: (ctx) => {
+    const token = ctx.headers.get("authorization");
+    if (!token) {
+      throw new UnauthorizedError("Unauthorized");
     }
+    return { token };
   },
-];
+};
 ```
 
 ```js
@@ -932,15 +941,19 @@ export async function GET(req: BurgerRequest) {
 }
 ```
 
-After (`1.0.0-beta`), the stop and the transform are separate hook points in `hooks.ts`:
+After (`1.0.0-beta`), the auth check and the transform are separate hook points in `hooks.ts`:
 
 ```ts title="src/api/products/hooks.ts"
+import { ForbiddenError } from "burger-api";
 import type { RouteHooks } from "burger-api";
 
-export const beforeRoute: RouteHooks["beforeRoute"] = (ctx) => {
-    if (ctx.headers.get("x-admin") !== "true") {
-        return Response.json({ error: "Forbidden" }, { status: 403 });
-    }
+export const transform: RouteHooks["transform"] = {
+    admin: (ctx) => {
+        if (ctx.headers.get("x-admin") !== "true") {
+            throw new ForbiddenError("Forbidden");
+        }
+        return true;
+    },
 };
 
 export const afterRoute: RouteHooks["afterRoute"] = () => (response) => {
@@ -951,7 +964,8 @@ export const afterRoute: RouteHooks["afterRoute"] = () => (response) => {
 
 Mapping rules:
 
-- A middleware that returned a `Response` becomes a `beforeRoute` hook that returns a `Response`.
+- A middleware that checked credentials or roles becomes a `transform` entry that throws an `HTTPError`.
+- A middleware that returned a `Response` to stop for another reason becomes a `beforeRoute` hook that returns a `Response`.
 - A middleware that returned a function `(response) => response` becomes `afterRoute` or `mapResponse` returning that function. `mapResponse` is the last chance to change headers.
 - A middleware that returned `undefined` becomes a hook that returns `undefined`.
 
@@ -1473,7 +1487,19 @@ Hooks control when code runs on a request. They are named stages in the request 
 
 `onRequest`, `transform`, `beforeRoute`, `afterRoute`, `mapResponse`, `onError`.
 
-Forward hooks (`onRequest`, `beforeRoute`) can return a `Response` to stop the pipeline: the handler and later hooks do not run. They can also return a function that transforms the response later.
+Forward hooks (`onRequest`, `beforeRoute`) can return a `Response` to skip the handler and every later forward hook. Response mappers returned by earlier hooks still run, and so do `afterRoute` and `mapResponse`. That keeps headers such as CORS on early responses like a 401 or 429.
+
+```ts
+// src/hooks.ts
+import { cors } from "../ecosystem/hooks/cors/cors";
+
+export const onRequest = [
+  cors({ origin: ["https://app.example.com"] }),
+  () => new Response("Too many requests", { status: 429 }),
+];
+```
+
+The second hook short-circuits the request. The handler and later forward hooks do not run, but the CORS mapper from the first hook still applies to the 429.
 
 Response hooks (`afterRoute`, `mapResponse`) run after the handler. Returning a `Response` replaces the current response and later hooks still run; returning a function transforms it. `onError` returns a `Response` to handle an error. Returning `undefined` continues.
 
@@ -1587,7 +1613,7 @@ export const transform: GlobalHooks["transform"] = {
 import type { BurgerContext } from "burger-api";
 
 export function GET(ctx: BurgerContext) {
-  return Response.json({ requestId: ctx.requestId });
+  return Response.json({ requestId: ctx.requestId ?? null });
 }
 ```
 
@@ -1596,10 +1622,12 @@ Add `requestId` to `BurgerContext` in the same `src/types.ts` block so TypeScrip
 ```ts
 declare module "burger-api" {
   interface BurgerContext {
-    requestId: string;
+    requestId?: string;
   }
 }
 ```
+
+`requestId` is optional because a hook can leave it unset for some requests. The logger hook declares the same field, so the two declarations must agree.
 
 See [Global Hooks](https://burger-api.com/docs/hooks/global#transform) for the full `transform` contract.
 
@@ -2157,7 +2185,7 @@ You do not need to write a separate `HEAD` handler. A `HEAD` request to any rout
 
 ### Automatic OPTIONS
 
-Every route answers `OPTIONS` with `204 No Content` and an `Allow` header, even when you do not export an `OPTIONS` handler. The automatic `Allow` matches the `405` `Allow` exactly: it includes `HEAD` when `GET` exists and always includes `OPTIONS`. The automatic handler skips `beforeRoute` (so auth hooks do not reject CORS preflights), but `onRequest` hooks still run. A user-defined `OPTIONS` handler takes over and runs the full pipeline. The automatic handler is not listed in the generated OpenAPI document.
+Every route answers `OPTIONS` with `204 No Content` and an `Allow` header, even when you do not export an `OPTIONS` handler. The automatic `Allow` matches the `405` `Allow` exactly: it includes `HEAD` when `GET` exists and always includes `OPTIONS`. The automatic handler skips `transform` and `beforeRoute` (so auth checks do not reject CORS preflights), but `onRequest` hooks still run. A user-defined `OPTIONS` handler takes over and runs the full pipeline. The automatic handler is not listed in the generated OpenAPI document.
 
 ### Trailing Slash
 
@@ -4002,6 +4030,8 @@ onRequest -> Routing -> transform -> Validation -> beforeRoute
 
 Errors thrown after routing (validation, `beforeRoute`, handler, `afterRoute`, `mapResponse`) jump to `onError`. Errors thrown in `onRequest` also run through the global, plugin and framework `onError` hooks. A request that matches no route is rendered directly (404) without running `onError`.
 
+`transform` runs before validation, so authenticate there: throw `UnauthorizedError` to reject, or return the user to set `ctx.user`. An unauthenticated caller then gets a 401, not a validation error. `beforeRoute` runs after validation; use it for checks that need `ctx.validated`.
+
 ## Scopes
 
 1. Framework  
@@ -4028,7 +4058,7 @@ Each hook point has its own type. TypeScript checks the return value of your hoo
 
 The types you use (all from `burger-api`):
 
-- `ForwardHook`: for `onRequest` and `beforeRoute`: returns `Response` (stop), `(response) => Response` (transform the eventual response), or `undefined` (continue)
+- `ForwardHook`: for `onRequest` and `beforeRoute`: returns `Response` (skip the handler and later forward hooks, then run the response hooks), `(response) => Response` (transform the eventual response), or `undefined` (continue)
 - `ResponseHook`: for `afterRoute` and `mapResponse`: returns `Response`, `(response) => Response`, or `undefined`
 - `ErrorHook`: for `onError`: takes `(error, ctx)`, returns `Response` or `undefined`
 - `RouteHooks`: the object with all hook points, for typing `hooks.ts` files
@@ -4040,7 +4070,7 @@ The types you use (all from `burger-api`):
 import type { RouteHooks } from "burger-api";
 
 export const beforeRoute: RouteHooks["beforeRoute"] = [
-    (ctx) => new Response("blocked", { status: 401 }), // stop
+    (ctx) => new Response("blocked", { status: 429 }), // stop
     () => (res) => res, // continue, but transform the final response
     () => undefined, // continue
 ];
@@ -4079,16 +4109,21 @@ Global hooks are defined once and applied across the app. Define them in `src/ho
 
 ```ts
 // src/hooks.ts
-import type { BurgerContext } from "burger-api";
+import { UnauthorizedError } from "burger-api";
+import type { GlobalHooks } from "burger-api";
 
-export const beforeRoute = [
-  async (ctx: BurgerContext) => {
-    if (!ctx.headers.get("authorization")) {
-      return Response.json({ error: "Unauthorized" }, { status: 401 });
+export const transform: GlobalHooks["transform"] = {
+  user: (ctx) => {
+    const token = ctx.headers.get("authorization");
+    if (!token) {
+      throw new UnauthorizedError("Missing token");
     }
+    return { token };
   },
-];
+};
 ```
+
+Authenticate in `transform`: it runs after routing and before validation, so an unauthenticated request gets a 401, not a 422 that lists the schema fields. `beforeRoute` runs after validation; use it for checks that need `ctx.validated`.
 
 You can export any of the six hook points: `onRequest`, `transform`, `beforeRoute`, `afterRoute`, `mapResponse`, `onError`.
 
@@ -4140,15 +4175,17 @@ Route hooks run only for a given route. Define them in the route's `hooks.ts` fi
 
 ```ts
 // src/api/users/hooks.ts
-import type { BurgerContext } from "burger-api";
+import { ForbiddenError } from "burger-api";
+import type { RouteHooks } from "burger-api";
 
-export const beforeRoute = [
-  async (ctx: BurgerContext) => {
+export const transform: RouteHooks["transform"] = {
+  admin: (ctx) => {
     if (ctx.query.admin !== "true") {
-      return Response.json({ error: "Forbidden" }, { status: 403 });
+      throw new ForbiddenError("Admin only");
     }
+    return true;
   },
-];
+};
 ```
 
 The handler lives in `route.ts`:
@@ -4165,6 +4202,8 @@ export async function GET(ctx: BurgerContext) {
 A route's `hooks.ts` can export any of: `transform`, `beforeRoute`, `afterRoute`, `mapResponse`, `onError`. `onRequest` is app-level only: define it in `src/hooks.ts` or a plugin, never in a route's `hooks.ts`. It runs before a route is matched, so a route-level export is ignored with a warning (and a `RouteHooks`-typed object rejects it at compile time).
 
 Route `beforeRoute` hooks run after global `beforeRoute` hooks and after validation, before the handler. Route `transform` entries run after global ones, before validation. There is no folder or group inheritance: hooks apply only to their own route directory.
+
+Authenticate in `transform`: it runs before validation, so an unauthenticated request gets a 401, not a 422 that lists the schema fields. `beforeRoute` runs after validation; use it for checks that need `ctx.validated`.
 
 Use route hooks for admin checks, loading route-specific data, or any logic that applies to a single endpoint. See [Hook System](https://burger-api.com/docs/hooks/system).
 
@@ -4202,8 +4241,8 @@ url: 'https://burger-api.com/docs/hooks/return-types'
 A hook can return one of three things:
 
 1. **`undefined`**: Continue to the next hook or the route handler.
-2. **`Response`**: For a forward hook (`onRequest`, `beforeRoute`), stop the pipeline and send this response (e.g. 401 Unauthorized). For a response hook (`afterRoute`, `mapResponse`), replace the current response; the remaining hooks still run on the replacement.
-3. **A function**: Transform the response. A forward hook's function runs right after the handler returns, before response validation and `afterRoute`. A response hook's function runs immediately at its stage. Either receives the current `Response` and returns a modified `Response` (e.g. for CORS headers).
+2. **`Response`**: For a forward hook (`onRequest`, `beforeRoute`), skip the handler and every later forward hook, and send this response (e.g. 401 Unauthorized). Mappers returned by earlier hooks still run, and `afterRoute` and `mapResponse` still run on it. For a response hook (`afterRoute`, `mapResponse`), replace the current response; the remaining hooks still run on the replacement.
+3. **A function**: Transform the response. A forward hook's function runs on the handler's response, or on an early response from a later forward hook, before response validation and `afterRoute`. A response hook's function runs immediately at its stage. Either receives the current `Response` and returns a modified `Response` (e.g. for CORS headers).
 
 ```ts
 // Continue
@@ -4231,6 +4270,8 @@ export const onError: ErrorHook[] = [];
 
 `onError` uses `ErrorHook` because it receives the error.
 
+Authenticate in `transform`, not `beforeRoute`. `transform` runs before validation, so an unauthenticated caller gets a 401 instead of a 422 that lists the schema fields. Throw `UnauthorizedError` to reject, or return the user to set `ctx.user`. `beforeRoute` runs after validation; use it for checks that need `ctx.validated`.
+
 ## Types for this feature
 
 Each hook point has a precise type. TypeScript checks your hook's return value against it.
@@ -4257,7 +4298,7 @@ export const afterRoute: RouteHooks["afterRoute"] = [
 ];
 ```
 
-✅ Correct: a transform function on a forward hook. The mapper is queued and runs right after the handler returns, before response validation and `afterRoute`:
+✅ Correct: a transform function on a forward hook. The mapper is queued and runs on the response: after the handler returns, or on the early response when a later forward hook short-circuits, before response validation and `afterRoute`:
 
 ```ts
 import type { RouteHooks } from "burger-api";
@@ -7697,7 +7738,7 @@ export async function GET(ctx: BurgerContext) {
 
 ## What about manual checks?
 
-A hand-rolled check in the handler works, but it runs per method, per route, and does not integrate with `config.ts`. Prefer a `beforeRoute` hook for a single-route check, and a plugin when the same rule protects many routes. See [Hooks](https://burger-api.com/docs/hooks/system).
+A hand-rolled check in the handler works, but it runs per method, per route, and does not integrate with `config.ts`. Prefer a `transform` entry for a single-route check, and a plugin when the same rule protects many routes. See [Hooks](https://burger-api.com/docs/hooks/system).
 
 ## Related
 
@@ -7843,15 +7884,17 @@ export const onRequest = [
 
 ```ts
 // src/api/products/hooks.ts
-import type { BurgerContext } from "burger-api";
+import { ForbiddenError } from "burger-api";
+import type { RouteHooks } from "burger-api";
 
-export const beforeRoute = [
-  async (ctx: BurgerContext) => {
+export const transform: RouteHooks["transform"] = {
+  admin: (ctx) => {
     if (ctx.query.admin !== "true") {
-      return Response.json({ error: "Forbidden" }, { status: 403 });
+      throw new ForbiddenError("Admin only");
     }
+    return true;
   },
-];
+};
 ```
 
 ```ts
@@ -8039,7 +8082,7 @@ export const onRequest = [cors({ origin: ["https://app.example.com"] })];
 
 ## Plugins
 
-Plugins are application extensions. They package hooks and inject request-scoped values onto `BurgerContext` (for example `ctx.apiKey` from `transform`, or `ctx.user` from `beforeRoute`). They cannot register providers: services are registered in `src/providers.ts` with `burger.provide()`.
+Plugins are application extensions. They package hooks and inject request-scoped values onto `BurgerContext` (for example `ctx.apiKey` from `transform`, or `ctx.user` from `transform`). They cannot register providers: services are registered in `src/providers.ts` with `burger.provide()`.
 
 - **What they do:** integrate with the application, often combining hooks with route `config.ts` (for example, auth).
 - **Where they live:** `ecosystem/plugins/` after install.
@@ -8204,7 +8247,7 @@ import { logger } from "../ecosystem/hooks/logger/logger";
 export const onRequest = [logger()];
 ```
 
-The logger returns a response mapper, so it logs each request when the response is ready. `onRequest` runs for every response the app produces, including 404s and CORS preflights, so those requests appear in the log too. A `beforeRoute` hook runs only for matched routes and would miss them.
+The logger returns a response mapper, so it logs each request when the response is ready. `onRequest` runs for every request, so the hook's response mapper also covers 404, 405, validation errors and `onError` responses, and sees the final status.
 
 ## Options
 
@@ -8374,13 +8417,15 @@ burger-api add compression
 
 ## Usage
 
-The hook returns a response transform, so compose it in `beforeRoute`:
+The hook returns a response transform, so compose it in `onRequest`:
 
 ```ts title="src/hooks.ts"
 import { compress } from "../ecosystem/hooks/compression/compression";
 
-export const beforeRoute = [compress()];
+export const onRequest = [compress()];
 ```
+
+`onRequest` runs for every request, so the hook's response mapper also covers 404, 405, validation errors and `onError` responses, and sees the final status.
 
 With no options it compresses bodies of 1KB or more with gzip, then deflate, whichever the client accepts first.
 
@@ -8389,7 +8434,7 @@ Raise the threshold or limit the content types:
 ```ts title="src/hooks.ts"
 import { compress } from "../ecosystem/hooks/compression/compression";
 
-export const beforeRoute = [
+export const onRequest = [
   compress({
     threshold: 2048,
     contentTypes: /^(text\/|application\/(json|javascript|xml))/,
@@ -8432,20 +8477,22 @@ burger-api add security-headers
 
 ## Usage
 
-The hook returns a response transform, so compose it in `beforeRoute`:
+The hook returns a response transform, so compose it in `onRequest`:
 
 ```ts title="src/hooks.ts"
 import { securityHeaders } from "../ecosystem/hooks/security-headers/security-headers";
 
-export const beforeRoute = [securityHeaders()];
+export const onRequest = [securityHeaders()];
 ```
+
+`onRequest` runs for every request, so the hook's response mapper also covers 404, 405, validation errors and `onError` responses, and sees the final status.
 
 For a stricter setup, use a preset. `strictSecurity()` adds a `'self'`-only CSP, a two year HSTS policy with `preload`, and disables camera, microphone, geolocation, and payment:
 
 ```ts title="src/hooks.ts"
 import { strictSecurity } from "../ecosystem/hooks/security-headers/security-headers";
 
-export const beforeRoute = [strictSecurity()];
+export const onRequest = [strictSecurity()];
 ```
 
 The other preset is `relaxedSecurity()`, which sends no CSP and no HSTS, sets `X-Frame-Options: SAMEORIGIN`, and keeps `X-XSS-Protection`.
@@ -8455,7 +8502,7 @@ To write your own CSP, pass camelCase directive names. They become kebab-case di
 ```ts title="src/hooks.ts"
 import { securityHeaders } from "../ecosystem/hooks/security-headers/security-headers";
 
-export const beforeRoute = [
+export const onRequest = [
   securityHeaders({
     contentSecurityPolicy: {
       defaultSrc: ["'self'"],
@@ -8595,7 +8642,7 @@ Presets are also available: `smallPayloadLimit()` (100KB), `mediumPayloadLimit()
 ## Good to know
 
 - The hook decides by body presence, not by method. A `GET` or `DELETE` with a body is checked like any other request. A request without a body is skipped.
-- Header mode trusts the client. A body without `Content-Length` is rejected with `411`, and a malformed one with `400`, but a client can still send a false length. Use `"stream"` on endpoints where that matters.
+- Header mode trusts the client. A body without `Content-Length` (chunked) gets `411 Length Required`, and a malformed one gets `400`, but a client can still send a false length. The `411` is intended, but some clients and fetch-handler targets (Cloudflare Workers, Deno, Vercel, a proxy) may forward bodies without `Content-Length`; use `mode: "stream"` there.
 - Stream mode reads a clone, so validation and the handler still get the original body. It must run before anything else reads the body, which means `onRequest`. If the body was already read, the hook warns once and lets the request through, because measuring then protects nothing.
 - Global hooks run before route hooks. A per-route limit in a route's `hooks.ts` can therefore be stricter than the global one, never looser.
 
@@ -8937,7 +8984,7 @@ export default (burger: PluginRegistrar) => {
 };
 ```
 
-By default every route requires an existing session. Mark the routes that must work without one, at least login, with `auth: false` (or `auth: { required: false }`):
+By default every route requires an existing session. The plugin checks it in `transform`, before validation, so an unauthenticated request gets a 401 even when the body is invalid. Mark the routes that must work without one, at least login, with `auth: false` (or `auth: { required: false }`):
 
 ```ts title="api/login/config.ts"
 export default { auth: false };
@@ -8989,16 +9036,19 @@ interface SessionStore {
 
 ## Roles
 
-Sessions have no roles concept. If a route's `config.auth` lists `roles`, the plugin answers `403 Forbidden` after the session check. It never lets the request through. Authorise with a route hook that reads the fields your login handler stored:
+Sessions have no roles concept. If a route's `config.auth` lists `roles`, the plugin answers `403 Forbidden` after the session check. It never lets the request through. Authorise with a route `transform` entry that reads the fields your login handler stored:
 
 ```ts title="api/admin/hooks.ts"
 import type { BurgerContext } from "burger-api";
 import { ForbiddenError } from "burger-api";
 
-export const beforeRoute = (ctx: BurgerContext) => {
-  if (ctx.session?.role !== "admin") {
-    throw new ForbiddenError("Admin only");
-  }
+export const transform = {
+  admin: (ctx: BurgerContext) => {
+    if (ctx.session?.role !== "admin") {
+      throw new ForbiddenError("Admin only");
+    }
+    return true;
+  },
 };
 ```
 
@@ -9061,7 +9111,7 @@ export default (burger: PluginRegistrar) => {
 };
 ```
 
-The plugin reads the discovery document from `<issuer>/.well-known/openid-configuration` the first time it has to verify a token. Verification runs in `beforeRoute`, so it finishes before the handler.
+The plugin reads the discovery document from `<issuer>/.well-known/openid-configuration` the first time it has to verify a token. Verification runs in `transform`, before validation, so an unauthenticated request gets a 401 even when the body is invalid.
 
 Public routes opt out with `auth: false`; protected routes require a token and may list roles:
 
@@ -9509,9 +9559,9 @@ defaults to `burger-api`, and the files are downloaded from the framework's
 `ecosystem/skills/<name>/` directory on GitHub.
 
 `--force` replaces an existing install without a prompt, also with no TTY.
-Without it, a non-TTY run exits with a message pointing at `--force`.
-`--local` copies the skill from the local checkout instead. See
-[Local mode](https://burger-api.com/docs/getting-started/cli#local-mode).
+Without it, a non-TTY run skips the skill with a warning and exits `0`, the
+same way `add` behaves. `--local` copies the skill from the local checkout
+instead. See [Local mode](https://burger-api.com/docs/getting-started/cli#local-mode).
 
 ### `burger-api skills list`
 

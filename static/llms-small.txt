@@ -74,6 +74,8 @@ This is the short version. For every install method, see [Installation](https://
     # no install needed: bunx @burger-api/cli <command>
     ```
 
+    Global Bun installs go to `~/.bun/bin`. If you see `burger-api: command not found`, add `~/.bun/bin` to your `PATH` (`%USERPROFILE%\.bun\bin` on Windows) and open a new terminal.
+
 2. **Create a project, enter it, and start the dev server:**
 
     ```bash
@@ -147,6 +149,8 @@ Burger API comes with a powerful CLI tool that makes it easy to scaffold new pro
 # Global installation
 bun add -g @burger-api/cli
 ```
+
+Global Bun installs go to `~/.bun/bin`. If you see `burger-api: command not found`, add `~/.bun/bin` to your `PATH` (`%USERPROFILE%\.bun\bin` on Windows) and open a new terminal.
 
 Or use with **bunx** (No Installation Needed):
 
@@ -329,6 +333,7 @@ Scaffolds a new project with interactive prompts.
 - Always writes `AGENTS.md` (project rules for AI agents; Claude Code and other agents read it).
 - Generates the `dev`, `build`, `start`, and `typecheck` scripts.
 - Options: `--lang ts|js` (default `ts`), `--yes` / `--defaults` (skip prompts), `--pages` (include `src/pages`), `--ws` (include file-based WebSocket routes), `--no-api` (skip API routes), `--api-dir <dir>`, `--api-prefix <prefix>`, `--no-skills`, `--local` (use the local checkout instead of npm/GitHub).
+- `--no-api` needs `--pages` and/or `--ws`. On its own, `create` stops with an error, because the project would serve nothing.
 
 ```bash
 burger-api create my-api
@@ -508,7 +513,7 @@ my-api/
 │   ├── openapi.config.ts  # OpenAPI metadata and docs UI
 │   ├── types.ts           # App-wide type extensions (TypeScript projects)
 │   └── api/               # File-based API routes
-├── ecosystem/             # Hooks and plugins installed with `burger-api add`
+├── ecosystem/             # Created by `burger-api add` / `generate hook|plugin`, not by `create`
 ├── .agents/
 │   └── skills/            # AI agent skills (optional)
 ├── .claude/
@@ -716,6 +721,8 @@ onRequest -> Routing -> transform -> Validation -> beforeRoute
 
 Errors thrown after routing (validation, `beforeRoute`, handler, `afterRoute`, `mapResponse`) jump to `onError`. Errors thrown in `onRequest` also run through the global, plugin and framework `onError` hooks. A request that matches no route is rendered directly (404) without running `onError`.
 
+`transform` runs before validation, so authenticate there: throw `UnauthorizedError` to reject, or return the user to set `ctx.user`. An unauthenticated caller then gets a 401, not a validation error. `beforeRoute` runs after validation; use it for checks that need `ctx.validated`.
+
 ## Scopes
 
 1. Framework  
@@ -742,7 +749,7 @@ Each hook point has its own type. TypeScript checks the return value of your hoo
 
 The types you use (all from `burger-api`):
 
-- `ForwardHook`: for `onRequest` and `beforeRoute`: returns `Response` (stop), `(response) => Response` (transform the eventual response), or `undefined` (continue)
+- `ForwardHook`: for `onRequest` and `beforeRoute`: returns `Response` (skip the handler and later forward hooks, then run the response hooks), `(response) => Response` (transform the eventual response), or `undefined` (continue)
 - `ResponseHook`: for `afterRoute` and `mapResponse`: returns `Response`, `(response) => Response`, or `undefined`
 - `ErrorHook`: for `onError`: takes `(error, ctx)`, returns `Response` or `undefined`
 - `RouteHooks`: the object with all hook points, for typing `hooks.ts` files
@@ -754,7 +761,7 @@ The types you use (all from `burger-api`):
 import type { RouteHooks } from "burger-api";
 
 export const beforeRoute: RouteHooks["beforeRoute"] = [
-    (ctx) => new Response("blocked", { status: 401 }), // stop
+    (ctx) => new Response("blocked", { status: 429 }), // stop
     () => (res) => res, // continue, but transform the final response
     () => undefined, // continue
 ];

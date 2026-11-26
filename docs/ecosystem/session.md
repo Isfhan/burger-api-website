@@ -25,7 +25,7 @@ export default (burger: PluginRegistrar) => {
 };
 ```
 
-By default every route requires an existing session. Mark the routes that must work without one, at least login, with `auth: false` (or `auth: { required: false }`):
+By default every route requires an existing session. The plugin checks it in `transform`, before validation, so an unauthenticated request gets a 401 even when the body is invalid. Mark the routes that must work without one, at least login, with `auth: false` (or `auth: { required: false }`):
 
 ```ts title="api/login/config.ts"
 export default { auth: false };
@@ -77,16 +77,19 @@ interface SessionStore {
 
 ## Roles
 
-Sessions have no roles concept. If a route's `config.auth` lists `roles`, the plugin answers `403 Forbidden` after the session check. It never lets the request through. Authorise with a route hook that reads the fields your login handler stored:
+Sessions have no roles concept. If a route's `config.auth` lists `roles`, the plugin answers `403 Forbidden` after the session check. It never lets the request through. Authorise with a route `transform` entry that reads the fields your login handler stored:
 
 ```ts title="api/admin/hooks.ts"
 import type { BurgerContext } from "burger-api";
 import { ForbiddenError } from "burger-api";
 
-export const beforeRoute = (ctx: BurgerContext) => {
-  if (ctx.session?.role !== "admin") {
-    throw new ForbiddenError("Admin only");
-  }
+export const transform = {
+  admin: (ctx: BurgerContext) => {
+    if (ctx.session?.role !== "admin") {
+      throw new ForbiddenError("Admin only");
+    }
+    return true;
+  },
 };
 ```
 

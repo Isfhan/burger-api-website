@@ -75,7 +75,7 @@ export async function GET(ctx: BurgerContext) {
 
 ## What about manual checks?
 
-A hand-rolled check in the handler works, but it runs per method, per route, and does not integrate with `config.ts`. Prefer a `beforeRoute` hook for a single-route check, and a plugin when the same rule protects many routes. See [Hooks](/docs/hooks/system).
+A hand-rolled check in the handler works, but it runs per method, per route, and does not integrate with `config.ts`. Prefer a `transform` entry for a single-route check, and a plugin when the same rule protects many routes. See [Hooks](/docs/hooks/system).
 
 
 ## Related

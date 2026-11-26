@@ -24,6 +24,8 @@ This is the short version. For every install method, see [Installation](/docs/ge
     # no install needed: bunx @burger-api/cli <command>
     ```
 
+    Global Bun installs go to `~/.bun/bin`. If you see `burger-api: command not found`, add `~/.bun/bin` to your `PATH` (`%USERPROFILE%\.bun\bin` on Windows) and open a new terminal.
+
 2. **Create a project, enter it, and start the dev server:**
 
     ```bash
