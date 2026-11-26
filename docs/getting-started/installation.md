@@ -96,7 +96,7 @@ Update the CLI and the framework to the latest version first. Most problems are 
   bun add burger-api@latest
   ```
 
-- **Hooks and plugins added with `burger-api add`:** these are copies inside your project, so updating the CLI or the framework does not change them. Run `burger-api add <name> --force` to replace a copy with the latest version. This overwrites the file, so keep your own edits elsewhere or re-apply them. See [Add Command](/docs/cli/add).
+- **Hooks and plugins added with `burger-api add`:** these are copies inside your project, so updating the CLI or the framework does not change them. Run `burger-api add <name> --force` to replace a copy with the latest version. This overwrites the file, so keep your own edits elsewhere or re-apply them. `burger-api doctor` tells you which copies are out of date. See [Add Command](/docs/cli/add) and [Doctor Command](/docs/cli/doctor#copied-hooks-and-plugins).
 
 Run `burger-api --version` to check which version you have. If it still shows an old version, another `burger-api` comes first on your `PATH`: remove it, or run the install script, which tells you where it is.
 
