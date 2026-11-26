@@ -7,7 +7,7 @@ const points = [
     icon: FileJson,
     title: "Generated from code",
     description:
-      "Routes and Zod schemas become an OpenAPI 3.0 document. No separate YAML to maintain.",
+      "Routes and Zod schemas become an OpenAPI 3.1 document. No separate YAML to maintain.",
   },
   {
     icon: Globe,
@@ -29,7 +29,7 @@ export function OpenAPI() {
       <SectionHeader
         eyebrow="OpenAPI"
         title="Documentation that writes itself"
-        subtitle="Turn on OpenAPI once. BurgerAPI generates the specification and serves an interactive API explorer."
+        subtitle="OpenAPI is on by default. BurgerAPI generates the specification and serves an interactive API explorer."
       />
 
       <div className="grid md:grid-cols-3 gap-5 mb-10">

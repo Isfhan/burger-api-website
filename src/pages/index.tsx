@@ -74,7 +74,7 @@ export default function Home(): ReactNode {
   const { siteConfig } = useDocusaurusContext();
 
   return (
-    <Layout title={siteConfig.projectName} description={siteConfig.tagline}>
+    <Layout description={siteConfig.tagline}>
       <LazyMotion features={domAnimation} strict>
         <main className="ba-main">
           <Hero />

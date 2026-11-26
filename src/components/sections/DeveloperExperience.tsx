@@ -19,9 +19,9 @@ const items: { icon: LucideIcon; title: string; description: string }[] = [
   },
   {
     icon: RefreshCw,
-    title: "Bun Hot Reload",
+    title: "Fast Reload",
     description:
-      "Develop with Bun's native watch mode. Change a route file and see updates immediately.",
+      "burger-api dev restarts the server when you change a file, so updates show up right away.",
   },
   {
     icon: Terminal,
@@ -39,7 +39,7 @@ const items: { icon: LucideIcon; title: string; description: string }[] = [
     icon: BookOpen,
     title: "Zero-Config OpenAPI",
     description:
-      "Turn on OpenAPI and get a live Swagger UI generated from your routes and schemas.",
+      "On by default: a live Swagger UI at /docs, generated from your routes and schemas.",
   },
   {
     icon: Sparkles,

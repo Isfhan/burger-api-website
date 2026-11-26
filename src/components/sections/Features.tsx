@@ -63,7 +63,7 @@ const features: Feature[] = [
     icon: FileJson,
     title: "Automatic OpenAPI",
     description:
-      "OpenAPI 3.0 is generated from your routes and Zod schemas, so the specification always matches the code.",
+      "OpenAPI 3.1 is generated from your routes and Zod schemas, so the specification always matches the code.",
   },
   {
     icon: Layers,
