@@ -20,7 +20,7 @@ import { logger } from "../ecosystem/hooks/logger/logger";
 export const onRequest = [logger()];
 ```
 
-The logger returns a response mapper, so it logs each request when the response is ready. `onRequest` runs for every response the app produces, including 404s and CORS preflights, so those requests appear in the log too. A `beforeRoute` hook runs only for matched routes and would miss them.
+The logger returns a response mapper, so it logs each request when the response is ready. `onRequest` runs for every request, so the hook's response mapper also covers 404, 405, validation errors and `onError` responses, and sees the final status.
 
 ## Options
 

@@ -30,6 +30,8 @@ Burger API comes with a powerful CLI tool that makes it easy to scaffold new pro
 bun add -g @burger-api/cli
 ```
 
+Global Bun installs go to `~/.bun/bin`. If you see `burger-api: command not found`, add `~/.bun/bin` to your `PATH` (`%USERPROFILE%\.bun\bin` on Windows) and open a new terminal.
+
 Or use with **bunx** (No Installation Needed):
 
 ```bash

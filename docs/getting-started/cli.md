@@ -42,6 +42,7 @@ Scaffolds a new project with interactive prompts.
 - Always writes `AGENTS.md` (project rules for AI agents; Claude Code and other agents read it).
 - Generates the `dev`, `build`, `start`, and `typecheck` scripts.
 - Options: `--lang ts|js` (default `ts`), `--yes` / `--defaults` (skip prompts), `--pages` (include `src/pages`), `--ws` (include file-based WebSocket routes), `--no-api` (skip API routes), `--api-dir <dir>`, `--api-prefix <prefix>`, `--no-skills`, `--local` (use the local checkout instead of npm/GitHub).
+- `--no-api` needs `--pages` and/or `--ws`. On its own, `create` stops with an error, because the project would serve nothing.
 
 ```bash
 burger-api create my-api
@@ -221,7 +222,7 @@ my-api/
 │   ├── openapi.config.ts  # OpenAPI metadata and docs UI
 │   ├── types.ts           # App-wide type extensions (TypeScript projects)
 │   └── api/               # File-based API routes
-├── ecosystem/             # Hooks and plugins installed with `burger-api add`
+├── ecosystem/             # Created by `burger-api add` / `generate hook|plugin`, not by `create`
 ├── .agents/
 │   └── skills/            # AI agent skills (optional)
 ├── .claude/

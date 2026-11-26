@@ -26,9 +26,9 @@ defaults to `burger-api`, and the files are downloaded from the framework's
 `ecosystem/skills/<name>/` directory on GitHub.
 
 `--force` replaces an existing install without a prompt, also with no TTY.
-Without it, a non-TTY run exits with a message pointing at `--force`.
-`--local` copies the skill from the local checkout instead. See
-[Local mode](/docs/getting-started/cli#local-mode).
+Without it, a non-TTY run skips the skill with a warning and exits `0`, the
+same way `add` behaves. `--local` copies the skill from the local checkout
+instead. See [Local mode](/docs/getting-started/cli#local-mode).
 
 ### `burger-api skills list`
 
