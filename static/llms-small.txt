@@ -216,7 +216,7 @@ Update the CLI and the framework to the latest version first. Most problems are 
   bun add burger-api@latest
   ```
 
-- **Hooks and plugins added with `burger-api add`:** these are copies inside your project, so updating the CLI or the framework does not change them. Run `burger-api add <name> --force` to replace a copy with the latest version. This overwrites the file, so keep your own edits elsewhere or re-apply them. See [Add Command](https://burger-api.com/docs/cli/add).
+- **Hooks and plugins added with `burger-api add`:** these are copies inside your project, so updating the CLI or the framework does not change them. Run `burger-api add <name> --force` to replace a copy with the latest version. This overwrites the file, so keep your own edits elsewhere or re-apply them. `burger-api doctor` tells you which copies are out of date. See [Add Command](https://burger-api.com/docs/cli/add) and [Doctor Command](https://burger-api.com/docs/cli/doctor#copied-hooks-and-plugins).
 
 Run `burger-api --version` to check which version you have. If it still shows an old version, another `burger-api` comes first on your `PATH`: remove it, or run the install script, which tells you where it is.
 
@@ -377,7 +377,7 @@ See [Add Command](https://burger-api.com/docs/cli/add) and [Ecosystem](https://b
 
 ### `burger-api dev`
 
-Starts the development server with hot reload. The server restarts when you change files.
+Starts the development server with hot reload. The server restarts when you change files in the entry file's folder (usually `src/`), in `ecosystem/` (also when `burger-api add` creates it while `dev` runs), or in `burger.build.ts`.
 
 - Options: `-p, --port <port>` (default `$PORT`, else `4000`), `-f, --file <file>` (default `src/index.ts`, `src/index.js`, or `src/index.mjs`).
 
@@ -416,6 +416,8 @@ burger-api start
 ```
 
 `bun run start` runs the same command through the project's `start` script.
+
+When `.build/bundle/app.js` is older than any file in `src/`, `ecosystem/` or `burger.build.ts`, `start` warns that the build is out of date. Run `burger-api build` again to include your changes.
 
 ### `burger-api build:exec [file]`
 

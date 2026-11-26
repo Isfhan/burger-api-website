@@ -22,9 +22,26 @@ It checks, in order:
 - `tsconfig.json` (or `jsconfig.json` for JavaScript projects) exists.
 - No `burger.config.ts`/`.js` file: doctor reports it as an error if found.
 - The scan options in `src/index.*` agree with `burger.build.ts`: a mismatch is a warning, not an error.
+- Official hooks and plugins copied into `ecosystem/hooks/` and `ecosystem/plugins/` by `burger-api add` are up to date (see [below](#copied-hooks-and-plugins)).
 - `src/hooks.ts`, `src/plugins.ts`, `src/providers.ts`, `src/openapi.config.ts`: reported as found or not found, but never as errors (all are optional).
 
 Exits `0` when every check passes, `1` otherwise, so it's safe to wire into a pre-commit hook or CI step alongside `bun run typecheck`.
+
+## Copied hooks and plugins
+
+`burger-api add` copies a hook or plugin into your project, so updating the CLI or the framework does not change it. Each official hook and plugin ships a `package.json` with its version, and doctor compares your copy with the latest one:
+
+- **Security issue (error):** an auth plugin (`jwt-auth`, `api-key`, `basic-auth`, `session`, `oidc`) copied before CLI 1.0.0-beta.3 still checks credentials after validation, so a request without credentials can get a `422` that describes the route's schema instead of a `401`. Doctor finds these copies by version, and by their code when the `package.json` is missing.
+- **Warning:** any other copy that is older than the latest version, or has no version.
+- **Pass:** the copy is up to date. Your own edits to an up-to-date copy are fine.
+
+Hooks and plugins you wrote yourself are not checked. To update a copy, run the command doctor prints:
+
+```bash
+burger-api add jwt-auth --force
+```
+
+`--force` overwrites the file, so keep your own edits elsewhere or re-apply them.
 
 ## `--json`
 

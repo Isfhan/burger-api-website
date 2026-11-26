@@ -74,7 +74,7 @@ const config: Config = {
     license: "MIT License",
     bunVersion: "Bun 1.4.4+",
     frameworkVersion: "1.0.0-beta.2",
-    cliVersion: "1.0.0-beta.3",
+    cliVersion: "1.0.0-beta.4",
     getStartedUrl: "/docs/",
     githubUrl: "https://github.com/isfhan/burger-api",
   },

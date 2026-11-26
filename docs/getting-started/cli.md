@@ -84,7 +84,7 @@ See [Add Command](/docs/cli/add) and [Ecosystem](/docs/ecosystem/introduction).
 
 ### `burger-api dev`
 
-Starts the development server with hot reload. The server restarts when you change files.
+Starts the development server with hot reload. The server restarts when you change files in the entry file's folder (usually `src/`), in `ecosystem/` (also when `burger-api add` creates it while `dev` runs), or in `burger.build.ts`.
 
 - Options: `-p, --port <port>` (default `$PORT`, else `4000`), `-f, --file <file>` (default `src/index.ts`, `src/index.js`, or `src/index.mjs`).
 
@@ -123,6 +123,8 @@ burger-api start
 ```
 
 `bun run start` runs the same command through the project's `start` script.
+
+When `.build/bundle/app.js` is older than any file in `src/`, `ecosystem/` or `burger.build.ts`, `start` warns that the build is out of date. Run `burger-api build` again to include your changes.
 
 ### `burger-api build:exec [file]`
 
