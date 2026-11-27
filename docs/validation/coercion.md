@@ -4,13 +4,13 @@ sidebar_label: Coercion
 
 # Coercion (Automatic Type Conversion)
 
-Query strings, path parameters, headers, and cookies always arrive as **text**. A query string like `?n=42` gives you the string `"42"`, not the number `42`. That means a strict Zod schema such as `z.object({ n: z.number() })` would reject it.
+Query strings, path params, headers and cookies always arrive as text. `?n=42` gives you the string `"42"`, so `z.number()` would reject it.
 
-**Coercion** (automatic type conversion) fixes this: BurgerAPI turns text into the right type for you, so `"42"` becomes `42`, `"true"` becomes `true`, and `"2026-01-01"` becomes a `Date`.
+Coercion converts the text for you: `"42"` becomes `42`, `"true"` becomes `true`, and `"2026-01-01"` becomes a `Date`. It is off by default.
 
 ## Turn it on
 
-Coercion is **opt-in and off by default**. Enable it for the whole app:
+For the whole app:
 
 ```typescript title="src/index.ts"
 import { Burger } from "burger-api";
@@ -21,7 +21,7 @@ const app = new Burger({
 });
 ```
 
-Or just for one route, with the `coerce` flag on that method's schema:
+For one method:
 
 ```typescript title="api/stats/schema.ts"
 import { z } from "zod";
@@ -32,36 +32,31 @@ export const GET = {
 };
 ```
 
-Now `?n=42&b=true` validates cleanly and `ctx.validated.query` holds `{ n: 42, b: true }` (real number and boolean).
-
-To enable coercion for every method in one `schema.ts`, export a top-level flag instead:
+For every method in one `schema.ts`:
 
 ```typescript title="api/stats/schema.ts"
 export const coerce = true;
 
 export const GET = { query: z.object({ n: z.number() }) };
-export const POST = { query: z.object({ page: z.number() }) };
 ```
+
+Now `?n=42&b=true` gives `ctx.validated.query` the value `{ n: 42, b: true }`.
 
 ## What gets converted
 
 | Schema field | Converts to |
 |--------------|-------------|
 | `z.number()` | number |
-| `z.boolean()` | boolean (`"true"`/`"1"` → `true`, `"false"`/`"0"` → `false`) |
+| `z.boolean()` | boolean (`"true"`/`"1"` and `"false"`/`"0"`) |
 | `z.date()` | `Date` |
-| `z.array(z.number())` | array of numbers (a single value is wrapped in an array first) |
+| `z.array(z.number())` | array of numbers |
 
-Coercion applies to `query`, `params`, `headers`, and `cookies`, but not to the request `body` (JSON bodies are already typed).
+## Good to know
 
-Conversion plans are built from Zod object fields. For other schema libraries, use that library's own conversion: framework `coerce: true` does not pre-convert non-Zod schemas.
-
-## Safe by design
-
-- A value that cannot be converted fails the validation normally. It never becomes `NaN` or silently corrupts your data.
-- When coercion is off, `"42"` stays `"42"` and strict schemas validate the raw values.
-- You can still use Zod's own `z.coerce.number()` if you prefer per-field control; the framework `coerce: true` is a simpler, app-wide switch.
-
+- Coercion works on `query`, `params`, `headers` and `cookies`. It does not touch the JSON body.
+- It works with Zod schemas. For other schema libraries, use that library's own conversion.
+- A value that cannot be converted fails validation with `422`.
+- You can still use Zod's `z.coerce.number()` on a single field.
 
 ## Related
 

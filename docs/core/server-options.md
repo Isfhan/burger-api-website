@@ -4,87 +4,55 @@ sidebar_label: Burger Options
 
 # Server Options
 
-The `Burger` constructor accepts a **ServerOptions** object. These are the main options:
+`new Burger({...})` takes a `ServerOptions` object. All options are optional. Most apps set none or only a few.
+
+```ts title="src/index.ts"
+import { Burger } from "burger-api";
+
+const burger = new Burger({
+  apiPrefix: "v1",
+  debug: true,
+});
+
+burger.serve(4000);
+```
+
+## Options
 
 | Option | Type | Description |
 |--------|------|-------------|
-| `apiDir` | `string` | Directory containing API route files (e.g. `./src/api`). Defaults to `./src/api`. Relative to the project root or to `src/`. |
-| `apiRoutes` | `RouteDefinition[]` | Pre-built API routes from the CLI build. When present, `apiDir` is ignored and no runtime filesystem scan happens. |
-| `pageDir` | `string` | Directory for page files. Defaults to `./src/pages` when that directory exists. |
-| `pageRoutes` | `PageDefinition[]` | Pre-built page routes from the CLI build. When present, `pageDir` is ignored. |
-| `wsDir` | `string` | Directory for WebSocket route files. Defaults to `./src/websocket` when that directory exists, so file-based WS routes work in dev without configuration. |
-| `wsRoutes` | `WebSocketRouteDefinition[]` | Pre-built WebSocket routes from the CLI build. When present, `wsDir` is ignored. |
-| `assetRoutes` | `EmbeddedAsset[]` | Embedded static assets from the CLI build (files under `<pageDir>/assets/`). When present, assets are served from the table; otherwise dev reads them from disk under `pageDir`. |
-| `apiPrefix` | `string` | URL prefix for API routes (default: `'api'`; `''` mounts them at `/`). |
-| `pagePrefix` | `string` | URL prefix for page routes (default: `''`). |
-| `title` | `string` | Fallback API title for the OpenAPI document when no `openapi.config.ts` exists. Prefer [OpenAPI config](/docs/api/openapi). |
-| `description` | `string` | Fallback API description, same rules as `title`. |
-| `version` | `string` | Fallback API version, same rules as `title`. |
-| `debug` | `boolean` | Enable debug mode (richer error rendering, response-validation detail). Defaults to on when `NODE_ENV=development` (the CLI `dev` command sets it); `false` turns it off even in development. |
-| `validation` | object | Validation settings: `coerce` (`boolean`), `responseValidation` (`'off' \| 'dev' \| 'enforce'`), `errorFormat` (`'plain' \| 'problem+json'`), `status` (`number`), `errorRenderer`. See [Validation Configuration](/docs/validation/configuration). |
-| `openapi` | `OpenAPIConfig` | OpenAPI configuration for programmatic apps. In dev, `openapi.config.ts` is auto-discovered; `burger-api build` embeds the convention file, so you rarely set this. See [OpenAPI](/docs/api/openapi). |
-| `globalHooks` | `Record<string, unknown>` | Pre-resolved global hooks module (from `src/hooks.ts`). Used in production builds with `apiRoutes`; in dev, `src/hooks.ts` is auto-discovered and this field is ignored. |
-| `pluginsModule` | `Record<string, unknown>` | Pre-resolved plugins module (from `src/plugins.ts`). In dev, `src/plugins.ts` is auto-discovered. |
-| `providersModule` | `Record<string, unknown>` | Pre-resolved providers module (from `src/providers.ts`). In dev, `src/providers.ts` is auto-discovered. |
-| `jit` | `boolean` | JIT-compile each route's hook plan into one function. Default `true`; runtimes that forbid dynamic code generation keep the interpreter. Set `false` to opt out. |
-| `engine` | `'auto' \| 'regex' \| 'trie'` | Dynamic-route dispatch engine for the fetch fallback. Default `'auto'` (trie). Static dispatch is unaffected. |
-| `hostname` | `string` | Hostname to bind for `serve()`. |
-| `adapter` | `RuntimeAdapter` | Runtime adapter override (test/embed seam). Defaults to the Bun adapter, loaded on first `serve()`. |
-| `runtimeTarget` | `RuntimeTarget` | Deployment target this build was produced for. Set automatically by `burger-api build --target=<platform>`; resolves WebSocket upgrade handling on targets that cannot be detected at runtime. |
-| `maxRequestBodySize` | `number` | Maximum request body size in bytes for `serve()` (Bun's default is 128 MB). Larger bodies are rejected by the runtime with `413`. |
+| `apiDir` | `string` | Folder with API routes. Default `./src/api`. |
+| `pageDir` | `string` | Folder with pages. Default `./src/pages` if it exists. |
+| `wsDir` | `string` | Folder with WebSocket routes. Default `./src/websocket` if it exists. |
+| `apiPrefix` | `string` | URL prefix for API routes. Default `'api'`. Use `''` to mount at `/`. |
+| `pagePrefix` | `string` | URL prefix for pages. Default `''`. |
+| `debug` | `boolean` | Show stack traces and response validation details. On by default when `NODE_ENV=development` (`burger-api dev` sets it). `false` turns it off. |
+| `validation` | object | `coerce`, `responseValidation` (`'off' \| 'dev' \| 'enforce'`), `errorFormat` (`'plain' \| 'problem+json'`), `status`, `errorRenderer`. See [Validation Configuration](/docs/validation/configuration). |
+| `openapi` | `OpenAPIConfig` | OpenAPI settings for apps without `src/openapi.config.ts`. See [OpenAPI](/docs/api/openapi). |
+| `title`, `description`, `version` | `string` | Fallback OpenAPI metadata. Prefer `src/openapi.config.ts`. |
+| `hostname` | `string` | Hostname for `serve()` to bind. |
+| `maxRequestBodySize` | `number` | Largest request body in bytes for `serve()`. Bigger bodies get `413`. Bun's default is 128 MB. |
 
-## Dev vs production
+## Set by the build
 
-In filesystem mode you pass `apiDir`/`pageDir`/`wsDir`, or let them default to the conventions (`./src/api`, `./src/pages`, `./src/websocket`) when those directories exist. Production builds pass the prebuilt `apiRoutes`/`pageRoutes`/`wsRoutes` instead. The CLI build produces the AOT route tables: `burger-api build` embeds them into the bundle, so production never scans the filesystem at runtime. See [CLI Tool](/docs/getting-started/cli) and [Burger Class](/docs/core/burger-class).
+`burger-api build` fills these in for you. You do not set them by hand in a normal project.
 
-## Types for this feature
+| Option | What the build puts there |
+|--------|-------------|
+| `apiRoutes`, `pageRoutes`, `wsRoutes` | Routes found at build time. They replace `apiDir`, `pageDir`, `wsDir`. |
+| `assetRoutes` | Files from `<pageDir>/assets/`. |
+| `globalHooks`, `pluginsModule`, `providersModule` | Your `src/hooks.ts`, `src/plugins.ts` and `src/providers.ts`. |
+| `runtimeTarget` | The `--target` platform. |
 
-The options object is typed as `ServerOptions`. TypeScript checks every option you pass.
+In dev, BurgerAPI reads your folders and app files directly. See [CLI Tool](/docs/getting-started/cli).
 
-The types you use (all from `burger-api`):
+## Advanced
 
-- `ServerOptions`: the options of `new Burger({...})`
-- `RouteDefinition`: a route for `apiRoutes`
-- `RouteSchema`: a route's full schema map
-- `HTTPMethod`: the allowed method names
+`jit`, `engine` and `adapter` are for tests and special runtimes. Leave them at their defaults.
 
-✅ Correct, typed options and a typed route definition:
+## Types
 
-```typescript
-import { Burger } from "burger-api";
-import type { RouteDefinition } from "burger-api";
-
-const routes: RouteDefinition[] = [
-    {
-        path: "/users",
-        handlers: { GET: (ctx) => Response.json({ ok: true }) },
-    },
-];
-
-const app = new Burger({
-    apiDir: "./src/api",
-    apiRoutes: routes,
-    debug: true,
-});
-```
-
-❌ Wrong, an unknown option or a bad method key:
-
-```typescript
-new Burger({
-    apiDir: "./src/api",
-    apiDri: "./src/api", // ❌ Property 'apiDri' does not exist
-});
-
-const bad: RouteDefinition = {
-    path: "/x",
-    handlers: { Get: () => new Response() }, // ❌ 'Get' is not an HTTP method
-};
-```
-
-See the [TypeScript overview](/docs/advanced/type-safety).
-
-Check your code: `bun run typecheck`.
+Import `ServerOptions` from `burger-api` if you build the options object separately. TypeScript flags a typo such as `apiDri`. Run `bun run typecheck` to check.
 
 ## Related
 

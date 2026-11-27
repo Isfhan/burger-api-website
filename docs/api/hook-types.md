@@ -4,9 +4,9 @@ sidebar_label: Hook Types
 
 # Hook Types
 
-Hooks are the request lifecycle functions. This page is the type reference. For the full model, see [Hook System](/docs/hooks/system).
+Type reference for hooks. All types come from `burger-api`. For how hooks work, see [Hook System](/docs/hooks/system).
 
-## Hook
+## ForwardHook and ResponseHook
 
 ```ts
 type ForwardHookResult =
@@ -15,11 +15,7 @@ type ForwardHookResult =
   | void
   | undefined;
 
-type ResponseHookResult =
-  | Response
-  | ((response: Response) => Response | Promise<Response>)
-  | void
-  | undefined;
+type ResponseHookResult = ForwardHookResult;
 
 type ForwardHook = (
   ctx: BurgerContext
@@ -32,13 +28,7 @@ type ResponseHook = (
 type Hook = ForwardHook | ResponseHook;
 ```
 
-`Hook` is the union of the two stage contracts: `ForwardHook` (`onRequest`, `beforeRoute`) and `ResponseHook` (`afterRoute`, `mapResponse`). Where multiple hooks run in sequence, the type is `Hook[]` (a single `Hook` is also accepted).
-
-A hook returns one of three things:
-
-- A `Response` for a forward hook stops the pipeline: that response is sent and the handler is skipped. For a response hook it replaces the current response and the remaining hooks still run.
-- `undefined` continues to the next hook or to the handler.
-- A function `(response) => Response` registers a mapper. A forward hook queues it to run right after the handler returns (before response validation and `afterRoute`). A response hook applies it immediately.
+`ForwardHook` is used by `onRequest` and `beforeRoute`. `ResponseHook` is used by `afterRoute` and `mapResponse`. Each slot takes one hook or an array. See [Hook Return Types](/docs/hooks/return-types) for what each return value does.
 
 ## ErrorHook
 
@@ -49,23 +39,21 @@ type ErrorHook = (
 ) => Response | void | undefined | Promise<Response | void | undefined>;
 ```
 
-`onError` hooks handle errors thrown after routing (validation, `beforeRoute`, the handler, `afterRoute`, `mapResponse`). They run nearest-first, Route → Global → Plugin → Framework. Return a `Response` to handle the error, or `undefined`/`void` to let the next `onError` hook try. If none handles it, the framework renders the default error response and logs 5xx errors. May be async.
-
-An error thrown by an `onRequest` hook also reaches `onError`, through the global, plugin and framework hooks (no route is matched yet, so route hooks are not involved).
+Return a `Response` to handle the error. Return `undefined` to let the next `onError` hook try. If no hook handles it, BurgerAPI sends a default error response.
 
 ## RouteHooks
 
 ```ts
 interface RouteHooks {
+  transform?: TransformMap;
   beforeRoute?: ForwardHook | ForwardHook[];
   afterRoute?: ResponseHook | ResponseHook[];
   mapResponse?: ResponseHook | ResponseHook[];
   onError?: ErrorHook | ErrorHook[];
-  transform?: TransformMap;
 }
 ```
 
-`RouteHooks` is the shape of a route's `hooks.ts`. There is no `onRequest` here: `onRequest` runs before a route is matched, so it cannot be scoped to one route. `transform` runs before validation.
+The shape of a route `hooks.ts`. It has no `onRequest`.
 
 ## GlobalHooks
 
@@ -75,7 +63,7 @@ interface GlobalHooks extends RouteHooks {
 }
 ```
 
-`GlobalHooks` is the shape of the app's `src/hooks.ts` and of a plugin's `hooks` object. It adds `onRequest` on top of `RouteHooks`.
+The shape of `src/hooks.ts` and of a plugin's `hooks`.
 
 ## TransformMap
 
@@ -83,9 +71,10 @@ interface GlobalHooks extends RouteHooks {
 type TransformMap = Record<string, (ctx: BurgerContext) => unknown>;
 ```
 
-`transform` is a map of factory functions keyed by the context field to inject. Each factory receives the context and its return value is merged onto the context instance. Use it to attach request-scoped values before validation runs.
+Each key is a field to add to `ctx`. Each function returns that field's value. See [Global Hooks](/docs/hooks/global#transform).
 
 ## Related
 
 - [Hook System](/docs/hooks/system)
+- [Hook Return Types](/docs/hooks/return-types)
 - [Key Concepts](/docs/key-concepts)

@@ -4,53 +4,32 @@ sidebar_label: Response Mutation
 
 # Response Mutation
 
-Handlers always return a standard Web `Response`. Response changes are expressed through `ctx.set`, and the framework applies them once at the end of the lifecycle, after `mapResponse`, via `applySet`.
+Handlers return a standard `Response`. To change the status, headers or cookies from a hook or a handler, use `ctx.set`. BurgerAPI applies it to the response at the end of the request.
 
-## Setting status and headers
+```ts title="src/api/users/route.ts"
+import type { BurgerContext } from "burger-api";
 
-```ts
-export async function GET(ctx: BurgerContext) {
-  ctx.set = {
-    status: 201,
-    headers: { "x-total": "42" },
+export async function POST(ctx: BurgerContext) {
+  ctx.set.status = 201;
+  ctx.set.headers = {
+    "x-total": "42",
+    "set-cookie": "session=abc; HttpOnly; Path=/",
   };
   return Response.json({ created: true });
 }
 ```
 
-- `ctx.set.status` overrides the response status only when defined, and never replaces an error status (`400` or higher). Errors stay errors.
-- `ctx.set.headers` is merged over the response's existing headers; explicit values win.
-- `ctx.set.headers` is always defined (created on first access). In TypeScript, assign an object (`ctx.set.headers = { "x-id": value }`); see [Context Set](/docs/api/context-set).
-- An array value appends each entry. A scalar `set-cookie` is appended, so a cookie set by the handler and one set through `ctx.set` both survive.
+What you get:
 
-## mapResponse
+- `ctx.set.status` changes the status of a success response. An error status (400 or higher) stays as it is.
+- `ctx.set.headers` adds headers. Your values win over the response's own headers.
+- An array value adds every entry. `set-cookie` is always added, so cookies from the handler and from `ctx.set` both reach the client.
+- A `ctx.set` from `onRequest` also applies to 404s, errors, pages and `/docs`.
 
-For response shaping that needs the actual response, use `mapResponse` hooks. They run nearest-first (Route → Global → Plugin → Framework), after `afterRoute`:
-
-```ts title="src/hooks.ts"
-export const mapResponse = [
-  (ctx: BurgerContext) => (res: Response) => {
-    res.headers.set("x-server", "burger");
-    return res;
-  },
-];
-```
-
-A `mapResponse` hook returns a function that receives the current response and returns the transformed response, or returns a `Response` to replace it, or `undefined` to continue. The CORS and logger hooks are `onRequest` hooks that return a response mapper like this, so they decorate every response, including 404s and CORS preflights.
-
-## applySet
-
-At the single exit point of the request flow, `applySet` merges `ctx.set` into the outgoing `Response`:
-
-- If `ctx.set` is empty (no status, no headers), the original `Response` is returned unchanged, with no extra memory used.
-- It runs uniformly on handler responses and on the auto-`HEAD` responses derived from `GET`.
-- It also runs for 404, 405, auto-`OPTIONS`, errors rendered by `onError`, pages, assets, `/docs` and `/openapi.json`. A `ctx.set` mutation from an `onRequest` hook applies to those responses too.
-
-## Why a single merge step
-
-Collecting response changes in `ctx.set` and applying them in one place keeps response handling predictable: hooks and handlers all influence the response the same way, and the framework controls exactly when the `Response` is finalized. This also keeps the code that runs for every request light on memory.
+To change the response body or read the response, use an [after hook](/docs/hooks/after) instead.
 
 ## Related
 
 - [ContextSet](/docs/api/context-set)
+- [After Hooks](/docs/hooks/after)
 - [Hook System](/docs/hooks/system)

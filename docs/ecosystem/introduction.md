@@ -5,26 +5,26 @@ sidebar_position: 1
 
 # Ecosystem
 
-BurgerAPI keeps a small core and ships optional packages under `ecosystem/`:
+BurgerAPI has a small core. Extra features come as ready-made hooks and plugins. The CLI copies their source into your project, so you can read and change them.
 
+- **Hooks** run code around requests. Add them in `src/hooks.ts` or a route's `hooks.ts`.
+- **Plugins** add app features, such as auth. Register them in `src/plugins.ts`.
+- **Skills** help AI coding tools understand a BurgerAPI project.
+
+See [Hooks & Plugins](/docs/ecosystem/hooks-plugins) for the difference.
+
+## Add a package
+
+```bash
+burger-api list          # show available packages
+burger-api add cors      # copy a package into your project
 ```
-ecosystem/
-├── hooks/      # Request lifecycle factories (CORS, logger, rate-limiter, ...)
-├── plugins/    # Application extensions (JWT, session, env, ...)
-└── skills/     # AI agent skills
-```
 
-| Folder | Role |
-|--------|------|
-| **hooks/** | Compose in `src/hooks.ts` or route `hooks.ts` |
-| **plugins/** | Register in `src/plugins.ts` |
-| **skills/** | Help AI tools understand BurgerAPI projects |
+Hooks land in `ecosystem/hooks/<name>/` and plugins in `ecosystem/plugins/<name>/`. Each folder has a `README.md` with every option.
 
-**Hooks** control the request lifecycle. **Plugins** extend the application. They are separate concepts.
+To update a copy later, run `burger-api add <name> --force`. This overwrites your local changes.
 
-### Hook packages
-
-See [Hooks & Plugins](/docs/ecosystem/hooks-plugins) for how hooks work. Available hook packages:
+## Hooks
 
 - [CORS](/docs/ecosystem/cors)
 - [Logger](/docs/ecosystem/logger)
@@ -35,37 +35,28 @@ See [Hooks & Plugins](/docs/ecosystem/hooks-plugins) for how hooks work. Availab
 - [Timeout](/docs/ecosystem/timeout)
 - [Body size limiter](/docs/ecosystem/body-size-limiter)
 
-### CLI
+## Plugins
 
-```bash
-burger-api list
-burger-api add cors
-burger-api add logger
-burger-api skills install
-```
-
-Packages install into `ecosystem/hooks/` or `ecosystem/plugins/` as appropriate.
-
-### Authentication
-
-Authentication is implemented through official ecosystem **plugins** that integrate with BurgerAPI's hook system and route `config.ts`. The framework core stays auth-agnostic. Available plugin packages:
+Auth is always a plugin. The core has no built-in auth.
 
 - [JWT Auth](/docs/ecosystem/jwt-auth)
 - [API Key Auth](/docs/ecosystem/api-key-auth)
 - [Basic Auth](/docs/ecosystem/basic-auth)
 - [Session](/docs/ecosystem/session)
 - [OIDC](/docs/ecosystem/oidc)
-- [Env Validation](/docs/ecosystem/env) (startup config, not an auth plugin)
+- [Env Validation](/docs/ecosystem/env) (checks environment variables at startup)
 
-### Agent skills
+## Agent skills
 
 ```bash
 burger-api skills install
 burger-api skills list
-burger-api skills available
 ```
 
-Skills install to `.agents/skills/<name>/` and `.claude/skills/<name>/`.
-Claude Code reads `.claude/skills/`; agents that support the Agent Skills
-standard (OpenCode, Codex, and others) read `.agents/skills/`. See
-[AI Agent Skills](/docs/ai-assistance/agent-skills).
+Skills install to `.agents/skills/<name>/` and `.claude/skills/<name>/`. See [AI Agent Skills](/docs/ai-assistance/agent-skills).
+
+## Related
+
+- [Hooks & Plugins](/docs/ecosystem/hooks-plugins)
+- [CLI Add](/docs/cli/add)
+- [Hook System](/docs/hooks/system)

@@ -4,16 +4,14 @@ sidebar_label: Hooks & Plugins
 
 # Hooks and Plugins
 
-The BurgerAPI ecosystem ships two kinds of packages, plus AI agent skills. See [Ecosystem](/docs/ecosystem/introduction) for the folder layout and CLI commands.
+The ecosystem has two kinds of packages. They are separate ideas.
+
+- Need code to run around requests, like headers or logging? Use a **hook**.
+- Need an app feature, like auth or env checks? Use a **plugin**.
 
 ## Hooks
 
-Hooks are small request lifecycle factories. They control when code runs on a request.
-
-- **What they do:** run at a named lifecycle stage (`onRequest`, `transform`, `beforeRoute`, `afterRoute`, `mapResponse`, `onError`).
-- **Where they live:** `ecosystem/hooks/` after install.
-- **Where you compose them:** `src/hooks.ts` (global) or a route's `hooks.ts` (route-specific).
-- **Examples:** cors, logger, rate-limiter, compression, timeout, security-headers.
+A hook runs at a lifecycle point: `onRequest`, `transform`, `beforeRoute`, `afterRoute`, `mapResponse` or `onError`. Add ecosystem hooks in `src/hooks.ts` (every request) or in a route's `hooks.ts` (that route only):
 
 ```ts title="src/hooks.ts"
 import { cors } from "../ecosystem/hooks/cors/cors";
@@ -23,12 +21,7 @@ export const onRequest = [cors({ origin: ["https://app.example.com"] })];
 
 ## Plugins
 
-Plugins are application extensions. They package hooks and inject request-scoped values onto `BurgerContext` (for example `ctx.apiKey` from `transform`, or `ctx.user` from `transform`). They cannot register providers: services are registered in `src/providers.ts` with `burger.provide()`.
-
-- **What they do:** integrate with the application, often combining hooks with route `config.ts` (for example, auth).
-- **Where they live:** `ecosystem/plugins/` after install.
-- **Where you register them:** `src/plugins.ts`.
-- **Examples:** jwt-auth, api-key, session, oidc, basic-auth, env.
+A plugin is `{ name, hooks? }`. Register plugins in `src/plugins.ts`:
 
 ```ts title="src/plugins.ts"
 import type { PluginRegistrar } from "burger-api";
@@ -39,86 +32,36 @@ export default (burger: PluginRegistrar) => {
 };
 ```
 
-`usePlugin()` accepts a plugin object or a factory function, plus two optional arguments:
+Plugins add hooks only. Services go in `src/providers.ts` with `burger.provide()`.
 
-```ts
-usePlugin(plugin: Plugin | PluginFactory, scope?: Scope, seed?: string): this
-```
+To register the same plugin twice (for example two JWT plugins with different secrets), pass a third `seed` argument: `usePlugin(plugin, undefined, "admin")`.
 
-`scope` overrides where the plugin's hooks sit in the chain (default `"plugin"`). `seed` disambiguates two registrations of the same plugin, for example two JWT plugins with different secrets.
+## Write your own plugin
 
-## Which one to use?
-
-- Need code to run around requests, like adding headers or logging? Use a **hook**.
-- Need an application feature like authentication or environment validation? Use a **plugin**.
-
-Hooks control the request lifecycle. Plugins extend the application. They are separate concepts. Do not treat plugins as a replacement for hooks.
-
-## Types for this feature
-
-The types you use (all from `burger-api`):
-
-- `Plugin` is a plugin: `{ name, hooks? }`
-- `PluginFactory` is a function returning a plugin (or a promise of one)
-- `GlobalHooks` is the hook object a plugin uses
-- `RouteHooks` is the hook object (for typing `hooks.ts` files)
-- `BurgerContext` is augmented to type values injected by `transform`
-
-✅ Correct: type the plugin when you write one:
+This plugin adds `ctx.tenant` to every request:
 
 ```ts title="src/plugins.ts"
 import type { Plugin, PluginRegistrar } from "burger-api";
 
-const logger: Plugin = {
-    name: "logger",
-    hooks: {
-        afterRoute: [(ctx) => (res) => res],
-    },
-};
-
-export default (burger: PluginRegistrar) => {
-    burger.usePlugin(logger);
-};
-```
-
-✅ Correct: inject a typed value with `transform` (augment `BurgerContext` in any app file):
-
-```ts
-import type { Plugin } from "burger-api";
-
 declare module "burger-api" {
-    interface BurgerContext {
-        tenant: string;
-    }
+  interface BurgerContext {
+    tenant: string;
+  }
 }
 
 const tenant: Plugin = {
-    name: "tenant",
-    hooks: {
-        transform: {
-            tenant: (ctx) => ctx.headers.get("x-tenant") ?? "public",
-        },
+  name: "tenant",
+  hooks: {
+    transform: {
+      tenant: (ctx) => ctx.headers.get("x-tenant") ?? "public",
     },
+  },
 };
 
-// In a handler: ctx.tenant (typed)
-```
-
-❌ Wrong: an unknown hook point on a plugin:
-
-```ts
-const bad: Plugin = {
-    name: "bad",
-    hooks: {
-        // ❌ Property 'beforeHandle' does not exist (the hook is beforeRoute)
-        beforeHandle: [],
-    },
+export default (burger: PluginRegistrar) => {
+  burger.usePlugin(tenant);
 };
 ```
-
-See the [TypeScript overview](/docs/advanced/type-safety).
-
-Check your code: `bun run typecheck`.
 
 ## Related
 

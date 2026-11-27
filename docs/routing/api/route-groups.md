@@ -4,370 +4,57 @@ sidebar_label: "Route Groups"
 
 # Route Groups
 
-Route groups organize API route files into logical folders without affecting the URL structure.
+A route group is a folder name in parentheses, such as `(admin)`. It helps you organize files. It does not appear in the URL.
 
-## What Are Route Groups?
-
-Route groups use parentheses `(folder)` to create organizational folders that are **ignored** when BurgerAPI builds the route path. The folder exists for your organization, but doesn't appear in the URL.
-
-## Syntax
-
-Wrap any folder name in parentheses to make it a route group:
-
-```
-(groupName)
-```
-
-## Basic Example
-
-### Without Route Groups
-
-```
-api/
-  users/
-    route.ts           → /api/users
-  products/
-    route.ts           → /api/products
-  orders/
-    route.ts           → /api/orders
-```
-
-All files are at the root level: hard to organize as your API grows.
-
-### With Route Groups
-
-```
-api/
-  (public)/
-    users/
-      route.ts         → /api/users
-    products/
-      route.ts         → /api/products
-  (admin)/
-    orders/
-      route.ts         → /api/orders
-    settings/
-      route.ts         → /api/settings
-```
-
-The `(public)` and `(admin)` folders don't appear in URLs:
-- `/api/users` (not `/api/public/users`)
-- `/api/orders` (not `/api/admin/orders`)
-
-## Common Use Cases
-
-### 1. Organizing by Access Level
-
-Separate public, authenticated, and admin routes:
+## Example
 
 ```
 api/
   (public)/
     products/
       route.ts         → /api/products
-    health/
-      route.ts         → /api/health
-  (authenticated)/
-    profile/
-      route.ts         → /api/profile
-    orders/
-      route.ts         → /api/orders
   (admin)/
     users/
       route.ts         → /api/users
-    analytics/
-      route.ts         → /api/analytics
+      [userId]/
+        route.ts       → /api/users/:userId
 ```
 
-:::warning Groups do not enforce anything
-A route group only removes its own name from the URL. It does not apply
-`hooks.ts` or `config.ts` to the routes inside it. Routes never inherit from
-parent folders.
+The URL is `/api/users`, not `/api/admin/users`. Groups work with dynamic and wildcard folders, and you can nest them.
 
-Put `hooks.ts` and `config.ts` next to each `route.ts` they should affect. To
-protect many routes at once, use a plugin or a global hook instead.
+| Folder | In the URL? | Example |
+| --- | --- | --- |
+| `(admin)/users/` | No | `/api/users` |
+| `admin/users/` | Yes | `/api/admin/users` |
 
-A folder with convention files but no `route.ts` applies to nothing, and
-BurgerAPI prints a startup warning:
+## Rules to know
+
+### Groups do not apply files to their children
+
+A group only changes the URL. A `hooks.ts` or `config.ts` inside `(admin)/` does not apply to the routes in it. Routes never inherit files from parent folders.
+
+Put `hooks.ts` and `config.ts` next to each `route.ts` they should affect. To protect many routes at once, use a plugin or a global hook.
+
+If a folder has convention files but no `route.ts`, BurgerAPI prints a startup warning:
 
 ```
 [burger-api] (authenticated) has config.ts, hooks.ts but no route.ts, so they apply to nothing.
 ```
-:::
 
-**Benefits:**
-- Clear visual separation by access level
-- Maintains clean, simple URLs
+### Two routes cannot share a URL
 
-### 2. Organizing by Feature
-
-Group related functionality together:
+Groups are removed from the path, so the same route in two groups gives the same URL. The app fails at startup:
 
 ```
-api/
-  (shop)/
-    products/
-      route.ts         → /api/products
-    cart/
-      route.ts         → /api/cart
-    checkout/
-      route.ts         → /api/checkout
-  (user-management)/
-    users/
-      route.ts         → /api/users
-    roles/
-      route.ts         → /api/roles
-    permissions/
-      route.ts         → /api/permissions
+api/(v1)/users/route.ts   → /api/users
+api/(v2)/users/route.ts   → /api/users   ❌ startup error
 ```
 
-### 3. Organizing by Version
+If the version should be in the URL, use a normal folder: `api/v1/users/route.ts` → `/api/v1/users`.
 
-Two route groups must never resolve to the same URL. A route group is ignored in the path, so copying a route into a second group creates a duplicate:
+## Related
 
-```
-api/
-  (v1)/
-    users/
-      route.ts         → /api/users
-  (v2-draft)/
-    users/
-      route.ts         → /api/users  ❌ duplicate: startup fails
-```
-
-Keep the version in the URL when it matters, using regular folders instead of groups:
-
-```
-api/
-  v1/
-    users/
-      route.ts         → /api/v1/users
-    products/
-      route.ts         → /api/v1/products
-  v2/
-    users/
-      route.ts         → /api/v2/users
-```
-
-Alternatively, serve one version at a time by pointing `apiDir` at a different directory.
-
-### 4. Organizing by Team
-
-Large teams can organize by ownership:
-
-```
-api/
-  (team-commerce)/
-    products/
-      route.ts         → /api/products
-    orders/
-      route.ts         → /api/orders
-  (team-auth)/
-    login/
-      route.ts         → /api/login
-    register/
-      route.ts         → /api/register
-```
-
-## Nested Route Groups
-
-You can nest route groups for more granular organization:
-
-```
-api/
-  (features)/
-    (shop)/
-      products/
-        route.ts       → /api/products
-      cart/
-        route.ts       → /api/cart
-    (auth)/
-      login/
-        route.ts       → /api/login
-      register/
-        route.ts       → /api/register
-```
-
-Both `(features)` and `(shop)` are ignored, resulting in `/api/products`.
-
-## Combining with Other Route Types
-
-Route groups work seamlessly with all other routing patterns:
-
-### Route Groups + Dynamic Routes
-
-```
-api/
-  (admin)/
-    users/
-      [userId]/
-        route.ts       → /api/users/[userId]
-```
-
-**URL:** `/api/users/123` (not `/api/admin/users/123`)
-
-### Route Groups + Wildcard Routes
-
-```
-api/
-  (internal)/
-    proxy/
-      [...]/
-        route.ts       → /api/proxy/[...]
-```
-
-**URL:** `/api/proxy/any/nested/path` (not `/api/internal/proxy/...`)
-
-## Example: Complete Organization
-
-Here's a real-world example of a well-organized API:
-
-```
-api/
-  (public)/
-    health/
-      route.ts              → /api/health
-    products/
-      route.ts              → /api/products
-      [productId]/
-        route.ts            → /api/products/[productId]
-  (authenticated)/
-    profile/
-      route.ts              → /api/profile
-    orders/
-      route.ts              → /api/orders
-      [orderId]/
-        route.ts            → /api/orders/[orderId]
-  (admin)/
-    users/
-      route.ts              → /api/users
-      [userId]/
-        route.ts            → /api/users/[userId]
-    analytics/
-      [...]/
-        route.ts            → /api/analytics/[...]
-```
-
-**Result:** Clean URLs with clear organization.
-
-## Best Practices
-
-### 1. Use Descriptive Group Names
-
-```typescript
-// ✅ Good: Clear purpose
-(admin)
-(authenticated)
-(public-api)
-(feature-shop)
-
-// ❌ Avoid: Vague names
-(misc)
-(stuff)
-(routes)
-```
-
-### 2. Keep Nesting Shallow
-
-```typescript
-// ✅ Good: 1-2 levels of grouping
-api/(features)/(shop)/products/route.ts
-
-// ❌ Avoid: Too many nested groups
-api/(org)/(dept)/(team)/(feature)/(sub)/route.ts
-```
-
-### 3. Consistent Naming Convention
-
-```typescript
-// ✅ Good: Pick a convention and stick with it
-(admin)
-(public)
-(authenticated)
-
-// ❌ Avoid: Mixed conventions
-(admin)
-(publicRoutes)
-(Authenticated_Users)
-```
-
-### 4. Document Your Organization
-
-Add a README in your api directory explaining your grouping strategy:
-
-```markdown
-# API Structure
-
-## Route Groups
-
-- `(public)` - Public endpoints
-- `(authenticated)` - Routes used by signed-in users
-- `(admin)` - Routes used by admins
-
-These folders are only for organization. They do not check who is calling.
-Authentication and authorization live in each route's `config.ts` or in a
-plugin.
-```
-
-## Route Groups vs. URL Segments
-
-It's important to understand the difference:
-
-| Feature | Route Groups `(folder)` | Regular Folders |
-|---------|------------------------|-----------------|
-| Affects URL | ❌ No | ✅ Yes |
-| Purpose | Organization only | URL structure |
-| Example | `(admin)/users/` → `/api/users` | `admin/users/` → `/api/admin/users` |
-
-## When NOT to Use Route Groups
-
-Don't use route groups when:
-
-1. **The path should be in the URL**
-   ```typescript
-   // ❌ Don't hide important URL segments
-   api/(v1)/users/route.ts  → /api/users  (version hidden!)
-   
-   // ✅ Keep version in URL if it matters
-   api/v1/users/route.ts    → /api/v1/users
-   ```
-
-2. **Organization doesn't add value**
-   ```typescript
-   // ❌ Unnecessary grouping
-   api/(routes)/(endpoints)/users/route.ts
-   
-   // ✅ Simple is better
-   api/users/route.ts
-   ```
-
-## Types for this feature
-
-Route groups do not change the types of a route. A group folder is removed from the URL, and the handlers inside are typed exactly like any other route.
-
-✅ Correct: the handler type is the same as without the group:
-
-```typescript
-// api/(admin)/users/route.ts → /api/users
-import { defineRoute } from "burger-api";
-import { GET as GetSchema } from "./schema";
-
-export const GET = defineRoute(GetSchema, (ctx) => {
-    return Response.json({ ok: true });
-});
-```
-
-There is no group type to learn. For the handler and parameter types, see [Static Routes](/docs/routing/api/static-routes) and [Dynamic Routes](/docs/routing/api/dynamic-routes). See the [TypeScript overview](/docs/advanced/type-safety).
-
-Check your code: `bun run typecheck`.
-
-## Next Steps
-
-Learn about other routing patterns:
-
-- **[Static Routes](./static-routes.md)** - Fixed API endpoints
-- **[Dynamic Routes](./dynamic-routes.md)** - Capture URL parameters
-- **[Wildcard Routes](./wildcard-routes.md)** - Handle complex nested paths
-
-Route groups keep your codebase organized as your API grows, without changing URLs.
-
+- [Static Routes](./static-routes.md)
+- [Dynamic Routes](./dynamic-routes.md)
+- [Wildcard Routes](./wildcard-routes.md)
+- [File-Based Routing](/docs/routing/file-based-routing)

@@ -4,164 +4,83 @@ sidebar_label: Request API
 
 # Request API
 
-The `ctx` object your handlers receive exposes request data through a small, consistent set of properties. This page shows how to use each one.
+Every handler and hook gets `ctx`, a `BurgerContext`. This page lists what you can read from it.
 
-`ctx` is a `BurgerContext`. It is not a `Request` subclass: the original request is available as `ctx.request`, and the standard request surface is delegated.
+Examples assume `import type { BurgerContext } from "burger-api";`.
 
-The examples on this page assume `import type { BurgerContext } from "burger-api";`.
+## Quick reference
 
-## ctx.request
+| Property | What it is |
+|----------|------------|
+| `ctx.params` | Path parameters from `[param]` folders |
+| `ctx.wildcardParams` | Segments matched by a `[...]` folder |
+| `ctx.query` | Query string values. See [Query Parsing](/docs/api/query-parsing) |
+| `ctx.cookies` | Cookies, by name |
+| `ctx.headers`, `ctx.method`, `ctx.url` | The usual request fields |
+| `ctx.json()`, `ctx.text()`, `ctx.arrayBuffer()` | Read the body |
+| `ctx.body` | The raw body stream |
+| `ctx.request` | The original `Request` |
+| `ctx.validated` | Data that passed your schemas |
+| `ctx.route` | The matched route. See [Route Metadata](/docs/api/route-metadata) |
+| `ctx.config` | The route's `config.ts` values, read-only |
+| `ctx.services` | Services from `src/providers.ts` |
+| `ctx.ip` | The client address |
+| `ctx.set` | Status, headers and cookies for the response. See [Response Mutation](/docs/api/response-mutation) |
 
-The raw `Request`. Use it when you need the full request object:
+## Params and query
 
-```ts
-export async function GET(ctx: BurgerContext) {
-  const url = new URL(ctx.request.url);
-  return Response.json({ path: url.pathname });
-}
-```
-
-## ctx.params
-
-Dynamic path parameters:
-
-```ts title="api/users/[id]/route.ts"
+```ts title="src/api/users/[id]/route.ts"
 export async function GET(ctx: BurgerContext) {
   const { id } = ctx.params;
-  return Response.json({ id });
+  const { limit = "10" } = ctx.query;
+  return Response.json({ id, limit });
 }
 ```
 
-**When to use:** any time the route has a `[param]` segment. Wildcard segments are available as `ctx.wildcardParams`.
-
-## ctx.query
-
-The parsed query string, available lazily:
-
-```ts
-export async function GET(ctx: BurgerContext) {
-  const { limit = "10", tag } = ctx.query;
-  return Response.json({ limit, tag });
-}
-```
-
-**Why:** `ctx.query` parses only when you read it, so requests that don't use the query pay nothing for parsing. See [Query Parsing](./query-parsing.md).
-
-## ctx.cookies
-
-Parsed cookies, also lazy. The record maps cookie names to values.
-
-## ctx.body
-
-The raw request body stream (`ReadableStream | null`), delegated from `ctx.request`.
-
-## ctx.json() and ctx.text()
-
-Read the request body as JSON or text. The body is read once and cached on `ctx`, so `ctx.json()`, `ctx.text()` and `ctx.arrayBuffer()` can be called after validation read the stream:
+## Body
 
 ```ts
 export async function POST(ctx: BurgerContext) {
-  const body = await ctx.json();
-  return Response.json({ received: body });
+  const body = await ctx.json<{ name: string }>();
+  return Response.json({ name: body.name });
 }
 ```
 
-When the route declares a `body` schema, read the validated body from `ctx.validated.body` instead. It is typed from the schema and non-optional after validation. Calling `ctx.json()` still works (the parsed body is cached), but the validated value is the one to use. A declared body schema also means non-JSON requests are rejected with `415 Unsupported Media Type` before the handler runs.
-
-## ctx.headers, ctx.method, ctx.url
-
-The request headers, HTTP method, and full URL. All delegate to the underlying request and never allocate anything extra:
-
-```ts
-export async function GET(ctx: BurgerContext) {
-  const token = ctx.headers.get("authorization");
-  return Response.json({ method: ctx.method });
-}
-```
-
-## ctx.route
-
-The matched route's identity:
-
-```ts
-export async function GET(ctx: BurgerContext) {
-  // ctx.route?.pattern === "/api/users/:id" (includes apiPrefix)
-  return Response.json({ pattern: ctx.route?.pattern });
-}
-```
-
-The route is always set in a matched handler, but the type is `RouteMeta | undefined`, so use optional chaining. See [Route Metadata](./route-metadata.md).
+You can call `ctx.json()` more than once. If the route has a `body` schema, read `ctx.validated.body` instead. It is typed and already checked.
 
 ## ctx.validated
 
-Data that passed your schemas, typed from `schema.ts`:
+Add a `schema.ts` and wrap the handler with `defineRoute`. `ctx.validated` is then typed from the schema.
 
-```ts title="api/products/schema.ts"
+```ts title="src/api/products/schema.ts"
 import { z } from "zod";
 
 export const GET = { query: z.object({ limit: z.coerce.number().optional() }) };
 ```
 
-```ts title="api/products/route.ts"
+```ts title="src/api/products/route.ts"
 import { defineRoute } from "burger-api";
 import { GET as GetSchema } from "./schema";
 
 export const GET = defineRoute(GetSchema, (ctx) => {
-  const { limit } = ctx.validated.query; // typed + validated
+  const { limit } = ctx.validated.query; // number | undefined
   return Response.json({ limit });
 });
 ```
 
-**Why:** validated data is typed from your schema, so handlers know exactly what they received without manual casts. See [Validation](/docs/validation/zod).
+See [Validation](/docs/core-concepts/validation).
 
 ## ctx.services
 
-Application services registered in `src/providers.ts`, typed via module augmentation. The services object is app-scoped, shared by every request, and frozen. Read from it, never assign to it; per-request data belongs in a [transform](/docs/hooks/global#transform) hook instead. See [Configuration](/docs/core/configuration).
+Shared services such as a database client. They are the same for every request and read-only. For per-request values, use a [transform](/docs/hooks/global#transform) hook. See [Providers](/docs/core-concepts/providers).
 
 ## ctx.ip
 
-The client socket address, resolved lazily on first read. It is never read from forwarded headers such as `X-Forwarded-For`: those are client-controlled. On Bun, `serve()` reads it from the server socket; [`@burger-api/node-server`](/docs/deployment/node) sets it from the Node socket; on plain `toFetchHandler` runtimes it is `undefined`. The [Rate Limiter](/docs/ecosystem/rate-limiter) hook uses it as the default client key.
-
-## ctx.set
-
-Response mutations, covered in [Response Mutation](./response-mutation.md).
-
-## Types for this feature
-
-The type you use: `BurgerContext`, or `BurgerContext<typeof GET>` when the route has a schema.
-
-✅ Correct: type the handler parameter:
-
-```ts
-import type { BurgerContext } from "burger-api";
-export async function GET(ctx: BurgerContext) {
-    const { limit = "10" } = ctx.query;
-    return Response.json({ limit });
-}
-```
-
-✅ Correct: give the JSON body a type with `ctx.json<T>()`:
-
-```ts
-export async function POST(ctx: BurgerContext) {
-    const body = await ctx.json<{ name: string }>();
-    return Response.json({ name: body.name });
-}
-```
-
-❌ Wrong: untyped handler parameters:
-
-```ts
-export async function GET(ctx) {
-    // ❌ Parameter 'ctx' implicitly has an 'any' type
-}
-```
-
-Unannoted `BurgerContext` keeps every request field (query, params, cookies) untyped. For typed request data, add a schema and wrap the handler with `defineRoute(schema, handler)` (or use `BurgerContext<typeof GET>` directly). See [Validation](/docs/validation/zod) and the [TypeScript overview](/docs/advanced/type-safety).
-
-Check your code: `bun run typecheck`.
+The client address from the socket. It never comes from headers like `X-Forwarded-For`. It is set on Bun `serve()` and on [`@burger-api/node-server`](/docs/deployment/node). With `toFetchHandler` it is `undefined`.
 
 ## Related
 
+- [Request Context](/docs/core/request-handling)
+- [Response Mutation](/docs/api/response-mutation)
 - [Burger Class](/docs/core/burger-class)
 - [Key Concepts](/docs/key-concepts)

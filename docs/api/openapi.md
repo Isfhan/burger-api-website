@@ -4,11 +4,16 @@ sidebar_label: 'OpenAPI / Swagger'
 
 # OpenAPI & Swagger
 
-BurgerAPI automatically generates an [OpenAPI 3.1](https://spec.openapis.org/oas/v3.1.0) specification from your routes and Zod schemas, and serves an interactive docs UI. OpenAPI 3.1 matches the JSON Schema dialect Zod emits, so generated schemas stay accurate. The spec is derived from the code, so it stays in sync as your API changes.
+BurgerAPI builds an [OpenAPI 3.1](https://spec.openapis.org/oas/v3.1.0) document from your routes and schemas. You get:
+
+- the spec at `/openapi.json`
+- an interactive docs UI at `/docs`
+
+The spec comes from your code, so it stays in sync as the API changes.
 
 ## Document metadata
 
-Set document metadata in `src/openapi.config.ts`, the convention file that `burger-api create` scaffolds. It is auto-discovered in dev, and `burger-api build` embeds it into the production entry:
+Set the title, version and more in `src/openapi.config.ts`. `burger-api create` adds this file for you.
 
 ```ts title="src/openapi.config.ts"
 import type { OpenAPIConfig } from "burger-api";
@@ -22,42 +27,31 @@ export default {
 } satisfies OpenAPIConfig;
 ```
 
-All fields:
-
 | Field | Type | Purpose |
 |-------|------|---------|
-| `title` | `string` | API title. Defaults to "Burger API" |
-| `description` | `string` | API description. Defaults to "Burger API documentation" |
-| `version` | `string` | API version. Defaults to "1.0.0" |
+| `title` | `string` | API title. Default "Burger API" |
+| `description` | `string` | API description. Default "Burger API documentation" |
+| `version` | `string` | API version. Default "1.0.0" |
 | `servers` | `OpenAPIServer[]` | Server URLs (`{ url, description? }`) |
 | `contact` | `OpenAPIContact` | `{ name?, url?, email? }` |
 | `license` | `OpenAPILicense` | `{ name, url? }` |
 | `termsOfService` | `string` | URL to the terms of service |
 | `externalDocs` | `OpenAPIExternalDocs` | `{ url, description? }` |
-| `security` | `Array<Record<string, string[]>>` | Root security requirements. Defaults to `[]` |
-| `path` | `string` | Path of the JSON spec. Defaults to `/openapi.json` |
-| `docsPath` | `string` | Path of the docs UI. Defaults to `/docs` |
-| `enabled` | `boolean` | Enable the OpenAPI endpoints. Defaults to `true` |
-| `docsAuth` | `DocsAuth` | Basic auth for `/docs` and `/openapi.json` (`{ username, password }`). Omit for no protection |
-| `provider` | `DocsProvider` | Docs UI function. Defaults to Swagger UI; alternatives: `scalarDocs()`, `redocDocs()` |
-| `mapJsonSchema` | `Record<string, JsonSchemaConverter>` | JSON Schema converters keyed by vendor, for validators that can't describe themselves (for example Valibot) |
+| `security` | `Array<Record<string, string[]>>` | Root security requirements. Default `[]` |
+| `path` | `string` | Path of the JSON spec. Default `/openapi.json` |
+| `docsPath` | `string` | Path of the docs UI. Default `/docs` |
+| `enabled` | `boolean` | Serve the spec and docs. Default `true` |
+| `docsAuth` | `DocsAuth` | Basic auth for the docs and spec (`{ username, password }`). Omit for none |
+| `provider` | `DocsProvider` | Docs UI. Default Swagger UI. Others: `scalarDocs()`, `redocDocs()` |
+| `mapJsonSchema` | `Record<string, JsonSchemaConverter>` | Converters for schema libraries that cannot describe themselves, such as Valibot |
 
-`new Burger({ title, version, description })` is a fallback for programmatic apps that do not use the convention file. When both exist, `openapi.config.ts` wins.
+Apps without the convention file can pass the same object as `new Burger({ openapi: { ... } })`. The older `new Burger({ title, version, description })` options also work. `openapi.config.ts` wins when both exist.
 
-For programmatic apps (no filesystem), pass the same object in the `openapi` option instead:
+## Route metadata
 
-```ts title="src/index.ts"
-const burger = new Burger({
-  apiRoutes: routes,
-  openapi: { title: "Widget Management API", version: "1.0.2" },
-});
-```
+Add details per endpoint in the route's `openapi.ts`, with one export per method:
 
-## Route-level metadata: the `openapi` type
-
-Add rich details per endpoint in `openapi.ts`, with per-method named exports:
-
-```ts title="api/products/[id]/openapi.ts"
+```ts title="src/api/products/[id]/openapi.ts"
 export const GET = {
   summary: "Get a specific product by ID",
   tags: ["Products"],
@@ -69,66 +63,22 @@ export const GET = {
 };
 ```
 
-The `openapi` type allows `summary`, `description`, `tags`, `operationId`, `deprecated`, `responses`, and `externalDocs` per HTTP method. BurgerAPI infers request and response schemas from your `schema.ts` where possible.
+Allowed fields: `summary`, `description`, `tags`, `operationId`, `deprecated`, `responses`, `externalDocs`. Request and response schemas come from `schema.ts`, so you do not repeat them.
 
-## Generated details
+## Docs UI
 
-- A `requestBody` is marked `required` only when the body schema rejects `undefined`. `z.object({ ... }).optional()` produces `required: false`.
-- Wildcard routes document the wildcard as a `{wildcard}` path parameter that may contain slashes.
-- Param names may contain `-` and `_`; `[user-id]` documents as `{user-id}`.
-- Validators that support [Standard JSON Schema](https://standardschema.dev) (Zod, ArkType, ...) are documented automatically, with no converter.
-- Other Standard Schema libraries (for example Valibot) emit parameters by name. With a `mapJsonSchema` converter the parameter gets the real schema; without one it gets `schema: {}` instead of being dropped. A `mapJsonSchema` converter always wins over the built-in conversion.
-- `docsAuth` accepts any UTF-8 username/password, including accented characters.
+Pick the UI with the `provider` field. The options are exported from `burger-api`: `swaggerDocs()` (default), `scalarDocs()`, `redocDocs()`.
 
-## Docs UI providers
+```ts title="src/openapi.config.ts"
+import { scalarDocs } from "burger-api";
+import type { OpenAPIConfig } from "burger-api";
 
-BurgerAPI serves an interactive UI at `/docs` and the raw spec at `/openapi.json`. The default provider is Swagger UI. The alternatives are exported from `burger-api`:
-
-- `swaggerDocs()`
-- `scalarDocs()`
-- `redocDocs()`
-
-The provider is set in the OpenAPI config, along with the spec path, docs path, and optional basic auth. Both the spec path (`/openapi.json` by default) and the docs path (`/docs` by default) are configurable there. `docsAuth` protects `/docs` and `/openapi.json`; the docs UI loads the spec from the configured `path`.
-
-## Types for this feature
-
-The types you use (from `burger-api`):
-
-- `openapi`: the per-route metadata object, keyed by lowercase method
-- `OpenAPIMeta`: one method's metadata (`summary`, `tags`, `responses`, ...)
-- `OpenAPIConfig`: the docs configuration (dev `openapi.config.ts`, production `openapi` option)
-
-✅ Correct: lowercase keys in programmatic metadata:
-
-```ts
-import type { RouteDefinition } from "burger-api";
-
-const def: RouteDefinition = {
-    path: "/products",
-    handlers: { GET: (ctx) => Response.json([]) },
-    openapi: { get: { summary: "List products" } }, // lowercase 'get'
-};
+export default {
+  title: "My API",
+  provider: scalarDocs(),
+  docsAuth: { username: "admin", password: "secret" },
+} satisfies OpenAPIConfig;
 ```
-
-❌ Wrong: an uppercase key is a silent no-op at runtime, so it fails at compile time:
-
-```ts
-const def: RouteDefinition = {
-    path: "/products",
-    handlers: { GET: (ctx) => Response.json([]) },
-    openapi: { GET: { summary: "List" } }, // ❌ 'GET' is not allowed (use 'get')
-};
-```
-
-❌ Wrong: a response value must be an object:
-
-```ts
-openapi: { get: { responses: { "200": 42 } } }; // ❌ 42 is not an object
-```
-
-See the [TypeScript overview](/docs/advanced/type-safety).
-
-Check your code: `bun run typecheck`.
 
 ## Related
 

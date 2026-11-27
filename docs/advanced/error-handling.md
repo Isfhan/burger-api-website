@@ -4,13 +4,24 @@ sidebar_label: Error Handling Patterns
 
 # Error Handling Patterns
 
-- **Validation errors:** BurgerAPI returns 422 with an RFC 9457 Problem Details body when validation fails. See [Validation Error Handling](/docs/validation/errors).
-- **Unmatched routes:** Requests to paths with no matching route return `404` with an RFC 9457 `application/problem+json` body.
-- **Framework errors:** Throw an `HTTPError` subclass (`ValidationError`, `NotFoundError`, `UnauthorizedError`, `ForbiddenError`, `MethodNotAllowedError`) and let `onError` render it.
-- **Hooks:** Return a `Response` (e.g. 401, 403) from a hook to short-circuit the pipeline and send that error directly.
-- **Handlers:** Return `Response.json({ error: "..." }, { status: 404 })` or use try/catch and return 500.
-- **Debug:** Error responses include diagnostics (stack, cause) only when debug is on: `debug: true` in the Burger constructor, or `NODE_ENV=development` when `debug` is unset. `burger-api dev` sets `NODE_ENV=development` for you. Every other environment never includes them. See [Configuration](/docs/core/configuration).
+- **Validation errors:** a failed request gets `422` with an RFC 9457 problem details body. See [Validation Error Handling](/docs/validation/errors).
+- **Unknown routes:** get `404` with a problem details body.
+- **Throw an error:** throw `NotFoundError`, `UnauthorizedError`, `ForbiddenError` or another `HTTPError`. BurgerAPI turns it into the right response. Add an `onError` hook to change how errors look.
+- **Stop in a hook:** return a `Response` (for example a `401`) from `onRequest` or `beforeRoute` to stop the request.
+- **Return from a handler:** `return Response.json({ error: "Not found" }, { status: 404 });`.
+- **Debug details:** stack traces appear only when debug is on (`debug: true`, or `NODE_ENV=development`, which `burger-api dev` sets). See [Configuration](/docs/core/configuration).
 
+```ts title="src/api/products/[id]/route.ts"
+import { NotFoundError } from "burger-api";
+import type { BurgerContext } from "burger-api";
+import { products } from "../store";
+
+export async function GET(ctx: BurgerContext) {
+  const product = products.find((p) => p.id === ctx.params.id);
+  if (!product) throw new NotFoundError("Product not found");
+  return Response.json(product);
+}
+```
 
 ## Related
 

@@ -4,262 +4,95 @@ sidebar_label: "Static Routes"
 
 # Static API Routes
 
-Static routes are the foundation of BurgerAPI's file-based routing system. They match exact URL paths and are always checked first in the routing priority order.
+A static route has a fixed path, such as `/api/products`. It captures no values from the URL.
 
-## What Are Static Routes?
+## Create a route
 
-Static routes are API endpoints with fixed, predetermined paths. Unlike dynamic or wildcard routes, static routes don't capture any URL parameters: they match exact paths only.
+Put a `route.ts` file in a folder under your `apiDir`. The folder path becomes the URL. The default `apiPrefix` is `api`.
 
-**Examples:**
-- `/api/products` - Lists all products
-- `/api/users/profile` - Gets current user's profile
-- `/api/settings/security` - Gets security settings
+```
+api/
+  products/
+    route.ts           → /api/products
+    featured/
+      route.ts         → /api/products/featured
+  users/
+    profile/
+      route.ts         → /api/users/profile
+```
 
-## File-Based Routing Basics
-
-BurgerAPI makes defining API endpoints intuitive using a file-based routing approach. Simply create files and folders within your designated `apiDir` (configured in the `Burger` constructor, e.g., `apiDir: './src/api'`), and BurgerAPI handles the rest.
-
-### How It Works
-
-**Directory Structure = URL Path:** The folder structure inside `apiDir` directly maps to the URL segments.
-
-Example: `api/users/profile/route.ts` becomes `/api/users/profile` (assuming the default `apiPrefix` of `'api'`).
-
-**`route.ts` Files:** Each file named `route.ts` defines the handlers for a specific path.
-
-**HTTP Method Exports:** Inside `route.ts`, export functions named after **uppercase** HTTP methods (`GET`, `POST`, `PUT`, `DELETE`, etc.) to handle requests for that method.
-
-## Creating Your First Static Route
-
-Let's create a simple products API endpoint:
+In `route.ts`, export one function per HTTP method. Use uppercase names: `GET`, `POST`, `PUT`, `PATCH`, `DELETE`.
 
 ```typescript title="api/products/route.ts"
 import type { BurgerContext } from "burger-api";
 
-// Handles GET requests to /api/products
 export async function GET(ctx: BurgerContext) {
   return Response.json({ message: "Fetched products" });
 }
-```
 
-This creates a static route `GET /api/products`. See [CRUD API](/docs/examples/crud-api) for the full `api/products/route.ts` file with GET and POST handlers.
-
-## Route Handlers
-
-Your exported HTTP method functions are the route handlers:
-
-### Handler Arguments
-
-- **Argument:** They receive a single argument: the `BurgerContext` object.
-
-### BurgerContext
-
-`ctx` is a `BurgerContext`. It is not a `Request` subclass: the original request is available as `ctx.request`, and the standard request surface is delegated. The fields you will use most:
-
-- `ctx.request`: The raw `Request`.
-- `ctx.params`: Dynamic path parameters (`[id]` segments).
-- `ctx.query`: The parsed query string.
-- `ctx.body` and `await ctx.json()`: Request body access.
-- `ctx.headers`, `ctx.method`, `ctx.url`: Standard request data.
-- `ctx.cookies`: Parsed cookies.
-- `ctx.validated`: Validated data if you declared schemas in `schema.ts`.
-- `ctx.set`: Response mutations.
-- `ctx.services` and `ctx.config`: Injected services and route options.
-
-See [Request API](/docs/api/request-api) for the full field list.
-
-### Return Value
-
-Handlers **must** return a standard `Response` object.
-
-## Supported HTTP Methods
-
-BurgerAPI supports all standard HTTP methods:
-
-- `GET` - Retrieve resources
-- `POST` - Create new resources
-- `PUT` - Update/replace resources
-- `PATCH` - Partially update resources
-- `DELETE` - Remove resources
-- `OPTIONS` - Get communication options
-- `HEAD` - Get headers only
-
-## Example: Nested Static Routes
-
-Create a multi-level API structure:
-
-```
-api/
-  users/
-    profile/
-      route.ts       → /api/users/profile
-    settings/
-      route.ts       → /api/users/settings
-  products/
-    featured/
-      route.ts       → /api/products/featured
-    route.ts         → /api/products
-```
-
-```typescript title="api/products/featured/route.ts"
-import type { BurgerContext } from "burger-api";
-
-export async function GET(ctx: BurgerContext) {
-  return Response.json({
-    message: "Featured products",
-    products: [
-      { id: 1, name: "Product A", featured: true },
-      { id: 2, name: "Product B", featured: true },
-    ],
-  });
+export async function POST(ctx: BurgerContext) {
+  const body = await ctx.json();
+  return Response.json({ created: body }, { status: 201 });
 }
 ```
 
-## Route Matching Priority
+Each handler gets one argument, `ctx` (a `BurgerContext`), and must return a standard `Response`. Returning a plain object does not work. See [Request API](/docs/api/request-api) for what `ctx` holds.
 
-:::tip Static Routes Have Highest Priority
-BurgerAPI uses a hybrid router. On Bun, `serve()` registers every route (static, `:param`, wildcard) as a per-method native Bun route. The fetch handler path (Cloudflare, Deno, Vercel, Node) uses a fast radix matcher.
+For a full example with GET and POST, see [CRUD API](/docs/examples/crud-api).
 
-- Static routes (e.g., `/products/featured`) are matched _before_ dynamic routes (`/products/[id]`).
-- Routes with more static segments are generally matched before routes with fewer.
+## Which route wins
 
-This helps avoid ambiguity when multiple route patterns could potentially match a request URL.
-:::
+When several routes could match a URL, the most specific one wins:
 
-## Routing Behavior
+1. Static (`featured/`)
+2. Dynamic (`[id]/`)
+3. Wildcard (`[...]/`)
 
-Beyond path matching, BurgerAPI applies consistent behavior to every route:
+```
+api/products/featured/route.ts   → GET /api/products/featured
+api/products/[id]/route.ts       → GET /api/products/123
+api/products/[...]/route.ts      → GET /api/products/123/reviews
+```
+
+## Built-in method handling
 
 ### Method Not Allowed (405)
 
-When a known route is requested with a method it does not support, BurgerAPI returns `405` and includes an `Allow` header listing the supported methods. The list always includes `HEAD` when `GET` exists and always includes `OPTIONS`, so it is never empty:
+If a route exists but does not export the requested method, the response is `405` with an `Allow` header:
 
 ```
-GET    /api/products   → 200
 DELETE /api/products   → 405  Allow: GET, HEAD, POST, OPTIONS
 ```
 
 ### Automatic HEAD
 
-You do not need to write a separate `HEAD` handler. A `HEAD` request to any route that defines `GET` runs the `GET` handler. The server sends no body for `HEAD` and reports the size of a buffered `GET` body through `Content-Length` (a `Content-Length` set by the handler is kept). The route's validation also applies to `HEAD`, except the `body` slot: `HEAD` carries no body, so `ctx.validated.body` stays unset.
+You do not write a `HEAD` handler. A `HEAD` request runs your `GET` handler and sends no body.
 
 ### Automatic OPTIONS
 
-Every route answers `OPTIONS` with `204 No Content` and an `Allow` header, even when you do not export an `OPTIONS` handler. The automatic `Allow` matches the `405` `Allow` exactly: it includes `HEAD` when `GET` exists and always includes `OPTIONS`. The automatic handler skips `transform` and `beforeRoute` (so auth checks do not reject CORS preflights), but `onRequest` hooks still run. A user-defined `OPTIONS` handler takes over and runs the full pipeline. The automatic handler is not listed in the generated OpenAPI document.
+Every route answers `OPTIONS` with `204` and an `Allow` header. The automatic handler skips `transform` and `beforeRoute`, so auth checks do not block CORS preflight requests. If you export your own `OPTIONS` handler, it replaces the automatic one.
 
-### Trailing Slash
+### Trailing slash
 
-The exact path is matched first. If nothing matches and the path ends in a slash, the router retries without it: `/api/products/` resolves to `/api/products`. A `:param` never binds an empty segment, so `/api/users/` does not set `ctx.params.id` to `""`; it retries as `/api/users` and only matches when that route exists.
+`/api/products/` matches `/api/products`.
 
-### Priority Example
+## Types
 
-Given these routes:
-```
-api/products/featured/route.ts    → Static: /api/products/featured
-api/products/[id]/route.ts         → Dynamic: /api/products/[id]
-api/products/[...]/route.ts        → Wildcard: /api/products/[...]
-```
-
-Request matching:
-- `GET /api/products/featured` → Matches **static** route (highest priority)
-- `GET /api/products/123` → Matches **dynamic** route (static doesn't match, dynamic checked next)
-- `GET /api/products/123/reviews` → Matches **wildcard** route (only wildcard can match multiple segments)
-
-## Best Practices
-
-### 1. Keep Routes Simple and Predictable
-
-```typescript
-// ✅ Good: Clear, predictable paths
-api/users/route.ts          → /api/users
-api/users/profile/route.ts  → /api/users/profile
-
-// ❌ Avoid: Overly nested or unclear paths
-api/v1/data/users/info/personal/route.ts
-```
-
-### 2. Use Proper HTTP Methods
-
-```typescript
-// ✅ Good: RESTful methods
-export async function GET(ctx: BurgerContext) { /* Get resource */ }
-export async function POST(ctx: BurgerContext) { /* Create resource */ }
-export async function DELETE(ctx: BurgerContext) { /* Delete resource */ }
-
-// ❌ Avoid: Using GET for mutations
-export async function GET(ctx: BurgerContext) { /* Don't delete in GET! */ }
-```
-
-### 3. Return Proper Response Objects
-
-```typescript
-// ✅ Good: Always return Response
-export async function GET(ctx: BurgerContext) {
-  return Response.json({ data: [] });
-}
-
-// ❌ Avoid: Returning plain objects
-export async function GET(ctx: BurgerContext) {
-  return { data: [] }; // Won't work!
-}
-```
-
-### 4. Handle Errors Gracefully
-
-```typescript
-export async function POST(ctx: BurgerContext) {
-  try {
-    const body = await ctx.json();
-    // Process body...
-    return Response.json({ success: true });
-  } catch (error) {
-    return Response.json(
-      { error: "Invalid request body" },
-      { status: 400 }
-    );
-  }
-}
-```
-
-## Types for this feature
-
-TypeScript checks your handlers before they run.
-
-The types you use (all from `burger-api`):
-
-- `BurgerContext`: the request object passed to a handler
-- `RequestHandler`: the type of a handler function
-
-✅ Correct: type the handler parameter with `BurgerContext`:
+Type the handler parameter with `BurgerContext`:
 
 ```typescript
 import type { BurgerContext } from "burger-api";
 
 export async function GET(ctx: BurgerContext) {
-    return Response.json({ message: "ok" });
+  return Response.json({ message: "ok" });
 }
 ```
 
-❌ Wrong: no parameter type and a non-`Response` return:
+For typed query, params or body, add a `schema.ts` and wrap the handler with `defineRoute`. See [Validation](/docs/validation/zod) and [Type Safety](/docs/advanced/type-safety).
 
-```typescript
-export async function GET(ctx) {
-    return { message: "ok" }; // ❌ Parameter 'ctx' needs a type
-}
-// ❌ Return type must be Response
-```
+## Related
 
-For typed request data (query, params, body), add a schema and wrap the handler with `defineRoute(schema, handler)`, or use `BurgerContext<typeof GET>` directly if you'd rather write the generic by hand. See [Validation](/docs/validation/zod) and the [TypeScript overview](/docs/advanced/type-safety).
-
-Check your code: `bun run typecheck`.
-
-## Next Steps
-
-Now that you understand static routes, learn about other routing patterns:
-
-- **[Route Groups](./route-groups.md)** - Organize routes without affecting URLs
-- **[Dynamic Routes](./dynamic-routes.md)** - Capture URL parameters like IDs
-- **[Wildcard Routes](./wildcard-routes.md)** - Handle complex nested paths
-
-Use static routes for well-defined endpoints with fixed paths, and combine them with dynamic and wildcard routes when paths vary.
-
+- [Dynamic Routes](./dynamic-routes.md)
+- [Wildcard Routes](./wildcard-routes.md)
+- [Route Groups](./route-groups.md)
+- [File-Based Routing](/docs/routing/file-based-routing)

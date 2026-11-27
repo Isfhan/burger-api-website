@@ -4,10 +4,24 @@ sidebar_label: Global Hooks
 
 # Global Hooks
 
-Global hooks are defined once and applied across the app. Define them in `src/hooks.ts` with one named export per hook point:
+Global hooks run for every request. Put them in `src/hooks.ts`, with one named export per hook.
 
-```ts
-// src/hooks.ts
+```ts title="src/hooks.ts"
+import { cors } from "../ecosystem/hooks/cors/cors";
+import { logger } from "../ecosystem/hooks/logger/logger";
+
+export const onRequest = [logger(), cors({ origin: ["https://app.example.com"] })];
+```
+
+You can export any of the six hooks: `onRequest`, `transform`, `beforeRoute`, `afterRoute`, `mapResponse`, `onError`. Ready-made hooks such as `cors` and `logger` come from the [Ecosystem](/docs/ecosystem/introduction).
+
+Global `onRequest`, `afterRoute` and `mapResponse` run for every response, including 404s, pages, assets and `/docs`. Global `transform` and `beforeRoute` run for matched API routes.
+
+## transform
+
+`transform` is an object, not a function. Each key is a field name. Each value is a function that gets `ctx` and returns the field's value. The field is added to `ctx` before validation, so later hooks and the handler can read it.
+
+```ts title="src/hooks.ts"
 import { UnauthorizedError } from "burger-api";
 import type { GlobalHooks } from "burger-api";
 
@@ -22,41 +36,11 @@ export const transform: GlobalHooks["transform"] = {
 };
 ```
 
-Authenticate in `transform`: it runs after routing and before validation, so an unauthenticated request gets a 401, not a 422 that lists the schema fields. `beforeRoute` runs after validation; use it for checks that need `ctx.validated`.
+Rules:
 
-You can export any of the six hook points: `onRequest`, `transform`, `beforeRoute`, `afterRoute`, `mapResponse`, `onError`.
-
-Hook factories from `ecosystem/hooks/` compose here too:
-
-```ts
-// src/hooks.ts
-import { cors } from "../ecosystem/hooks/cors/cors";
-import { logger } from "../ecosystem/hooks/logger/logger";
-
-export const onRequest = [logger(), cors({ origin: ["https://app.example.com"] })];
-```
-
-Scope order: Framework → Plugin → Global → Route for request hooks. Response hooks (`afterRoute`, `mapResponse`) and error hooks (`onError`) run nearest-first: Route → Global → Plugin → Framework.
-
-## transform
-
-`transform` is not a function: it is a map of field names to factory functions. Each factory receives `ctx` and its result is shallow-assigned onto the context before validation runs, so handlers and later hooks can read it.
-
-```ts
-// src/hooks.ts
-import type { GlobalHooks } from "burger-api";
-
-export const transform: GlobalHooks["transform"] = {
-  tenant: (ctx) => ctx.headers.get("x-tenant"),
-};
-```
-
-Built-in fields are reserved and cannot be replaced: every field, getter and method on `BurgerContext` (for example `params`, `query`, `json`, `route`, `set`, `services`, `ip`) plus internal names such as `cache` and `_`-prefixed keys. A transform entry with a reserved name throws at startup, so the typo is fixed before a request runs. Global transform entries apply before route-level entries, so a route can override a global value.
-
-`onRequest`, `afterRoute` and `mapResponse` run for every response the app produces, including pages, assets, `/docs` and `/openapi.json`. `transform` and `beforeRoute` run for matched API routes and WebSocket upgrades.
-
-Use global hooks for logging, CORS, auth checks, or any logic that should run across routes. See [Hook System](/docs/hooks/system) and [Ecosystem](/docs/ecosystem/introduction).
-
+- You cannot use a name that `ctx` already has, such as `params`, `query` or `set`. The app fails at startup if you do.
+- A route `transform` with the same name overrides the global one.
+- Add the field to `BurgerContext` in `src/types.ts` to type it. See [Providers](/docs/core-concepts/providers#type-the-service).
 
 ## Related
 

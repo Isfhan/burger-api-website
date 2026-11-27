@@ -4,16 +4,15 @@ sidebar_label: Deployment
 
 # Deployment
 
-Deployment depends on your runtime. BurgerAPI's deployment guides cover each target:
+Build your app with `burger-api build`, then run it on your target. Each target has its own guide:
 
-- [Deploy on Bun](/docs/deployment/bun): `burger.serve(port)` with `burger-api build` and `burger-api start`.
-- [Deploy on Node.js](/docs/deployment/node): `@burger-api/node-server`'s `serve(app)`, WebSocket included.
-- [Deploy on Cloudflare Workers](/docs/deployment/cloudflare)
-- [Deploy on Vercel](/docs/deployment/vercel)
-- [Deploy on Deno](/docs/deployment/deno)
+- [Bun](/docs/deployment/bun): `burger-api build`, then `burger-api start`.
+- [Node.js](/docs/deployment/node): `serve(app)` from `@burger-api/node-server`.
+- [Cloudflare Workers](/docs/deployment/cloudflare)
+- [Vercel](/docs/deployment/vercel)
+- [Deno](/docs/deployment/deno)
 
-The production flow is `burger-api build` (routes and options are embedded at build time), then `burger-api start` for Bun, `serve(app)` from `@burger-api/node-server` for plain Node, or `toFetchHandler(app)` for WinterCG edge targets. See [CLI Build](/docs/cli/build) and [Build Exec](/docs/cli/build-exec).
-
+Edge targets use `toFetchHandler(app)`. See [CLI Build](/docs/cli/build) and [Build Exec](/docs/cli/build-exec).
 
 ## Related
 

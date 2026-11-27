@@ -4,21 +4,19 @@ sidebar_label: Response Types
 
 # Response Types
 
-Route handlers and hooks return **Response** objects. BurgerAPI uses the standard Web API [Response](https://developer.mozilla.org/en-US/docs/Web/API/Response) only.
+Handlers return a standard Web [Response](https://developer.mozilla.org/en-US/docs/Web/API/Response). There is no custom response type.
 
-## Common patterns
-
-**JSON response:**
+**JSON:**
 
 ```typescript
 return Response.json({ message: "Hello" });
 return Response.json({ error: "Not found" }, { status: 404 });
 ```
 
-**Plain text or HTML:**
+**Text or HTML:**
 
 ```typescript
-return new Response("OK", { status: 200 });
+return new Response("OK");
 return new Response("<h1>Hello</h1>", {
   headers: { "Content-Type": "text/html" },
 });
@@ -33,12 +31,11 @@ return new Response(body, {
 });
 ```
 
-A hook can return a **Response** to stop the pipeline, or **undefined** to continue, or a function that receives the handler's response and returns a new Response (e.g. for CORS). Response phases like `mapResponse` decorate the final response. See [Hook System](/docs/hooks/system) and [Hook Return Types](/docs/hooks/return-types).
-
+To set status or headers from a hook, use `ctx.set`. See [Response Mutation](/docs/api/response-mutation). For what hooks can return, see [Hook Return Types](/docs/hooks/return-types).
 
 ## Related
 
-- [Applications](/docs/core-concepts/applications)
-- [Routing](/docs/core-concepts/routing)
 - [Handlers](/docs/core-concepts/handlers)
 - [Request Context](/docs/core/request-handling)
+- [Response Mutation](/docs/api/response-mutation)
+- [Hook Return Types](/docs/hooks/return-types)

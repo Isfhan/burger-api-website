@@ -4,15 +4,19 @@ sidebar_label: Logger Hook
 
 # Logger Hook
 
-The logger hook logs requests with method, URL, status code, response time, and optional extras. Install it with:
+This hook logs each request with its method, URL, status and response time.
+
+## Install
 
 ```bash
 burger-api add logger
 ```
 
-## Usage
+To update the copy later, run `burger-api add logger --force`.
 
-Compose it in `src/hooks.ts` as an `onRequest` hook:
+## Add it
+
+Add it to `onRequest` in `src/hooks.ts`, so it logs every response, including 404s and errors:
 
 ```ts title="src/hooks.ts"
 import { logger } from "../ecosystem/hooks/logger/logger";
@@ -20,19 +24,7 @@ import { logger } from "../ecosystem/hooks/logger/logger";
 export const onRequest = [logger()];
 ```
 
-The logger returns a response mapper, so it logs each request when the response is ready. `onRequest` runs for every request, so the hook's response mapper also covers 404, 405, validation errors and `onError` responses, and sees the final status.
-
-## Options
-
-- `colors`: colorized output. Default `true`.
-- `format`: `"text"` or `"json"`.
-- `logQuery`, `logHeaders`, `logBody`: extra request details. Default `false`. `logBody` may log sensitive data; use only in development.
-- `requestId`: attach and log a request ID, read from `requestIdHeader` when present. Default `true`. The ID is available as `ctx.requestId` (typed by the hook's module augmentation).
-- `requestIdHeader`: header an existing request ID is read from. Default `"X-Request-ID"`.
-- `includeRequestIdInLog`: include the ID in each log line. Default `true`.
-- `skip`: a string, regex, or function to skip certain requests. Strings and regexes match the request pathname, not the full URL.
-- `formatter`: custom log format.
-- `logFn`: custom output function (file, external service).
+For options, use `createLogger()`:
 
 ```ts title="src/hooks.ts"
 import { createLogger } from "../ecosystem/hooks/logger/logger";
@@ -42,7 +34,15 @@ export const onRequest = [
 ];
 ```
 
-Check the package README in `ecosystem/hooks/logger/` for the full option list.
+## Options
+
+- `format`: `"text"` or `"json"`.
+- `colors`: color the output. Default `true`.
+- `skip`: a string, regex or function. Matching paths are not logged.
+- `requestId`: add a request ID, available as `ctx.requestId`. Default `true`.
+- `logFn`: send log lines somewhere else, such as a file or a log service.
+
+The full list is in `ecosystem/hooks/logger/README.md`.
 
 ## Related
 

@@ -4,42 +4,37 @@ sidebar_label: "Static Pages"
 
 # File-Based Static Pages
 
-Beyond APIs, BurgerAPI can serve static HTML files by leveraging the same intuitive file-based routing conventions.
+BurgerAPI can also serve HTML pages. Pages use the same folder rules as API routes.
 
-## Configuration
+## Setup
 
-To enable this feature, simply tell BurgerAPI where your page files live using the `pageDir` option in the `Burger` constructor:
+Set `pageDir` in the `Burger` constructor:
 
 ```typescript title="src/index.ts"
 import { Burger } from "burger-api";
 
 const burger = new Burger({
-  apiDir: "./src/api",          // Don't forget your API directory!
-  pageDir: "./src/pages",       // Directory containing page files
-  pagePrefix: "",               // Optional: Prefix for page URLs (defaults to none)
-  // ... other options
+  apiDir: "./src/api",
+  pageDir: "./src/pages",
+  pagePrefix: "", // optional, no prefix by default
 });
 
 burger.serve(4000);
 ```
 
-## Defining Pages
+## How files map to URLs
 
-Organize your page files within the `pageDir` directory:
+- `src/pages/index.html` or `index.tsx` → `/`
+- `src/pages/about.html` → `/about`
+- `src/pages/products/index.html` → `/products`
+- `src/pages/(marketing)/contact.html` → `/contact` (groups are not in the URL)
+- `src/pages/posts/[slug].tsx` → `/posts/:slug`
 
-- **Directory Structure = URL Path:** Just like API routes, the folder structure maps directly to the URL path (relative to any `pagePrefix`).
-- **Supported Files:** BurgerAPI looks for `.html` files (served as HTML) and `.tsx` files (plain handler functions, see below).
-- **URL Mapping Examples:**
-  - `src/pages/index.html` or `src/pages/index.tsx` → `/`
-  - `src/pages/about.html` → `/about`
-  - `src/pages/user/profile.html` → `/user/profile`
-  - `src/pages/products/index.html` → `/products`
-- **Grouping Folders (`(folder)`)**: Use parentheses to organize files without affecting the URL (e.g., `src/pages/(marketing)/contact.html` → `/contact`).
-- **Dynamic Segments (`[param]`)**: Capture URL segments using square brackets (e.g., `src/pages/posts/[slug].html`).
+Two dynamic page files at the same level (`[a].tsx` and `[b].tsx`) fail at startup.
 
-## Plain HTML Files (`.html`)
+## HTML files
 
-Good old `.html` files require no special handling. BurgerAPI serves them directly as static assets.
+A `.html` file is served as-is.
 
 ```html title="src/pages/about.html"
 <!DOCTYPE html>
@@ -47,27 +42,22 @@ Good old `.html` files require no special handling. BurgerAPI serves them direct
   <head>
     <meta charset="UTF-8" />
     <title>About Us</title>
-    <link rel="stylesheet" href="/assets/css/style.css" />
   </head>
   <body>
-    <h1>About BurgerAPI</h1>
-    <p>Serving tasty web frameworks built on Bun!</p>
+    <h1>About</h1>
   </body>
 </html>
 ```
 
-## Dynamic Pages (`.tsx`)
+## Dynamic pages (`.tsx`)
 
-A `.tsx` page is **not** React/JSX server-side rendering. It's a plain handler
-function, exactly like an API route's `GET` handler, that returns a `Response`
-directly. Use it when a page needs to compute its HTML from a route param,
-a service, or anything else that a static `.html` file can't express.
+A `.tsx` page is a handler function, not React rendering. Its default export gets a `BurgerContext` and must return a `Response`. Returning JSX does not render anything.
 
 ```tsx title="src/pages/posts/[slug].tsx"
 import type { BurgerContext } from "burger-api";
 
 export default async function GET(ctx: BurgerContext): Promise<Response> {
-  const slug = ctx.params.slug ?? "unknown";
+  const slug = ctx.params.slug;
   return new Response(
     `<!doctype html><html><body><h1>Post: ${slug}</h1></body></html>`,
     { headers: { "Content-Type": "text/html" } }
@@ -75,26 +65,11 @@ export default async function GET(ctx: BurgerContext): Promise<Response> {
 }
 ```
 
-The default export receives the same `BurgerContext` an API route handler
-does (`ctx.params`, `ctx.services`, etc.) and must return a `Response`;
-returning a JSX element instead will not render anything. If you want actual
-JSX templating, build the HTML string yourself (e.g. with a template
-function or a JSX-to-string helper) and pass it to `new Response(...)`; there
-is no built-in SSR renderer.
+## Good to know
 
-## Hooks and context
-
-Global and plugin `onRequest` hooks run for pages, assets, `/openapi.json`, and `/docs`, including in apps with no API routes. Global and plugin `afterRoute` / `mapResponse` hooks also run for these responses, so CORS or security headers are added there too.
-
-Every `.tsx` page handler receives the same `BurgerContext` an API route handler does, so `ctx.services`, `ctx.query`, `ctx.set` and the `Request` surface all work. Static `.html` files are served as-is.
-
-## Methods
-
-Pages, assets, `/docs` and `/openapi.json` answer `GET` and `HEAD` only. Every other method gets `405 Method Not Allowed` with `Allow: GET, HEAD` and an RFC 9457 problem body.
-
-## Runtime support
-
-`serve()` on Bun serves every page type. On WinterCG targets (`toFetchHandler`: Node, Cloudflare, Deno, Vercel), function page routes and embedded assets are served, but dynamic (`[param]`) pages are Bun-only. The framework logs one warning listing the page routes it cannot serve instead of failing silently.
+- Pages answer `GET` and `HEAD` only. Other methods get `405`.
+- Global and plugin hooks (`onRequest`, `afterRoute`, `mapResponse`) run for pages too, so CORS and security headers apply.
+- Dynamic `[param]` pages work only with `serve()` on Bun. With `toFetchHandler` (Node, Cloudflare, Deno, Vercel), the app logs a warning listing the pages it cannot serve.
 
 ## Related
 

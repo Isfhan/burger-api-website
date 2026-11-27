@@ -4,34 +4,53 @@ sidebar_label: API Key Auth
 
 # API Key Auth Plugin
 
-The API key auth plugin reads an API key from a header, validates it against a static list or a custom function, and attaches it to the context. Install it with:
+This plugin reads an API key from a request header and checks it. A valid key is put on `ctx.apiKey`.
+
+## Install
 
 ```bash
 burger-api add api-key
 ```
 
-## Usage
+To update the copy later, run `burger-api add api-key --force`.
 
-Register the plugin in `src/plugins.ts`:
+## Register
 
 ```ts title="src/plugins.ts"
 import type { PluginRegistrar } from "burger-api";
 import { apiKey } from "../ecosystem/plugins/api-key/api-key";
 
 export default (burger: PluginRegistrar) => {
-  burger.usePlugin(apiKey({ keys: ["demo-api-key-123"] }));
+  burger.usePlugin(apiKey({ keys: [process.env.API_KEY!] }));
 };
 ```
 
 ## Options
 
-- `keys`: static list of valid keys.
-- `validate`: async function for dynamic validation, for example against a database.
-- `header`: header name to read the key from. Default `"X-API-Key"`.
-- `extract`: custom extraction function, for example from the query string.
-- `attachToContext`: attach the key to the context. Default `true`.
+- `keys`: list of valid keys.
+- `validate`: async function to check a key yourself, for example against a database.
+- `header`: header to read. Default `"X-API-Key"`.
 
-After successful validation the key is available as `ctx.apiKey`. The plugin augments `BurgerContext` with `apiKey?: string`, so importing it in `src/plugins.ts` is enough for TypeScript to type it in your routes:
+The full list is in `ecosystem/plugins/api-key/README.md`.
+
+## Protect routes
+
+Once registered, every route needs a valid key. Open a route with `auth: false` in its `config.ts`:
+
+```ts title="api/health/config.ts"
+export default { auth: false };
+```
+
+Change one method only with a method export:
+
+```ts title="api/items/config.ts"
+export default { auth: false };      // GET stays public
+export const POST = { auth: true };  // POST needs a key
+```
+
+A missing or wrong key gets `401`. The key is checked before validation, so a bad key gets `401` even when the body is invalid. WebSocket routes follow the same `config.ts` rule.
+
+## Use it in a handler
 
 ```ts title="api/private/route.ts"
 import type { BurgerContext } from "burger-api";
@@ -41,42 +60,8 @@ export async function GET(ctx: BurgerContext) {
 }
 ```
 
-## Route configuration
-
-The plugin integrates with route `config.ts`. Open routes opt out with `auth: false`; protected routes require auth:
-
-```ts title="api/public/health/config.ts"
-export default { auth: false };
-```
-
-```ts title="api/private/config.ts"
-export default { auth: { required: true } };
-```
-
-A missing or invalid key produces `401 Unauthorized`. The framework core stays auth-agnostic; authentication is always a plugin.
-
-### Per method
-
-The default export applies route-wide; an uppercase method export overrides it for that method (shallow merge, method wins):
-
-```ts title="api/items/config.ts"
-export default { auth: false };
-
-export const POST = { auth: { required: true } };
-```
-
-Here GET stays public while POST needs a valid key.
-
-### WebSocket routes
-
-The plugin gates WebSocket upgrades too. A public WS route needs `auth: false` in its `config.ts`, or the upgrade is rejected:
-
-```ts title="src/websocket/chat/config.ts"
-export default { auth: false };
-```
-
-Check the package README in `ecosystem/plugins/api-key/` for the full option list and security notes.
-
 ## Related
 
 - [Ecosystem](/docs/ecosystem/introduction)
+- [JWT Auth](/docs/ecosystem/jwt-auth)
+- [Authentication Example](/docs/examples/authentication)

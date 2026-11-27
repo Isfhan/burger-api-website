@@ -4,42 +4,52 @@ sidebar_label: Schema Definition
 
 # Schema Definition
 
-The **validation schema** lives in `schema.ts`, one per route directory. It exports one object per HTTP method (uppercase: `GET`, `POST`, and so on). For each method you describe the data you expect.
+Put validation schemas in `schema.ts`, next to `route.ts`. Export one object per HTTP method (`GET`, `POST`, and so on).
 
-In short: a schema is a small description of "what the request should look like". BurgerAPI reads it, checks the real request against it, and gives you clean data to work with.
+Validation runs after `transform` hooks and before `beforeRoute` hooks. If it fails, the request gets `422` and the handler does not run.
 
 ## The full shape
 
-```typescript title="api/products/schema.ts"
+Every slot is optional. Describe only what you use.
+
+```typescript title="api/products/[id]/schema.ts"
 import { z } from "zod";
 
 export const GET = {
-  // path parameters, e.g. /users/:id
-  params: z.object({ id: z.string() }),
-  // query string, e.g. ?limit=10 (query values arrive as strings)
-  query: z.object({ limit: z.coerce.number() }),
-  // request headers
+  params: z.object({ id: z.string() }),         // path params
+  query: z.object({ limit: z.coerce.number() }), // query string
   headers: z.object({ "x-api-key": z.string() }),
-  // cookies
   cookies: z.object({ session: z.string() }),
-  // JSON request body (POST/PUT)
-  body: z.object({ name: z.string() }),
-  // per-route opt-in for automatic type conversion
-  coerce: true,
+  coerce: true,                                  // convert text values
 };
 
-export const POST = {
-  body: z.object({ name: z.string() }),
-  // validate what the handler returns
+export const PUT = {
+  params: z.object({ id: z.string() }),
+  body: z.object({ name: z.string() }),          // JSON body
   response: { 200: z.object({ id: z.string() }) },
 };
 ```
 
-Every slot is optional. You only describe what you actually use.
+## Use the validated data
 
-## Reusing a schema across routes
+Wrap the handler with `defineRoute` to get types from the schema:
 
-When the same shape appears in several routes, define it once and import it. Plain TypeScript, no registry to learn:
+```typescript title="api/products/[id]/route.ts"
+import { defineRoute } from "burger-api";
+import { GET as GetSchema } from "./schema";
+
+export const GET = defineRoute(GetSchema, (ctx) => {
+  const { id } = ctx.validated.params;   // string
+  const { limit } = ctx.validated.query; // number
+  return Response.json({ id, limit });
+});
+```
+
+The data is on `ctx.validated.params`, `.query`, `.headers`, `.cookies` and `.body`.
+
+## Share a schema
+
+Define a shape once and import it:
 
 ```typescript title="src/schemas.ts"
 import { z } from "zod";
@@ -53,56 +63,8 @@ export const Pagination = z.object({
 ```typescript title="api/items/schema.ts"
 import { Pagination } from "../../schemas";
 
-export const GET = { query: Pagination }; // shared, fully typed
+export const GET = { query: Pagination };
 ```
-
-## Validated data
-
-After validation, the result is available on `ctx.validated`:
-
-- `ctx.validated.params`
-- `ctx.validated.query`
-- `ctx.validated.headers`
-- `ctx.validated.cookies`
-- `ctx.validated.body`
-
-Each is typed from the corresponding schema. Wrap the handler with `defineRoute(schema, handler)` to get the inferred types automatically, or annotate it with `BurgerContext<typeof GET>` by hand. See [Zod Validation](/docs/validation/zod), [Query](/docs/validation/query), and [Body](/docs/validation/body).
-
-## Types for this feature
-
-The schema is the source of your types. The handler that uses it gets those types for free.
-
-The types you use (from `burger-api`):
-
-- `defineRoute(schema, handler)`: infers the handler type from `schema`; no generic to write
-- `BurgerContext<typeof GET>`: the same inference, written by hand. `typeof GET` is the schema export.
-- `ctx.validated`: the validated data, typed slot by slot.
-- `RouteSchema`: a route's full schema map (for programmatic routes).
-
-✅ Correct. Wrap the handler with `defineRoute`:
-
-```typescript title="api/products/route.ts"
-import { defineRoute } from "burger-api";
-import { GET as GetSchema } from "./schema";
-
-export const GET = defineRoute(GetSchema, (ctx) => {
-    const { id } = ctx.validated.params; // typed: string
-    const { limit } = ctx.validated.query; // typed: number
-    return Response.json({ id, limit });
-});
-```
-
-❌ Wrong. Using a slot you did not declare:
-
-```typescript
-export const GET = defineRoute(GetSchema, (ctx) => {
-    ctx.validated.body.name; // ❌ 'body' is unknown (no body schema on GET)
-});
-```
-
-A slot without a schema is `unknown` and is never set at runtime. See the [TypeScript overview](/docs/advanced/type-safety).
-
-Check your code: `bun run typecheck`.
 
 ## Related
 

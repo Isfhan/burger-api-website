@@ -4,25 +4,18 @@ sidebar_position: 1
 
 # Runtimes & Compatibility
 
-BurgerAPI is **Bun-first** and WinterCG-compatible. The same app code (routes,
-hooks, validation, OpenAPI, plugins, providers) runs on Bun in development and
-deploys to five targets via `burger-api build --target=<platform>`: Bun,
-Node.js, Cloudflare Workers, Deno, and Vercel.
+You write your app once and run it on Bun in development. To deploy, run `burger-api build --target=<platform>` for one of five targets: Bun, Node.js, Cloudflare Workers, Deno, or Vercel.
 
-The framework and CLI require **Bun 1.4.4 or newer**. Node.js deployments
-target **Node 24.22.1+ or 26.12.1+**. These versions include the October
-2026 security fixes (Brotli, TLS), so don't run anything older.
+Version requirements:
 
-Every claim on this page comes from `RUNTIME_CAPABILITIES`, a small data table
-exported from `burger-api` itself. The CLI's `build --target` reads the same
-table to reject an unsupported combination (e.g. a WebSocket route targeting
-Vercel) at build time.
+- **Bun 1.4.4 or newer** for the framework and CLI.
+- **Node 24.22.1+ or 26.12.1+** for Node.js deployments.
 
 ## Feature matrix
 
 | Feature | Bun | Node.js | Cloudflare Workers | Deno | Vercel |
 |---|---|---|---|---|---|
-| File-based routing (`route.*`, `schema.*`, `hooks.*`, `openapi.*`, `config.*`) | Full | Full | Full (AOT) | Full (AOT) | Full (AOT) |
+| File-based routing (`route.*`, `schema.*`, `hooks.*`, `openapi.*`, `config.*`) | Full | Full | Full | Full | Full |
 | Hook lifecycle (all 6 points) | Full | Full | Full | Full | Full |
 | Validation (`ctx.validated`, 422 + RFC 9457) | Full | Full | Full | Full | Full |
 | OpenAPI + docs UI | Full | Full | Full | Full | Full |
@@ -30,67 +23,31 @@ Vercel) at build time.
 | `burger-api build --target` | `bun` (default) | `node` | `cloudflare` | `deno` | `vercel` |
 | Long-running process | Yes | Yes | No (per-request) | Usually (Deploy: no) | No (per-invocation) |
 | Filesystem at request time | Yes | Yes | No | Yes (Deploy: no) | No |
-| Static assets | Disk (dev, `serve()`) / embedded (prod) | Embedded (AOT) | Platform-native recommended (Assets binding) | Embedded (AOT) | Platform-native recommended (`public/` + CDN) |
-| WebSocket | Yes (native `ServerWebSocket`) | Yes (via `@burger-api/node-server`'s bridge) | Yes (native `WebSocketPair`) | Yes (native `Deno.upgradeWebSocket`) | **No** |
+| Static assets | Yes | Yes | Yes (platform assets recommended) | Yes | Yes (platform assets recommended) |
+| WebSocket | Yes | Yes (with `@burger-api/node-server`) | Yes | Yes | **No** |
+| Pub/sub (`ws.publish`, `ctx.publish`) | Yes | No | No | No | No |
 | `--compile` (standalone binary) | Yes | N/A | N/A | N/A | N/A |
 
 ## WebSocket
 
-Four of five targets genuinely support WebSocket, each through its own native
-primitive. There's no shim pretending otherwise:
+WebSocket works on every target except Vercel. Vercel has no long-lived connections, so `burger-api build --target=vercel` fails if your project has WebSocket routes.
 
-- **Bun**: `server.upgrade()`, the runtime hijacks the socket directly.
-- **Cloudflare Workers**: `new WebSocketPair()`, returned as a `101` response with `webSocket` set.
-- **Deno**: `Deno.upgradeWebSocket(request)`.
-- **Node.js**: no `fetch`-handler upgrade path exists on Node at all, so the
-  [`@burger-api/node-server`](/docs/deployment/node) adapter wires
-  `createNodeWsBridge()` to `node:http`'s `'upgrade'` event automatically
-  when the app has WebSocket routes.
-
-**Vercel is the one real exception**, and it's a platform limitation, not a
-missing adapter: Vercel Functions have no persistent-connection model to
-upgrade into. `burger-api build --target=vercel` **fails at build time** if
-the project has any WebSocket routes, rather than silently shipping a broken
-route. The same check `RUNTIME_CAPABILITIES` backs is what the runtime side
-also uses, so a WebSocket upgrade attempted against a Vercel-declared build
-gets an honest "not supported on this deployment target" response instead of
-being mistaken for a plain, bridgeable Node deployment.
-
-See [WebSocket → Node.js](/docs/websocket/overview#nodejs) for the Node bridge specifically.
+Pub/sub is Bun-only. See [WebSocket](/docs/websocket/overview) for a pattern that works everywhere, and [WebSocket on Node.js](/docs/websocket/overview#nodejs) for Node setup.
 
 ## Static assets
 
-Two portable modes exist inside burger-api itself:
+Production builds include your asset files, so they work on every target. On Cloudflare Workers and Vercel, use the platform's own static hosting (Cloudflare Assets, Vercel `public/`) for anything more than a few small files.
 
-- **Dev** (`pageDir` set, Bun only): files under `<pageDir>/assets/` are read from disk per request by `serve()`. Disk-backed serving requires Bun; other runtimes throw a clear error pointing at the embedded-assets mode.
-- **Production AOT** (`burger-api build`): file contents are base64-embedded into the build output, so the artifact never touches the filesystem at request time. This works on every target, including Cloudflare and Vercel.
+## Cloudflare Workers, Deno, and Vercel
 
-For Cloudflare Workers and Vercel specifically, prefer the platform's own
-static hosting over framework-served assets once you have more than a
-handful of small files. Cloudflare's Assets binding and Vercel's `public/` +
-CDN are both faster and cheaper than routing static content through a
-Worker/Function invocation. burger-api's embedded-asset mode is there for
-small, bundled assets (an icon, a manifest), not as a CDN replacement.
+- `burger-api build` finds your routes at build time. Your app does not read the filesystem at request time.
+- Do not import `bun` in your app code. These runtimes cannot load it.
+- The build gives you an entry file. You bundle and deploy it with the platform's own tool (`wrangler`, `deno`, `vercel`).
 
-## What the non-Bun targets need
+## Related
 
-Cloudflare Workers and Vercel have no persistent filesystem at
-request time, so:
-
-- Routes must be **compiled ahead of time (AOT)**. `burger-api build
-  --target=<platform>` does this for you: it scans `apiDir`/`pageDir`/`wsDir`
-  once at build time and generates a self-contained entry file. There is no
-  runtime route scanning on these targets.
-- The module graph must contain **no `bun` imports**: the generated entry
-  exports `{ fetch: toFetchHandler(app) }`, portable across every WinterCG
-  runtime.
-- Cloudflare/Deno/Vercel builds are **not bundled by burger-api**: the
-  generated entry is handed to the platform's own tool (`wrangler`, `deno`,
-  `vercel`) to bundle and deploy, the same as any other project on that
-  platform.
-
-See the deployment guides for each target: [Bun](deployment/bun),
-[Node.js](deployment/node),
-[Cloudflare Workers](deployment/cloudflare), [Vercel](deployment/vercel),
-[Deno](deployment/deno), and [Benchmarks](advanced/benchmarks) for how fast
-the Bun path actually is.
+- [Deploy on Bun](/docs/deployment/bun)
+- [Deploy on Node.js](/docs/deployment/node)
+- [Deploy on Cloudflare Workers](/docs/deployment/cloudflare)
+- [Deploy on Deno](/docs/deployment/deno)
+- [Deploy on Vercel](/docs/deployment/vercel)
