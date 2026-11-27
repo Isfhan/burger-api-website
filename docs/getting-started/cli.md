@@ -44,6 +44,11 @@ burger-api build
 burger-api start
 ```
 
+Options:
+
+- `-p, --port <port>`: the port (default `$PORT`, else `4000`).
+- `-f, --file <file>`: the file to run (default `.build/bundle/app.js`, else `src/index.ts`).
+
 ## Common workflows
 
 **Create and run a project**

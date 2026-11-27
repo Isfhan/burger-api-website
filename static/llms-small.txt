@@ -275,6 +275,11 @@ burger-api build
 burger-api start
 ```
 
+Options:
+
+- `-p, --port <port>`: the port (default `$PORT`, else `4000`).
+- `-f, --file <file>`: the file to run (default `.build/bundle/app.js`, else `src/index.ts`).
+
 ## Common workflows
 
 **Create and run a project**
@@ -478,9 +483,9 @@ See [Hook Return Types](https://burger-api.com/docs/hooks/return-types) for deta
 import type { RouteHooks } from "burger-api";
 
 export const beforeRoute: RouteHooks["beforeRoute"] = [
-  (ctx) => {
-    if (!ctx.headers.get("x-api-key")) {
-      return new Response("Unauthorized", { status: 401 });
+  () => {
+    if (process.env.MAINTENANCE === "1") {
+      return new Response("Down for maintenance", { status: 503 });
     }
   },
 ];

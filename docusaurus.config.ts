@@ -87,7 +87,25 @@ const config: Config = {
     locales: ["en"],
   },
 
-  plugins: [githubStarsPlugin],
+  plugins: [
+    githubStarsPlugin,
+    [
+      "@docusaurus/plugin-client-redirects",
+      {
+        // Beta patch release posts were merged into the beta post.
+        redirects: [
+          {
+            from: "/blog/burger-api-v1.0.0-beta.2-release",
+            to: "/blog/burger-api-v1.0.0-beta-release",
+          },
+          {
+            from: "/blog/cli-v1.0.0-beta.4-release",
+            to: "/blog/burger-api-v1.0.0-beta-release",
+          },
+        ],
+      },
+    ],
+  ],
 
   presets: [
     [

@@ -20,7 +20,7 @@ bun run dev
 ## Options
 
 - `--lang ts|js`: TypeScript (default) or JavaScript.
-- `--yes`: skip the questions and use the defaults.
+- `--yes` (or `--defaults`): skip the questions and use the defaults.
 - `--pages`: add a `src/pages/` folder for web pages.
 - `--ws`: add WebSocket routes.
 - `--no-api`: no API routes (use with `--pages` or `--ws`).

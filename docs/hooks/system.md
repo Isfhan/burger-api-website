@@ -39,9 +39,9 @@ See [Hook Return Types](/docs/hooks/return-types) for details and examples.
 import type { RouteHooks } from "burger-api";
 
 export const beforeRoute: RouteHooks["beforeRoute"] = [
-  (ctx) => {
-    if (!ctx.headers.get("x-api-key")) {
-      return new Response("Unauthorized", { status: 401 });
+  () => {
+    if (process.env.MAINTENANCE === "1") {
+      return new Response("Down for maintenance", { status: 503 });
     }
   },
 ];
