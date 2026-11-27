@@ -7,7 +7,7 @@ sidebar_label: Error Handling Patterns
 - **Validation errors:** a failed request gets `422` with an RFC 9457 problem details body. See [Validation Error Handling](/docs/validation/errors).
 - **Unknown routes:** get `404` with a problem details body.
 - **Throw an error:** throw `NotFoundError`, `UnauthorizedError`, `ForbiddenError` or another `HTTPError`. BurgerAPI turns it into the right response. Add an `onError` hook to change how errors look.
-- **Stop in a hook:** return a `Response` (for example a `401`) from `onRequest` or `beforeRoute` to stop the request.
+- **Stop in a hook:** return a `Response` (for example a `429` or `503`) from `onRequest` or `beforeRoute` to stop the request. For auth, throw `UnauthorizedError` from `transform` instead. See [Auth goes in transform](/docs/hooks/system#auth-goes-in-transform).
 - **Return from a handler:** `return Response.json({ error: "Not found" }, { status: 404 });`.
 - **Debug details:** stack traces appear only when debug is on (`debug: true`, or `NODE_ENV=development`, which `burger-api dev` sets). See [Configuration](/docs/core/configuration).
 

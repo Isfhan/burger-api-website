@@ -275,6 +275,11 @@ burger-api build
 burger-api start
 ```
 
+Options:
+
+- `-p, --port <port>`: the port (default `$PORT`, else `4000`).
+- `-f, --file <file>`: the file to run (default `.build/bundle/app.js`, else `src/index.ts`).
+
 ## Common workflows
 
 **Create and run a project**
@@ -1086,13 +1091,15 @@ Errors go to `onError`.
 import type { GlobalHooks } from "burger-api";
 
 export const beforeRoute: GlobalHooks["beforeRoute"] = [
-  (ctx) => {
-    if (!ctx.headers.get("x-api-key")) {
-      return new Response("Unauthorized", { status: 401 });
+  () => {
+    if (process.env.MAINTENANCE === "1") {
+      return new Response("Down for maintenance", { status: 503 });
     }
   },
 ];
 ```
+
+For auth, check credentials in `transform` instead, so a caller without a token gets a 401 before validation runs. See [Auth goes in transform](https://burger-api.com/docs/hooks/system#auth-goes-in-transform).
 
 Returning a `Response` from `onRequest` or `beforeRoute` stops the request. The handler does not run, but `afterRoute` and `mapResponse` still do.
 
@@ -1949,9 +1956,9 @@ See [Hook Return Types](https://burger-api.com/docs/hooks/return-types) for deta
 import type { RouteHooks } from "burger-api";
 
 export const beforeRoute: RouteHooks["beforeRoute"] = [
-  (ctx) => {
-    if (!ctx.headers.get("x-api-key")) {
-      return new Response("Unauthorized", { status: 401 });
+  () => {
+    if (process.env.MAINTENANCE === "1") {
+      return new Response("Down for maintenance", { status: 503 });
     }
   },
 ];
@@ -2115,9 +2122,9 @@ When a forward hook stops the request, `afterRoute` and `mapResponse` still run.
 import type { RouteHooks } from "burger-api";
 
 export const beforeRoute: RouteHooks["beforeRoute"] = [
-  (ctx) => {
-    if (!ctx.headers.get("authorization")) {
-      return new Response("Unauthorized", { status: 401 }); // stop
+  () => {
+    if (process.env.MAINTENANCE === "1") {
+      return new Response("Down for maintenance", { status: 503 }); // stop
     }
     return undefined; // continue
   },
@@ -6353,7 +6360,7 @@ bun run dev
 ## Options
 
 - `--lang ts|js`: TypeScript (default) or JavaScript.
-- `--yes`: skip the questions and use the defaults.
+- `--yes` (or `--defaults`): skip the questions and use the defaults.
 - `--pages`: add a `src/pages/` folder for web pages.
 - `--ws`: add WebSocket routes.
 - `--no-api`: no API routes (use with `--pages` or `--ws`).
@@ -7832,7 +7839,7 @@ url: 'https://burger-api.com/docs/advanced/error-handling'
 - **Validation errors:** a failed request gets `422` with an RFC 9457 problem details body. See [Validation Error Handling](https://burger-api.com/docs/validation/errors).
 - **Unknown routes:** get `404` with a problem details body.
 - **Throw an error:** throw `NotFoundError`, `UnauthorizedError`, `ForbiddenError` or another `HTTPError`. BurgerAPI turns it into the right response. Add an `onError` hook to change how errors look.
-- **Stop in a hook:** return a `Response` (for example a `401`) from `onRequest` or `beforeRoute` to stop the request.
+- **Stop in a hook:** return a `Response` (for example a `429` or `503`) from `onRequest` or `beforeRoute` to stop the request. For auth, throw `UnauthorizedError` from `transform` instead. See [Auth goes in transform](https://burger-api.com/docs/hooks/system#auth-goes-in-transform).
 - **Return from a handler:** `return Response.json({ error: "Not found" }, { status: 404 });`.
 - **Debug details:** stack traces appear only when debug is on (`debug: true`, or `NODE_ENV=development`, which `burger-api dev` sets). See [Configuration](https://burger-api.com/docs/core/configuration).
 

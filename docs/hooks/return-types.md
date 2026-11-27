@@ -20,9 +20,9 @@ When a forward hook stops the request, `afterRoute` and `mapResponse` still run.
 import type { RouteHooks } from "burger-api";
 
 export const beforeRoute: RouteHooks["beforeRoute"] = [
-  (ctx) => {
-    if (!ctx.headers.get("authorization")) {
-      return new Response("Unauthorized", { status: 401 }); // stop
+  () => {
+    if (process.env.MAINTENANCE === "1") {
+      return new Response("Down for maintenance", { status: 503 }); // stop
     }
     return undefined; // continue
   },
