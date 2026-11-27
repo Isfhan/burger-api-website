@@ -4,23 +4,24 @@ sidebar_label: Dev Command
 
 # Dev Command
 
-`burger-api dev` runs your API in development mode with hot reload. It is the default script in new projects (`bun run dev`).
-
-Options: `-p, --port <port>` (default `$PORT`, else `4000`), `-f, --file <file>` (default `src/index.ts`, `src/index.js`, or `src/index.mjs`).
-
-The command sets `NODE_ENV=development` when it is not already set, so the framework's debug output (stack traces, response-validation detail) is on.
+`burger-api dev` runs your app while you develop. When you save a file in `src/`, `ecosystem/` or `burger.build.ts`, it restarts the app. New projects run it with `bun run dev`.
 
 ```bash
 burger-api dev
-# or, in a scaffolded project:
-bun run dev
+burger-api dev --port 3000
 ```
 
-For production, run `burger-api build` first and then `burger-api start`. See [CLI Tool](/docs/getting-started/cli).
+Options:
+
+- `-p, --port <port>`: the port (default `$PORT`, else `4000`).
+- `-f, --file <file>`: the entry file (default `src/index.ts`).
+
+`dev` turns on debug output, so errors show stack traces and response validation problems in detail. If the app crashes, `dev` keeps running and starts it again when you save a fix.
+
+For production, use `burger-api build`. See [Build Command](/docs/cli/build).
 
 ## Related
 
-- [CLI Installation](/docs/cli/installation)
 - [Create Command](/docs/cli/create)
-- [Add Command](/docs/cli/add)
+- [Build Command](/docs/cli/build)
 - [Burger API CLI Tool](/docs/getting-started/cli)

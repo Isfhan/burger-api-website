@@ -11,8 +11,8 @@
 ### Getting Started
 
 - [Quick Start](https://burger-api.com/docs/quick-start): Get a BurgerAPI app running in under a minute.
-- [Installation](https://burger-api.com/docs/getting-started/installation): BurgerAPI is built for the Bun.js runtime.
-- [CLI Tool](https://burger-api.com/docs/getting-started/cli): The Burger API CLI creates, manages, and builds Burger API projects.
+- [Installation](https://burger-api.com/docs/getting-started/installation): BurgerAPI runs on Bun.
+- [CLI Tool](https://burger-api.com/docs/getting-started/cli): The burger-api CLI creates projects, adds hooks and plugins, runs your app while you develop, and builds it for production.
 - [Key Concepts](https://burger-api.com/docs/key-concepts): BurgerAPI is a Bun-first, WinterCG-compatible framework for APIs and web apps.
 - [JavaScript](https://burger-api.com/docs/javascript): JavaScript is a first-class citizen in BurgerAPI.
 - [Migrating from 0.9.x](https://burger-api.com/docs/migration): This guide is for apps running burger-api 0.9.x and @burger-api/cli 0.9.x.
@@ -26,7 +26,7 @@
 - [Hooks](https://burger-api.com/docs/core-concepts/hooks): Hooks control when code runs on a request.
 - [Providers](https://burger-api.com/docs/core-concepts/providers): A provider is a service your app needs at runtime: a database client, a mailer, a cache.
 - [Validation](https://burger-api.com/docs/core-concepts/validation): Validation checks the incoming request at a fixed point in the lifecycle: after transform, before beforeRoute.
-- [Configuration](https://burger-api.com/docs/core/configuration): BurgerAPI uses five clear configuration layers.
+- [Configuration](https://burger-api.com/docs/core/configuration): Settings live in a few files, each for one job:
 - [Response Types](https://burger-api.com/docs/core/response-types): Route handlers and hooks return Response objects.
 
 ### Routing
@@ -111,24 +111,24 @@
 ### CLI Tool
 
 - [CLI Installation](https://burger-api.com/docs/cli/installation): Install the Burger API CLI to create projects, add hooks and plugins, and build for production.
-- [Create Command](https://burger-api.com/docs/cli/create): burger-api create scaffolds a new Burger API project with interactive prompts.
+- [Create Command](https://burger-api.com/docs/cli/create): burger-api create creates a new project and installs its dependencies.
 - [Generate Command](https://burger-api.com/docs/cli/generate): burger-api generate (alias g) scaffolds route directories, WebSocket route directories, and local hook/plugin stubs.
-- [Add Command](https://burger-api.com/docs/cli/add): burger-api add adds hooks and plugins from the ecosystem to your project.
-- [List Command](https://burger-api.com/docs/cli/list): burger-api list (alias: ls) shows all available hooks and plugins from the official ecosystem.
-- [Skills Command](https://burger-api.com/docs/cli/skills): burger-api skills manages AI agent skills for your project.
-- [Dev Command](https://burger-api.com/docs/cli/dev): burger-api dev runs your API in development mode with hot reload.
-- [Build Command](https://burger-api.com/docs/cli/build): burger-api build [file] builds your project for a deployment target.
-- [Build Exec Command (build:exec)](https://burger-api.com/docs/cli/build-exec): burger-api build:exec [file] compiles your project into a standalone executable that runs without Bun installed.
-- [Inspect Command](https://burger-api.com/docs/cli/inspect): burger-api inspect prints a summary of everything the CLI discovers in your project: config, routes, hooks, plugins, and convention-file coverage.
-- [Doctor Command](https://burger-api.com/docs/cli/doctor): burger-api doctor validates your project structure and reports issues: a quick health check before you dig into a bug that might just be a missing file.
+- [Add Command](https://burger-api.com/docs/cli/add): burger-api add copies official hooks and plugins into your project.
+- [List Command](https://burger-api.com/docs/cli/list): burger-api list (alias ls) shows the official hooks and plugins with a short description of each.
+- [Skills Command](https://burger-api.com/docs/cli/skills): burger-api skills adds AI agent skills to your project.
+- [Dev Command](https://burger-api.com/docs/cli/dev): burger-api dev runs your app while you develop.
+- [Build Command](https://burger-api.com/docs/cli/build): burger-api build builds your app for production.
+- [Build Exec Command (build:exec)](https://burger-api.com/docs/cli/build-exec): burger-api build:exec builds your app into a single executable file.
+- [Inspect Command](https://burger-api.com/docs/cli/inspect): burger-api inspect shows what the CLI finds in your project: your settings, API routes with their methods, pages, WebSocket routes, hooks and plugins.
+- [Doctor Command](https://burger-api.com/docs/cli/doctor): burger-api doctor checks your project for common problems.
 
 ### Deployment
 
 - [Runtimes & Compatibility](https://burger-api.com/docs/compatibility): BurgerAPI is Bun-first and WinterCG-compatible.
-- [Deploy on Bun](https://burger-api.com/docs/deployment/bun): Bun is BurgerAPI's primary runtime and needs Bun 1.4.4 or newer.
-- [Deploy on Node.js](https://burger-api.com/docs/deployment/node): Run BurgerAPI on plain Node.js: a real long-lived node:http server, not just the WinterCG fetch entry other targets use.
-- [Deploy on Cloudflare Workers](https://burger-api.com/docs/deployment/cloudflare): BurgerAPI apps are WinterCG-compatible, so the same code that runs on Bun runs on Cloudflare Workers through the web-standard adapter.
-- [Deploy on Vercel](https://burger-api.com/docs/deployment/vercel): Deploy BurgerAPI to Vercel as a web-standard Function.
+- [Deploy on Bun](https://burger-api.com/docs/deployment/bun): Bun is BurgerAPI's main runtime (Bun 1.4.4 or newer).
+- [Deploy on Node.js](https://burger-api.com/docs/deployment/node): BurgerAPI runs on Node.js 24 and newer with the @burger-api/node-server package.
+- [Deploy on Cloudflare Workers](https://burger-api.com/docs/deployment/cloudflare): Your BurgerAPI app runs on Cloudflare Workers without code changes.
+- [Deploy on Vercel](https://burger-api.com/docs/deployment/vercel): Your BurgerAPI app runs as a Vercel Function without code changes.
 - [Deploy on Deno](https://burger-api.com/docs/deployment/deno): In October 2026 the Deno team joined Cloudflare.
 
 ### Performance

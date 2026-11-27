@@ -180,6 +180,38 @@ We'd rather list these than have you discover them:
 
 The beta is how we find the things our own tests cannot: your routes, your edge cases, your runtime. Report what breaks, and it gets fixed. Your feedback shapes the beta, and we read every issue.
 
+## Updates during the beta
+
+We add each beta release here. The full list of changes is in the changelogs for [burger-api](https://github.com/isfhan/burger-api/blob/main/packages/burger-api/CHANGELOG.md), [the CLI](https://github.com/isfhan/burger-api/blob/main/packages/cli/CHANGELOG.md) and [node-server](https://github.com/isfhan/burger-api/blob/main/packages/node-server/CHANGELOG.md).
+
+To update:
+
+```bash
+bun add burger-api@latest
+bun add -g @burger-api/cli@latest
+burger-api doctor
+```
+
+Hooks and plugins you added with `burger-api add` are copies in your project, so updating does not change them. `burger-api doctor` tells you which ones to refresh and prints the command.
+
+### November 27: CLI 1.0.0-beta.4, node-server 0.1.2
+
+- `doctor` finds auth plugins that still need the November 26 security update.
+- On Node, body-size-limiter no longer answers `411` to a POST, PUT or DELETE without a body.
+- `start` and `dev` notice changes in `ecosystem/` and `burger.build.ts`.
+
+### November 26: burger-api 1.0.0-beta.2, CLI 1.0.0-beta.3
+
+- **Security:** the auth plugins check credentials before validation, so a request without credentials gets `401` instead of `422`. Refresh your copies with `burger-api add <name> --force`.
+- `HTTPError` can carry response headers, for example `WWW-Authenticate`.
+- Ctrl+C on `dev` and `start` stops the server too, and exits with code `130`.
+
+### November 23: burger-api 1.0.0-beta.1, CLI 1.0.0-beta.2, node-server 0.1.1
+
+- **Security:** server errors no longer show their message to clients in production, and auth plugins enforce `config.auth.roles`.
+- **Security (Node):** the `Host` header can no longer change which route runs.
+- Bun and the other runtimes answer the same way for `405`, trailing slashes and WebSocket routes.
+
 ## Try it and tell us
 
 ```bash

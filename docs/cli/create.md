@@ -4,27 +4,40 @@ sidebar_label: Create Command
 
 # Create Command
 
-`burger-api create <project-name>` scaffolds a new Burger API project with interactive prompts.
-
-- Creates directory structure, config, and installs dependencies.
-- New projects get **`burger.build.ts`** at the root with the build-time scan settings (for example `apiDir`, `apiPrefix`, `wsDir`, `debug`). Build-time only: runtime options go in `new Burger({...})`, `src/plugins.ts`, and route `config.ts`.
-- TypeScript projects also get **`src/types.ts`**, a commented module-augmentation example for app-wide type extensions.
-- Always writes **`AGENTS.md`** (commands, layout, and framework rules for AI agents) (Claude Code and other agents read it), even with `--no-skills`.
-- Prompts: API routes, API directory, API prefix, debug mode, Page routes, Page directory, Page prefix, WebSocket routes, WebSocket directory, AI agent skills.
-- `--local` scaffolds `link:burger-api` and `link:@burger-api/cli` from your checkout instead of npm. See [Local mode](/docs/getting-started/cli#local-mode).
-
-**Example:**
+`burger-api create <project-name>` creates a new project and installs its dependencies. It asks a few questions: whether you want API routes, pages or WebSocket routes, their folders and prefixes, and whether to add AI agent skills.
 
 ```bash
 burger-api create my-api
 ```
 
-**Next steps:** Edit `burger.build.ts` if needed, run `bun run dev`, add hooks and plugins with `burger-api add`. When skills are opted in they are installed to both `.agents/skills/burger-api/` and `.claude/skills/burger-api/`. See [CLI Tool](/docs/getting-started/cli).
+Then:
 
+```bash
+cd my-api
+bun run dev
+```
+
+## Options
+
+- `--lang ts|js`: TypeScript (default) or JavaScript.
+- `--yes`: skip the questions and use the defaults.
+- `--pages`: add a `src/pages/` folder for web pages.
+- `--ws`: add WebSocket routes.
+- `--no-api`: no API routes (use with `--pages` or `--ws`).
+- `--api-dir <dir>`, `--api-prefix <prefix>`: change where API routes live and their URL prefix.
+- `--no-skills`: do not add AI agent skills.
+
+```bash
+burger-api create my-api --lang js
+burger-api create my-app --pages --ws
+```
+
+## What you get
+
+Every project gets `src/index.ts`, an `src/api/` folder with an example route, `burger.build.ts` with your build settings, and `AGENTS.md` with project rules for AI coding agents. See [CLI Tool](/docs/getting-started/cli#project-structure) for the full layout.
 
 ## Related
 
-- [CLI Installation](/docs/cli/installation)
 - [Add Command](/docs/cli/add)
-- [List Command](/docs/cli/list)
+- [Dev Command](/docs/cli/dev)
 - [Burger API CLI Tool](/docs/getting-started/cli)

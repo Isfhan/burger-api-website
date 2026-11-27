@@ -4,101 +4,53 @@ sidebar_label: Build Command
 
 # Build Command
 
-`burger-api build [file]` builds your project for a deployment target. The entry defaults to `src/index.ts`, `src/index.js`, or `src/index.mjs`. Routes are discovered at build time (via `burger.build.ts` or conventions) and compiled ahead of time (AOT) so production never depends on filesystem scanning.
-
-**Options:**
-
-- `--target <platform>`: `bun` (default), `node`, `cloudflare`, `deno`, `vercel` (or `browser`, a raw `Bun.build` passthrough for bundling client-side code)
-- `--outfile <path>`: Output path; defaults depend on `--target` (see table below)
-- `--compile`: Compile to a standalone executable instead of bundling (`--target=bun` only, see [Build Exec](/docs/cli/build-exec)). On Windows, the emitted file is `<outfile>.exe` when the outfile does not already end in `.exe`; the CLI prints that real path.
-- `--no-bytecode`: Disable bytecode compilation (`--compile` only)
-- `--minify`: Minify output (`bun`/`node` targets only)
-- `--sourcemap <type>`: `inline`, `linked`, or `none` (`bun`/`node` targets only)
-- `--no-bun-check`: Skip the Bun-only API warning for portable targets
-
-**Default `--outfile` per target:**
-
-| Target | Default output | What builds it |
-|---|---|---|
-| `bun` | `.build/bundle/app.js` | `Bun.build()`, a self-contained entry file |
-| `node` | `.build/bundle/app.js` | `Bun.build({ target: 'node' })` |
-| `cloudflare` | `.build/cloudflare/index.ts` | `wrangler` (not this CLI) |
-| `deno` | `.build/deno/index.ts` | `deno` (not this CLI) |
-| `vercel` | `api/index.ts` | `vercel` (not this CLI) |
-
-## Examples
+`burger-api build` builds your app for production. It finds your routes at build time, so the deployed app does not need your source folders.
 
 ```bash
-# Bun (default), self-contained bundle
-burger-api build src/index.ts
-
-# Node.js, uses @burger-api/node-server's serve() instead of app.serve()
-bun add @burger-api/node-server
-burger-api build src/index.ts --target=node
-
-# Cloudflare Workers, generates .build/cloudflare/index.ts + wrangler.toml
-# (only if wrangler.toml doesn't already exist), then hand off to wrangler
-burger-api build src/index.ts --target=cloudflare
-wrangler dev
-
-# Deno, generates .build/deno/index.ts + deno.json
-burger-api build src/index.ts --target=deno
-deno serve --port 8000 .build/deno/index.ts
-
-# Vercel, generates api/index.ts + vercel.json
-burger-api build src/index.ts --target=vercel
-vercel dev
-
-# Standalone binary (Bun only)
-burger-api build src/index.ts --compile --outfile=my-app
+burger-api build
 ```
 
-## What differs per target
+The entry defaults to `src/index.ts` (or `.js`/`.mjs`). Pass another file as the first argument if yours is elsewhere.
 
-For `bun` and `node`, this command runs `Bun.build()` and produces one
-bundled entry file. Projects with pages also emit the page assets next to
-it, so deploy the whole directory. For `cloudflare`, `deno`, and `vercel`, there's no long-running
-process to bundle for. The generated entry (a plain `.ts` file exporting
-`{ fetch: toFetchHandler(app) }`) is handed to the platform's own tool to
-bundle and deploy, the same way a hand-written project on that platform
-already works. `burger-api build` never re-implements `wrangler`/`deno`/
-`vercel`'s own bundler.
+## Targets
 
-A project's declared target is baked into the build as
-`ServerOptions.runtimeTarget`, and a WebSocket route on a target that can't
-support it (`vercel`) fails the build immediately with a clear error. See
-[Compatibility](/docs/compatibility) for what each target supports.
+Choose where the app will run with `--target`:
 
-## Bun-only code on portable targets
+| Target | Output | Run or deploy it with |
+|---|---|---|
+| `bun` (default) | `.build/bundle/app.js` | `burger-api start` |
+| `node` | `.build/bundle/app.js` | `node .build/bundle/app.js` |
+| `cloudflare` | `.build/cloudflare/index.ts` | `wrangler dev` / `wrangler deploy` |
+| `deno` | `.build/deno/index.ts` | `deno serve .build/deno/index.ts` |
+| `vercel` | `api/index.ts` | `vercel dev` / `vercel --prod` |
 
-Building for `cloudflare`, `deno`, `vercel`, or `node` prints one warning
-listing any user source file that imports `bun`/`bun:*`, uses the `Bun.`
-global, or calls Bun's pub/sub (`ctx.publish()`, `ws.publish()`,
-`server.publish()`). Those runtimes have no Bun globals, so the code would
-fail in the platform's bundler later. The build still succeeds; remove the
-Bun-only code before deploying, or pass `--no-bun-check` to skip the scan.
+```bash
+burger-api build                        # Bun
+burger-api build --target=node          # Node: run "bun add @burger-api/node-server" first
+burger-api build --target=cloudflare    # also creates wrangler.toml if you have none
+```
 
-Text in comments and string literals is ignored, and a file that
-feature-checks Bun with `typeof Bun` is portable for its `Bun.` uses (but not
-for its `bun`/`bun:*` imports or publish calls).
+For Cloudflare, Deno and Vercel, the build also creates the platform's config file (`wrangler.toml`, `deno.json` or `vercel.json`) when you do not have one. It never overwrites yours.
 
-Platform config files (`wrangler.toml`, `deno.json`, `vercel.json`) are
-scaffolded automatically **only when one doesn't already exist**; an
-existing config is never overwritten.
+If your app has pages, the Bun and Node builds put the page files next to `app.js`. Deploy the whole `.build/bundle/` folder.
 
-Production flow on Bun/Node: run `burger-api build`, then start the server
-with `burger-api start` (Bun) or `node <outfile>` (Node, via
-`@burger-api/node-server`). On Cloudflare and Vercel, `wrangler deploy` and
-`vercel --prod` take over from there. On Deno, run the generated entry with
-`deno serve`; for hosting, see [Deno deployment](/docs/deployment/deno).
+See the [Deployment](/docs/deployment/bun) guides for each platform, and [Compatibility](/docs/compatibility) for what each target supports.
 
-See [CLI Tool](/docs/getting-started/cli).
+## Bun-only code
+
+When you build for Node, Cloudflare, Deno or Vercel, the CLI warns about files that use Bun-only APIs (`Bun.*`, `bun:*` imports, or WebSocket publish), because they will fail on that platform. Remove that code before you deploy. A WebSocket route on Vercel fails the build, because Vercel does not support WebSockets.
+
+## Options
+
+- `--target <platform>`: `bun` (default), `node`, `cloudflare`, `deno` or `vercel`.
+- `--outfile <path>`: where to write the build.
+- `--minify`: minify the output (Bun and Node).
+- `--sourcemap <type>`: `inline`, `linked` or `none` (Bun and Node).
+- `--compile`: build a standalone executable instead. See [Build Exec](/docs/cli/build-exec).
+- `--no-bun-check`: skip the Bun-only code warning.
 
 ## Related
 
-- [CLI Installation](/docs/cli/installation)
 - [Build Exec](/docs/cli/build-exec)
-- [Create Command](/docs/cli/create)
-- [Add Command](/docs/cli/add)
 - [Compatibility](/docs/compatibility)
 - [Burger API CLI Tool](/docs/getting-started/cli)
