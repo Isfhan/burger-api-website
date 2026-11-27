@@ -46,7 +46,7 @@ bun init
 bun add burger-api
 ```
 
-Then follow the same `index.ts` and `api` setup from the rest of this tutorial. A manual project has no `dev` script, so start it with `bun run src/index.ts` instead of `bun run dev`. See [Manual Setup](../getting-started/installation.md#alternative-manual-setup-standard-bun) for the full steps.
+Then follow the same `index.ts` and `api` setup from the rest of this tutorial. A manual project has no `dev` script, so start it with `bun run src/index.ts` instead of `bun run dev`. See [Manual Setup](../getting-started/installation.md#without-the-cli) for the full steps.
 :::
 
 ## Step 2: Configure Your Server

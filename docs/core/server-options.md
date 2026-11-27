@@ -8,7 +8,7 @@ The `Burger` constructor accepts a **ServerOptions** object. These are the main 
 
 | Option | Type | Description |
 |--------|------|-------------|
-| `apiDir` | `string` | Directory containing API route files (e.g. `./src/api`). Defaults to `./src/api` in filesystem mode when that directory exists. Relative to the project root, with an entry-file fallback (`src/`) when the CLI loads or scans the app. See [How directories resolve](/docs/core/configuration#how-directories-resolve). |
+| `apiDir` | `string` | Directory containing API route files (e.g. `./src/api`). Defaults to `./src/api`. Relative to the project root or to `src/`. |
 | `apiRoutes` | `RouteDefinition[]` | Pre-built API routes from the CLI build. When present, `apiDir` is ignored and no runtime filesystem scan happens. |
 | `pageDir` | `string` | Directory for page files. Defaults to `./src/pages` when that directory exists. |
 | `pageRoutes` | `PageDefinition[]` | Pre-built page routes from the CLI build. When present, `pageDir` is ignored. |

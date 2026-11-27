@@ -4,31 +4,28 @@ sidebar_label: Add Command
 
 # Add Command
 
-`burger-api add <name...>` adds hooks and plugins from the ecosystem to your project.
-
-- Downloads the package from GitHub.
-- Hooks install to `ecosystem/hooks/`; plugins install to `ecosystem/plugins/`.
-- Prints usage instructions after install: compose hooks in `src/hooks.ts`, register plugins in `src/plugins.ts`.
-- `--force` replaces an existing install without a prompt, also with no TTY. Without it, a non-TTY run skips the package and tells you to pass `--force`.
-- `--local` reads the local checkout instead of GitHub. See [Local mode](/docs/getting-started/cli#local-mode).
-
-**Examples:**
+`burger-api add <name...>` copies official hooks and plugins into your project. Hooks go to `ecosystem/hooks/`, plugins to `ecosystem/plugins/`. After copying, the CLI prints the code to register them in `src/hooks.ts` or `src/plugins.ts`.
 
 ```bash
 burger-api add cors
 burger-api add cors logger rate-limiter
-burger-api add jwt-auth api-key
+burger-api add jwt-auth
+```
+
+See what is available with `burger-api list`, or browse the [Ecosystem](/docs/ecosystem/introduction).
+
+## Updating a copy
+
+The files are yours to read and edit, so updating the CLI does not change them. To replace a copy with the latest version, add `--force`:
+
+```bash
 burger-api add cors --force
 ```
 
-List available hooks and plugins with `burger-api list`. See [CLI Tool](/docs/getting-started/cli) and [Ecosystem](/docs/ecosystem/introduction).
-
-`burger-api generate hook <name>` / `generate plugin <name>` scaffold a blank local stub instead. If the name you pick already matches a real, working implementation in the ecosystem catalog, `generate` warns and suggests `burger-api add <name>` instead, though it still creates the stub either way (the check is a hint, not a block).
-
+`--force` overwrites the copy, so re-apply any edits you made. `burger-api doctor` tells you which copies are out of date. See [Doctor Command](/docs/cli/doctor).
 
 ## Related
 
-- [CLI Installation](/docs/cli/installation)
-- [Create Command](/docs/cli/create)
 - [List Command](/docs/cli/list)
+- [Generate Command](/docs/cli/generate): create your own hook or plugin
 - [Burger API CLI Tool](/docs/getting-started/cli)

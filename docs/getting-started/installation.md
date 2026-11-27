@@ -5,120 +5,79 @@ sidebar_position: 1 # Position it early in the Getting Started section
 
 # Installation
 
-BurgerAPI is built for the [Bun.js](https://bun.sh/) runtime. Make sure you have Bun installed before you begin.
+BurgerAPI runs on [Bun](https://bun.sh/). Install Bun 1.4.4 or newer first ([guide](https://bun.sh/docs/installation)), then check it:
 
-## Prerequisites
+```bash
+bun --version
+```
 
-- **Bun:** Follow the official [Bun installation guide](https://bun.sh/docs/installation) to install it on your system.
+## Install the CLI
 
-  You can verify your installation by running:
+The `burger-api` CLI creates projects and adds hooks and plugins. Pick one way to install it:
+
+- **With Bun** (recommended):
 
   ```bash
-  bun --version
+  bun add -g @burger-api/cli
   ```
 
-## Recommended: Using the Burger API CLI
+  If you then see `burger-api: command not found`, add `~/.bun/bin` to your `PATH` (`%USERPROFILE%\.bun\bin` on Windows) and open a new terminal.
 
-Burger API comes with a powerful CLI tool that makes it easy to scaffold new projects and manage hooks and plugins. Install it globally to get started:
+- **With the install script**, which installs a standalone executable:
 
-### Installation
-
-#### Option 1: Bun Global Installation (Recommended if you have Bun installed)
-
-```bash
-# Global installation
-bun add -g @burger-api/cli
-```
-
-Global Bun installs go to `~/.bun/bin`. If you see `burger-api: command not found`, add `~/.bun/bin` to your `PATH` (`%USERPROFILE%\.bun\bin` on Windows) and open a new terminal.
-
-Or use with **bunx** (No Installation Needed):
-
-```bash
-bunx @burger-api/cli create my-project
-```
-
-#### Option 2: Standalone Executable (Alternative Installation Method)
-
-- **macOS/Linux/WSL:**
   ```bash
+  # macOS, Linux, WSL
   curl -fsSL https://burger-api.com/install.sh | bash
   ```
-- **Windows PowerShell:**
+
   ```powershell
+  # Windows PowerShell
   irm https://burger-api.com/install.ps1 | iex
   ```
 
-#### Option 3: Download a binary from GitHub Releases
+- **From [GitHub Releases](https://github.com/isfhan/burger-api/releases/latest)**: download the executable for your system and put it on your `PATH`. On Linux and macOS, run `chmod +x burger-api`.
 
-1. Download the executable for your platform from [GitHub Releases](https://github.com/isfhan/burger-api/releases/latest).
-2. Add the downloaded file to your `PATH`.
-3. On Linux and macOS, make it executable:
+You can also run it once without installing: `bunx @burger-api/cli create my-api`.
 
-   ```bash
-   chmod +x burger-api
-   ```
-
-### Create your project
-
-Once installed, you can create a new project by running:
+## Create and run a project
 
 ```bash
-burger-api create my-awesome-api
-```
-
-### Run your project
-
-```bash
-cd my-awesome-api
+burger-api create my-api
+cd my-api
 bun run dev
 ```
 
-For detailed CLI usage, check out the [CLI Tool Guide](./cli.md).
+See the [CLI Tool](./cli.md) guide for every command.
 
-### Update to the latest version
+## Update
 
 :::tip Getting an error?
-Update the CLI and the framework to the latest version first. Most problems are already fixed there.
+Update the CLI and the framework first. Most problems are already fixed there.
 :::
 
-- **Installed with Bun:** this replaces the old version.
+```bash
+bun add -g @burger-api/cli@latest   # the CLI (or run the install script again)
+bun add burger-api@latest           # the framework, in your project
+burger-api doctor                   # finds hooks and plugins to refresh
+```
 
-  ```bash
-  bun add -g @burger-api/cli@latest
-  ```
+Hooks and plugins you added with `burger-api add` are copies in your project, so these updates do not change them. `burger-api doctor` tells you which ones are out of date and prints the command to refresh each one. See [Add Command](/docs/cli/add#updating-a-copy).
 
-- **Installed with the install script:** run the same script again. It removes old versions first (a global `@burger-api/cli` from Bun or npm, and the previous executable), then installs the latest one.
+Run `burger-api --version` to see which version you have. If it still shows an old version, another `burger-api` comes first on your `PATH`: remove it, or run the install script, which tells you where it is.
 
-- **The framework in your project:**
+## Without the CLI
 
-  ```bash
-  bun add burger-api@latest
-  ```
+You can also set up a project by hand:
 
-- **Hooks and plugins added with `burger-api add`:** these are copies inside your project, so updating the CLI or the framework does not change them. Run `burger-api add <name> --force` to replace a copy with the latest version. This overwrites the file, so keep your own edits elsewhere or re-apply them. `burger-api doctor` tells you which copies are out of date. See [Add Command](/docs/cli/add) and [Doctor Command](/docs/cli/doctor#copied-hooks-and-plugins).
+1. Create a Bun project and install BurgerAPI and Zod:
 
-Run `burger-api --version` to check which version you have. If it still shows an old version, another `burger-api` comes first on your `PATH`: remove it, or run the install script, which tells you where it is.
-
----
-
-## Alternative: Manual Setup (Standard Bun)
-
-If you prefer not to use the CLI, you can set up a project manually using standard Bun commands:
-
-1. **Initialize a new Bun project:**
-   Navigate to your project directory and run:
    ```bash
    bun init
-   ```
-   Follow the prompts to create a basic Bun project.
-
-2. **Install BurgerAPI and Zod:**
-   ```bash
    bun add burger-api zod
    ```
 
-3. **Create your entry file** (`src/index.ts`):
+2. Create your entry file:
+
    ```typescript title="src/index.ts"
    import { Burger } from "burger-api";
 
@@ -132,7 +91,8 @@ If you prefer not to use the CLI, you can set up a project manually using standa
    });
    ```
 
-4. **Create your first route.** The runtime reads validation from a route's `schema.ts`, so declare the schema there and import it into `route.ts`:
+3. Create your first route. Validation goes in the route's `schema.ts`:
+
    ```typescript title="src/api/schema.ts"
    import { z } from "zod";
    import type { MethodSchema } from "burger-api";
@@ -141,6 +101,7 @@ If you prefer not to use the CLI, you can set up a project manually using standa
      query: z.object({ name: z.string().default("world") }),
    } satisfies MethodSchema;
    ```
+
    ```typescript title="src/api/route.ts"
    import { defineRoute } from "burger-api";
    import { GET as GetSchema } from "./schema";
@@ -150,25 +111,18 @@ If you prefer not to use the CLI, you can set up a project manually using standa
    });
    ```
 
-5. **Run it:**
+4. Run it:
+
    ```bash
    bun run src/index.ts
    ```
 
    Open `http://localhost:4000/api` (try `?name=Burger`) and `http://localhost:4000/docs`.
 
----
-
-## Ready to Go!
-
-You now have a Bun project set up with BurgerAPI installed.
-
-Next, see the [Configuration](./../core/configuration.md) guide to learn how a BurgerAPI instance is configured.
-
+Next, see [Configuration](./../core/configuration.md) to learn how to set up your app.
 
 ## Related
 
 - [Quick Start](/docs/quick-start)
 - [Key Concepts](/docs/key-concepts)
 - [Burger API CLI Tool](/docs/getting-started/cli)
-- [Request Context](/docs/core/request-handling)

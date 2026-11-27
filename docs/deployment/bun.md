@@ -4,17 +4,9 @@ sidebar_position: 1
 
 # Deploy on Bun
 
-Bun is BurgerAPI's primary runtime and needs Bun 1.4.4 or newer. A Bun
-deployment uses the Bun adapter directly: `burger.serve(port)` runs a
-long-lived HTTP server with the full feature set (native static route map,
-WebSockets, pages).
+Bun is BurgerAPI's main runtime (Bun 1.4.4 or newer). Every feature works on Bun, including pages and WebSocket pub/sub.
 
-## How it works
-
-- `src/index.ts` creates the `Burger` app and calls `burger.serve(port)`.
-- `burger-api build` compiles routes ahead of time (AOT) into the production
-  bundle.
-- `burger-api start` runs the production build on your server.
+You build your app with `burger-api build` and run the build with `burger-api start`.
 
 ## Entry file
 
