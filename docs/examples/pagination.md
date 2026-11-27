@@ -4,7 +4,7 @@ sidebar_label: Pagination
 
 # Pagination Example
 
-Paginate a list using a validated query and advertise totals via `ctx.set`.
+Paginate a list with a validated query, and send the totals as headers.
 
 ## Store
 
@@ -52,7 +52,7 @@ export const GET = defineRoute(GETSchema, (ctx) => {
 });
 ```
 
-The query is validated against `schema.ts`, so `page` and `limit` are numbers, and `ctx.set` applies the pagination headers once at the end of the request lifecycle. See also the [CRUD API](./crud-api.md).
+`page` and `limit` are numbers after validation. `ctx.set` adds the pagination headers to the response. See also the [CRUD API](/docs/examples/crud-api).
 
 
 ## Related

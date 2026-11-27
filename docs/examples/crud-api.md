@@ -4,9 +4,9 @@ sidebar_label: CRUD API
 
 # CRUD API Example
 
-A complete products API with list, read, create, update, and delete, using file-based routing, Zod validation, and `ctx.set`.
+A products API with list, read, create, update and delete.
 
-Each route directory is self-contained: `route.ts` holds the handlers, `schema.ts` holds the per-method validation schemas.
+Each route folder has `route.ts` for handlers and `schema.ts` for validation.
 
 ## Store
 
@@ -20,7 +20,7 @@ export interface Product {
 export const products: Product[] = [];
 ```
 
-## List with query + response headers
+## List and create
 
 ```ts title="src/api/products/schema.ts"
 import { z } from "zod";
@@ -110,9 +110,8 @@ export const DELETE = defineRoute(DeleteSchema, (ctx) => {
 });
 ```
 
-`ctx.set` collects status and header changes, applied once when the response leaves the app. See [Response Mutation](/docs/api/response-mutation).
+`ctx.set` holds the status and headers to add to the response. See [Response Mutation](/docs/api/response-mutation).
 
-This example shows routing, validation, and response mutation working together. See also the [Todo API](../tutorials/todo-api.md) and [Blog API](../tutorials/blog-api.md).
 
 
 ## Related

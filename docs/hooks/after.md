@@ -4,12 +4,11 @@ sidebar_label: After Hooks
 
 # After Hooks
 
-`afterRoute` runs after the route handler returns. `mapResponse` runs before the response is sent. Both use the response-transform contract: return a function from the hook. The function receives the current `Response` and returns a new `Response` (e.g. with added or modified headers).
+`afterRoute` runs after the handler returns. `mapResponse` runs right before the response is sent. Use them to change the response, for example to add headers.
 
-Global (`src/hooks.ts`) and plugin `afterRoute` / `mapResponse` hooks run for **every** response the app produces: matched routes, 404s, 405s, auto-`OPTIONS`, errors rendered by `onError`, pages, assets, `/docs` and `/openapi.json`. Route-level response hooks run only for their matched route.
+Return a function from the hook. It gets the current `Response` and returns a new one.
 
-```ts
-// src/hooks.ts
+```ts title="src/hooks.ts"
 import type { GlobalHooks } from "burger-api";
 
 export const afterRoute: GlobalHooks["afterRoute"] = [
@@ -21,16 +20,13 @@ export const afterRoute: GlobalHooks["afterRoute"] = [
 ];
 ```
 
-Common use: adding CORS headers or other response transforms. For CORS, prefer the [cors hook](/docs/ecosystem/cors) from the ecosystem.
+Global and plugin after hooks run for every response: matched routes, 404s, errors, pages, assets and `/docs`. Route after hooks run only for their route.
 
-Use `mapResponse` for work that must happen right before the response is sent, such as final headers.
-
-See [Hook Return Types](/docs/hooks/return-types) and [Hook System](/docs/hooks/system).
-
+For CORS, use the [cors hook](/docs/ecosystem/cors). For a simple status or header change, `ctx.set` is often easier. See [Response Mutation](/docs/api/response-mutation).
 
 ## Related
 
 - [Hook System](/docs/hooks/system)
+- [Hook Return Types](/docs/hooks/return-types)
 - [Global Hooks](/docs/hooks/global)
 - [Route Hooks](/docs/hooks/route-specific)
-- [Request Context](/docs/core/request-handling)

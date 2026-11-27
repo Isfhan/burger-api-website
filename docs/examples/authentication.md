@@ -4,68 +4,36 @@ sidebar_label: Authentication
 
 # Authentication Example
 
-Protect routes with an auth plugin. The core framework is auth-agnostic: authentication is always packaged as a plugin under `ecosystem/plugins/` and integrates with hooks and route `config.ts`.
+Protect routes with an auth plugin. This example uses API keys.
 
-## Install an auth plugin
-
-Choose a plugin and install it with the CLI:
+## 1. Add the plugin
 
 ```bash
 burger-api add api-key
 ```
 
-or for JWT:
+## 2. Register it
 
-```bash
-burger-api add jwt-auth
-```
-
-See [API Key Auth](/docs/ecosystem/api-key-auth) and [JWT Auth](/docs/ecosystem/jwt-auth).
-
-## Register the plugin
-
-Register it in `src/plugins.ts`:
-
-```ts
-// src/plugins.ts
+```ts title="src/plugins.ts"
 import type { PluginRegistrar } from "burger-api";
 import { apiKey } from "../ecosystem/plugins/api-key/api-key";
 
 export default (burger: PluginRegistrar) => {
-  burger.usePlugin(apiKey({ keys: ["demo-api-key-123"] }));
+  burger.usePlugin(apiKey({ keys: [process.env.API_KEY!] }));
 };
 ```
 
-## Protect a route
+Now every route needs a valid key. A request without one gets `401`.
 
-The plugin enforces route `config.ts`. Protected routes require auth; open routes opt out:
+## 3. Open public routes
 
-```ts
-// src/api/admin/config.ts
-export default { auth: { required: true } };
-```
-
-```ts
-// src/api/public/health/config.ts
+```ts title="src/api/health/config.ts"
 export default { auth: false };
 ```
 
-A missing or invalid key produces `401 Unauthorized`; the handler runs only after auth passes:
+## 4. Read the identity
 
-```ts
-// src/api/admin/route.ts
-import type { BurgerContext } from "burger-api";
-
-export async function GET(ctx: BurgerContext) {
-  return Response.json({ secret: "accessible only with a valid key" });
-}
-```
-
-## Read the authenticated identity
-
-The plugin attaches the authenticated identity to the context. With the API key plugin it is `ctx.apiKey`; with the JWT plugin it is the decoded payload as `ctx.user`. Both are typed through the plugin's module augmentation (the API key plugin extends `BurgerContext`; the JWT plugin extends `BurgerAuthUser`, the shared type behind `ctx.user`), so they are typed as soon as the plugin is imported in `src/plugins.ts`:
-
-```ts
+```ts title="src/api/admin/route.ts"
 import type { BurgerContext } from "burger-api";
 
 export async function GET(ctx: BurgerContext) {
@@ -73,10 +41,9 @@ export async function GET(ctx: BurgerContext) {
 }
 ```
 
-## What about manual checks?
+The handler runs only after the key passes. For JWT, use `burger-api add jwt-auth`; the user is then on `ctx.user`.
 
-A hand-rolled check in the handler works, but it runs per method, per route, and does not integrate with `config.ts`. Prefer a `transform` entry for a single-route check, and a plugin when the same rule protects many routes. See [Hooks](/docs/hooks/system).
-
+See [API Key Auth](/docs/ecosystem/api-key-auth) and [JWT Auth](/docs/ecosystem/jwt-auth).
 
 ## Related
 

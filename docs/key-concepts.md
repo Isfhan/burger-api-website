@@ -5,99 +5,61 @@ sidebar_position: 2
 
 # Key Concepts
 
-BurgerAPI is a Bun-first, WinterCG-compatible framework for APIs and web apps.
-TypeScript and JavaScript are both first-class. Here are the main ideas.
+These are the main ideas in BurgerAPI. Each section links to a page with more detail.
 
 ## File-based routing
 
-Routes are defined by your **file and folder structure**. Put `route.ts` (or
-`route.js`, `route.mjs`) files under your API directory (e.g. `src/api`), and
-BurgerAPI maps them to URLs. Each route directory is self-contained with
-optional sibling convention files: `schema.ts`, `hooks.ts`, `openapi.ts`,
-`config.ts`. No manual route registration.
+Your folders are your URLs. A folder under `src/api/` with a `route.ts` file is a route. Next to it you can add `schema.ts`, `hooks.ts`, `openapi.ts`, and `config.ts`. Each route folder stands on its own: child folders do not inherit these files.
 
-See [File-Based Routing](/docs/routing/file-based-routing), [Static API Routes](/docs/routing/api/static-routes), and [Configuration](/docs/core/configuration).
+See [File-Based Routing](/docs/routing/file-based-routing).
 
-## Burger instance and configuration
+## Burger instance
 
-You create one **`Burger`** instance with runtime options (`apiDir`,
-`apiPrefix`, validation settings, and fallback OpenAPI metadata such as
-`title`). Build-time concerns
-(dirs, prefixes, debug) live in **`burger.build.ts`** and are used by the CLI
-only. For WinterCG deployments you pass pre-built **`apiRoutes`** instead of
-directories.
+`src/index.ts` creates one `Burger` instance and starts the server. Build settings live in `burger.build.ts` and are read by the CLI.
 
-See [Burger Class](/docs/core/burger-class), [Server Options](/docs/core/server-options), and [Configuration](/docs/core/configuration).
-
-## Hooks and plugins
-
-**Hooks** control the request lifecycle: `onRequest`, `transform`,
-`beforeRoute`, `afterRoute`, `mapResponse`, `onError`. Global hooks live in
-`src/hooks.ts`; route hooks in `api/**/hooks.ts`.
-
-**Plugins** extend the application. They are registered in `src/plugins.ts`
-with `burger.usePlugin(plugin | factory, scope?, seed?)`, may package hooks,
-and inject context values through `transform` (for example `ctx.user` or
-`ctx.apiKey`). Providers are registered separately in `src/providers.ts`:
-plugins cannot call `provide()`. Hooks and plugins are separate concepts.
-
-See [Hooks](/docs/hooks/system) and [Ecosystem](/docs/ecosystem/introduction).
+See [Burger Class](/docs/core/burger-class) and [Configuration](/docs/core/configuration).
 
 ## Context
 
-The single object flowing through the request lifecycle is **`BurgerContext`**
-(`ctx`). It exposes the original request (`ctx.request`), parsed data
-(`ctx.query`, `ctx.params`, `ctx.json()`), validated input (`ctx.validated`),
-injected services (`ctx.services`), and more. Handlers always return a
-standard Web **`Response`**.
+Every handler gets one object, `ctx` (type `BurgerContext`). It holds the request, `ctx.params`, `ctx.query`, validated data in `ctx.validated`, and your services in `ctx.services`. Handlers return a standard `Response`.
 
-Wrap a handler with **`defineRoute(schema, handler)`** to get `ctx.validated`
-typed from the schema automatically, with no `BurgerContext<typeof Schema>`
-generic to write by hand. `defineHooks(schema, hooks)` does the same for a
-route's `hooks.ts`. Both are optional; the manual generic still works.
+```ts
+import type { BurgerContext } from "burger-api";
 
-See [Validation](/docs/validation/zod) and [Type Safety](/docs/advanced/type-safety).
+export async function GET(ctx: BurgerContext) {
+    return Response.json({ id: ctx.params.id });
+}
+```
+
+See [Request Context](/docs/core/request-handling).
 
 ## Validation
 
-Request **validation** uses Standard Schema libraries, with Zod as the
-default. Define per-method schemas in `schema.ts` for query, params, headers,
-cookies, and body; BurgerAPI validates before your handler runs and attaches
-the result to `ctx.validated`. Errors follow the RFC 9457 Problem Details
-format.
+Define a schema per method in `schema.ts`. BurgerAPI checks the request before your handler runs. Bad input gets a `422` error. Wrap the handler in `defineRoute(schema, handler)` to get `ctx.validated` typed for you.
 
-See [Zod Validation](/docs/validation/zod), [Schema Definition](/docs/validation/schema), and [Validation Errors](/docs/validation/errors).
+See [Zod Validation](/docs/validation/zod) and [Type Safety](/docs/advanced/type-safety).
+
+## Hooks and plugins
+
+- **Hooks** run at steps of a request: `onRequest`, `transform`, `beforeRoute`, `afterRoute`, `mapResponse`, `onError`. Put global hooks in `src/hooks.ts` and route hooks in the route's `hooks.ts`.
+- **Plugins** add features to your app. Register them in `src/plugins.ts`.
+- **Providers** register shared services in `src/providers.ts`. You read them from `ctx.services`.
+
+See [Hooks](/docs/hooks/system) and [Ecosystem](/docs/ecosystem/introduction).
 
 ## OpenAPI
 
-BurgerAPI can **generate an OpenAPI 3.1 specification** from your routes and
-schemas and serve an interactive docs UI.
+BurgerAPI builds an OpenAPI document from your routes and schemas. It serves the docs UI at `/docs`.
 
 See [OpenAPI & Swagger](/docs/api/openapi).
 
-## CLI and builds
+## CLI and deployment
 
-The **Burger API CLI** lets you create projects (`create`, with `--lang ts|js`),
-add ecosystem hooks and plugins (`add`, `list`), run the dev server (`dev`),
-and build for a deployment target (`build --target=<platform>`, `start`).
-AOT route discovery means production builds never scan the filesystem at
-runtime.
+The CLI creates projects (`create`), adds hooks and plugins (`add`), runs the dev server (`dev`), and builds for production (`build`). Pick a platform with `--target`: `bun` (default), `node`, `cloudflare`, `deno`, or `vercel`.
 
-See [CLI Tool](/docs/getting-started/cli) and [Build Command](/docs/cli/build).
+WebSocket routes work on every target except Vercel.
 
-## Deployment
-
-`burger-api build --target=<platform>` generates the right output per
-target: Bun (default) and Node.js get a self-contained bundle (`app.serve()`
-on Bun, `@burger-api/node-server`'s `serve()` on Node); Cloudflare Workers,
-Deno, and Vercel get a portable `export default { fetch: toFetchHandler(app) }`
-entry plus a scaffolded platform config (`wrangler.toml` / `deno.json` /
-`vercel.json`), bundled by that platform's own tool. WebSocket routes work
-natively on all of these except Vercel, which has no persistent-connection
-model, so the build fails at build time rather than shipping a broken route.
-
-See [Deployment](/docs/deployment/bun) and [Compatibility](/docs/compatibility)
-for the full per-runtime matrix.
+See [CLI Tool](/docs/getting-started/cli), [Deployment](/docs/deployment/bun), and [Compatibility](/docs/compatibility).
 
 ## Related
 

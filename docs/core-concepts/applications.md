@@ -4,9 +4,9 @@ sidebar_label: Applications
 
 # Applications
 
-A BurgerAPI application is an instance of the `Burger` class. You configure it once and start it with `serve`.
+A BurgerAPI app is an instance of the `Burger` class. Create it in `src/index.ts` and start it with `serve`.
 
-```ts
+```ts title="src/index.ts"
 import { Burger } from "burger-api";
 
 const burger = new Burger({
@@ -16,44 +16,25 @@ const burger = new Burger({
 burger.serve(4000);
 ```
 
-OpenAPI metadata such as the title and version lives in `src/openapi.config.ts`. The `new Burger({ title, version })` options still work as a fallback:
-
-```ts title="src/openapi.config.ts"
-import type { OpenAPIConfig } from "burger-api";
-
-export default {
-  title: "My API",
-  version: "1.0.0",
-} satisfies OpenAPIConfig;
-```
-
-The application brings together:
-
-- **Routes** discovered from the file system (see [Routing](./routing.md)).
-- **Hooks** that run at named stages of the request lifecycle (see [Hook System](/docs/hooks/system)).
-- **Plugins** that extend the application, registered in `src/plugins.ts`.
-- **Providers** that inject shared services into `ctx.services`, declared in `src/providers.ts`.
-- **Validation** schemas that guard requests (see [Validation](./validation.md)).
-- **OpenAPI** documentation generated automatically from your routes (see [OpenAPI & Swagger](/docs/api/openapi)).
-
 ## Where things live
 
-Scaffolded projects split configuration across convention files:
+Each concern has its own file:
 
 | Concern | Where |
 |---------|-------|
 | Runtime options | `new Burger({...})` in `src/index.ts` |
-| OpenAPI metadata | `src/openapi.config.ts` |
-| Global hooks | `src/hooks.ts` |
-| Plugins | `src/plugins.ts` |
-| Providers | `src/providers.ts` |
-| Build-time settings | `burger.build.ts` (CLI only) |
+| Routes | `src/api/**/route.ts`. See [Routing](/docs/core-concepts/routing) |
+| Global hooks | `src/hooks.ts`. See [Hook System](/docs/hooks/system) |
+| Plugins | `src/plugins.ts`. See [Hooks and Plugins](/docs/ecosystem/hooks-plugins) |
+| Shared services | `src/providers.ts`. See [Providers](/docs/core-concepts/providers) |
+| OpenAPI metadata | `src/openapi.config.ts`. See [OpenAPI & Swagger](/docs/api/openapi) |
+| Build settings | `burger.build.ts` (CLI only) |
 
-Runtime options such as `apiDir`, `apiPrefix`, and `validation` are described in [Server Options](../core/server-options.md) and [Configuration](../core/configuration.md). OpenAPI metadata is described in [OpenAPI & Swagger](/docs/api/openapi).
+All files except `src/index.ts` are optional. For the options of `new Burger`, see [Server Options](/docs/core/server-options).
 
 ## Related
 
 - [Routing](/docs/core-concepts/routing)
 - [Handlers](/docs/core-concepts/handlers)
-- [Request Context](/docs/core/request-handling)
-- [Ecosystem](/docs/ecosystem/introduction)
+- [Configuration](/docs/core/configuration)
+- [Burger Class](/docs/core/burger-class)

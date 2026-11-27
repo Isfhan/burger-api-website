@@ -4,10 +4,9 @@ sidebar_label: Route Hooks
 
 # Route Hooks
 
-Route hooks run only for a given route. Define them in the route's `hooks.ts` file:
+Route hooks run only for one route. Put them in a `hooks.ts` file next to the route's `route.ts`.
 
-```ts
-// src/api/users/hooks.ts
+```ts title="src/api/users/hooks.ts"
 import { ForbiddenError } from "burger-api";
 import type { RouteHooks } from "burger-api";
 
@@ -21,47 +20,32 @@ export const transform: RouteHooks["transform"] = {
 };
 ```
 
-The handler lives in `route.ts`:
+A route `hooks.ts` can export `transform`, `beforeRoute`, `afterRoute`, `mapResponse` and `onError`.
 
-```ts
-// src/api/users/route.ts
-import type { BurgerContext } from "burger-api";
+- `onRequest` is not allowed here. It runs before routing, so put it in `src/hooks.ts` or a plugin. A route `onRequest` export is ignored with a warning.
+- Route hooks run after global hooks for `transform` and `beforeRoute`, and before global hooks for `afterRoute`, `mapResponse` and `onError`.
+- Hooks are not inherited. They apply only to their own route folder.
 
-export async function GET(ctx: BurgerContext) {
-  return Response.json({ users: [] });
-}
-```
+## Typed ctx.validated
 
-A route's `hooks.ts` can export any of: `transform`, `beforeRoute`, `afterRoute`, `mapResponse`, `onError`. `onRequest` is app-level only: define it in `src/hooks.ts` or a plugin, never in a route's `hooks.ts`. It runs before a route is matched, so a route-level export is ignored with a warning (and a `RouteHooks`-typed object rejects it at compile time).
+If a hook reads `ctx.validated`, wrap the hooks with `defineHooks(schema, hooks)`. It types `ctx` from the route's schema.
 
-Route `beforeRoute` hooks run after global `beforeRoute` hooks and after validation, before the handler. Route `transform` entries run after global ones, before validation. There is no folder or group inheritance: hooks apply only to their own route directory.
-
-Authenticate in `transform`: it runs before validation, so an unauthenticated request gets a 401, not a 422 that lists the schema fields. `beforeRoute` runs after validation; use it for checks that need `ctx.validated`.
-
-Use route hooks for admin checks, loading route-specific data, or any logic that applies to a single endpoint. See [Hook System](/docs/hooks/system).
-
-When a route hook reads `ctx.validated` (the route has a `schema.ts`), wrap the hooks with `defineHooks(schema, hooks)` (the `defineRoute` counterpart for hooks files) to get it typed:
-
-```ts
-// src/api/users/hooks.ts
+```ts title="src/api/users/hooks.ts"
 import { defineHooks } from "burger-api";
 import { GET as GetSchema } from "./schema";
 
 export const { beforeRoute } = defineHooks(GetSchema, {
   beforeRoute: (ctx) => {
-    ctx.validated.query; // typed, same schema as route.ts
+    ctx.validated.query; // typed from schema.ts
   },
 });
 ```
 
-Hooks run for every method of the route, so a slot that only one method declares (like `body`) is typed possibly `undefined`. Read it with `ctx.validated.body?.name`.
-
-See [Type Safety](/docs/advanced/type-safety).
-
+Route hooks run for every method of the route. A slot that only one method has, like `body`, may be `undefined`. Read it with `ctx.validated.body?.name`.
 
 ## Related
 
 - [Hook System](/docs/hooks/system)
 - [Global Hooks](/docs/hooks/global)
 - [Hook Return Types](/docs/hooks/return-types)
-- [Request Context](/docs/core/request-handling)
+- [Type Safety](/docs/advanced/type-safety)

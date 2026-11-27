@@ -4,77 +4,16 @@ sidebar_label: "Wildcard Routes"
 
 # Wildcard Routes
 
-Wildcard routes are catch-all routes that match any number of path segments after a certain point in the URL. Use them for admin panels, file systems, documentation sites, and proxies.
+A wildcard route matches every path below a point in the URL. Name a folder `[...]`. The captured segments are in `ctx.wildcardParams`, an array of strings.
 
-## What Are Wildcard Routes?
-
-Think of wildcard routes as a "catch everything else" pattern. While static routes match exact paths and dynamic routes match single segments, wildcard routes capture **all remaining segments** in the URL path.
-
-**Common Use Cases:**
-
-- **OAuth/Authentication:** Handle multiple authentication providers in one route, for example `/auth/[...]` for Google, GitHub, and Facebook callbacks.
-- **Multi-tenant Applications:** Serve tenant-specific content with dynamic subpaths like `/tenants/[tenantId]/[...]`
-- **Blog/CMS Systems:** Manage deeply nested content categories like `/blog/tech/web-dev/react/2024/hooks-guide`
-- **E-commerce Catalogs:** Handle complex product category hierarchies like `/products/electronics/computers/laptops/gaming`
-- **Internationalization (i18n):** Serve localized content with paths like `/[locale]/docs/[...]` for `/en/docs/getting-started/installation`
-- **Microservices Gateway:** Route API requests to different microservices based on path patterns
-
-## Basic Usage
-
-Creating a wildcard route is simple: use the `[...]` folder name in your route structure.
-
-### Creating a Wildcard Route
-
-Here's a basic example:
-
-**Folder Structure:**
+## Example
 
 ```
 api/
-  admin/
+  files/
     [...]/
-      route.ts
+      route.ts         → /api/files/*
 ```
-
-This structure creates a wildcard route at `/api/admin/*` that matches any path starting with `/api/admin/`.
-
-**Route Handler:**
-
-```typescript title="api/admin/[...]/route.ts"
-import type { BurgerContext } from "burger-api";
-
-export async function GET(ctx: BurgerContext) {
-  // wildcardParams contains all segments after /admin/
-  const wildcardParams = ctx.wildcardParams;
-
-  return Response.json({
-    message: "Admin wildcard route",
-    path: wildcardParams.join("/"),
-    segments: wildcardParams,
-  });
-}
-```
-
-**Example Requests:**
-
-```
-GET /api/admin/settings
-→ wildcardParams = ["settings"]
-
-GET /api/admin/settings/profile
-→ wildcardParams = ["settings", "profile"]
-
-GET /api/admin/users/123/permissions/edit
-→ wildcardParams = ["users", "123", "permissions", "edit"]
-```
-
-:::tip Wildcards Also Match Their Base Path
-A wildcard route matches its own base path too. For `api/files/[...]`, a request to `/api/files` (with no further segments) matches the route with `wildcardParams = []`. Check `wildcardParams.length === 0` to handle the base path explicitly.
-:::
-
-## Accessing Wildcard Parameters
-
-The `ctx.wildcardParams` property gives you access to all captured path segments as an array of strings.
 
 ```typescript title="api/files/[...]/route.ts"
 import type { BurgerContext } from "burger-api";
@@ -82,549 +21,59 @@ import type { BurgerContext } from "burger-api";
 export async function GET(ctx: BurgerContext) {
   const segments = ctx.wildcardParams;
 
-  // Build the file path from segments
-  const filePath = segments.join("/");
-
-  // Check if path is provided
   if (segments.length === 0) {
-    return Response.json(
-      {
-        error: "No file path specified",
-      },
-      { status: 400 }
-    );
+    return Response.json({ error: "No file path" }, { status: 400 });
   }
 
-  return Response.json({
-    message: `Fetching file: ${filePath}`,
-    directory: segments.slice(0, -1).join("/"),
-    filename: segments[segments.length - 1],
-  });
+  return Response.json({ path: segments.join("/") });
 }
 ```
 
-**Accessing the endpoint:**
-
 ```
-GET /api/files/documents/2024/report.pdf
-→ wildcardParams = ["documents", "2024", "report.pdf"]
-→ filePath = "documents/2024/report.pdf"
-→ directory = "documents/2024"
-→ filename = "report.pdf"
+GET /api/files                         → wildcardParams = []
+GET /api/files/report.pdf              → wildcardParams = ["report.pdf"]
+GET /api/files/docs/2024/report.pdf    → wildcardParams = ["docs", "2024", "report.pdf"]
 ```
 
-## Route Priority
+The wildcard also matches its base path (`/api/files`) with an empty array. Check `segments.length` if you need to handle that case.
 
-Understanding how BurgerAPI matches routes is important when combining different route types.
+## With a dynamic segment
 
-:::tip Route Matching Order
-BurgerAPI uses a hybrid router. On Bun, `serve()` registers every route (static, `:param`, wildcard) as a per-method native Bun route. The fetch handler path (Cloudflare, Deno, Vercel, Node) uses a fast radix matcher. Static routes are matched first, then dynamic, then wildcard, so more specific routes always win.
-:::
-
-### Priority Examples
-
-Let's say you have these routes defined:
+You can put a wildcard under a `[param]` folder. Validate the param with a schema. Check the wildcard segments yourself: schemas do not validate them.
 
 ```
-api/
-  admin/
-    settings/
-      route.ts           → /api/admin/settings (Static)
-    [section]/
-      route.ts           → /api/admin/[section] (Dynamic)
-    [...]/
-      route.ts           → /api/admin/[...] (Wildcard)
-```
-
-**Here's what gets matched:**
-
-| Request URL                  | Matched Route                  | Why                                      |
-| ---------------------------- | ------------------------------ | ---------------------------------------- |
-| `/api/admin/settings`        | Static `/api/admin/settings`   | Static routes matched first              |
-| `/api/admin/users`           | Dynamic `/api/admin/[section]` | No static match, dynamic matched         |
-| `/api/admin/users/list`      | Wildcard `/api/admin/[...]`    | Multiple segments, wildcard catches all  |
-| `/api/admin/reports/2024/q3` | Wildcard `/api/admin/[...]`    | Multiple segments, only wildcard matches |
-
-## Advanced Usage
-
-Wildcard routes combine well with dynamic routes.
-
-### Wildcard Inside Dynamic Routes
-
-You can nest wildcard routes within dynamic routes to create flexible APIs:
-
-**Folder Structure:**
-
-```
-api/
-  users/
-    [userId]/
-      [...]/
-        route.ts
-```
-
-This creates a pattern like `/api/users/{userId}/*` where you can access both the user ID and the remaining path.
-
-**Route Handler:**
-
-```typescript title="api/users/[userId]/[...]/schema.ts"
-import { z } from "zod";
-
-export const GET = {
-  params: z.object({
-    userId: z.string().min(1),
-  }),
-};
+api/users/[userId]/[...]/route.ts   → /api/users/:userId/*
 ```
 
 ```typescript title="api/users/[userId]/[...]/route.ts"
-import { defineRoute } from "burger-api";
-import { GET as GetSchema } from "./schema";
-
-export const GET = defineRoute(GetSchema, (ctx) => {
-  // Access validated userId from params
-  const { userId } = ctx.validated.params;
-
-  // Access the remaining path segments
-  const wildcardParams = ctx.wildcardParams;
-
-  return Response.json({
-    userId,
-    userPath: wildcardParams.join("/"),
-    segments: wildcardParams,
-    message: `Accessing user ${userId}'s resource: ${wildcardParams.join("/")}`,
-  });
-});
-```
-
-**Example Requests:**
-
-```
-GET /api/users/123/posts
-→ params.userId = "123"
-→ wildcardParams = ["posts"]
-
-GET /api/users/123/posts/456/comments
-→ params.userId = "123"
-→ wildcardParams = ["posts", "456", "comments"]
-
-GET /api/users/abc/files/documents/resume.pdf
-→ params.userId = "abc"
-→ wildcardParams = ["files", "documents", "resume.pdf"]
-```
-
-## Real-World Examples
-
-### Example 1: OAuth Authentication Handler
-
-Handle multiple OAuth providers with a single wildcard route:
-
-```typescript title="api/auth/[...]/route.ts"
-import type { BurgerContext } from "burger-api";
-
-// OAuth provider configurations
-const providers = {
-  "google/callback": { name: "Google", redirectUrl: "/dashboard" },
-  "github/callback": { name: "GitHub", redirectUrl: "/dashboard" },
-  "facebook/callback": { name: "Facebook", redirectUrl: "/dashboard" },
-  "twitter/callback": { name: "Twitter", redirectUrl: "/dashboard" },
-};
-
-export async function GET(ctx: BurgerContext) {
-  const segments = ctx.wildcardParams;
-  const authPath = segments.join("/");
-
-  // Check if it's a known auth route
-  const provider = providers[authPath];
-
-  if (!provider) {
-    return Response.json(
-      {
-        error: "Unknown authentication provider",
-        path: authPath,
-      },
-      { status: 404 }
-    );
-  }
-
-  // Handle OAuth callback
-  const code = ctx.query.code;
-
-  if (!code) {
-    return Response.json(
-      { error: "Missing authorization code" },
-      { status: 400 }
-    );
-  }
-
-  // Process OAuth callback (simplified)
-  return Response.json({
-    success: true,
-    provider: provider.name,
-    message: `Successfully authenticated with ${provider.name}`,
-    redirectUrl: provider.redirectUrl,
-  });
-}
-```
-
-### Example 2: Multi-tenant Application
-
-Build a multi-tenant SaaS API where each tenant has dynamic nested resources:
-
-```typescript title="api/tenants/[tenantId]/[...]/schema.ts"
-import { z } from "zod";
-
-export const GET = {
-  params: z.object({
-    tenantId: z.string().uuid(),
-  }),
-};
-```
-
-```typescript title="api/tenants/[tenantId]/[...]/route.ts"
-import { defineRoute } from "burger-api";
-import { GET as GetSchema } from "./schema";
-
-export const GET = defineRoute(GetSchema, (ctx) => {
-  const { tenantId } = ctx.validated.params;
-  const resourcePath = ctx.wildcardParams;
-
-  // Handle different tenant resources
-  const [resource, ...rest] = resourcePath;
-
-  switch (resource) {
-    case "users":
-      return Response.json({
-        tenant: tenantId,
-        resource: "users",
-        subPath: rest,
-        data: { message: "Fetching tenant users" },
-      });
-
-    case "settings":
-      return Response.json({
-        tenant: tenantId,
-        resource: "settings",
-        subPath: rest,
-        data: { message: "Fetching tenant settings" },
-      });
-
-    case "analytics":
-      return Response.json({
-        tenant: tenantId,
-        resource: "analytics",
-        subPath: rest,
-        data: { message: "Fetching tenant analytics" },
-      });
-
-    default:
-      return Response.json(
-        {
-          error: "Unknown tenant resource",
-          tenant: tenantId,
-          path: resourcePath.join("/"),
-        },
-        { status: 404 }
-      );
-  }
-});
-```
-
-### Example 3: Blog/CMS with Nested Categories
-
-Handle deeply nested blog categories and posts:
-
-```typescript title="api/blog/[...]/route.ts"
 import type { BurgerContext } from "burger-api";
 
 export async function GET(ctx: BurgerContext) {
-  const segments = ctx.wildcardParams;
-
-  // Parse the path: /blog/tech/web-dev/react/2024/hooks-guide
-  if (segments.length === 0) {
-    // Return all top-level categories
-    return Response.json({
-      type: "categories",
-      data: ["tech", "business", "lifestyle"],
-    });
-  }
-
-  // Check if last segment looks like a post slug
-  const lastSegment = segments[segments.length - 1];
-  const isPost =
-    lastSegment.includes("-") ||
-    !segments[segments.length - 1].match(/^\d{4}$/);
-
-  if (isPost) {
-    // This is a blog post
-    return Response.json({
-      type: "post",
-      slug: lastSegment,
-      category: segments.slice(0, -1).join("/"),
-      breadcrumbs: segments,
-      // In real app: fetch post from database
-      data: {
-        title: lastSegment.replace(/-/g, " "),
-        category: segments.slice(0, -1),
-        content: "Post content here...",
-      },
-    });
-  } else {
-    // This is a category
-    return Response.json({
-      type: "category",
-      path: segments.join("/"),
-      breadcrumbs: segments,
-      // In real app: fetch posts in this category
-      posts: ["getting-started", "advanced-techniques", "best-practices"],
-    });
-  }
+  const { userId } = ctx.params;
+  const rest = ctx.wildcardParams;
+  // GET /api/users/123/posts/456 → userId = "123", rest = ["posts", "456"]
+  return Response.json({ userId, rest });
 }
 ```
 
-### Example 4: E-commerce Product Categories
+## Rules to know
 
-Handle complex product category hierarchies:
+- **Use `[...]` only.** A named folder such as `[...slug]` is an error in dev and in builds. Read `ctx.wildcardParams` instead.
+- **Wildcards match last.** Order is static, then `[param]`, then `[...]`. A wildcard only gets requests no other route matches.
+- **A wildcard must be the last folder.** A folder after `[...]`, or two wildcards at the same level, fails at startup.
+- **Not typed by name.** `ctx.wildcardParams` is always `string[]`. If you need named, typed values, use [dynamic segments](./dynamic-routes.md).
 
-```typescript title="api/products/[...]/route.ts"
-import type { BurgerContext } from "burger-api";
+Example of the order:
 
-export async function GET(ctx: BurgerContext) {
-  const categoryPath = ctx.wildcardParams;
-
-  // Example: /products/electronics/computers/laptops/gaming
-  const category = categoryPath[categoryPath.length - 1];
-  const parentCategories = categoryPath.slice(0, -1);
-
-  // Get query parameters for filtering
-  const minPrice = ctx.query.min_price;
-  const maxPrice = ctx.query.max_price;
-  const brand = ctx.query.brand;
-
-  return Response.json({
-    category: category,
-    fullPath: categoryPath.join(" > "),
-    breadcrumbs: categoryPath,
-    filters: {
-      minPrice: minPrice ? parseFloat(minPrice) : null,
-      maxPrice: maxPrice ? parseFloat(maxPrice) : null,
-      brand: brand,
-    },
-    // In real app: fetch products from database
-    products: [
-      { id: 1, name: "Gaming Laptop Pro", price: 1299 },
-      { id: 2, name: "Ultra Gaming Laptop", price: 1599 },
-    ],
-  });
-}
 ```
-
-### Example 5: Internationalized Documentation
-
-Serve localized documentation with language prefixes:
-
-```typescript title="api/[locale]/docs/[...]/schema.ts"
-import { z } from "zod";
-
-const supportedLocales = ["en", "es", "fr", "de", "ja", "zh"];
-
-export const GET = {
-  params: z.object({
-    locale: z.enum(supportedLocales as [string, ...string[]]),
-  }),
-};
+api/admin/settings/route.ts    → /api/admin/settings
+api/admin/[section]/route.ts   → /api/admin/users
+api/admin/[...]/route.ts       → /api/admin/users/list
 ```
-
-```typescript title="api/[locale]/docs/[...]/route.ts"
-import { defineRoute } from "burger-api";
-import { GET as GetSchema } from "./schema";
-
-export const GET = defineRoute(GetSchema, (ctx) => {
-  const { locale } = ctx.validated.params;
-  const docPath = ctx.wildcardParams;
-
-  if (docPath.length === 0) {
-    // Return documentation home for this locale
-    return Response.json({
-      locale,
-      message: `Welcome to documentation (${locale})`,
-      sections: ["getting-started", "api-reference", "guides"],
-    });
-  }
-
-  // Fetch localized documentation
-  const fullPath = docPath.join("/");
-
-  return Response.json({
-    locale,
-    path: fullPath,
-    breadcrumbs: docPath,
-    // In real app: fetch from CMS or markdown files
-    content: {
-      title: `${fullPath} (${locale})`,
-      body: `Localized content for ${fullPath} in ${locale}`,
-    },
-  });
-});
-```
-
-### Example 6: Microservices API Gateway
-
-Route requests to different microservices based on path:
-
-```typescript title="api/gateway/[...]/route.ts"
-import type { BurgerContext } from "burger-api";
-
-// Microservice routing map
-const services = {
-  users: "http://users-service:3001",
-  orders: "http://orders-service:3002",
-  payments: "http://payments-service:3003",
-  inventory: "http://inventory-service:3004",
-};
-
-export async function GET(ctx: BurgerContext) {
-  const segments = ctx.wildcardParams;
-  const [service, ...path] = segments;
-
-  const serviceUrl = services[service];
-
-  if (!serviceUrl) {
-    return Response.json(
-      {
-        error: "Unknown service",
-        service,
-        availableServices: Object.keys(services),
-      },
-      { status: 404 }
-    );
-  }
-
-  // Forward request to microservice
-  const targetUrl = `${serviceUrl}/${path.join("/")}`;
-  const searchIndex = ctx.url.indexOf("?");
-  const search = searchIndex >= 0 ? ctx.url.slice(searchIndex) : "";
-
-  try {
-    const response = await fetch(`${targetUrl}${search}`, {
-      method: ctx.method,
-      headers: ctx.headers,
-    });
-
-    const data = await response.json();
-
-    return Response.json({
-      service,
-      path: path.join("/"),
-      data,
-    });
-  } catch (error) {
-    return Response.json(
-      {
-        error: "Service unavailable",
-        service,
-        message: error instanceof Error ? error.message : String(error),
-      },
-      { status: 503 }
-    );
-  }
-}
-```
-
-## API Reference
-
-### `ctx.wildcardParams` Property
-
-**Type:** `string[]`
-
-**Description:** An array containing all path segments captured by the wildcard route. Each segment is a string representing one part of the URL path after the wildcard point. The property is always an array, empty for non-wildcard routes.
-
-**Usage:**
-
-```typescript
-const wildcardParams = ctx.wildcardParams;
-```
-
-**Example:**
-For the URL `/api/admin/settings/users/permissions`:
-
-```typescript
-// In api/admin/[...]/route.ts
-ctx.wildcardParams = ["settings", "users", "permissions"];
-```
-
-## Important Notes
-
-:::warning Limitations
-When working with wildcard routes, keep these limitations in mind:
-
-1. **Mixing with Dynamic Routes:** Dynamic `[id]` and wildcard `[...]` folders can coexist at the same directory level. The router resolves them by priority: static > dynamic > wildcard. See [Dynamic Routes](/docs/routing/api/dynamic-routes) for the full rule.
-2. **Lowest Priority:** Wildcard routes are always matched last. If a static or dynamic route exists that matches the path, it will be chosen first.
-3. **Placement:** A wildcard folder must be the last segment of the path. Two wildcard folders at the same directory level, or any segment after a wildcard, fail at startup with a clear error.
-4. **Anonymous Only:** The folder is named `[...]`. A named wildcard folder such as `[...slug]` is not supported: development and production builds both fail with a clear error. Use `[...]` and read `ctx.wildcardParams` instead.
-5. **All Segments Captured:** The wildcard captures **all** remaining segments as an array. There is no partial wildcard matching.
-:::
-
-:::tip Best Practices
-
-- **Handle empty arrays:** `ctx.wildcardParams` is always an array, but it is empty when no segments were captured
-- **Validate segments manually:** Wildcard parameters are not validated by Zod schemas. Add your own validation logic to ensure the captured segments are what you expect
-- **Use meaningful responses:** Return clear error messages when paths don't match expected patterns
-- **Document your paths:** If building a complex API, document which paths are valid for your wildcard routes
-- **Combine with dynamic routes:** You can use Zod validation for dynamic route params (like `[userId]`) while handling wildcards manually
-   :::
-
-## Summary
-
-Wildcard routes handle complex, nested URL structures:
-
-- Use `[...]` folder syntax to create wildcard routes
-- Access captured segments via `ctx.wildcardParams`
-- Combine with dynamic routes for flexible patterns
-- Remember: Static > Dynamic > Wildcard in matching priority
-- Use them for admin panels, file systems, and proxy APIs
-
-See the other routing documentation to learn more:
-
-- **[Static Routes](./static-routes.md)** - Learn about fixed API endpoints
-- **[Route Groups](./route-groups.md)** - Organize routes without affecting URLs
-- **[Dynamic Routes](./dynamic-routes.md)** - Capture URL parameters in your routes
-
-
-## Types for this feature
-
-TypeScript checks the handler parameter. The wildcard segments themselves have no schema.
-
-The types you use (from `burger-api`):
-
-- `BurgerContext`: the request object
-- `ctx.wildcardParams`: always `string[]` (empty for non-wildcard routes; there is no schema for wildcard segments)
-
-✅ Correct: type the handler and read the array:
-
-```typescript
-import type { BurgerContext } from "burger-api";
-
-export async function GET(ctx: BurgerContext) {
-    const segments = ctx.wildcardParams;
-    return Response.json({ segments });
-}
-```
-
-❌ Wrong: wildcard segments are not typed by name:
-
-```typescript
-export async function GET(ctx: BurgerContext) {
-    ctx.wildcardParams.foo; // ❌ Property 'foo' does not exist on 'string[]'
-}
-```
-
-If you need typed parameters, use [dynamic segments](/docs/routing/api/dynamic-routes) (`[id]`) with a `params` schema instead. See the [TypeScript overview](/docs/advanced/type-safety).
-
-Check your code: `bun run typecheck`.
 
 ## Related
 
+- [Static Routes](./static-routes.md)
+- [Dynamic Routes](./dynamic-routes.md)
+- [Route Groups](./route-groups.md)
 - [File-Based Routing](/docs/routing/file-based-routing)
-- [Static API Routes](/docs/routing/api/static-routes)
-- [Dynamic Routes](/docs/routing/api/dynamic-routes)

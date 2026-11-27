@@ -4,22 +4,24 @@ sidebar_label: Complete Project Example
 
 # Complete Project Example
 
-A full BurgerAPI project follows the 1.0 layout. App-level files live in `src/`, each with one job:
+A full BurgerAPI project. Each file has one job:
 
 ```
+burger.build.ts        # build settings (CLI only)
 src/
-├── index.ts           # Burger instance + burger.serve(port)
+├── index.ts           # new Burger(...) + serve()
 ├── plugins.ts         # register plugins
-├── providers.ts       # declare shared services
-├── hooks.ts           # global hooks (onRequest, beforeRoute, ...)
-├── openapi.config.ts  # OpenAPI metadata and docs config
-└── api/               # routes
+├── providers.ts       # shared services
+├── hooks.ts           # global hooks
+├── openapi.config.ts  # OpenAPI and docs settings
+├── types.ts           # your type extensions
+└── api/
     └── products/
-        ├── route.ts   # export async function GET(ctx: BurgerContext)
-        ├── schema.ts  # per-method validation schemas
+        ├── route.ts   # handlers
+        ├── schema.ts  # validation
         ├── hooks.ts   # route hooks
-        ├── openapi.ts # per-method OpenAPI metadata
-        └── config.ts  # route options (auth, cache, timeout, ...)
+        ├── openapi.ts # OpenAPI metadata
+        └── config.ts  # route options (auth, ...)
 ```
 
 ```ts title="src/index.ts"
@@ -56,10 +58,9 @@ export const onRequest = [
 ];
 ```
 
-Build-time concerns (dirs, prefixes, debug) live in `burger.build.ts` and are used by the CLI only. Runtime options belong in `new Burger({...})`, `src/plugins.ts`, and route `config.ts`.
+Create this layout with `burger-api create my-app`. Run `bun run dev` while you work. For production, run `burger-api build`, then `burger-api start`.
 
-Use `burger-api create my-app` to scaffold this structure. Run the dev server with `bun run dev`; build and start with `burger-api build` and `burger-api start`. For step-by-step builds, see the [Blog API](/docs/tutorials/blog-api) and [Todo API](/docs/tutorials/todo-api) tutorials.
-
+For step-by-step guides, see the [Blog API](/docs/tutorials/blog-api) and [Todo API](/docs/tutorials/todo-api) tutorials.
 
 ## Related
 

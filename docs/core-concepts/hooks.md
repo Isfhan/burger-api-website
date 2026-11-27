@@ -4,39 +4,36 @@ sidebar_label: Hooks
 
 # Hooks
 
-Hooks control when code runs on a request. They are named stages in the request lifecycle:
+Hooks run your code at fixed points of a request. There are six: `onRequest`, `transform`, `beforeRoute`, `afterRoute`, `mapResponse` and `onError`.
 
-`onRequest`, `transform`, `beforeRoute`, `afterRoute`, `mapResponse`, `onError`.
+```
+onRequest → Routing → transform → Validation → beforeRoute
+  → Handler → afterRoute → mapResponse
+```
 
-Forward hooks (`onRequest`, `beforeRoute`) can return a `Response` to skip the handler and every later forward hook. Response mappers returned by earlier hooks still run, and so do `afterRoute` and `mapResponse`. That keeps headers such as CORS on early responses like a 401 or 429.
+Errors go to `onError`.
 
-```ts
-// src/hooks.ts
-import { cors } from "../ecosystem/hooks/cors/cors";
+```ts title="src/hooks.ts"
+import type { GlobalHooks } from "burger-api";
 
-export const onRequest = [
-  cors({ origin: ["https://app.example.com"] }),
-  () => new Response("Too many requests", { status: 429 }),
+export const beforeRoute: GlobalHooks["beforeRoute"] = [
+  (ctx) => {
+    if (!ctx.headers.get("x-api-key")) {
+      return new Response("Unauthorized", { status: 401 });
+    }
+  },
 ];
 ```
 
-The second hook short-circuits the request. The handler and later forward hooks do not run, but the CORS mapper from the first hook still applies to the 429.
+Returning a `Response` from `onRequest` or `beforeRoute` stops the request. The handler does not run, but `afterRoute` and `mapResponse` still do.
 
-Response hooks (`afterRoute`, `mapResponse`) run after the handler. Returning a `Response` replaces the current response and later hooks still run; returning a function transforms it. `onError` returns a `Response` to handle an error. Returning `undefined` continues.
+Hooks live in `src/hooks.ts` (every request) or in a route's `hooks.ts` (that route only). Plugins are a separate thing: they package hooks for reuse.
 
-Hooks live in two scopes:
-
-- Global: `src/hooks.ts`, for every request.
-- Route: `api/**/hooks.ts`, for a single route directory.
-
-Plugins are a separate concept: they extend the application and may register hooks. Keep the two separate.
-
-See [Hook System](/docs/hooks/system) for the full model: scope order, route convention files, and the return contract. See [Ecosystem](/docs/ecosystem/introduction) for how hooks and plugins are packaged.
-
+See [Hook System](/docs/hooks/system) for the full guide.
 
 ## Related
 
-- [Applications](/docs/core-concepts/applications)
-- [Routing](/docs/core-concepts/routing)
-- [Handlers](/docs/core-concepts/handlers)
-- [Request Context](/docs/core/request-handling)
+- [Hook System](/docs/hooks/system)
+- [Global Hooks](/docs/hooks/global)
+- [Route Hooks](/docs/hooks/route-specific)
+- [Hooks and Plugins](/docs/ecosystem/hooks-plugins)

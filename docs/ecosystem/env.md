@@ -4,17 +4,17 @@ sidebar_label: Env Validation
 
 # Env Plugin
 
-The env plugin checks your environment variables when the app starts. It validates types, fills in defaults, and throws a clear error that lists every problem, so a bad deploy fails at boot instead of on the first request. It is not an auth plugin: it has no request hooks and does not touch routing or `config.auth`.
+This plugin checks your environment variables when the app starts. It checks types, fills in defaults, and stops startup with a clear list of problems. It is not an auth plugin and adds no request hooks.
 
-Install it with:
+## Install
 
 ```bash
 burger-api add env
 ```
 
-## Usage
+To update the copy later, run `burger-api add env --force`.
 
-Register the plugin in `src/plugins.ts`:
+## Register
 
 ```ts title="src/plugins.ts"
 import type { PluginRegistrar } from "burger-api";
@@ -29,41 +29,30 @@ export default (burger: PluginRegistrar) => {
       },
       optional: {
         PORT: { type: "number", default: 3000 },
-        LOG_LEVEL: { type: "string", default: "info" },
       },
     })
   );
 };
 ```
 
-Validation runs while `src/plugins.ts` is loaded. With the config above, a missing `DATABASE_URL` or a `PORT` of `"abc"` stops startup with a message that names each variable.
+With this config, a missing `DATABASE_URL` or a `PORT` of `"abc"` stops startup.
 
 ## Options
 
-- `required`: object of variable name to schema. Default `{}`.
-- `optional`: object of variable name to schema, normally with a `default`. Default `{}`.
-- `throwOnError`: throw when anything is missing or invalid. Default `true`.
-- `onError`: callback that receives the error list, for logging or reporting. Called before the throw. Default unset.
+- `required`: variables that must be set.
+- `optional`: variables that may be missing, usually with a `default`.
 
-Each schema supports:
+Each variable takes:
 
-- `type`: `"string"`, `"number"`, `"boolean"`, `"url"`, or `"json"`. Required.
-- `default`: value used when the variable is missing or empty. A default also makes a `required` variable optional.
-- `validate`: `(value: string) => boolean` for extra checks.
-- `description`: text added to the missing-variable message.
+- `type`: `"string"`, `"number"`, `"boolean"`, `"url"` or `"json"`.
+- `default`: value used when the variable is missing or empty.
+- `validate`: `(value) => boolean` for extra checks.
 
-Each reported error has `name`, `message`, and `type` (`"missing"` or `"invalid"`).
+The full list is in `ecosystem/plugins/env/README.md`.
 
-## What the handler sees
+## Use the values
 
-The plugin adds nothing to the context and runs no hooks. It checks `process.env` and writes defaults back into it, so handlers keep reading `process.env.PORT` as before, typed `string | undefined`. There is no generated typed env object, so parse the value where you need a number or a boolean.
-
-## Good to know
-
-- An empty string counts as missing, for both `required` and `optional`, so `PORT=` fails a number check by being treated as absent.
-- Defaults are written to `process.env` as strings: `default: 3000` becomes `"3000"`. A required variable with a default is not an error.
-- `validate` is not called when the value came from `default`; it only sees values that were already set.
-- `number` accepts anything `Number()` accepts, so `"0x10"` and `"1e3"` pass. `boolean` accepts `true`, `false`, `1`, `0`, `yes`, and `no`, case-insensitive.
+Read them from `process.env` as usual. Defaults are written back as strings, so `PORT` is `"3000"`. Parse numbers and booleans where you use them.
 
 ## Related
 

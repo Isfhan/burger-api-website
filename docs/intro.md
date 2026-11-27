@@ -6,30 +6,26 @@ slug: /
 
 # Welcome to BurgerAPI
 
-BurgerAPI is a Bun-first, WinterCG-compatible framework for building modern APIs with file-based routing, end-to-end type safety, and a clear project structure. TypeScript and JavaScript are both first-class: the same conventions work with `.ts`, `.js`, and `.mjs` route files, and JavaScript projects get full JSDoc type-checking.
+BurgerAPI is a Bun-first framework for building APIs. You create folders and files, and BurgerAPI turns them into routes. It works with TypeScript and JavaScript.
 
 :::info A new BurgerAPI
 `burger-api` and `@burger-api/cli` 1.0.0-beta are rebuilt from the ground up and install by default. Please try them and [open an issue](https://github.com/isfhan/burger-api/issues) if anything breaks or feels wrong. See the [release notes](/blog/burger-api-v1.0.0-beta-release) for what is new. Coming from `burger-api@0.9.7` or `@burger-api/cli@0.9.9`? The [migration guide](/docs/migration) covers every breaking change.
 :::
 
-### What BurgerAPI is built around
+### What you get
 
-- **File-based routing:** A route is a directory of sibling files.
-- **Route convention files:** `route.ts`, `schema.ts`, `hooks.ts`, `openapi.ts`, `config.ts` (self-contained; no group inheritance).
-- **Hooks:** Request lifecycle (`onRequest`, `transform`, `beforeRoute`, `afterRoute`, `mapResponse`, `onError`).
-- **Plugins:** Application extensions (`src/plugins.ts`). Hooks and plugins are separate concepts.
-- **Providers:** App services via `src/providers.ts` → `ctx.services`.
-- **Validation:** Standard Schema (Zod default) in `schema.ts` with per-method exports (`GET`, `POST`, …).
-- **Context:** Public type **`BurgerContext`**. Handlers return standard Web **`Response`**.
-- **Type inference:** `defineRoute(schema, handler)` / `defineHooks(schema, hooks)` infer `ctx.validated` from your schema, so there is no generic to write by hand.
-- **OpenAPI:** Spec + docs UI.
-- **Ecosystem:** `ecosystem/hooks/`, `ecosystem/plugins/`, `ecosystem/skills/`.
-- **Build config:** `burger.build.ts` is read by `burger-api build`, `inspect`, and `doctor`; `burger-api dev`/`start` read `new Burger({...})` in `src/index.ts`. The scaffold keeps both in sync and the defaults agree out of the box. Runtime config lives in `new Burger({...})`, `openapi.config.ts`, plugins, and route `config.ts`.
-- **Deploy targets:** `burger-api build --target=bun|node|cloudflare|deno|vercel`: one command per platform, no hand-written entry files.
+- **File-based routing:** a folder with a `route.ts` file is a route.
+- **Validation:** define schemas in `schema.ts` and read typed data from `ctx.validated`.
+- **Hooks:** run code at each step of a request, for example to log or check auth.
+- **Plugins and providers:** add features in `src/plugins.ts` and shared services in `src/providers.ts`.
+- **OpenAPI:** API docs generated from your routes, served at `/docs`.
+- **WebSocket:** real-time routes under `src/websocket/`.
+- **Deploy anywhere:** `burger-api build --target=bun|node|cloudflare|deno|vercel`.
 
 ### Getting started
 
-- **[CLI Quick Start](./getting-started/cli.md)**
+- **[Quick Start](./quick-start.md)**
+- **[CLI](./getting-started/cli.md)**
 - **[Key Concepts](./key-concepts.md)**
 - **[JavaScript](./javascript.md)**
 - **[Routing](./routing/file-based-routing.md)**
@@ -38,11 +34,6 @@ BurgerAPI is a Bun-first, WinterCG-compatible framework for building modern APIs
 - **[OpenAPI](./api/openapi.md)**
 - **[Deployment](./deployment/bun.md)**: Bun, [Node.js](./deployment/node.md), [Cloudflare Workers](./deployment/cloudflare.md), [Deno](./deployment/deno.md), [Vercel](./deployment/vercel.md)
 - **[Ecosystem](./ecosystem/introduction.md)**
-
-### Core ideas
-
-- **[Performance](./performance/overview.md)** and **[Benchmarks](./advanced/benchmarks.md)**
-- **[Type Safety](./advanced/type-safety.md)**
 - **[Compatibility](./compatibility.md)**: what works on each runtime
 
 ## Related

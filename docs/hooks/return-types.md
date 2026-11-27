@@ -4,98 +4,60 @@ sidebar_label: Hook Return Types
 
 # Hook Return Types
 
-A hook can return one of three things:
+A hook returns one of three things.
 
-1. **`undefined`**: Continue to the next hook or the route handler.
-2. **`Response`**: For a forward hook (`onRequest`, `beforeRoute`), skip the handler and every later forward hook, and send this response (e.g. 401 Unauthorized). Mappers returned by earlier hooks still run, and `afterRoute` and `mapResponse` still run on it. For a response hook (`afterRoute`, `mapResponse`), replace the current response; the remaining hooks still run on the replacement.
-3. **A function**: Transform the response. A forward hook's function runs on the handler's response, or on an early response from a later forward hook, before response validation and `afterRoute`. A response hook's function runs immediately at its stage. Either receives the current `Response` and returns a modified `Response` (e.g. for CORS headers).
+| Return | `onRequest`, `beforeRoute` | `afterRoute`, `mapResponse` |
+|--------|----------------------------|-----------------------------|
+| `undefined` | Continue | Continue |
+| `Response` | Stop. Skip the handler and send this response | Replace the current response |
+| `(response) => Response` | Change the response after the handler runs | Change the response now |
 
-```ts
-// Continue
-return undefined;
+When a forward hook stops the request, `afterRoute` and `mapResponse` still run. So headers such as CORS still reach a 401 or 429.
 
-// Stop and respond
-return new Response("Unauthorized", { status: 401 });
+`onError` returns a `Response` to handle the error, or `undefined` to let the next `onError` hook try.
 
-// Transform the response (afterRoute / mapResponse)
-return (response) => {
-  const headers = new Headers(response.headers);
-  headers.set("X-Custom", "value");
-  return new Response(response.body, { status: response.status, headers });
-};
-```
-
-Hook types come from `burger-api`:
-
-```ts
-import type { Hook, ErrorHook } from "burger-api";
-
-export const onRequest: Hook[] = [];
-export const onError: ErrorHook[] = [];
-```
-
-`onError` uses `ErrorHook` because it receives the error.
-
-Authenticate in `transform`, not `beforeRoute`. `transform` runs before validation, so an unauthenticated caller gets a 401 instead of a 422 that lists the schema fields. Throw `UnauthorizedError` to reject, or return the user to set `ctx.user`. `beforeRoute` runs after validation; use it for checks that need `ctx.validated`.
-
-## Types for this feature
-
-Each hook point has a precise type. TypeScript checks your hook's return value against it.
-
-The types you use (all from `burger-api`):
-
-- `ForwardHook`: `onRequest`, `beforeRoute`. Returns `Response`, a transform function, or `undefined`.
-- `ResponseHook`: `afterRoute`, `mapResponse`. Returns `Response`, a transform function, or `undefined`.
-- `ErrorHook`: `onError`. Returns `Response` or `undefined`.
-- `RouteHooks`: the per-route hook object, for `hooks.ts` files (no `onRequest`).
-- `GlobalHooks`: extends `RouteHooks` with `onRequest`, for `src/hooks.ts` and plugin hooks.
-
-✅ Correct: a transform function on a response hook:
-
-```ts
+```ts title="src/api/users/hooks.ts"
 import type { RouteHooks } from "burger-api";
+
+export const beforeRoute: RouteHooks["beforeRoute"] = [
+  (ctx) => {
+    if (!ctx.headers.get("authorization")) {
+      return new Response("Unauthorized", { status: 401 }); // stop
+    }
+    return undefined; // continue
+  },
+];
 
 export const afterRoute: RouteHooks["afterRoute"] = [
-    (ctx) => (response) => {
-        const headers = new Headers(response.headers);
-        headers.set("X-Custom", "value");
-        return new Response(response.body, { status: response.status, headers });
-    },
+  () => (response) => {
+    const headers = new Headers(response.headers);
+    headers.set("X-Custom", "value");
+    return new Response(response.body, { status: response.status, headers });
+  },
 ];
 ```
 
-✅ Correct: a transform function on a forward hook. The mapper is queued and runs on the response: after the handler returns, or on the early response when a later forward hook short-circuits, before response validation and `afterRoute`:
+## Types
 
-```ts
-import type { RouteHooks } from "burger-api";
+Import these from `burger-api`:
 
-export const beforeRoute: RouteHooks["beforeRoute"] = [
-    () => (response) => {
-        const headers = new Headers(response.headers);
-        headers.set("X-Custom", "value");
-        return new Response(response.body, { status: response.status, headers });
-    },
-];
-```
+- `RouteHooks`: the shape of a route `hooks.ts` (no `onRequest`).
+- `GlobalHooks`: the shape of `src/hooks.ts` and plugin hooks (adds `onRequest`).
+- `ForwardHook`, `ResponseHook`, `ErrorHook`: one hook function.
 
-❌ Wrong: a hook returns an invalid value:
+TypeScript rejects a wrong return value:
 
 ```ts
 export const beforeRoute: RouteHooks["beforeRoute"] = [
-    () => "yes", // ❌ Type 'string' is not assignable
+  () => "yes", // ❌ Type 'string' is not assignable
 ];
 ```
 
-See the [TypeScript overview](/docs/advanced/type-safety).
-
-Check your code: `bun run typecheck`.
-
-See [Hook System](/docs/hooks/system) and [After Hooks](/docs/hooks/after).
-
+Run `bun run typecheck` to check your code. See [Hook Types](/docs/api/hook-types) for the full signatures.
 
 ## Related
 
 - [Hook System](/docs/hooks/system)
-- [Global Hooks](/docs/hooks/global)
-- [Route Hooks](/docs/hooks/route-specific)
-- [Request Context](/docs/core/request-handling)
+- [After Hooks](/docs/hooks/after)
+- [Hook Types](/docs/api/hook-types)
+- [Type Safety](/docs/advanced/type-safety)

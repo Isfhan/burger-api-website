@@ -4,17 +4,13 @@ sidebar_label: Headers Validation
 
 # Headers Validation
 
-You can validate request **headers** the same way you validate the query string or body. This is useful for API keys, tokens, and other header-based inputs.
-
-## Example
+Add a `headers` schema to a method in `schema.ts`. The validated values are on `ctx.validated.headers`.
 
 ```typescript title="api/secure/schema.ts"
 import { z } from "zod";
 
 export const GET = {
-  headers: z.object({
-    "x-api-key": z.string().min(1),
-  }),
+  headers: z.object({ "x-api-key": z.string().min(1) }),
 };
 ```
 
@@ -23,19 +19,16 @@ import { defineRoute } from "burger-api";
 import { GET as GetSchema } from "./schema";
 
 export const GET = defineRoute(GetSchema, (ctx) => {
-  const key = ctx.validated.headers["x-api-key"];
-  return Response.json({ key });
+  return Response.json({ key: ctx.validated.headers["x-api-key"] });
 });
 ```
 
-If the `x-api-key` header is missing or empty, BurgerAPI responds with `422` and a structured error. The validated value is available on `ctx.validated.headers`.
+If the header is missing or empty, the request gets `422`.
 
-## Notes
+## Good to know
 
-- BurgerAPI lowercases incoming header names before validation, so declare header keys in lowercase (`"x-api-key"`). A schema key with capitals, such as `"X-Api-Key"`, can never match, so it fails at startup with an error naming the key and its lowercase form.
-- Headers are text, so enable [coercion](/docs/validation/coercion) if you expect typed header values.
-- Cookie values are validated separately. See [Cookie Validation](/docs/validation/cookie).
-
+- Write header keys in lowercase (`"x-api-key"`). A key with capitals is a startup error.
+- Header values are text. Turn on [coercion](/docs/validation/coercion) if you expect numbers or booleans.
 
 ## Related
 

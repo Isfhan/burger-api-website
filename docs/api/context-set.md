@@ -4,7 +4,7 @@ sidebar_label: ContextSet
 
 # ContextSet
 
-`ContextSet` is the type of `ctx.set`. It describes response changes that the framework applies at the end of the request lifecycle, after `mapResponse`.
+`ContextSet` is the type of `ctx.set`. Use it to change the response status and headers. For usage, see [Response Mutation](/docs/api/response-mutation).
 
 ```ts
 interface ContextSet {
@@ -15,39 +15,18 @@ interface ContextSet {
 
 ## Fields
 
-### status
+| Field | Type | What it does |
+|-------|------|--------------|
+| `status` | `number` | Sets the response status. It does not replace an error status (400 or higher). |
+| `headers` | `Record<string, string \| string[]> \| Headers` | Adds headers to the response. Your values win. An array value adds every entry. `set-cookie` values are added, not replaced. |
 
-- **Type:** `number | undefined`
-- **Description:** The HTTP status to set on the response. When omitted, the handler's status is preserved. A response with an error status (`400` or higher) keeps that status: `ctx.set.status` only restyles success responses.
-
-### headers
-
-- **Type:** `Record<string, string | string[]> | Headers | undefined`
-- **Description:** Headers to merge over the response's existing headers. Explicitly set values win. An array value appends every entry instead of replacing. A scalar `set-cookie` is appended too, so cookies from the handler and from `ctx.set` both survive.
-
-`ctx.set.headers` is always defined at runtime: it is created on first access.
+`ctx.set.headers` always exists, so you can assign to it directly.
 
 ```ts
 ctx.set.headers = { "x-request-id": ctx.headers.get("x-request-id") ?? "none" };
 ```
 
-In JavaScript, setting a single key (`ctx.set.headers["x-request-id"] = value`) also works. In TypeScript, assign an object as shown, because the type also allows a `Headers` object.
-
-## Example
-
-```ts
-export async function POST(ctx: BurgerContext) {
-  ctx.set = {
-    status: 201,
-    headers: { "x-version": "1.0.0" },
-  };
-  return Response.json({ created: true });
-}
-```
-
-The mutation is applied by `applySet` at the pipeline exit, after `mapResponse` hooks run. See [Response Mutation](./response-mutation.md).
-
 ## Related
 
 - [Response Mutation](/docs/api/response-mutation)
-- [Burger Class](/docs/core/burger-class)
+- [Request API](/docs/api/request-api)

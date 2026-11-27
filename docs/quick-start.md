@@ -7,26 +7,23 @@ sidebar_position: 0
 
 Get a BurgerAPI app running in under a minute.
 
-Full install options (standalone executable, manual setup): [Installation](/docs/getting-started/installation).
-
 ## Prerequisites
 
-- **[Bun](https://bun.sh/)**: BurgerAPI is built for Bun. Install it from [bun.sh](https://bun.sh). Bun runs the CLI and local dev server regardless of where you deploy. See [Deploy anywhere](#deploy-anywhere) below.
+- **[Bun](https://bun.sh/)**: the CLI and the dev server run on Bun, wherever you deploy later.
 
 ## Steps
 
-This is the short version. For every install method, see [Installation](/docs/getting-started/installation).
-
-1. **Install the CLI** (if you have Bun), or run it with **bunx** without installing:
+1. **Install the CLI:**
 
     ```bash
     bun add -g @burger-api/cli
-    # no install needed: bunx @burger-api/cli <command>
     ```
 
-    Global Bun installs go to `~/.bun/bin`. If you see `burger-api: command not found`, add `~/.bun/bin` to your `PATH` (`%USERPROFILE%\.bun\bin` on Windows) and open a new terminal.
+    You can also skip the install and run `bunx @burger-api/cli <command>`.
 
-2. **Create a project, enter it, and start the dev server:**
+    If you see `burger-api: command not found`, add `~/.bun/bin` to your `PATH` (`%USERPROFILE%\.bun\bin` on Windows) and open a new terminal.
+
+2. **Create a project and start the dev server:**
 
     ```bash
     burger-api create my-api
@@ -36,35 +33,30 @@ This is the short version. For every install method, see [Installation](/docs/ge
 
 3. **Open** [http://localhost:4000/api](http://localhost:4000/api) for the starter route and [http://localhost:4000/docs](http://localhost:4000/docs) for the API docs.
 
-## Language choice
+## JavaScript
 
-BurgerAPI treats TypeScript and JavaScript as first-class languages. The
-scaffold defaults to TypeScript; pass `--lang js` for a JavaScript project
-(`jsconfig.json` with `checkJs`, `.js` / `.mjs` route files, JSDoc types):
+The project uses TypeScript by default. For JavaScript, pass `--lang js`:
 
 ```bash
 burger-api create my-api --lang js
 ```
 
-See [JavaScript](/docs/javascript) for details.
+See [JavaScript](/docs/javascript).
 
 ## Deploy anywhere
 
-`bun run dev` above is local development. When you're ready to ship, `burger-api build --target=<platform>` builds for the platform you're deploying to: Bun (default), Node.js, Cloudflare Workers, Deno, or Vercel:
+When you are ready to ship, build for your platform: `bun` (default), `node`, `cloudflare`, `deno`, or `vercel`.
 
 ```bash
 burger-api build src/index.ts --target=cloudflare
-wrangler dev   # boots the generated build locally, then `wrangler deploy`
 ```
 
-The Node.js target also needs `@burger-api/node-server` (`bun add @burger-api/node-server`). See [Node.js deployment](/docs/deployment/node).
-
-See [Deployment](/docs/deployment/bun) for each target and [Compatibility](/docs/compatibility) for what works where (WebSocket, for example, works on every target except Vercel).
+See [Deployment](/docs/deployment/bun) for each target and [Compatibility](/docs/compatibility) for what works where.
 
 ## Next steps
 
-- [Installation](/docs/getting-started/installation): Full install options (standalone executable, manual setup).
-- [CLI Tool](/docs/getting-started/cli): All CLI commands (create, add, list, dev, build, start).
-- [Key Concepts](/docs/key-concepts): Routing, hooks, plugins, validation.
+- [Installation](/docs/getting-started/installation): other install options.
+- [CLI Tool](/docs/getting-started/cli): all CLI commands.
+- [Key Concepts](/docs/key-concepts): routing, hooks, plugins, validation.
 - [JavaScript](/docs/javascript): JavaScript with JSDoc types.
 - [Deployment](/docs/deployment/bun): Bun, Node.js, Cloudflare Workers, Deno, Vercel.

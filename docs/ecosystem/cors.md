@@ -4,15 +4,19 @@ sidebar_label: CORS Hook
 
 # CORS Hook
 
-The CORS hook adds the appropriate `Access-Control-*` headers to responses, for example to allow browser cross-origin requests. Install it with:
+This hook adds `Access-Control-*` headers, so browsers can call your API from another origin. It also answers `OPTIONS` preflight requests with `204`.
+
+## Install
 
 ```bash
 burger-api add cors
 ```
 
-## Usage
+To update the copy later, run `burger-api add cors --force`.
 
-CORS belongs in `onRequest`: it runs pre-routing, so it can answer `OPTIONS` preflight requests before route matching. Compose it in `src/hooks.ts`:
+## Add it
+
+Add it to `onRequest` in `src/hooks.ts`, so it runs before routing:
 
 ```ts title="src/hooks.ts"
 import { cors } from "../ecosystem/hooks/cors/cors";
@@ -24,14 +28,13 @@ export const onRequest = [
 
 ## Options
 
-- `origin`: `"*"` or a string, array, or function. Default `"*"`. With `credentials: true`, `origin` must be explicit origins.
+- `origin`: `"*"`, a string, an array or a function. Default `"*"`. With `credentials: true`, list the origins.
+- `credentials`: allow cookies and auth headers.
 - `methods`: allowed HTTP methods.
-- `allowedHeaders` / `exposedHeaders`: header whitelists.
-- `maxAge`: preflight cache in seconds.
-- `debug`: verbose logging.
-- `enforceHttps`: block insecure origins in production.
+- `allowedHeaders`, `exposedHeaders`: header lists.
+- `maxAge`: how long browsers cache the preflight, in seconds.
 
-The hook handles `OPTIONS` preflight automatically and returns `204 No Content` with the CORS headers. Check the package README in `ecosystem/hooks/cors/` for the full option list.
+The full list is in `ecosystem/hooks/cors/README.md`.
 
 ## Related
 

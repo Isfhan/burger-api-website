@@ -7,77 +7,47 @@ sidebar_position: 1
 
 # AI Agent Skills
 
-Agent Skills provide structured, AI-readable documentation for your BurgerAPI project. Modern agentic IDEs discover them automatically.
+An Agent Skill is a set of markdown files that teaches your AI coding assistant how BurgerAPI works. Install it once. Your assistant finds it on its own and uses it when you ask about routes, hooks, validation, or the CLI.
 
-## What Are Agent Skills?
+Skills follow the [agentskills.io](https://agentskills.io) open standard.
 
-Agent Skills follow the [agentskills.io](https://agentskills.io) open standard: a `SKILL.md` file with YAML frontmatter and progressive disclosure through reference documents.
+## Install
 
-Instead of attaching files manually, you install a skill once and your AI assistant finds it automatically.
+### New project
 
-## How They Work
-
-1. **Install**: `burger-api skills install` downloads the burger-api skill once, then writes it to both `.agents/skills/burger-api/` and `.claude/skills/burger-api/`
-2. **Discover**: Each agent scans its own skills folder at the project root and loads relevant skills
-3. **Activate**: When you ask about routing, hooks, or CLI tasks, the agent uses the skill as context
-
-## Installation
-
-### With a New Project
-
-When you run `burger-api create`, you'll be asked:
+`burger-api create` asks:
 
 ```text
 ◇  Add AI agent skills? (recommended for agentic IDEs)
 │  Yes / No
 ```
 
-Answer Yes (default) and the skill is installed automatically. The new project
-also gets `AGENTS.md` (project rules for AI agents, read by Claude Code and
-other agents), even if you skip skills.
+Answer Yes (the default). Every new project also gets an `AGENTS.md` file with project rules for AI agents.
 
-### In an Existing Project
+### Existing project
 
 ```bash
 burger-api skills install
 ```
 
-This installs the default burger-api skill. You can also browse available skills:
+To see what is available and what is installed:
 
 ```bash
 burger-api skills available
 burger-api skills list
 ```
 
-`skills list` shows each installed skill once and names every folder it is in.
+## Where the files go
 
-## Project Layout
-
-When skills are installed, your project includes both copies:
+The skill is written to two folders with the same content:
 
 ```text
-.agents/skills/burger-api/     # Agent Skills standard
-├── SKILL.md
-└── references/
-    ├── routing.md
-    ├── validation.md
-    ├── hooks.md
-    ├── cli.md
-    └── openapi.md
-
-.claude/skills/burger-api/     # same files, copied for Claude Code
+.agents/skills/burger-api/     # read by OpenCode, Codex, and other agentskills.io tools
+.claude/skills/burger-api/     # read by Claude Code
 ```
 
-## Compatible Agents
+If your tool reads a different folder, copy the skill there. The files are plain markdown.
 
-No configuration needed. Each tool reads its own folder:
-
-- **Claude Code**: reads from `.claude/skills/`
-- **OpenCode**, **Codex**, and other tools that support the agentskills.io standard: read from `.agents/skills/`
-
-If a tool looks for a different folder, copy the skill there yourself. The
-files are plain markdown.
-
-## Next Steps
+## Related
 
 - [Skills CLI Command Reference](/docs/cli/skills)

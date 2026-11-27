@@ -4,11 +4,9 @@ sidebar_label: Burger
 
 # Burger Class
 
-The **`Burger`** class is the main entry point for your BurgerAPI application. You import it, create an instance with [Server Options](/docs/core/server-options), and call `serve()` to start the server.
+`Burger` is your app. Create it in `src/index.ts` and call `serve()` to start it.
 
-## Constructor
-
-```ts
+```ts title="src/index.ts"
 import { Burger } from "burger-api";
 
 const app = new Burger({
@@ -18,29 +16,39 @@ const app = new Burger({
 await app.serve(4000);
 ```
 
-The constructor accepts a `ServerOptions` object that defines where routes live, URL prefixes, and validation settings. In dev, `src/hooks.ts`, `src/plugins.ts`, and `src/providers.ts` are auto-discovered; production builds pass pre-resolved modules and `apiRoutes` instead. OpenAPI metadata lives in `src/openapi.config.ts`, not here. See [Server Options](/docs/core/server-options) and [Configuration](/docs/core/configuration).
+The constructor takes [Server Options](/docs/core/server-options). Hooks, plugins, providers and OpenAPI metadata live in their own files, not here. See [Configuration](/docs/core/configuration).
+
+## App files
+
+| File | Role |
+|------|------|
+| `src/index.ts` | `new Burger({...})` and `serve()` only |
+| `src/hooks.ts` | Global hooks |
+| `src/plugins.ts` | Register plugins with `usePlugin` |
+| `src/providers.ts` | Register services with `provide` |
+| `src/openapi.config.ts` | OpenAPI metadata and docs UI |
+| `burger.build.ts` | Build settings, read by the CLI only |
 
 ## Methods
 
-### serve(port, callback?)
+### serve(port?, callback?)
 
-Starts the server and listens for requests.
+Starts the server on Bun.
 
 ```ts
-await app.serve(4000);
 await app.serve(4000, () => {
   console.log("Server running at http://localhost:4000");
 });
 ```
 
-- **port** (number, default: 4000): port to listen on.
-- **callback?** (function): called after the server has started.
+- `port`: default `4000`.
+- `callback`: runs once the server has started.
 
-This is the Bun deployment surface. See [Deployment](/docs/deployment/bun).
+See [Deployment](/docs/deployment/bun).
 
-### usePlugin(plugin, scope?, seed?)
+### usePlugin(plugin)
 
-Registers a plugin (application extension) through the registrar passed to `src/plugins.ts`. Plugin hooks are compiled into the hook chain for every route. The same plugin identity is deduplicated. Returns the registrar for chaining.
+Registers a plugin. Call it in `src/plugins.ts`, which default-exports a function:
 
 ```ts title="src/plugins.ts"
 import type { PluginRegistrar } from "burger-api";
@@ -51,11 +59,11 @@ export default function (burger: PluginRegistrar) {
 }
 ```
 
-The default export of `src/plugins.ts` is the place to register plugins. See [Hooks and Plugins](/docs/ecosystem/hooks-plugins) and [Configuration](/docs/core/configuration#plugins-and-providers).
+Registering the same plugin twice has no extra effect. See [Hooks and Plugins](/docs/ecosystem/hooks-plugins) and [Configuration](/docs/core/configuration#plugins-and-providers).
 
 ### provide(name, service)
 
-Registers an application service, created once at startup and injected into `ctx.services` for every request. Services are frozen and shared across requests.
+Registers a service. It is created once and shared as `ctx.services.<name>`. Call it in `src/providers.ts`:
 
 ```ts title="src/providers.ts"
 import type { ProviderRegistrar } from "burger-api";
@@ -66,11 +74,11 @@ export default function (burger: ProviderRegistrar) {
 }
 ```
 
-The default export of `src/providers.ts` is the place to register services. Access them as `ctx.services.name`, typed via module augmentation. See [Configuration](/docs/core/configuration#plugins-and-providers).
+See [Providers](/docs/core-concepts/providers) and [Configuration](/docs/core/configuration#plugins-and-providers).
 
 ### websocket(path, handlers)
 
-Registers a WebSocket route programmatically (as an alternative to a file-based route under `wsDir`). Returns `this` for chaining.
+Adds a WebSocket route in code:
 
 ```ts
 app.websocket("/chat", {
@@ -83,15 +91,15 @@ app.websocket("/chat", {
 });
 ```
 
-Programmatic WebSocket routes are a **dev-only** convenience. They are not captured by production AOT builds. Use a file-based route under `wsDir` for anything that needs to survive `burger-api build`. See [WebSocket](/docs/websocket/overview).
+Routes added this way work in dev only. `burger-api build` does not include them. For production, add a file under `src/websocket/`. See [WebSocket](/docs/websocket/overview).
 
 ### fetchHandler()
 
-Builds a Web-Standard fetch handler for the app. Usable with `Bun.serve`, `Deno.serve`, Vercel, Cloudflare Workers, and Node 24.22.1+ or 26.12.1+. It serves static function page routes and embedded assets, and handles WebSocket upgrades where the runtime supports them (Bun, Deno, Cloudflare Workers). Bun-only page features (HTML-import bundles and dynamic `[param]` pages) and disk-backed dev assets are only served by `serve()` on Bun; see [Compatibility](/docs/compatibility).
+Builds a standard fetch handler `(request) => Promise<Response>`. It is async, so `await` it. Use it with `Bun.serve`, `Deno.serve`, Vercel, Cloudflare Workers or Node 24+. Some page features work only with `serve()` on Bun. See [Compatibility](/docs/compatibility).
 
-### toFetchHandler(burger)
+### toFetchHandler(app)
 
-The WinterCG entry point. `toFetchHandler(app)` returns a Web-Standard fetch handler that runs anywhere `Request` and `Response` exist:
+A function, not a method. It wraps the app as a fetch handler you can export directly:
 
 ```ts
 import { Burger, toFetchHandler } from "burger-api";
@@ -105,13 +113,11 @@ export default { fetch: toFetchHandler(app) };
 Deno.serve(toFetchHandler(app));
 ```
 
-Cloudflare Workers, Deno, and Vercel pass AOT `apiRoutes`: those runtimes have no filesystem at request time. See [Deployment](/docs/deployment/bun).
+These runtimes have no filesystem, so pass the `apiRoutes` from `burger-api build`. See [Deployment](/docs/deployment/bun).
 
 ### createNodeWsBridge(options)
 
-Lower-level Node WebSocket integration. On Node, use `serve(app)` from [`@burger-api/node-server`](/docs/deployment/node) instead: it starts the HTTP server and wires the WebSocket bridge for you.
-
-`createNodeWsBridge()` returns a bridge that plugs the framework's WebSocket pipeline into `node:http`'s `'upgrade'` event, using a framing library's `WebSocketServer` (the `ws` package). It requires WebSocket routes to already be configured (`wsDir`, `wsRoutes`, or `app.websocket()`) and to have been processed by `await app.fetchHandler()` (or `await app.serve()`) first; it throws otherwise. This is the escape hatch for wiring things by hand.
+Low-level WebSocket support for Node. You rarely need it. Use `serve(app)` from [`@burger-api/node-server`](/docs/deployment/node) instead: it starts HTTP and WebSocket for you.
 
 ```ts
 import { serve } from "@burger-api/node-server";
@@ -119,34 +125,22 @@ import { Burger } from "burger-api";
 
 const app = new Burger({ apiRoutes, wsRoutes });
 
-serve(app, { port: 3000 }); // HTTP + WebSocket bridge, including createNodeWsBridge()
+serve(app, { port: 3000 });
 ```
 
-See [WebSocket](/docs/websocket/overview#nodejs) and [Compatibility](/docs/compatibility).
+See [WebSocket](/docs/websocket/overview#nodejs).
 
 ### getServer()
 
-Returns the underlying `Server` wrapper (created in the constructor, so it is always present). Mainly useful for test harnesses and benchmark scripts that need to stop the server cleanly; `isRunning()` reports whether `serve()` has actually started it.
+Returns the server object. Useful in tests to stop the server:
 
 ```ts
 const server = app.getServer();
 if (server?.isRunning()) server.stop();
 ```
 
-## App files
-
-Scaffolded projects split configuration across convention files:
-
-| File | Role |
-|------|------|
-| `src/index.ts` | `Burger` instance, `serve()` only |
-| `src/hooks.ts` | Global lifecycle hooks |
-| `src/plugins.ts` | Register plugins |
-| `src/providers.ts` | Declare shared services |
-| `src/openapi.config.ts` | OpenAPI metadata, docs UI, docs auth |
-| `burger.build.ts` | Build-time only (CLI) |
-
 ## Related
 
 - [Server Options](/docs/core/server-options)
 - [Configuration](/docs/core/configuration)
+- [Providers](/docs/core-concepts/providers)

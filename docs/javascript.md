@@ -5,55 +5,23 @@ sidebar_position: 3
 
 # JavaScript
 
-JavaScript is a first-class citizen in BurgerAPI. Every convention works the
-same in `.js` and `.mjs` as it does in `.ts`: `route.*`, `schema.*`,
-`hooks.*`, `openapi.*`, `config.*`, plus the app-level convention files
-(`hooks.js`, `plugins.js`, `providers.js`, `openapi.config.js`). TypeScript
-remains the default, but you can scaffold a fully typed JavaScript project
-with one flag.
+You can write a BurgerAPI app in JavaScript. Every convention file works with `.js` and `.mjs`, the same as `.ts`. You get type checking from JSDoc comments.
 
-## Scaffold a JavaScript project
+## Create a JavaScript project
 
 ```bash
 burger-api create my-api --lang js
 ```
 
-This creates the same project as `--lang ts` with `.js` files and no
-`src/types.ts`. Instead of `tsconfig.json` you get a `jsconfig.json` that
-enables type-checking of JSDoc annotations:
+You get the same project with `.js` files. A `jsconfig.json` with `checkJs: true` makes your editor check your JSDoc types and give you autocomplete.
 
-```json
-{
-  "compilerOptions": {
-    "lib": ["ESNext", "DOM", "DOM.Iterable"],
-    "target": "ESNext",
-    "module": "ESNext",
-    "moduleDetection": "force",
-    "jsx": "react-jsx",
-    "checkJs": true,
-    "strict": true,
-    "noImplicitAny": true,
-    "noUncheckedIndexedAccess": true,
-    "moduleResolution": "bundler",
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "noEmit": true
-  },
-  "include": ["src"]
-}
-```
+## Write a route
 
-With `checkJs` on, your editor type-checks your JSDoc against the shipped `burger-api` type declarations, so you get full IntelliSense without writing a single type annotation in a `.ts` file. All of it lives in `.js` comments.
-
-## Route files
-
-Route files use the same uppercase handler exports as TypeScript:
+Use the same uppercase handler exports as TypeScript. Add types with JSDoc:
 
 ```js
 // src/api/hello/route.js
 /**
- * Say hello.
  * @param {import('burger-api').BurgerContext} ctx
  * @returns {Promise<Response>}
  */
@@ -63,61 +31,16 @@ export async function GET(ctx) {
 }
 ```
 
-`.mjs` files work identically. A route directory must not contain both
-`route.js` and `route.ts`: the scanner fails loudly on mixed files.
+A route folder must not contain both `route.js` and `route.ts`. The app fails to start if it does.
 
-## JSDoc types
+## Validated data
 
-Because JavaScript has no `import type`, you reference framework types
-through JSDoc import types:
-
-- `@param {import('burger-api').BurgerContext} ctx` for handlers and hooks.
-- `@type {import('burger-api').Hook}` for hook functions and
-  `@type {import('burger-api').Plugin}` for plugins.
-- `@returns {Promise<Response>}` keeps handlers explicitly typed.
-
-There is no runtime cost: JSDoc types are comments and are erased by Bun.
-
-## A full JSDoc route example
-
-A complete route directory, in JavaScript with JSDoc types:
-
-```js
-// src/api/products/route.js
-import { NotFoundError, defineRoute } from "burger-api";
-import { POST as PostSchema } from "./schema";
-
-/**
- * List products.
- * @param {import('burger-api').BurgerContext} ctx
- * @returns {Promise<Response>}
- */
-export async function GET(ctx) {
-  return Response.json({ products: [] });
-}
-
-// With a body schema, read the validated body instead of calling ctx.json().
-export const POST = defineRoute(PostSchema, (ctx) => {
-  const { name } = ctx.validated.body;
-  return Response.json({ created: { name } }, { status: 201 });
-});
-
-/**
- * Get one product.
- * @param {import('burger-api').BurgerContext} ctx
- * @returns {Promise<Response>}
- */
-export async function PATCH(ctx) {
-  throw new NotFoundError("Product not found");
-}
-```
+Put the schema in `schema.js`. Use `@satisfies`, not `@type`, so `defineRoute` can infer the types of `ctx.validated`:
 
 ```js
 // src/api/products/schema.js
 import { z } from "zod";
 
-// @satisfies (not @type) keeps the literal type, so defineRoute can infer
-// ctx.validated from it.
 /** @satisfies {import('burger-api').MethodSchema} */
 export const POST = {
   body: z.object({ name: z.string() }),
@@ -125,42 +48,30 @@ export const POST = {
 ```
 
 ```js
-// src/api/products/hooks.js
-import { UnauthorizedError } from "burger-api";
+// src/api/products/route.js
+import { defineRoute } from "burger-api";
+import { POST as PostSchema } from "./schema";
 
-/**
- * Route transform: require a valid authorization header before validation.
- * @type {import('burger-api').TransformMap}
- */
-export const transform = {
-  user: (ctx) => {
-    const token = ctx.headers.get("authorization");
-    if (!token) {
-      throw new UnauthorizedError("Unauthorized");
-    }
-    return { token };
-  },
-};
+export const POST = defineRoute(PostSchema, (ctx) => {
+  const { name } = ctx.validated.body;
+  return Response.json({ created: { name } }, { status: 201 });
+});
 ```
 
-```js
-// src/api/products/openapi.js
-/** @type {import('burger-api').OpenAPIMeta} */
-export const GET = { summary: "List products", tags: ["products"] };
-```
+## Common JSDoc types
 
-## Generating routes in a JavaScript project
+- `@param {import('burger-api').BurgerContext} ctx` for handlers and hooks.
+- `@type {import('burger-api').Hook}` for hook functions.
+- `@type {import('burger-api').Plugin}` for plugins.
+- `@type {import('burger-api').OpenAPIMeta}` for entries in `openapi.js`.
 
-`burger-api generate` detects your project language: a `jsconfig.json` in the
-project root marks a JavaScript project, so generated files use `.js`
-extensions automatically.
+## Generate files
+
+`burger-api generate` sees `jsconfig.json` and creates `.js` files:
 
 ```bash
-burger-api generate route users        # creates route.js, schema.js, ...
-burger-api generate route users --lang js   # force JavaScript
+burger-api generate route users
 ```
-
-Hooks and plugins generation follows the same rule.
 
 ## Related
 

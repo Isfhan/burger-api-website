@@ -4,94 +4,78 @@ sidebar_label: Hook System
 
 # Hook System
 
-BurgerAPI uses a **hook-based request lifecycle**. Six named stages with clear jobs, each returning a defined shape.
+Hooks let you run code at fixed points of a request. Use them for auth, logging, headers and error handling.
 
-**Hooks** control when code runs on a request.  
-**Plugins** extend the application (and may register hooks). Keep them separate.
+Hooks and plugins are separate things. A hook runs at one point of a request. A plugin is a package of hooks that you register in `src/plugins.ts`.
 
-## Six hooks
+## The six hooks
 
-| Hook | When |
+| Hook | When it runs |
 |------|------|
-| `onRequest` | Request enters the app |
-| `transform` | After routing, before validation (context decoration) |
+| `onRequest` | The request enters the app, before routing |
+| `transform` | After routing, before validation. Adds fields to `ctx` |
 | `beforeRoute` | After validation, before the handler |
 | `afterRoute` | After the handler returns |
-| `mapResponse` | Before the response is sent (final headers) |
-| `onError` | Any error in the lifecycle |
+| `mapResponse` | Right before the response is sent |
+| `onError` | When an error is thrown |
 
 ```
 onRequest → Routing → transform → Validation → beforeRoute
   → Handler → afterRoute → mapResponse
 ```
 
-Errors thrown after routing (validation, `beforeRoute`, handler, `afterRoute`, `mapResponse`) jump to `onError`. Errors thrown in `onRequest` also run through the global, plugin and framework `onError` hooks. A request that matches no route is rendered directly (404) without running `onError`.
+An error thrown in any step goes to `onError`. A request that matches no route gets a 404.
 
-`transform` runs before validation, so authenticate there: throw `UnauthorizedError` to reject, or return the user to set `ctx.user`. An unauthenticated caller then gets a 401, not a validation error. `beforeRoute` runs after validation; use it for checks that need `ctx.validated`.
+## What a hook returns
 
-## Scopes
+- `undefined`: continue.
+- A `Response` from `onRequest` or `beforeRoute`: stop here and send this response. The handler does not run. `afterRoute` and `mapResponse` still run on it.
+- A `Response` from `afterRoute` or `mapResponse`: replace the current response.
+- A function `(response) => Response`: change the response.
 
-1. Framework  
-2. Plugin  
-3. Global (`src/hooks.ts`)  
-4. Route (`api/**/hooks.ts`)
+See [Hook Return Types](/docs/hooks/return-types) for details and examples.
 
-Request hooks run Framework → Plugin → Global → Route. Response hooks (`afterRoute`, `mapResponse`) and error hooks (`onError`) run nearest-first: Route → Global → Plugin → Framework.
-
-There is **no** folder or group inheritance of hooks. Each route directory is self-contained.
-
-## Route convention files
-
-Alongside `route.ts`:
-
-- `hooks.ts` : route hooks  
-- `schema.ts` : validation  
-- `openapi.ts` : OpenAPI  
-- `config.ts` : route options (auth, cache, timeout, …)
-
-## Types for this feature
-
-Each hook point has its own type. TypeScript checks the return value of your hook against that type.
-
-The types you use (all from `burger-api`):
-
-- `ForwardHook`: for `onRequest` and `beforeRoute`: returns `Response` (skip the handler and later forward hooks, then run the response hooks), `(response) => Response` (transform the eventual response), or `undefined` (continue)
-- `ResponseHook`: for `afterRoute` and `mapResponse`: returns `Response`, `(response) => Response`, or `undefined`
-- `ErrorHook`: for `onError`: takes `(error, ctx)`, returns `Response` or `undefined`
-- `RouteHooks`: the object with all hook points, for typing `hooks.ts` files
-
-✅ Correct: each hook returns something from its contract:
-
-```typescript
-// hooks.ts
+```ts title="src/api/users/hooks.ts"
 import type { RouteHooks } from "burger-api";
 
 export const beforeRoute: RouteHooks["beforeRoute"] = [
-    (ctx) => new Response("blocked", { status: 429 }), // stop
-    () => (res) => res, // continue, but transform the final response
-    () => undefined, // continue
-];
-
-export const afterRoute: RouteHooks["afterRoute"] = [
-    (ctx) => (res) => res, // change the response
+  (ctx) => {
+    if (!ctx.headers.get("x-api-key")) {
+      return new Response("Unauthorized", { status: 401 });
+    }
+  },
 ];
 ```
 
-❌ Wrong: a hook returns a value that is not in the contract:
+## Where hooks live
 
-```typescript
-export const beforeRoute: RouteHooks["beforeRoute"] = [
-    () => 42, // ❌ Type 'number' is not assignable
-];
-```
+- **Global**: `src/hooks.ts`. See [Global Hooks](/docs/hooks/global).
+- **Route**: `hooks.ts` next to a `route.ts`. See [Route Hooks](/docs/hooks/route-specific).
+- **Plugin**: the `hooks` of a plugin registered in `src/plugins.ts`. See [Hooks and Plugins](/docs/ecosystem/hooks-plugins).
 
-The full rules for each return value are on the [Hook Return Types](/docs/hooks/return-types) page. See the [TypeScript overview](/docs/advanced/type-safety).
+Global and plugin `afterRoute` and `mapResponse` run for every response: 404s, errors, pages, assets and `/docs` too. Route hooks run only when their route matches.
 
-When a route's hooks read `ctx.validated`, `defineHooks(schema, hooks)` types every hook's `ctx` from the route's schema in one step. See [Route Hooks](/docs/hooks/route-specific).
+`onRequest` is not allowed in a route `hooks.ts`. It runs before routing, so put it in `src/hooks.ts` or a plugin.
 
-Check your code: `bun run typecheck`.
+Hooks are not inherited. A route's `hooks.ts` applies to that route only, not to sub-folders.
+
+## Order
+
+- `onRequest`, `transform`, `beforeRoute`: plugin hooks first, then global, then route.
+- `afterRoute`, `mapResponse`, `onError`: route hooks first, then global, then plugin.
+
+## Auth goes in transform
+
+`transform` runs before validation. If you check auth there, a caller without a token gets a 401, not a 422 that lists your schema fields. Throw `UnauthorizedError` to reject. Use `beforeRoute` for checks that need `ctx.validated`.
+
+## Changing status and headers
+
+Set `ctx.set.status` and `ctx.set.headers` from any hook or handler. See [Response Mutation](/docs/api/response-mutation).
 
 ## Related
 
-- [Global hooks](/docs/hooks/global)
-- [Route hooks](/docs/hooks/route-specific)
+- [Global Hooks](/docs/hooks/global)
+- [Route Hooks](/docs/hooks/route-specific)
+- [After Hooks](/docs/hooks/after)
+- [Hook Return Types](/docs/hooks/return-types)
+- [Hook Types](/docs/api/hook-types)

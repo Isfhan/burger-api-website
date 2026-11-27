@@ -4,13 +4,13 @@ sidebar_label: Validation Types
 
 # Validation Types
 
-Validation is declared with Zod (or any [Standard Schema](https://standardschema.dev/) library). Each route directory carries a `schema.ts` file with per-method named exports. BurgerAPI validates the request after `transform` and before `beforeRoute`.
+Type reference for validation. For how validation works, see [Validation](/docs/core-concepts/validation).
 
 ## Per-method schema
 
-Each HTTP method maps to an object of optional schemas:
+`schema.ts` exports one object per HTTP method. Each slot is optional and takes a Zod or [Standard Schema](https://standardschema.dev/) schema.
 
-```ts title="api/products/schema.ts"
+```ts title="src/api/products/schema.ts"
 import { z } from "zod";
 
 export const GET = { query: z.object({ limit: z.coerce.number().optional() }) };
@@ -20,35 +20,31 @@ export const POST = {
 };
 ```
 
-The available slots are `params`, `query`, `headers`, `cookies`, and `body`. A slot accepts a schema (Zod or any Standard Schema library). Per-status-code `response` schemas are validated after the handler. See [Schema Definition](/docs/validation/schema) for every slot.
+| Slot | Checks |
+|------|--------|
+| `params` | Path parameters |
+| `query` | Query string |
+| `headers` | Request headers |
+| `cookies` | Cookies |
+| `body` | JSON body |
+| `response` | Handler output, keyed by status (`200`) or class (`2xx`) |
 
-## Validated data
+## ctx.validated
 
-After validation, the result is available on `ctx.validated`. Each key exists only if that slot had a schema:
+Valid data lands on `ctx.validated.params`, `.query`, `.headers`, `.cookies` and `.body`. A key exists only if its slot has a schema. Wrap the handler with `defineRoute` to type it:
 
-- `ctx.validated.params`
-- `ctx.validated.query`
-- `ctx.validated.headers`
-- `ctx.validated.cookies`
-- `ctx.validated.body`
-
-Typing flows from `schema.ts`. The recommended way to wire it up is `defineRoute(schema, handler)`, imported from `burger-api`, with `schema` the same object you already export from `./schema`:
-
-```ts title="api/products/route.ts"
+```ts title="src/api/products/route.ts"
 import { defineRoute } from "burger-api";
 import { GET as GetSchema } from "./schema";
 
 export const GET = defineRoute(GetSchema, (ctx) => {
-  // ctx.validated.query is inferred, no generic to write
   return Response.json({ limit: ctx.validated.query.limit });
 });
 ```
 
-The older, equivalent form still works: annotate the handler with `BurgerContext<typeof GET>` directly. See [Validation](/docs/validation/zod) and [Type Safety](/docs/advanced/type-safety).
+## ValidationError
 
-## Errors
-
-Failed validation throws a `ValidationError`, which carries the failing `slot` and structured `ValidationIssue[]`:
+A failed check throws `ValidationError` (status 422). It has the failing `slot` and a list of issues:
 
 ```ts
 interface ValidationIssue {
@@ -58,15 +54,15 @@ interface ValidationIssue {
 }
 ```
 
-`ValidationError` extends `HTTPError` with status 422. If no `onError` hook handles it, the framework renders an RFC 9457 Problem Details response. See [Validation Errors](/docs/validation/errors) and [Problem Details](/docs/validation/problem-details).
+If no `onError` hook handles it, the client gets an RFC 9457 Problem Details response. See [Validation Errors](/docs/validation/errors).
 
-## Validation configuration
+## Options
 
-The server accepts a `validation` option (`coerce`, `responseValidation`, `errorFormat`). See [Validation Configuration](/docs/validation/configuration).
+`new Burger({ validation: { ... } })` takes `coerce`, `responseValidation` and `errorFormat`. See [Validation Configuration](/docs/validation/configuration).
 
 ## Related
 
-- [Burger Class](/docs/core/burger-class)
-- [Server Options](/docs/core/server-options)
-- [Validation](/docs/validation/zod)
+- [Validation](/docs/core-concepts/validation)
+- [Schema Definition](/docs/validation/schema)
 - [Validation Configuration](/docs/validation/configuration)
+- [Server Options](/docs/core/server-options)

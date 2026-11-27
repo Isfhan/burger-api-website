@@ -4,17 +4,17 @@ sidebar_label: OIDC
 
 # OIDC Plugin
 
-The OIDC plugin verifies a token from an OpenID Connect provider against the provider's published signing keys. It checks expiry, issuer, audience, and roles, then puts the token claims on `ctx.user`. Use it when your tokens come from an identity provider such as Google, Auth0, or Entra ID rather than a secret you control.
+This plugin checks tokens from an OpenID Connect provider, such as Google, Auth0 or Entra ID. It verifies the token with the provider's public keys and puts the claims on `ctx.user`.
 
-Install it with:
+## Install
 
 ```bash
 burger-api add oidc
 ```
 
-## Usage
+To update the copy later, run `burger-api add oidc --force`.
 
-Register the plugin in `src/plugins.ts`:
+## Register
 
 ```ts title="src/plugins.ts"
 import type { PluginRegistrar } from "burger-api";
@@ -30,9 +30,17 @@ export default (burger: PluginRegistrar) => {
 };
 ```
 
-The plugin reads the discovery document from `<issuer>/.well-known/openid-configuration` the first time it has to verify a token. Verification runs in `transform`, before validation, so an unauthenticated request gets a 401 even when the body is invalid.
+## Options
 
-Public routes opt out with `auth: false`; protected routes require a token and may list roles:
+- `issuer`: provider URL. Required. Must match the token `iss` exactly.
+- `audience`: when set, the token `aud` must contain it.
+- `algorithms`: allowed algorithms. Default `["RS256", "ES256"]`. Only these two are supported.
+
+The full list is in `ecosystem/plugins/oidc/README.md`.
+
+## Protect routes
+
+Once registered, every route needs a valid token. Open a route with `auth: false` in its `config.ts`. Require a role with `roles` (read from the token's `roles` claim):
 
 ```ts title="api/public/config.ts"
 export default { auth: false };
@@ -42,51 +50,21 @@ export default { auth: false };
 export default { auth: { required: true, roles: ["admin"] } };
 ```
 
-See [JWT Auth](/docs/ecosystem/jwt-auth) for typing `auth` in `RouteConfig`.
+- A missing or bad token gets `401`. A missing role gets `403`.
+- The token is checked before validation, so `401` comes before `422`.
+- If the provider cannot be reached, the request gets `503`. The client can retry.
 
-## Options
-
-- `issuer`: provider issuer URL. Required. Must match the token `iss` exactly.
-- `audience`: audience value. When set, the token `aud` must contain it. Default unset, so audience is not checked.
-- `header`: header to read the token from. Default `"Authorization"`.
-- `prefix`: prefix before the token. Default `"Bearer"`. Must match exactly, including case and the space.
-- `clockTolerance`: allowed clock skew in seconds. Default `0`.
-- `jwksCacheTtl`: how long fetched signing keys stay cached, in seconds. Default `3600`.
-- `algorithms`: allowed token `alg` values. Default `["RS256", "ES256"]`.
-- `requireExpiration`: reject tokens without an `exp` claim. Default `true`.
-
-A token is also rejected when `nbf` is in the future or when `iss` differs from `issuer`.
-
-## Roles
-
-A route that lists `auth.roles` needs at least one match in the token's `roles` claim:
-
-```ts title="api/admin/config.ts"
-export default { auth: { required: true, roles: ["admin", "ops"] } };
-```
-
-Any listed role is enough. A non-array `roles` claim counts as no roles, so a string claim never matches by substring. An empty `roles: []`, or plain `auth: true`, means no role is required. If nothing matches, the route answers `403 Forbidden`.
-
-## What the handler sees
-
-`ctx.user` holds the verified token claims:
+## Use it in a handler
 
 ```ts title="api/me/route.ts"
 import type { BurgerContext } from "burger-api";
 
 export async function GET(ctx: BurgerContext) {
-  return Response.json({ sub: ctx.user?.sub, roles: ctx.user?.roles });
+  return Response.json({ sub: ctx.user?.sub, email: ctx.user?.email });
 }
 ```
 
-The plugin augments `BurgerAuthUser` with `sub`, `iss`, `aud`, `exp`, and `roles`. The full decoded payload is available, so provider-specific claims such as `email` are there too.
-
-## Good to know
-
-- When a token names a `kid` that is not in the cache, the plugin refetches the keys once and retries. Forced refetches are limited to one every 30 seconds, so forged `kid` values cannot hammer the provider.
-- If discovery or the key set cannot be fetched, the plugin logs the error and answers `503`, not `401`. The token itself was never evaluated, so the client should retry.
-- Only `RS256` and `ES256` are implemented. Adding another algorithm to `algorithms` does not enable it, and tokens that use it are rejected as invalid.
-- `exp` equal to the current second already counts as expired. `clockTolerance` is the only allowance.
+All token claims are on `ctx.user`.
 
 ## Related
 

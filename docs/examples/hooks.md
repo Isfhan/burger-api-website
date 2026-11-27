@@ -4,12 +4,11 @@ sidebar_label: Hooks Example
 
 # Hooks Example
 
-Using global and route-specific hooks:
+## Global hook
 
-**Global:** Export a hook array from `src/hooks.ts`. It runs for every request in the app (e.g. logger, CORS).
+Export a hook list from `src/hooks.ts`. It runs for every request:
 
-```ts
-// src/hooks.ts
+```ts title="src/hooks.ts"
 import type { BurgerContext } from "burger-api";
 
 export const onRequest = [
@@ -19,10 +18,11 @@ export const onRequest = [
 ];
 ```
 
-**Route-specific:** Export hook points (`transform`, `beforeRoute`, `afterRoute`, `mapResponse`, `onError`) from a route's `hooks.ts`. They run only for that route directory. `beforeRoute` runs after global hooks and validation, before the handler.
+## Route hook
 
-```ts
-// src/api/products/hooks.ts
+Export hooks from a route's `hooks.ts`. They run only for that route. This `transform` hook blocks non-admin requests:
+
+```ts title="src/api/products/hooks.ts"
 import { ForbiddenError } from "burger-api";
 import type { RouteHooks } from "burger-api";
 
@@ -36,8 +36,7 @@ export const transform: RouteHooks["transform"] = {
 };
 ```
 
-```ts
-// src/api/products/route.ts
+```ts title="src/api/products/route.ts"
 import type { BurgerContext } from "burger-api";
 
 export async function GET(ctx: BurgerContext) {
@@ -45,10 +44,9 @@ export async function GET(ctx: BurgerContext) {
 }
 ```
 
-A hook returns a `Response` to short-circuit the request, or `undefined` to continue. `afterRoute` and `mapResponse` can also return a function that transforms the response.
+A hook returns a `Response` to stop the request, or nothing to continue.
 
-See [Hook System](/docs/hooks/system), [Global Hooks](/docs/hooks/global), and [Route Hooks](/docs/hooks/route-specific).
-
+See [Hook System](/docs/hooks/system), [Global Hooks](/docs/hooks/global) and [Route Hooks](/docs/hooks/route-specific).
 
 ## Related
 
