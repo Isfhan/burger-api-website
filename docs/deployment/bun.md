@@ -51,6 +51,35 @@ bun run build   # AOT route scan + production bundle
 bun run start   # serve the production build
 ```
 
+## HTTPS
+
+Most apps get HTTPS from what sits in front of them: a load balancer, a CDN such as Cloudflare, or a proxy such as nginx or Caddy. It handles the certificate and HTTP/2, and your app serves plain HTTP behind it. Your hosting platform usually sets this up for you. For WebSocket routes, the proxy must forward upgrade requests.
+
+To serve HTTPS from the app itself, pass a certificate and key with the `tls` option:
+
+```ts
+// src/index.ts
+import { Burger } from "burger-api";
+
+const app = new Burger({
+  apiDir: "./src/api",
+  tls: process.env.TLS_CERT
+    ? {
+        cert: Bun.file(process.env.TLS_CERT),
+        key: Bun.file(process.env.TLS_KEY!),
+      }
+    : undefined,
+});
+
+const port = Number(process.env.PORT) || 4000;
+app.serve(port);
+```
+
+- Set `TLS_CERT` and `TLS_KEY` to the full paths of your PEM files. Use full paths: the production build runs from its own folder, so relative paths do not work.
+- Without the variables, the app serves plain HTTP. That keeps local development simple.
+- WebSocket routes use `wss://` when `tls` is set.
+- `tls` works with `serve()` on Bun. On Node, Cloudflare Workers, Deno and Vercel, the platform handles HTTPS and the option is ignored.
+
 ## VPS or Docker
 
 Build and run the production bundle, then expose the port:

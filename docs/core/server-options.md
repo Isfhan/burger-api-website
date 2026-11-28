@@ -32,6 +32,7 @@ burger.serve(4000);
 | `title`, `description`, `version` | `string` | Fallback OpenAPI metadata. Prefer `src/openapi.config.ts`. |
 | `hostname` | `string` | Hostname for `serve()` to bind. |
 | `maxRequestBodySize` | `number` | Largest request body in bytes for `serve()`. Bigger bodies get `413`. Bun's default is 128 MB. |
+| `tls` | object | `cert` and `key` (plus optional `passphrase`, `ca`, `serverName`). `serve()` then speaks HTTPS. Bun only. See [HTTPS](/docs/deployment/bun#https). |
 
 ## Set by the build
 
