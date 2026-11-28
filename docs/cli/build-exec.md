@@ -22,6 +22,7 @@ Options:
 
 - `--outfile <path>`: where to write the executable. On Windows, `.exe` is added if missing.
 - `--target <target>`: the operating system and CPU to build for.
+- `--no-minify`: build without minifying the code.
 - `--no-bytecode`: build without bytecode (the app starts more slowly).
 
 `burger-api build --compile` does the same thing.
