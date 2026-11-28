@@ -194,6 +194,11 @@ burger-api doctor
 
 Hooks and plugins you added with `burger-api add` are copies in your project, so updating does not change them. `burger-api doctor` tells you which ones to refresh and prints the command.
 
+### November 28: burger-api 1.0.0-beta.3, CLI 1.0.0-beta.6
+
+- New `tls` option: your app can serve HTTPS itself on Bun. See [HTTPS](/docs/deployment/bun#https).
+- `build:exec --no-minify` turns minifying off.
+
 ### November 27: CLI 1.0.0-beta.5
 
 - On Linux, `dev` keeps noticing changes to `burger.build.ts` after an editor saves it by replacing the file.
